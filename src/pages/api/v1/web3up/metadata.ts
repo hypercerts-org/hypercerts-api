@@ -1,13 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { validateMetaData } from "@hypercerts-org/sdk";
-import { AnyLink } from "@web3-storage/w3up-client/dist/src/types";
 import { jsonToBlob } from "@/utils";
 import { setup } from "@/client";
 
 type ResponseData = {
   message: string;
-  cid?: AnyLink;
+  cid?: string;
   errors?: Record<string, string | string[]>;
 };
 
@@ -31,7 +30,13 @@ export default async function handler(
 
     const result = await client.uploadFile(blob);
 
-    res.status(200).json({ message: "Data uploaded succesfully", cid: result });
+    console.log(result);
+
+    console.log(result.toString());
+
+    res
+      .status(200)
+      .json({ message: "Data uploaded succesfully", cid: result.toString() });
   } else {
     res.status(405).json({ message: "Not allowed" });
   }
