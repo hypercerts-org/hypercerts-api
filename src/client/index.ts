@@ -1,24 +1,11 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import * as Signer from "@ucanto/principal/ed25519"; // Agents on Node should use Ed25519 keys
 import { importDAG } from "@ucanto/core/delegation";
 import { CarReader } from "@ipld/car";
 import * as Client from "@web3-storage/w3up-client";
 import { StoreMemory } from "@web3-storage/access/stores/store-memory";
-import { validateMetaData } from "@hypercerts-org/sdk";
+import { assertExists } from "@/utils";
 
-type ResponseData = {
-  message: string;
-};
-
-function assertExists(variable?: string, name?: string) {
-  if (!variable) {
-    throw new Error(`Environment variable ${name} is not set.`);
-  }
-
-  return variable;
-}
-
-const setup = async () => {
+export const setup = async () => {
   const KEY = assertExists(process.env.KEY, "KEY");
   const PROOF = assertExists(process.env.PROOF, "PROOF");
   // from "bring your own Agent" example in `Creating a client object" section`
@@ -51,30 +38,3 @@ const parseProof = async (data: string) => {
   // @ts-ignore
   return importDAG(blocks);
 };
-
-const jsonToBlob = (data: any) => {
-  const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
-  return blob;
-};
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const client = await setup();
-
-  const reqData = req.body;
-
-  const { data, valid, errors } = validateMetaData(reqData);
-
-  if (!valid) {
-    res.status(400).json({ message: "Errors in submitted data", errors });
-    return;
-  }
-
-  const blob = jsonToBlob(data);
-
-  const result = await client.uploadFile(blob);
-
-  res.status(200).json({ message: "Data uploaded succesfully", cid: result });
-}
