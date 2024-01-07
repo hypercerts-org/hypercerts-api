@@ -8,7 +8,7 @@ import { isAddress } from "viem";
 
 type AllowListPostRequest = {
   allowList: string;
-  totalUnits: bigint;
+  totalUnits: string;
 };
 
 type ResponseData = {
@@ -54,7 +54,7 @@ export default async function handler(
 
         const { valid, errors } = validateAllowlist(
           allowListEntries,
-          reqData.totalUnits
+          BigInt(reqData.totalUnits)
         );
 
         if (!valid) {
@@ -98,7 +98,6 @@ export default async function handler(
 }
 
 const isAllowListEntry = (data: unknown): data is AllowlistEntry => {
-  console.log("IS ALLOWLIST ENTRY", data);
   if (!Array.isArray(data)) return false;
   const _address = data[0];
   const _units = data[1];
@@ -121,10 +120,6 @@ const isAllowListPostRequest = (
 };
 
 const isNumberOrBigInt = (value: unknown): value is number | bigint => {
-  if (typeof value === "bigint" || typeof value === "number") {
-    return true;
-  }
-
   if (typeof value === "string") {
     try {
       const parsedValue = BigInt(value);
