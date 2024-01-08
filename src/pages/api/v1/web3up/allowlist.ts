@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { AllowlistEntry, validateAllowlist } from "@hypercerts-org/sdk";
-import { jsonToBlob } from "@/utils";
+import { allowCors, jsonToBlob } from "@/utils";
 import { setup } from "@/client";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { isAddress } from "viem";
@@ -17,10 +17,10 @@ type ResponseData = {
   errors?: Record<string, string | string[]>;
 };
 
-export default async function handler(
+const handler = async (
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
-) {
+) => {
   if (req.method === "POST") {
     const client = await setup();
 
@@ -95,7 +95,7 @@ export default async function handler(
   } else {
     res.status(405).json({ message: "Not allowed" });
   }
-}
+};
 
 const isAllowListEntry = (data: unknown): data is AllowlistEntry => {
   if (!Array.isArray(data)) return false;
@@ -131,3 +131,5 @@ const isNumberOrBigInt = (value: unknown): value is number | bigint => {
 
   return false;
 };
+
+export default allowCors(handler);
