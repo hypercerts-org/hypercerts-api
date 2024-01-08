@@ -102,7 +102,7 @@ const isAllowListEntry = (data: unknown): data is AllowlistEntry => {
   const _address = data[0];
   const _units = data[1];
 
-  return data.length === 2 && isAddress(_address) && isNumberOrBigInt(_units);
+  return data.length === 2 && isAddress(_address) && isParsableToBigInt(_units);
 };
 
 // Check on allowlist dump as string and units as bigint
@@ -115,11 +115,12 @@ const isAllowListPostRequest = (
     "allowList" in data &&
     typeof data.allowList === "string" &&
     "totalUnits" in data &&
-    typeof data.totalUnits === "bigint"
+    typeof data.totalUnits === "string" &&
+    isParsableToBigInt(data.totalUnits)
   );
 };
 
-const isNumberOrBigInt = (value: unknown): value is number | bigint => {
+const isParsableToBigInt = (value: unknown): value is number | bigint => {
   if (typeof value === "string") {
     try {
       const parsedValue = BigInt(value);
