@@ -6,7 +6,7 @@ import {
   validateClaimData,
   validateMetaData,
 } from "@hypercerts-org/sdk";
-import { jsonToBlob } from "@/utils";
+import { allowCors, jsonToBlob } from "@/utils";
 import { setup } from "@/client";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { getFromIPFS } from "@/utils/getFromIPFS";
@@ -17,10 +17,10 @@ type ResponseData = {
   errors?: Record<string, string | string[]>;
 };
 
-export default async function handler(
+const handler = async (
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
-) {
+) => {
   if (req.method === "POST") {
     const client = await setup();
 
@@ -100,7 +100,7 @@ export default async function handler(
   } else {
     res.status(405).json({ message: "Not allowed" });
   }
-}
+};
 
 // Check on required hypercert metadata fields
 const isHypercertMetadata = (data: unknown): data is HypercertMetadata => {
@@ -138,3 +138,5 @@ const isHypercertClaimData = (data: unknown): data is HypercertClaimdata => {
     typeof data.rights === "object"
   );
 };
+
+export default allowCors(handler);
