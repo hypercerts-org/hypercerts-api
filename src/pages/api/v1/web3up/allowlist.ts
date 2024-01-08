@@ -81,7 +81,7 @@ const handler = async (
       return;
     }
 
-    const blob = jsonToBlob(merkleTree);
+    const blob = jsonToBlob(JSON.parse(reqData.allowList));
 
     try {
       const result = await client.uploadFile(blob);
