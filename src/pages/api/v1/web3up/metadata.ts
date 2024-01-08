@@ -95,6 +95,8 @@ const handler = async (
         .status(200)
         .json({ message: "Data uploaded succesfully", cid: result.toString() });
     } catch (e) {
+      console.error(e);
+
       res.status(500).json({ message: "Error uploading data" });
     }
   } else {
