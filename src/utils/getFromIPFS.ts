@@ -10,7 +10,7 @@ const gateways = ["https://w3s.link/ipfs/{cid}", "https://ipfs.io/ipfs/{cid}"];
 
 export const getFromIPFS = async (
   cid: string,
-  timeout: number = 10000
+  timeout: number = 20000
 ): Promise<IPFSResponse> => {
   const res: IPFSResponse = { cid };
   const _errors: Record<string, string | string[]> = {};
