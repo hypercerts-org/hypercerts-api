@@ -63,10 +63,9 @@ const handler = async (
 
     // If allowlist was provided, check if allowlist is valid
     if (reqData.allowList) {
-      console.log("ALLOWLIST", reqData.allowList);
       const { data: allowList, errors } = await getFromIPFS(reqData.allowList);
 
-      if (typeof allowList !== "string") {
+      if (typeof allowList !== "object") {
         res.status(400).json({
           message: "AllowList data not found",
           errors: { ...errors, allowListCID: reqData.allowList },
@@ -76,7 +75,7 @@ const handler = async (
 
       try {
         // Parse allowlist as openzeppelin merkle tree
-        const merkleTree = StandardMerkleTree.load(JSON.parse(allowList));
+        const merkleTree = StandardMerkleTree.load(allowList);
       } catch (e) {
         res.status(400).json({
           message: "Allowlist should be a valid openzeppelin merkle tree",
