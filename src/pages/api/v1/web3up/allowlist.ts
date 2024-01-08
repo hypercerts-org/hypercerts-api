@@ -65,7 +65,7 @@ const handler = async (
           return;
         }
 
-        merkleTree = reqData.allowList;
+        merkleTree = _merkleTree;
       } catch (e) {
         res.status(400).json({
           message: "Allowlist should be a valid openzeppelin merkle tree",
@@ -81,7 +81,7 @@ const handler = async (
       return;
     }
 
-    const blob = jsonToBlob(reqData.allowList);
+    const blob = jsonToBlob(merkleTree);
 
     try {
       const result = await client.uploadFile(blob);
