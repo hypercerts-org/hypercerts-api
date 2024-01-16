@@ -75,7 +75,7 @@ const handler = async (
 
       try {
         // Parse allowlist as openzeppelin merkle tree
-        const merkleTree = StandardMerkleTree.load(allowList);
+        const merkleTree = StandardMerkleTree.load(JSON.parse(allowList));
       } catch (e) {
         res.status(400).json({
           message: "Allowlist should be a valid openzeppelin merkle tree",
