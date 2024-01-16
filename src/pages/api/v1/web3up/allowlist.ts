@@ -5,21 +5,16 @@ import { allowCors, jsonToBlob } from "@/utils";
 import { setup } from "@/client";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { isAddress } from "viem";
+import { ResponseData } from "../../types";
 
 type AllowListPostRequest = {
   allowList: string;
   totalUnits: string;
 };
 
-type ResponseData = {
-  message: string;
-  cid?: string;
-  errors?: Record<string, string | string[]>;
-};
-
 const handler = async (
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<ResponseData<{ cid: string }>>
 ) => {
   if (req.method === "POST") {
     const client = await setup();
@@ -28,7 +23,9 @@ const handler = async (
 
     // Check if object contains openzeppelin merkle tree dump and total units
     if (!isAllowListPostRequest(reqData)) {
-      res.status(400).json({ message: "Not a valid merkle tree object" });
+      res
+        .status(400)
+        .json({ success: false, message: "Not a valid merkle tree object" });
       return;
     }
 
@@ -59,6 +56,7 @@ const handler = async (
 
         if (!valid) {
           res.status(400).json({
+            success: false,
             message: "Errors in submitted allowlist",
             errors,
           });
@@ -69,6 +67,7 @@ const handler = async (
       } catch (e) {
         console.log(e);
         res.status(400).json({
+          success: false,
           message: "Allowlist should be a valid openzeppelin merkle tree",
           errors: { receivedAllowlist: reqData.allowList },
         });
@@ -77,24 +76,28 @@ const handler = async (
     }
 
     if (!merkleTree) {
-      res
-        .status(500)
-        .json({ message: "Something went wrong parsing the allowlist" });
+      res.status(500).json({
+        success: false,
+        message: "Something went wrong parsing the allowlist",
+      });
       return;
     }
 
-    const blob = jsonToBlob(merkleTree.dump());
+    const blob = jsonToBlob(JSON.stringify(merkleTree.dump()));
 
     try {
       const result = await client.uploadFile(blob);
 
-      res
-        .status(200)
-        .json({ message: "Data uploaded succesfully", cid: result.toString() });
+      res.status(200).json({
+        success: true,
+        message: "Data uploaded succesfully",
+        data: { cid: result.toString() },
+      });
     } catch (e) {
       const error = e as Error;
 
       res.status(500).json({
+        success: false,
         message: "Error uploading data",
         errors: {
           name: error.name,
@@ -103,7 +106,7 @@ const handler = async (
       });
     }
   } else {
-    res.status(405).json({ message: "Not allowed" });
+    res.status(405).json({ success: false, message: "Not allowed" });
   }
 };
 
