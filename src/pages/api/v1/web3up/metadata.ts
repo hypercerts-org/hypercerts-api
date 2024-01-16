@@ -63,7 +63,7 @@ const handler = async (
     if (reqData.allowList) {
       const { data: allowList, errors } = await getFromIPFS(reqData.allowList);
 
-      if (typeof allowList !== "object" || !allowList) {
+      if (typeof allowList !== "string" || !allowList) {
         res.status(400).json({
           success: false,
           message: `AllowList data not found. CID: ${reqData.allowList}`,
