@@ -10,16 +10,11 @@ import { allowCors, jsonToBlob } from "@/utils";
 import { setup } from "@/client";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { getFromIPFS } from "@/utils/getFromIPFS";
-
-type ResponseData = {
-  message: string;
-  cid?: string;
-  errors?: Record<string, string | string[]>;
-};
+import { ResponseData } from "../../types";
 
 const handler = async (
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<ResponseData<{ cid: string }>>
 ) => {
   if (req.method === "POST") {
     const client = await setup();
@@ -28,9 +23,10 @@ const handler = async (
 
     // Check if object is hypercert metadata object
     if (!isHypercertMetadata(reqData)) {
-      res
-        .status(400)
-        .json({ message: "Not a valid hypercert metadata object" });
+      res.status(400).json({
+        success: false,
+        message: "Not a valid hypercert metadata object",
+      });
       return;
     }
 
@@ -40,6 +36,7 @@ const handler = async (
 
     if (!claimDataValid) {
       res.status(400).json({
+        success: false,
         message: "Errors in submitted claim data",
         errors: claimDataErrors,
       });
@@ -55,6 +52,7 @@ const handler = async (
 
     if (!metaDataValid) {
       res.status(400).json({
+        success: false,
         message: "Errors in submitted metadata",
         errors: metaDataErrors,
       });
@@ -67,6 +65,7 @@ const handler = async (
 
       if (typeof allowList !== "object" || !allowList) {
         res.status(400).json({
+          success: false,
           message: `AllowList data not found. CID: ${reqData.allowList}`,
           errors: { ...errors },
         });
@@ -78,6 +77,7 @@ const handler = async (
         const merkleTree = StandardMerkleTree.load(JSON.parse(allowList));
       } catch (e) {
         res.status(400).json({
+          success: false,
           message: "Allowlist should be a valid openzeppelin merkle tree",
           errors: {
             receivedAllowlistCID: reqData.allowList,
@@ -93,13 +93,16 @@ const handler = async (
     try {
       const result = await client.uploadFile(blob);
 
-      res
-        .status(200)
-        .json({ message: "Data uploaded succesfully", cid: result.toString() });
+      res.status(200).json({
+        success: true,
+        message: "Data uploaded succesfully",
+        data: { cid: result.toString() },
+      });
     } catch (e) {
       const error = e as Error;
 
       res.status(500).json({
+        success: false,
         message: "Error uploading data",
         errors: {
           name: error.name,
@@ -108,7 +111,7 @@ const handler = async (
       });
     }
   } else {
-    res.status(405).json({ message: "Not allowed" });
+    res.status(405).json({ success: false, message: "Not allowed" });
   }
 };
 
