@@ -79,6 +79,7 @@ const handler = async (
       } catch (e) {
         res.status(400).json({
           message: "Allowlist should be a valid openzeppelin merkle tree",
+          errors: { receivedAllowlist: reqData.allowList },
         });
         return;
       }
