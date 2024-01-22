@@ -5,11 +5,12 @@ import {
   HypercertMetadata,
   validateClaimData,
   validateMetaData,
+  getFromIPFS,
+  StorageError,
 } from "@hypercerts-org/sdk";
 import { allowCors, jsonToBlob } from "@/utils";
 import { setup } from "@/client";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
-import { getFromIPFS } from "@/utils/getFromIPFS";
 import { ResponseData } from "../../types";
 
 const handler = async (
@@ -61,13 +62,27 @@ const handler = async (
 
     // If allowlist was provided, check if allowlist is valid
     if (reqData.allowList) {
-      const { data: allowList, errors } = await getFromIPFS(reqData.allowList);
+      let allowList;
+      try {
+        allowList = await getFromIPFS(reqData.allowList);
+      } catch (e) {
+        const error = e as Error;
 
-      if (typeof allowList !== "string" || !allowList) {
+        res.status(400).json({
+          success: false,
+          message: `Error getting allowlist from IPFS. CID: ${reqData.allowList}`,
+          errors: { message: error.message, name: error.name },
+        });
+        return;
+      }
+
+      if (!allowList || typeof allowList !== "string") {
         res.status(400).json({
           success: false,
           message: `AllowList data not found. CID: ${reqData.allowList}`,
-          errors: { ...errors },
+          errors: {
+            message: "Allowlist data not found or not of expected type",
+          },
         });
         return;
       }
