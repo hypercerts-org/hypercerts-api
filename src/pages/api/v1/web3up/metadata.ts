@@ -64,7 +64,7 @@ const handler = async (
     if (reqData.allowList) {
       let allowList;
       try {
-        allowList = await getFromIPFS(reqData.allowList);
+        allowList = await getFromIPFS(reqData.allowList, 30000);
       } catch (e) {
         const error = e as Error;
 
