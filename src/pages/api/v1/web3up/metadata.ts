@@ -9,7 +9,7 @@ import {
   StorageError,
 } from "@hypercerts-org/sdk";
 import { allowCors, jsonToBlob } from "@/utils";
-import { setup } from "@/client";
+import { setup } from "@/client/w3up";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { ResponseData } from "../../types";
 

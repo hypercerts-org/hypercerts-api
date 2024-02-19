@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import { AllowlistEntry, validateAllowlist } from "@hypercerts-org/sdk";
 import { allowCors, jsonToBlob } from "@/utils";
-import { setup } from "@/client";
+import { setup } from "@/client/w3up";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { isAddress } from "viem";
 import { ResponseData } from "../../types";
