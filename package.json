@@ -4,23 +4,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm codegen && nodemon src/index.ts",
-    "build": "pnpm codegen && npx tsc",
-    "start": "node dist/index.js",
+    "dev": "nodemon src/index.ts",
+    "build": "npx tsc",
+    "start": "node -r dotenv/config src/index.js",
     "lint": "next lint",
-    "test": "vitest",
-    "codegen": "graphql-codegen --config codegen.ts"
+    "test": "vitest"
   },
   "dependencies": {
-    "@apollo/server": "^4.10.0",
     "@hypercerts-org/sdk": "^1.4.2-alpha.0",
     "@ipld/car": "^5.2.5",
     "@openzeppelin/merkle-tree": "^1.0.5",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "20.10.6",
-    "@types/react": "18.2.46",
-    "@types/react-dom": "18.2.18",
     "@ucanto/core": "^9.0.1",
     "@ucanto/principal": "^9.0.0",
     "@web3-storage/access": "^18.1.0",
@@ -31,9 +27,7 @@
     "eslint-config-next": "14.0.4",
     "express": "^4.18.2",
     "graphql": "^16.8.1",
-    "next": "14.0.4",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "graphql-yoga": "^5.1.1",
     "typescript": "5.3.3",
     "viem": "^2.0.3"
   },
@@ -41,12 +35,14 @@
     "node": "18.x"
   },
   "devDependencies": {
+    "@eddeee888/gcg-typescript-resolver-files": "^0.7.2",
     "@graphql-codegen/cli": "5.0.2",
     "@graphql-codegen/graphql-modules-preset": "^4.0.4",
     "@graphql-codegen/introspection": "4.0.2",
     "@graphql-codegen/typescript": "4.0.4",
     "@graphql-codegen/typescript-document-nodes": "4.0.4",
     "@graphql-codegen/typescript-resolvers": "4.0.4",
+    "@graphql-tools/delegate": "^10.0.3",
     "@graphql-tools/executor-http": "^1.0.8",
     "@graphql-tools/schema": "^10.0.2",
     "@graphql-tools/stitch": "^9.0.3",
@@ -61,6 +57,8 @@
     "nodemon": "^3.0.3",
     "sinon": "^17.0.1",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.7.1",
     "vitest": "^1.1.3"
   }
 }

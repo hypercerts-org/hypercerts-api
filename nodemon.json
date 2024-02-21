@@ -1,7 +1,8 @@
 {
+  "ignore": ["**/*.test.ts", "**/*.spec.ts", ".git", "node_modules"],
   "watch": ["src"],
   "ext": "ts",
   "execMap": {
-    "ts": "node --loader ts-node/esm"
+    "ts": "tsx -r dotenv/config"
   }
 }

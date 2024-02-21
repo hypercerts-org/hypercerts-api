@@ -6,7 +6,7 @@ const remoteExecutor = buildHTTPExecutor({
     "https://api.thegraph.com/subgraphs/name/hypercerts-admin/hypercerts-sepolia",
 });
 
-export const hypercertsSubschema = {
+export const hypercertsGraphSubschema = {
   schema: await schemaFromExecutor(remoteExecutor),
   executor: remoteExecutor,
 };

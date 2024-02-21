@@ -1,24 +1,26 @@
 import { describe, it, afterEach, afterAll } from "vitest";
 import { expect } from "chai";
 import { createMocks, RequestMethod } from "node-mocks-http";
+import { Request, Response } from "express";
 
 import sinon from "sinon";
 
 import { data } from "../../utils";
 import { Client } from "@web3-storage/w3up-client";
-import handler from "../../../src/pages/api/v1/web3up/allowlist";
-import { NextApiRequest, NextApiResponse } from "next/types";
+import { allowlistHandler } from "@/handlers/v1/web3up/allowlist";
+import { Link } from "@web3-storage/access";
 
 describe("W3Up Client allowlist", async () => {
   const { metadata, merkleTree, someData } = data;
 
   const storeBlobMock = sinon
     .stub(Client.prototype, "uploadFile")
-    .resolves({ "/": merkleTree.cid }); //TODO better Link object creation
+    .resolves({ "/": merkleTree.cid } as unknown as Link); //TODO better Link object creation
 
   const mockRequestResponse = (method: RequestMethod = "POST") => {
-    const { req, res }: { req: NextApiRequest; res: NextApiResponse } =
-      createMocks({ method });
+    const { req, res }: { req: Request; res: Response } = createMocks({
+      method,
+    });
     req.headers = {
       "Content-Type": "application/json",
     };
@@ -36,7 +38,7 @@ describe("W3Up Client allowlist", async () => {
 
   it("POST valid allowList - 200", async () => {
     const { req, res } = mockRequestResponse();
-    await handler(req, res);
+    await allowlistHandler(req, res);
 
     expect(res.statusCode).to.eq(200);
     expect(res.getHeaders()).to.deep.eq({ "content-type": "application/json" });
@@ -54,7 +56,7 @@ describe("W3Up Client allowlist", async () => {
   it("GET allowlist not allowed - 405", async () => {
     const { req, res } = mockRequestResponse();
     req.method = "GET";
-    await handler(req, res);
+    await allowlistHandler(req, res);
 
     expect(res.statusCode).to.eq(405);
     expect(res.getHeaders()).to.deep.eq({ "content-type": "application/json" });
@@ -70,7 +72,7 @@ describe("W3Up Client allowlist", async () => {
   it("POST incorrect allowlist - 400", async () => {
     const { req, res } = mockRequestResponse();
     req.body = { allowList: data.someData.data, totalUnits: 100n };
-    await handler(req, res);
+    await allowlistHandler(req, res);
 
     expect(res.statusCode).to.eq(400);
     expect(res.getHeaders()).to.deep.eq({ "content-type": "application/json" });
@@ -84,7 +86,7 @@ describe("W3Up Client allowlist", async () => {
   it("POST upload allowlist fails - 500", async () => {
     const { req, res } = mockRequestResponse();
     storeBlobMock.rejects();
-    await handler(req, res);
+    await allowlistHandler(req, res);
 
     expect(res.statusCode).to.eq(500);
     expect(res.getHeaders()).to.deep.eq({ "content-type": "application/json" });

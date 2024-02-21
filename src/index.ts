@@ -1,47 +1,62 @@
 import express, { Express, Request, Response } from "express";
-import { ApolloServer } from "@apollo/server";
-import { expressMiddleware } from "@apollo/server/express4";
-import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import { createYoga } from "graphql-yoga";
 
-import dotenv from "dotenv";
+import { makeGatewaySchema } from "./graphql/schemas";
+import { allowlistHandler } from "./handlers/v1/web3up/allowlist";
+import { metadataHandler } from "./handlers/v1/web3up/metadata";
+
 import cors from "cors";
-import http from "http";
-
-dotenv.config({ path: ".env.local" });
-
-import { gatewaySchema } from "./graphql/schemas/gateway";
 
 const app: Express = express();
 
-// Our httpServer handles incoming requests to our Express app.
-// Below, we tell Apollo Server to "drain" this httpServer,
-// enabling our servers to shut down gracefully.
-const httpServer = http.createServer(app);
-const port = process.env.PORT || 3000;
+app.use(cors());
 
-const server = new ApolloServer({
-  schema: gatewaySchema,
-  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+const defaultQuery = `
+  query {
+    claims(first: 5) {
+      id
+      tokenID
+      metadata {
+        token_id
+      }
+    }
+  }
+`;
+
+const yoga = createYoga({
+  schema: await makeGatewaySchema(),
+  graphiql: { defaultQuery },
+  cors: {
+    origin: "http://localhost:4000",
+    credentials: true,
+    allowedHeaders: ["X-Custom-Header"],
+    methods: ["POST"],
+  },
 });
-
-// Note you must call `start()` on the `ApolloServer`
-// instance before passing the instance to `expressMiddleware`
-await server.start();
-
-app.use(
-  "/v1/graphql",
-  cors<cors.CorsRequest>(),
-  express.json(),
-  expressMiddleware(server)
-);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
 
-app.get("/v1/graphql", (req: Request, res: Response) => {
-  res.send("Express + TypeScript + GraphQL Server");
+app.post("/v1/web3up/:dataToStore", (req: Request, res: Response) => {
+  if (req.params.dataToStore === "allowlist") {
+    console.log("allowlistHandler");
+    return allowlistHandler(req, res);
+  }
+
+  if (req.params.dataToStore === "metadata") {
+    console.log("metadataHandler");
+    return metadataHandler(req, res);
+  }
+
+  return res.status(404).send("Not Found");
 });
 
-await new Promise<void>((resolve) => httpServer.listen({ port }, resolve));
+// Bind GraphQL Yoga to the graphql endpoint to avoid rendering the playground on any path
+app.use(yoga.graphqlEndpoint, yoga);
+
+app.listen(4000, () => {
+  console.log("Running a GraphQL API server at http://localhost:4000/graphql");
+});
+
 console.log(`🚀 Server ready at http://localhost:4000/`);
