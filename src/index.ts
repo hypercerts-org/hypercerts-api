@@ -6,6 +6,9 @@ import { allowlistHandler } from "./handlers/v1/web3up/allowlist";
 import { metadataHandler } from "./handlers/v1/web3up/metadata";
 
 import cors from "cors";
+import { assertExists } from "./utils";
+
+const PORT = assertExists(process.env.PORT, "PORT");
 
 const app: Express = express();
 
@@ -55,8 +58,10 @@ app.post("/api/v1/:dataToStore", (req: Request, res: Response) => {
 // Bind GraphQL Yoga to the graphql endpoint to avoid rendering the playground on any path
 app.use(yoga.graphqlEndpoint, yoga);
 
-app.listen(4000, () => {
-  console.log("Running a GraphQL API server at http://localhost:4000/graphql");
+app.listen(PORT, () => {
+  console.log(
+    `Running a GraphQL API server at http://localhost:${PORT}/graphql`
+  );
 });
 
-console.log(`🚀 Server ready at http://localhost:4000/`);
+console.log(`🚀 Server ready at http://localhost:${PORT}/`);
