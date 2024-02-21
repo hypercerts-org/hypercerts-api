@@ -38,7 +38,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
 
-app.post("/v1/web3up/:dataToStore", (req: Request, res: Response) => {
+app.post("/api/v1/:dataToStore", (req: Request, res: Response) => {
   if (req.params.dataToStore === "allowlist") {
     console.log("allowlistHandler");
     return allowlistHandler(req, res);
