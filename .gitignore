@@ -38,3 +38,6 @@ next-env.d.ts
 
 # generated graphql files
 src/generated/
+
+dist
+.rollup.cache
