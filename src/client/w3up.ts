@@ -3,11 +3,11 @@ import { importDAG } from "@ucanto/core/delegation";
 import { CarReader } from "@ipld/car";
 import * as Client from "@web3-storage/w3up-client";
 import { StoreMemory } from "@web3-storage/access/stores/store-memory";
-import { assertExists } from "@/utils";
+import { web3upKey, web3upProof } from "@/utils/constants";
 
 export const setup = async () => {
-  const KEY = assertExists(process.env.KEY, "KEY");
-  const PROOF = assertExists(process.env.PROOF, "PROOF");
+  const KEY = web3upKey;
+  const PROOF = web3upProof;
   // from "bring your own Agent" example in `Creating a client object" section`
   // used command line to generate KEY and PROOF (stored in env variables)
   // KEY: `npx ucan-key ed --json` in command line, which returns private key and DID for Agent (the private key is stored in KEY)

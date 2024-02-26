@@ -1,21 +1,19 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-
+import { Request, Response } from "express";
 import {
   HypercertClaimdata,
   HypercertMetadata,
   validateClaimData,
   validateMetaData,
   getFromIPFS,
-  StorageError,
 } from "@hypercerts-org/sdk";
-import { allowCors, jsonToBlob } from "@/utils";
-import { setup } from "@/client";
+import { jsonToBlob } from "@/utils";
+import { setup } from "@/client/w3up";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
-import { ResponseData } from "../../types";
+import { ResponseData } from "@/types";
 
-const handler = async (
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData<{ cid: string }>>
+export const metadataHandler = async (
+  req: Request,
+  res: Response<ResponseData<{ cid: string }>>
 ) => {
   if (req.method === "POST") {
     const client = await setup();
@@ -166,5 +164,3 @@ const isHypercertClaimData = (data: unknown): data is HypercertClaimdata => {
     typeof data.rights === "object"
   );
 };
-
-export default allowCors(handler);

@@ -1,20 +1,19 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-
+import { Request, Response } from "express";
 import { AllowlistEntry, validateAllowlist } from "@hypercerts-org/sdk";
-import { allowCors, jsonToBlob } from "@/utils";
-import { setup } from "@/client";
+import { jsonToBlob } from "@/utils";
+import { setup } from "@/client/w3up";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { isAddress } from "viem";
-import { ResponseData } from "../../types";
+import { ResponseData } from "@/types";
 
 type AllowListPostRequest = {
   allowList: string;
   totalUnits: string;
 };
 
-const handler = async (
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData<{ cid: string }>>
+export const allowlistHandler = async (
+  req: Request,
+  res: Response<ResponseData<{ cid: string }>>
 ) => {
   if (req.method === "POST") {
     const client = await setup();
@@ -145,5 +144,3 @@ const isParsableToBigInt = (value: unknown): value is number | bigint => {
 
   return false;
 };
-
-export default allowCors(handler);

@@ -1,27 +1,29 @@
 import { describe, it, afterEach, afterAll } from "vitest";
 import { expect } from "chai";
 import { createMocks, RequestMethod } from "node-mocks-http";
+import { Request, Response } from "express";
 
 import sinon from "sinon";
 
 import { data } from "../../utils";
 import { Client } from "@web3-storage/w3up-client";
-import handler from "../../../src/pages/api/v1/web3up/metadata";
-import { NextApiRequest, NextApiResponse } from "next/types";
 import axios from "axios";
+import { metadataHandler } from "@/handlers/v1/web3up/metadata";
+import { AnyLink } from "@web3-storage/w3up-client/dist/src/types";
 
 describe("W3Up Client metadata", async () => {
   const { metadata, merkleTree, someData } = data;
 
   const storeBlobMock = sinon
     .stub(Client.prototype, "uploadFile")
-    .resolves({ "/": metadata.cid }); //TODO better Link object creation
+    .resolves({ "/": metadata.cid } as unknown as AnyLink); //TODO better Link object creation
 
   const getAllowlistMock = sinon.stub(axios, "get");
 
   const mockRequestResponse = (method: RequestMethod = "POST") => {
-    const { req, res }: { req: NextApiRequest; res: NextApiResponse } =
-      createMocks({ method });
+    const { req, res }: { req: Request; res: Response } = createMocks({
+      method,
+    });
     req.headers = {
       "Content-Type": "application/json",
     };
@@ -39,13 +41,15 @@ describe("W3Up Client metadata", async () => {
 
   it("POST valid metadata without allowList - 200", async () => {
     const { req, res } = mockRequestResponse();
-    await handler(req, res);
+    await metadataHandler(req, res);
 
     expect(res.statusCode).to.eq(200);
     expect(res.getHeaders()).to.deep.eq({ "content-type": "application/json" });
     expect(res.statusMessage).to.eq("OK");
 
     //TODO better typing and check on returned CID
+
+    console.log(res);
     // @ts-ignore
     expect(res._getJSONData().message).to.eq("Data uploaded succesfully");
     // @ts-ignore
@@ -60,7 +64,7 @@ describe("W3Up Client metadata", async () => {
     req.body = { ...req.body, allowList: someData.cid };
     getAllowlistMock.resolves(Promise.resolve({ data: merkleTree.data }));
 
-    await handler(req, res);
+    await metadataHandler(req, res);
 
     expect(res.statusCode).to.eq(200);
     expect(res.getHeaders()).to.deep.eq({ "content-type": "application/json" });
@@ -79,7 +83,7 @@ describe("W3Up Client metadata", async () => {
   it("GET metadata not allowed - 405", async () => {
     const { req, res } = mockRequestResponse();
     req.method = "GET";
-    await handler(req, res);
+    await metadataHandler(req, res);
 
     expect(res.statusCode).to.eq(405);
     expect(res.getHeaders()).to.deep.eq({ "content-type": "application/json" });
@@ -95,7 +99,7 @@ describe("W3Up Client metadata", async () => {
   it("POST incorrect metadata - 400", async () => {
     const { req, res } = mockRequestResponse();
     req.body = data.someData.data;
-    await handler(req, res);
+    await metadataHandler(req, res);
 
     expect(res.statusCode).to.eq(400);
     expect(res.getHeaders()).to.deep.eq({ "content-type": "application/json" });
@@ -112,7 +116,7 @@ describe("W3Up Client metadata", async () => {
     const { req, res } = mockRequestResponse();
     req.body = { ...req.body, allowList: someData.cid };
     getAllowlistMock.resolves(Promise.resolve({ data: "not a merkle tree" }));
-    await handler(req, res);
+    await metadataHandler(req, res);
 
     expect(res.statusCode).to.eq(400);
     expect(res.getHeaders()).to.deep.eq({
@@ -133,7 +137,7 @@ describe("W3Up Client metadata", async () => {
   it("POST upload metadata fails - 500", async () => {
     const { req, res } = mockRequestResponse();
     storeBlobMock.rejects();
-    await handler(req, res);
+    await metadataHandler(req, res);
 
     expect(res.statusCode).to.eq(500);
     expect(res.getHeaders()).to.deep.eq({ "content-type": "application/json" });
