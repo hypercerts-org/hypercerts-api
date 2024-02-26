@@ -16,7 +16,14 @@
       "@/*": ["./src/*"]
     },
     "outDir": "./dist",
-    "rootDirs": ["src"]
+    "rootDirs": ["src"],
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "https://hypercerts-api-staging.up.railway.app/graphql",
+        "tadaOutputLocation": "./src/types/graphql-env.d.ts"
+      }
+    ]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.json"],
   "exclude": ["node_modules"]

@@ -1,14 +1,11 @@
 import { buildHTTPExecutor } from "@graphql-tools/executor-http";
 import { schemaFromExecutor } from "@graphql-tools/wrap";
-import { assertExists } from "../../utils/assertExists.js";
+import { supabaseApiKey } from "@/utils/constants";
 
 const remoteExecutor = buildHTTPExecutor({
   endpoint: "https://icidusuyshxkefjmqccr.supabase.co/graphql/v1",
   headers: {
-    apiKey: assertExists(
-      process.env.SUPABASE_HC_METADATA_API_KEY,
-      "SUPABASE_HC_METADATA_API_KEY"
-    ),
+    apiKey: supabaseApiKey,
   },
 });
 

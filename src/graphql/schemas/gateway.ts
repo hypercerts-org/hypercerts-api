@@ -1,10 +1,9 @@
 import { stitchSchemas } from "@graphql-tools/stitch";
-import { delegateToSchema } from "@graphql-tools/delegate";
 
 import { easSubschema } from "./eas.js";
 import { hypercertsGraphSubschema } from "./hypercertsGraph.js";
 import { metadataSubschema } from "./metadata.js";
-import { OperationTypeNode } from "graphql";
+import { supabase } from "@/client/supabase.js";
 
 const metadata = {
   ...metadataSubschema,
@@ -27,24 +26,24 @@ const makeGatewaySchema = async () => {
     resolvers: {
       Claim: {
         metadata: {
-          selectionSet: `{ tokenID }`, // Necessary for ensuring tokenID is fetched with the Claim
-          resolve(claim, args, context, info) {
-            const filter = {
-              token_id: { eq: claim.tokenID },
-            };
+          selectionSet: `{ tokenID, contract }`, // Necessary for ensuring tokenID is fetched with the Claim
+          resolve: async (claim, args, context, info) => {
+            const { data } = await supabase
+              .from("hypercerts")
+              .select("*")
+              .eq("token_id", claim.tokenID)
+              .eq("contract_address", claim.contract)
+              .select();
 
-            
+            if (data === null || data.length === 0) {
+              return null;
+            }
 
-            return delegateToSchema({
-              schema: metadata,
-              operation: OperationTypeNode.QUERY,
-              fieldName: "hypercertsCollection",
-              args: {
-                token_id: claim.tokenID,
-              },
-              context,
-              info,
-            });
+            // Hack because metadata returns a float (e.g. tokenID 1020847100762815390390123822295304634368 becomes token_id "1.0208471007628154e+39" )
+            data[0].token_id = claim.tokenID;
+
+            // return data;
+            return data[0];
           },
         },
       },
