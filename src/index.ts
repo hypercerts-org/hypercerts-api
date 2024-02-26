@@ -30,9 +30,6 @@ const yoga = createYoga({
   schema: await makeGatewaySchema(),
   graphiql: { defaultQuery },
   cors: {
-    origin: "http://localhost:4000",
-    credentials: true,
-    allowedHeaders: ["X-Custom-Header"],
     methods: ["POST"],
   },
 });
