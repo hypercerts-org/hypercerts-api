@@ -1,8 +1,13 @@
-import { assertExists } from "./assertExists";
+import {assertExists} from "./assertExists";
+
+export const supabaseUrl = assertExists(
+    process.env.SUPABASE_HC_URL,
+    "SUPABASE_HC_URL"
+);
 
 export const supabaseApiKey = assertExists(
-  process.env.SUPABASE_HC_METADATA_API_KEY,
-  "SUPABASE_HC_METADATA_API_KEY"
+    process.env.SUPABASE_HC_METADATA_API_KEY,
+    "SUPABASE_HC_METADATA_API_KEY"
 );
 
 export const web3upKey = assertExists(process.env.KEY, "WEB3UP_KEY");

@@ -41,3 +41,4 @@ src/generated/
 
 dist
 .rollup.cache
+.idea
