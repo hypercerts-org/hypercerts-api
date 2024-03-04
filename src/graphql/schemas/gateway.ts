@@ -5,7 +5,7 @@ import {easSubschema} from "./eas.js";
 import {hypercertsGraphSubschema} from "./hypercertsGraph.js";
 import {metadataSubschema} from "./metadata.js";
 import {supabase} from "@/client/supabase.js";
-import {OperationTypeNode} from "graphql/language";
+import {OperationTypeNode} from "graphql";
 
 const metadata = {
     ...metadataSubschema,
