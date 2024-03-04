@@ -1,8 +1,9 @@
-import { supabaseApiKey } from "@/utils/constants";
-import { createClient } from "@supabase/supabase-js";
+import {supabaseApiKey, supabaseUrl} from "@/utils/constants";
+import {createClient} from "@supabase/supabase-js";
+import {Database} from "@/types/database-generated.types";
 
 // Create a single supabase client for interacting with your database
-export const supabase = createClient(
-  "https://icidusuyshxkefjmqccr.supabase.co/",
-  supabaseApiKey
+export const supabase = createClient<Database>(
+    supabaseUrl,
+    supabaseApiKey
 );
