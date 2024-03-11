@@ -25,7 +25,7 @@ const makeGatewaySchema = async () => {
       }
       extend type hypercerts {
         claim: Claim 
-        tokens: [ClaimToken]
+        fractions: [ClaimToken]
         attestations: [attestations]
       }
       type Query {
@@ -54,45 +54,56 @@ const makeGatewaySchema = async () => {
             },
             hypercerts: {
                 attestations: {
-                    selectionSet: `{ hypercert_contract }`,
-                    resolve: async (root, args, context, info) => {
-                        return await delegateToSchema({
-                            schema: tokens,
-                            operation: OperationTypeNode.QUERY,
-                            fieldName: 'attestations',
-                            args: {where: {tokenID: root.token_id, contract: root.contract_address}},
-                            context,
-                            info
-                        })
+                    selectionSet: `{ claim_id }`,
+                    resolve: async (hypercert, args, context, info) => {
+                        const {data} = await supabase
+                            .from("supported_schemas")
+                            .select('contract_address, attestations(*)')
+                            .eq("attestations.token_id", hypercert.claim_id)
+
+                        if (data === null) {
+                            return null;
+                        }
+
+                        // return data;
+                        return data;
                     }
                 },
-                claim: {
-                    selectionSet: `{ hypercert_contract }`,
-                    resolve: async (root, args, context, info) => {
-                        const res = await delegateToSchema({
-                            schema: tokens,
-                            operation: OperationTypeNode.QUERY,
-                            fieldName: 'claims',
-                            args: {where: {tokenID: root.token_id, contract: root.contract_address}},
-                            context,
-                            info
-                        })
-
-                        return res[0];
-
-                    }
-                },
-                tokens: {
-                    selectionSet: `{ hypercert_contract }`,
-                    resolve: async (root, args, context, info) => {
+                // claim: {
+                //     selectionSet: `{ claim_id, hypercert_contracts }`,
+                //     resolve: async (root, args, context, info) => {
+                //         console.log(root);
+                //         const res = await delegateToSchema({
+                //             schema: tokens,
+                //             operation: OperationTypeNode.QUERY,
+                //             fieldName: 'claims',
+                //             args: {
+                //                 where: {tokenID: root.claim_id}
+                //             },
+                //             context,
+                //             info
+                //         })
+                //
+                //
+                //         console.log(res);
+                //
+                //         return res[0];
+                //
+                //     }
+                // },
+                fractions: {
+                    resolve: async (hypercert, args, context, info) => {
                         return await delegateToSchema({
                             schema: tokens,
                             operation: OperationTypeNode.QUERY,
                             fieldName: 'claimTokens',
-                            args: {where: {claim_: {tokenID: root.token_id, contract: root.contract_address}}},
+                            args: {
+                                tokenID: hypercert.claim_id
+                            },
                             context,
                             info
                         })
+
                     }
                 }
             },
