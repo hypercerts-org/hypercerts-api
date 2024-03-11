@@ -1,7 +1,6 @@
 import {stitchSchemas} from "@graphql-tools/stitch";
 import {delegateToSchema} from '@graphql-tools/delegate'
 
-import {easSubschema} from "./eas.js";
 import {hypercertsGraphSubschema} from "./hypercertsGraph.js";
 import {metadataSubschema} from "./metadata.js";
 import {supabase} from "@/client/supabase.js";
@@ -19,19 +18,56 @@ const tokens = {
 
 const makeGatewaySchema = async () => {
     return stitchSchemas({
-        subschemas: [easSubschema, tokens, metadata],
+        subschemas: [tokens, metadata],
         typeDefs: `
       extend type Claim {
         metadata: hypercerts
       }
       extend type hypercerts {
         claim: Claim 
+        tokens: [ClaimToken]
+        attestations: [attestations]
+      }
+      type Query {
+        hypercerts_total: Int
+        attestations_total: Int
       }
     `,
         resolvers: {
+            Query: {
+                hypercerts_total: {
+                    resolve: async () => {
+                        const {count} = await supabase
+                            .from("hypercerts")
+                            .select('*', {count: 'exact', head: true})
+                        return count;
+                    }
+                },
+                attestations_total: {
+                    resolve: async () => {
+                        const {count} = await supabase
+                            .from("attestations")
+                            .select('*', {count: 'exact', head: true})
+                        return count;
+                    }
+                }
+            },
             hypercerts: {
+                attestations: {
+                    selectionSet: `{ hypercert_contract }`,
+                    resolve: async (root, args, context, info) => {
+                        return await delegateToSchema({
+                            schema: tokens,
+                            operation: OperationTypeNode.QUERY,
+                            fieldName: 'attestations',
+                            args: {where: {tokenID: root.token_id, contract: root.contract_address}},
+                            context,
+                            info
+                        })
+                    }
+                },
                 claim: {
-                    selectionSet: `{ token_id, contract_address }`,
+                    selectionSet: `{ hypercert_contract }`,
                     resolve: async (root, args, context, info) => {
                         const res = await delegateToSchema({
                             schema: tokens,
@@ -44,6 +80,19 @@ const makeGatewaySchema = async () => {
 
                         return res[0];
 
+                    }
+                },
+                tokens: {
+                    selectionSet: `{ hypercert_contract }`,
+                    resolve: async (root, args, context, info) => {
+                        return await delegateToSchema({
+                            schema: tokens,
+                            operation: OperationTypeNode.QUERY,
+                            fieldName: 'claimTokens',
+                            args: {where: {claim_: {tokenID: root.token_id, contract: root.contract_address}}},
+                            context,
+                            info
+                        })
                     }
                 }
             },
