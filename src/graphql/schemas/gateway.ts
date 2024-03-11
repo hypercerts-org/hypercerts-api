@@ -1,7 +1,6 @@
 import {stitchSchemas} from "@graphql-tools/stitch";
 import {delegateToSchema} from '@graphql-tools/delegate'
 
-import {easSubschema} from "./eas.js";
 import {hypercertsGraphSubschema} from "./hypercertsGraph.js";
 import {metadataSubschema} from "./metadata.js";
 import {supabase} from "@/client/supabase.js";
@@ -19,30 +18,91 @@ const tokens = {
 
 const makeGatewaySchema = async () => {
     return stitchSchemas({
-        subschemas: [easSubschema, tokens, metadata],
+        subschemas: [tokens, metadata],
         typeDefs: `
       extend type Claim {
         metadata: hypercerts
       }
       extend type hypercerts {
         claim: Claim 
+        fractions: [ClaimToken]
+        attestations: [attestations]
+      }
+      type Query {
+        hypercerts_total: Int
+        attestations_total: Int
       }
     `,
         resolvers: {
+            Query: {
+                hypercerts_total: {
+                    resolve: async () => {
+                        const {count} = await supabase
+                            .from("hypercerts")
+                            .select('*', {count: 'exact', head: true})
+                        return count;
+                    }
+                },
+                attestations_total: {
+                    resolve: async () => {
+                        const {count} = await supabase
+                            .from("attestations")
+                            .select('*', {count: 'exact', head: true})
+                        return count;
+                    }
+                }
+            },
             hypercerts: {
-                claim: {
-                    selectionSet: `{ token_id, contract_address }`,
-                    resolve: async (root, args, context, info) => {
-                        const res = await delegateToSchema({
+                attestations: {
+                    selectionSet: `{ claim_id }`,
+                    resolve: async (hypercert, args, context, info) => {
+                        const {data} = await supabase
+                            .from("supported_schemas")
+                            .select('contract_address, attestations(*)')
+                            .eq("attestations.token_id", hypercert.claim_id)
+
+                        if (data === null) {
+                            return null;
+                        }
+
+                        // return data;
+                        return data;
+                    }
+                },
+                // claim: {
+                //     selectionSet: `{ claim_id, hypercert_contracts }`,
+                //     resolve: async (root, args, context, info) => {
+                //         console.log(root);
+                //         const res = await delegateToSchema({
+                //             schema: tokens,
+                //             operation: OperationTypeNode.QUERY,
+                //             fieldName: 'claims',
+                //             args: {
+                //                 where: {tokenID: root.claim_id}
+                //             },
+                //             context,
+                //             info
+                //         })
+                //
+                //
+                //         console.log(res);
+                //
+                //         return res[0];
+                //
+                //     }
+                // },
+                fractions: {
+                    resolve: async (hypercert, args, context, info) => {
+                        return await delegateToSchema({
                             schema: tokens,
                             operation: OperationTypeNode.QUERY,
-                            fieldName: 'claims',
-                            args: {where: {tokenID: root.token_id, contract: root.contract_address}},
+                            fieldName: 'claimTokens',
+                            args: {
+                                tokenID: hypercert.claim_id
+                            },
                             context,
                             info
                         })
-
-                        return res[0];
 
                     }
                 }

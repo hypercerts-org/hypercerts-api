@@ -26966,6 +26966,27 @@ export type introspection = {
               "ofType": null
             },
             "args": []
+          },
+          {
+            "name": "properties",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "JSON",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "claim",
+            "type": {
+              "kind": "OBJECT",
+              "name": "Claim",
+              "ofType": null
+            },
+            "args": []
           }
         ],
         "interfaces": [
@@ -27385,6 +27406,17 @@ export type introspection = {
               "name": "String",
               "ofType": null
             }
+          },
+          {
+            "name": "properties",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "JSON",
+                "ofType": null
+              }
+            }
           }
         ]
       },
@@ -27685,6 +27717,17 @@ export type introspection = {
               "kind": "SCALAR",
               "name": "String",
               "ofType": null
+            }
+          },
+          {
+            "name": "properties",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "JSON",
+                "ofType": null
+              }
             }
           }
         ]
