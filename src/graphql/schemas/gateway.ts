@@ -1,25 +1,25 @@
-import { stitchSchemas } from "@graphql-tools/stitch";
-import { delegateToSchema } from "@graphql-tools/delegate";
+import {stitchSchemas} from "@graphql-tools/stitch";
+import {delegateToSchema} from "@graphql-tools/delegate";
 
-import { hypercertsGraphSubschema } from "./hypercertsGraph.js";
-import { metadataSubschema } from "./metadata.js";
-import { supabase } from "@/client/supabase.js";
-import { OperationTypeNode } from "graphql";
+import {hypercertsGraphSubschema} from "./hypercertsGraph.js";
+import {metadataSubschema} from "./metadata.js";
+import {supabase} from "@/client/supabase.js";
+import {OperationTypeNode} from "graphql";
 
 const metadata = {
-  ...metadataSubschema,
-  batch: true,
+    ...metadataSubschema,
+    batch: true,
 };
 
 const tokens = {
-  ...hypercertsGraphSubschema,
-  batch: true,
+    ...hypercertsGraphSubschema,
+    batch: true,
 };
 
 const makeGatewaySchema = async () => {
-  return stitchSchemas({
-    subschemas: [tokens, metadata],
-    typeDefs: `
+    return stitchSchemas({
+        subschemas: [tokens, metadata],
+        typeDefs: `
       extend type Claim {
         metadata: hypercerts
       }
@@ -33,98 +33,98 @@ const makeGatewaySchema = async () => {
         attestations_total: Int
       }
     `,
-    resolvers: {
-      Query: {
-        hypercerts_total: {
-          resolve: async () => {
-            const { count } = await supabase
-              .from("hypercerts")
-              .select("*", { count: "exact", head: true });
-            return count;
-          },
-        },
-        attestations_total: {
-          resolve: async () => {
-            const { count } = await supabase
-              .from("attestations")
-              .select("*", { count: "exact", head: true });
-            return count;
-          },
-        },
-      },
-      hypercerts: {
-        attestations: {
-          selectionSet: `{ claim_id }`,
-          resolve: async (hypercert, args, context, info) => {
-            const { data } = await supabase
-              .from("supported_schemas")
-              .select("contract_address, attestations(*)")
-              .eq("attestations.token_id", hypercert.claim_id);
-
-
-            return data;
-          },
-        },
-        claim: {
-            selectionSet: `{ claim_id, hypercert_contracts }`,
-            resolve: async (hypercert, args, context, info) => {
-                const res = await delegateToSchema({
-                    schema: tokens,
-                    operation: OperationTypeNode.QUERY,
-                    fieldName: 'claims',
-                    args: {
-                        where: {tokenID: hypercert.claim_id}
+        resolvers: {
+            Query: {
+                hypercerts_total: {
+                    resolve: async () => {
+                        const {count} = await supabase
+                            .from("hypercerts")
+                            .select("*", {count: "exact", head: true});
+                        return count;
                     },
-                    context,
-                    info
-                })
-        
-        
-                return res[0];
-        
-            }
-        },
-        fractions: {
-          selectionSet: `{ claim, tokenID, owner}`,
-          resolve: async (hypercert, args, context, info) => {
-            return await delegateToSchema({
-              schema: tokens,
-              operation: OperationTypeNode.QUERY,
-              fieldName: "claimTokens",
-              args: {
-                where: { claim_: { tokenID: hypercert.claim_id } },
-              },
-              context,
-              info,
-            });
-          },
-        },
-      },
-      Claim: {
-        metadata: {
-          selectionSet: `{ tokenID, contract }`, // Necessary for ensuring tokenID is fetched with the Claim
-          resolve: async (claim) => {
-            const { data } = await supabase
-              .from("hypercerts")
-              .select("*")
-              .eq("token_id", claim.tokenID)
-              .eq("contract_address", claim.contract)
-              .select();
+                },
+                attestations_total: {
+                    resolve: async () => {
+                        const {count} = await supabase
+                            .from("attestations")
+                            .select("*", {count: "exact", head: true});
+                        return count;
+                    },
+                },
+            },
+            hypercerts: {
+                attestations: {
+                    selectionSet: `{ claim_id }`,
+                    resolve: async (hypercert) => {
+                        const {data} = await supabase
+                            .from("supported_schemas")
+                            .select("contract_address, attestations(*)", {count: "exact", head: true})
+                            .eq("attestations.token_id", hypercert.claim_id);
 
-            if (data === null || data.length === 0) {
-              return null;
-            }
 
-            // Hack because metadata returns a float (e.g. tokenID 1020847100762815390390123822295304634368 becomes token_id "1.0208471007628154e+39" )
-            data[0].token_id = claim.tokenID;
+                        return data;
+                    },
+                },
+                claim: {
+                    selectionSet: `{ claim_id, hypercert_contracts }`,
+                    resolve: async (hypercert, args, context, info) => {
+                        const res = await delegateToSchema({
+                            schema: tokens,
+                            operation: OperationTypeNode.QUERY,
+                            fieldName: 'claims',
+                            args: {
+                                where: {tokenID: hypercert.claim_id}
+                            },
+                            context,
+                            info
+                        })
 
-            // return data;
-            return data[0];
-          },
+
+                        return res[0];
+
+                    }
+                },
+                fractions: {
+                    selectionSet: `{ claim, tokenID, owner}`,
+                    resolve: async (hypercert, args, context, info) => {
+                        return await delegateToSchema({
+                            schema: tokens,
+                            operation: OperationTypeNode.QUERY,
+                            fieldName: "claimTokens",
+                            args: {
+                                where: {claim_: {tokenID: hypercert.claim_id}},
+                            },
+                            context,
+                            info,
+                        });
+                    },
+                },
+            },
+            Claim: {
+                metadata: {
+                    selectionSet: `{ tokenID, contract }`, // Necessary for ensuring tokenID is fetched with the Claim
+                    resolve: async (claim) => {
+                        const {data} = await supabase
+                            .from("hypercerts")
+                            .select("*")
+                            .eq("token_id", claim.tokenID)
+                            .eq("contract_address", claim.contract)
+                            .select();
+
+                        if (data === null || data.length === 0) {
+                            return null;
+                        }
+
+                        // Hack because metadata returns a float (e.g. tokenID 1020847100762815390390123822295304634368 becomes token_id "1.0208471007628154e+39" )
+                        data[0].token_id = claim.tokenID;
+
+                        // return data;
+                        return data[0];
+                    },
+                },
+            },
         },
-      },
-    },
-  });
+    });
 };
 
-export { makeGatewaySchema };
+export {makeGatewaySchema};
