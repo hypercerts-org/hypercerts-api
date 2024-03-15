@@ -20,13 +20,17 @@ const makeGatewaySchema = async () => {
     return stitchSchemas({
         subschemas: [tokens, metadata],
         typeDefs: `
+       type claimAttestations {
+        count: Int
+        data: [attestations]
+        }
       extend type Claim {
         metadata: hypercerts
       }
       extend type hypercerts {
         claim: Claim 
         fractions: [ClaimToken]
-        attestations: [attestations]
+        claimAttestations: claimAttestations
       }
       type Query {
         hypercerts_total: Int
@@ -53,16 +57,23 @@ const makeGatewaySchema = async () => {
                 },
             },
             hypercerts: {
-                attestations: {
+                claimAttestations: {
                     selectionSet: `{ claim_id }`,
                     resolve: async (hypercert) => {
-                        const {data} = await supabase
-                            .from("supported_schemas")
-                            .select("contract_address, attestations(*)", {count: "exact", head: true})
-                            .eq("attestations.token_id", hypercert.claim_id);
+                        const {data, count} = await supabase
+                            .from("attestations")
+                            .select("*", {count: "exact"})
+                            .eq("token_id", hypercert.claim_id);
 
 
-                        return data;
+                        // quick hack because bigints are returned as floats
+                        const atts = data.map((att) => {
+                            att.token_id = BigInt(hypercert.claim_id);
+                            return att;
+                        })
+
+                        return {count, data: atts};
+
                     },
                 },
                 claim: {
@@ -78,7 +89,6 @@ const makeGatewaySchema = async () => {
                             context,
                             info
                         })
-
 
                         return res[0];
 
