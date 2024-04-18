@@ -1,14 +1,8 @@
-import {Args, ArgsType, Field, FieldResolver, Query, Resolver, ResolverInterface, Root} from "type-graphql";
+import {Args, FieldResolver, Query, Resolver, Root} from "type-graphql";
 import {Hypercert} from "../typeDefs/hypercertTypeDefs.js";
 import {inject, injectable} from "tsyringe";
-import {SupabaseService} from "../services/supabaseService.js";
-import {Metadata} from "../typeDefs/metadataTypeDefs.js";
-
-@ArgsType()
-export class GetHypercertsByIdArgs {
-    @Field()
-    hypercert_id!: string
-}
+import {GetHypercertArgs, SupabaseService} from "../services/supabaseService.js";
+import {MalformedDataError} from "@hypercerts-org/sdk";
 
 @injectable()
 @Resolver(of => Hypercert)
@@ -19,21 +13,20 @@ class HypercertResolver {
         private readonly supabaseService: SupabaseService) {
     }
 
-    @Query(returns => [Hypercert])
-    async hypercerts() {
-        return this.supabaseService.getHypercerts();
-    }
+    @Query(_ => [Hypercert])
+    async hypercerts(@Args() {where}: GetHypercertArgs) {
+        return await this.supabaseService.getHypercerts({where});
 
-    @Query(returns => Hypercert)
-    async hypercertsById(
-        @Args() {hypercert_id}: GetHypercertsByIdArgs
-    ) {
-        return this.supabaseService.getHypercertsById({hypercert_id});
     }
 
     @FieldResolver({nullable: true})
-    async metadata(@Root() hypercert: Partial<Hypercert>): Promise<Metadata | null> {
-        const res = await this.supabaseService.getMetadataByUri({uri: hypercert.uri})
+    async metadata(@Root() hypercert: Partial<Hypercert>) {
+        if (!hypercert.uri) {
+            return null;
+        }
+
+        const res = await this.supabaseService.getMetadataByUri({uri: hypercert?.uri})
+
         if (!res) {
             return null;
         }
@@ -41,9 +34,16 @@ class HypercertResolver {
         return res;
     }
 
-    @FieldResolver({nullable: true})
+    @FieldResolver()
     async contract(@Root() hypercert: Partial<Hypercert>) {
-        return this.supabaseService.getContract({id: hypercert.contracts_id})
+        const res = this.supabaseService.getContractsById({id: hypercert.contracts_id})
+
+        if (!res) {
+            console.log(`Contract with id ${hypercert.contracts_id} not found: `, res)
+            throw new MalformedDataError(`Contract with id ${hypercert.contracts_id} not found`, {response: res})
+        }
+
+        return res;
     }
 }
 

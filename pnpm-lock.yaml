@@ -11,6 +11,9 @@ dependencies:
   '@graphql-tools/merge':
     specifier: ^9.0.3
     version: 9.0.3(graphql@16.8.1)
+  '@graphql-yoga/plugin-response-cache':
+    specifier: ^3.5.0
+    version: 3.5.0(@envelop/core@5.0.0)(graphql-yoga@5.1.1)(graphql@16.8.1)
   '@hypercerts-org/sdk':
     specifier: ^1.4.2-alpha.0
     version: 1.4.2-alpha.0(react@18.2.0)(ts-node@10.9.2)(typescript@5.3.3)
@@ -20,6 +23,9 @@ dependencies:
   '@openzeppelin/merkle-tree':
     specifier: ^1.0.5
     version: 1.0.5
+  '@supabase/postgrest-js':
+    specifier: ^1.15.2
+    version: 1.15.2
   '@supabase/supabase-js':
     specifier: ^2.39.7
     version: 2.39.7
@@ -934,6 +940,22 @@ packages:
       '@envelop/core': 5.0.0
       graphql: 16.8.1
       graphql-middleware: 6.1.35(graphql@16.8.1)
+      tslib: 2.6.2
+    dev: false
+
+  /@envelop/response-cache@6.1.2(@envelop/core@5.0.0)(graphql@16.8.1):
+    resolution: {integrity: sha512-vBX6z/TxBZSNReVn69VJVkdGHpGzHyeQNMz9LXobczl55KCZaf2inBWguSdGq+vx6PlB068GhLeg+a7kseiF1Q==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@envelop/core': ^5.0.0
+      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+    dependencies:
+      '@envelop/core': 5.0.0
+      '@graphql-tools/utils': 10.1.2(graphql@16.8.1)
+      '@whatwg-node/fetch': 0.9.15
+      fast-json-stable-stringify: 2.1.0
+      graphql: 16.8.1
+      lru-cache: 10.2.0
       tslib: 2.6.2
     dev: false
 
@@ -2346,6 +2368,20 @@ packages:
       tslib: 2.6.2
     dev: false
 
+  /@graphql-yoga/plugin-response-cache@3.5.0(@envelop/core@5.0.0)(graphql-yoga@5.1.1)(graphql@16.8.1):
+    resolution: {integrity: sha512-LOel/QTbpCGM3CJBmInYje+yH1k/N2rxuAUk7KEhFgnJ+hFM4b0jj1sg4U5GqCPJ0Cooijz9hcX4bn3Uz5X3Ug==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      graphql: ^15.2.0 || ^16.0.0
+      graphql-yoga: ^5.3.0
+    dependencies:
+      '@envelop/response-cache': 6.1.2(@envelop/core@5.0.0)(graphql@16.8.1)
+      graphql: 16.8.1
+      graphql-yoga: 5.1.1(graphql@16.8.1)
+    transitivePeerDependencies:
+      - '@envelop/core'
+    dev: false
+
   /@graphql-yoga/subscription@5.0.0:
     resolution: {integrity: sha512-Ri7sK8hmxd/kwaEa0YT8uqQUb2wOLsmBMxI90QDyf96lzOMJRgBuNYoEkU1pSgsgmW2glceZ96sRYfaXqwVxUw==}
     engines: {node: '>=18.0.0'}
@@ -3285,6 +3321,12 @@ packages:
     engines: {node: 4.x || >=6.0.0}
     dependencies:
       whatwg-url: 5.0.0
+    dev: false
+
+  /@supabase/postgrest-js@1.15.2:
+    resolution: {integrity: sha512-9/7pUmXExvGuEK1yZhVYXPZnLEkDTwxgMQHXLrN5BwPZZm4iUCL1YEyep/Z2lIZah8d8M433mVAUEGsihUj5KQ==}
+    dependencies:
+      '@supabase/node-fetch': 2.6.15
     dev: false
 
   /@supabase/postgrest-js@1.9.2:

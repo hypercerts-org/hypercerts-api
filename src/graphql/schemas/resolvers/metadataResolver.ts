@@ -1,16 +1,10 @@
-import {Args, ArgsType, Field, Query, Resolver, ResolverInterface} from "type-graphql";
+import {Args, Query, Resolver} from "type-graphql";
 import {Metadata} from "../typeDefs/metadataTypeDefs.js";
 import {inject, injectable} from "tsyringe";
-import {SupabaseService} from "../services/supabaseService.js";
-
-@ArgsType()
-export class GetMetadataArgs {
-    @Field()
-    uri!: string;
-}
+import {GetMetadataArgs, SupabaseService} from "../services/supabaseService.js";
 
 @injectable()
-@Resolver(of => Metadata)
+@Resolver(_ => Metadata)
 class MetadataResolver {
 
     constructor(
@@ -18,12 +12,13 @@ class MetadataResolver {
         private readonly supabaseService: SupabaseService) {
     }
 
-    @Query(returns => Metadata)
-    async metadataByUri(
-        @Args() {uri}: GetMetadataArgs
+    @Query(_ => [Metadata])
+    async metadata(
+        @Args() {where}: GetMetadataArgs
     ) {
-        return await this.supabaseService.getMetadataByUri({uri});
+        return await this.supabaseService.getMetadata({where});
     }
+
 }
 
 export {MetadataResolver};

@@ -1,9 +1,7 @@
-import {ArgsType, Field, FieldResolver, Query, Resolver, Root} from "type-graphql";
+import {ArgsType, Field, Query, Resolver} from "type-graphql";
 import {inject, injectable} from "tsyringe";
 import {SupabaseService} from "../services/supabaseService.js";
 import {GraphQLBigInt} from "graphql-scalars";
-import {Contract} from "../typeDefs/contractTypeDefs.js";
-import {Tables} from "../../../types/supabase.js";
 import {Token} from "../typeDefs/tokenTypeDefs.js";
 
 @ArgsType()
@@ -12,22 +10,10 @@ export class GetTokenArgs {
     id?: string;
     @Field(type => String, {nullable: true})
     contracts_id?: string;
-    @Field(type => GraphQLBigInt, {nullable: true})
-    creation_block_timestamp?: bigint | number;
-    @Field(type => String, {nullable: true})
-    hypercert_id?: string | null;
-    @Field(type => GraphQLBigInt, {nullable: true})
-    last_block_update_timestamp?: bigint | number;
     @Field(type => String, {nullable: true})
     owner_address?: string;
     @Field(type => GraphQLBigInt, {nullable: true})
-    token_id?: bigint | number;
-    @Field(type => String, {nullable: true})
-    type?: "claim" | "fraction";
-    @Field(type => GraphQLBigInt, {nullable: true})
     units?: bigint | number;
-    @Field(type => String, {nullable: true})
-    uri?: string;
 
 }
 
