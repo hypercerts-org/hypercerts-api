@@ -1,4 +1,4 @@
-import {assertExists} from "./assertExists";
+import {assertExists} from "./assertExists.js";
 
 export const supabaseUrl = assertExists(
     process.env.SUPABASE_HC_URL,

@@ -9602,6 +9602,18 @@ export type introspection = {
               }
             },
             "args": []
+          },
+          {
+            "name": "totalCount",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "args": []
           }
         ],
         "interfaces": []
@@ -10906,14 +10918,11 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "attestations",
+            "name": "claimAttestations",
             "type": {
-              "kind": "LIST",
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "attestations",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "claimAttestations",
+              "ofType": null
             },
             "args": []
           }
@@ -10954,6 +10963,18 @@ export type introspection = {
               "ofType": {
                 "kind": "OBJECT",
                 "name": "PageInfo",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "totalCount",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
                 "ofType": null
               }
             },
@@ -12324,6 +12345,34 @@ export type introspection = {
                     "ofType": null
                   }
                 }
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "claimAttestations",
+        "fields": [
+          {
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "data",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "attestations",
+                "ofType": null
               }
             },
             "args": []

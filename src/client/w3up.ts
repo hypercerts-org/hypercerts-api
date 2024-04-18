@@ -3,7 +3,7 @@ import { importDAG } from "@ucanto/core/delegation";
 import { CarReader } from "@ipld/car";
 import * as Client from "@web3-storage/w3up-client";
 import { StoreMemory } from "@web3-storage/access/stores/store-memory";
-import { web3upKey, web3upProof } from "@/utils/constants";
+import { web3upKey, web3upProof } from "../utils/constants.js";
 
 export const setup = async () => {
   const KEY = web3upKey;
