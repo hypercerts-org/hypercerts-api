@@ -16,22 +16,22 @@ class Hypercert {
     // @Field(type => [Token])
     // fractions?: [Token];
     @Field(type => String, {nullable: true})
-    uri: string | null;
+    uri?: string | null;
 
     @Field(type => GraphQLBigInt, {nullable: true})
-    creation_block_timestamp: bigint | number | null;
+    creation_block_timestamp?: bigint | number | null;
     @Field(type => String, {nullable: true})
-    hypercert_id: string | null;
+    hypercert_id?: string | null;
     @Field(type => GraphQLBigInt, {nullable: true})
-    last_block_update_timestamp: bigint | number | null;
+    last_block_update_timestamp?: bigint | number | null;
     @Field(type => String, {nullable: true})
-    owner_address: string | null;
+    owner_address?: string | null;
     @Field(type => GraphQLBigInt, {nullable: true})
-    token_id: bigint | number;
+    token_id?: bigint | number;
     @Field(type => String, {nullable: true})
-    type: Database["public"]["Enums"]["token_type"] | null;
+    type?: Database["public"]["Enums"]["token_type"] | null;
     @Field(type => GraphQLBigInt, {nullable: true})
-    units: bigint | number | null;
+    units?: bigint | number | null;
 }
 
 
