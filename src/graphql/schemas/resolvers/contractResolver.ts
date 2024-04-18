@@ -1,23 +1,11 @@
-import {ArgsType, Field, FieldResolver, Query, Resolver, Root} from "type-graphql";
+import {Args, ArgsType, Field, FieldResolver, Query, Resolver, Root} from "type-graphql";
 import {inject, injectable} from "tsyringe";
-import {SupabaseService} from "../services/supabaseService.js";
-import {GraphQLBigInt} from "graphql-scalars";
+import {GetContractsArgs, SupabaseService} from "../services/supabaseService.js";
 import {Contract} from "../typeDefs/contractTypeDefs.js";
 
-@ArgsType()
-export class GetContractArgs {
-    @Field(type => String, {nullable: true})
-    id?: string;
-    @Field(type => String, {nullable: true})
-    contract_address?: string;
-    @Field(type => GraphQLBigInt, {nullable: true})
-    chain_id?: bigint | number | string;
-    @Field(type => GraphQLBigInt, {nullable: true})
-    start_block?: bigint | number | null;
-}
 
 @injectable()
-@Resolver(of => Contract)
+@Resolver(_ => Contract)
 class ContractResolver {
 
     constructor(
@@ -26,8 +14,8 @@ class ContractResolver {
     }
 
     @Query(returns => [Contract])
-    async contracts() {
-        return await this.supabaseService.getContracts();
+    async contracts(@Args() args: GetContractsArgs) {
+        return await this.supabaseService.getContracts(args);
     }
 
     @FieldResolver({nullable: true})

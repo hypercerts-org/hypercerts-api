@@ -1,6 +1,7 @@
 import express, {Express, Request, Response} from "express";
 import {createYoga} from "graphql-yoga";
 import "reflect-metadata";
+import {useResponseCache} from '@graphql-yoga/plugin-response-cache'
 
 import {allowlistHandler} from "./handlers/v1/web3up/allowlist.js";
 import {metadataHandler} from "./handlers/v1/web3up/metadata.js";
@@ -10,11 +11,17 @@ import {assertExists} from "./utils/assertExists.js";
 import {buildSchema} from "type-graphql";
 import {resolvers} from "./graphql/schemas/resolvers/index.js";
 import {container} from "tsyringe";
-import path, {dirname} from "node:path";
-import {fileURLToPath} from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// @ts-expect-error BigInt is not supported by JSON
+BigInt.prototype.toJSON = function () {
+    const int = Number.parseInt(this.toString());
+    return int ?? this.toString();
+};
+
+// @ts-expect-error BigInt is not supported by JSON
+BigInt.prototype.fromJSON = function () {
+    return BigInt(this.toString());
+};
 
 const PORT = assertExists(process.env.PORT, "PORT");
 
@@ -22,33 +29,46 @@ const app: Express = express();
 
 app.use(cors());
 
-const defaultQuery = `
-  query {
-    claims(first: 5) {
-      id
-      tokenID
-      metadata {
-        token_id
-      }
+const defaultQuery = `{
+  hypercerts {
+    hypercert_id
+    creation_block_timestamp
+    last_block_update_timestamp
+    contract {
+      chain_id
+      contract_address
+    }
+    metadata {
+      name
+      description
+      contributors
     }
   }
-`;
+}`;
 
+//TODO ESlint runs with react config, remove NextJS traces
 const yoga = createYoga({
     schema: await buildSchema({
         resolvers,
         // Registry 3rd party IOC container
         container: {get: cls => container.resolve(cls)},
         // Create 'schema.graphql' file with schema definition in current directory
-        emitSchemaFile: path.resolve(__dirname, "schema.graphql"),
+        emitSchemaFile: true,
     }),
     graphiql: {defaultQuery},
     cors: {
         methods: ["POST"],
     },
+    plugins: [
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        useResponseCache({
+            // global cache
+            session: () => null
+        })
+    ]
 });
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (_: Request, res: Response) => {
     res.send("Express + TypeScript Server");
 });
 
