@@ -1,5 +1,5 @@
 import {Field, InputType, Int} from "type-graphql";
-import {WhereOptions} from "./whereOptions.js";
+import type {WhereOptions} from "./whereOptions.js";
 import {StringArraySearchOptions, StringSearchOptions} from "./searchOptions.js";
 import {Metadata} from "../typeDefs/metadataTypeDefs.js";
 import {FetchParams} from "./fetchOptions.js";

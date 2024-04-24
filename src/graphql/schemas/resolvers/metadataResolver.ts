@@ -1,7 +1,8 @@
 import {Args, Query, Resolver} from "type-graphql";
 import {Metadata} from "../typeDefs/metadataTypeDefs.js";
 import {inject, injectable} from "tsyringe";
-import {GetMetadataArgs, SupabaseService} from "../services/supabaseService.js";
+import {SupabaseService} from "../../../services/SupabaseService.js";
+import {GetMetadataArgs} from "../args/metadataArgs.js";
 
 @injectable()
 @Resolver(_ => Metadata)

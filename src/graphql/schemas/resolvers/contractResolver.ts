@@ -1,7 +1,8 @@
-import {Args, ArgsType, Field, FieldResolver, Query, Resolver, Root} from "type-graphql";
+import {Args, FieldResolver, Query, Resolver, Root} from "type-graphql";
 import {inject, injectable} from "tsyringe";
-import {GetContractsArgs, SupabaseService} from "../services/supabaseService.js";
+import {SupabaseService} from "../../../services/SupabaseService.js";
 import {Contract} from "../typeDefs/contractTypeDefs.js";
+import {GetContractsArgs} from "../args/contractArgs.js";
 
 
 @injectable()
@@ -13,15 +14,11 @@ class ContractResolver {
         private readonly supabaseService: SupabaseService) {
     }
 
-    @Query(returns => [Contract])
+    @Query(_ => [Contract])
     async contracts(@Args() args: GetContractsArgs) {
-        return await this.supabaseService.getContracts(args);
+        return this.supabaseService.getContracts(args);
     }
 
-    @FieldResolver({nullable: true})
-    tokens(@Root() contract: Partial<Contract>) {
-        return this.supabaseService.getTokensByContractId({contracts_id: contract.id!});
-    }
 }
 
 export {ContractResolver};

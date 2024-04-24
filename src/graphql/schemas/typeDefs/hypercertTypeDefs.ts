@@ -1,8 +1,10 @@
 import {Field, ID, ObjectType} from "type-graphql";
 import {Metadata} from "./metadataTypeDefs.js";
-import {Database} from "../../../types/supabase.js";
+import type {Database} from "../../../types/supabase.js";
 import {GraphQLBigInt} from "graphql-scalars";
 import {Contract} from "./contractTypeDefs.js";
+import {Fraction} from "./fractionTypeDefs.js";
+import GetAttestationsResponse from "../resolvers/attestationResolver.js";
 
 @ObjectType()
 class Hypercert {
@@ -14,6 +16,10 @@ class Hypercert {
     metadata?: Metadata;
     @Field(_ => Contract, {nullable: true})
     contract?: Contract;
+    @Field(_ => GetAttestationsResponse, {nullable: true})
+    attestations?: GetAttestationsResponse;
+    @Field(_ => [Fraction], {nullable: true})
+    fractions?: Fraction[];
     @Field(_ => String, {nullable: true})
     uri?: string | null;
 

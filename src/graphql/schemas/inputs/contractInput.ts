@@ -1,8 +1,8 @@
 import {Field, InputType, Int} from "type-graphql";
-import {WhereOptions} from "./whereOptions.js";
+import type {WhereOptions} from "./whereOptions.js";
 import {Contract} from "../typeDefs/contractTypeDefs.js";
 import {NumberSearchOptions, StringSearchOptions} from "./searchOptions.js";
-import {FetchParams} from "./fetchOptions.js";
+import {FetchOptions} from "./fetchOptions.js";
 
 @InputType()
 export class ContractWhereInput implements WhereOptions<Contract> {
@@ -14,10 +14,21 @@ export class ContractWhereInput implements WhereOptions<Contract> {
     chain_id?: NumberSearchOptions | null;
 }
 
+
+// @InputType()
+// export class HypercertFetchInput implements FetchParams {
+//     @Field(_ => Int, {nullable: true})
+//     offset = 0;
+//     @Field(_ => Int, {nullable: true})
+//     limit = 100;
+// }
+
 @InputType()
-export class ContractFetchInput implements FetchParams {
+export class ContractFetchInput implements FetchOptions {
     @Field(_ => Int, {nullable: true})
-    offset = 0;
+    from = 0;
     @Field(_ => Int, {nullable: true})
-    limit = 100;
+    to = 1000;
+    @Field(_ => Int, {nullable: true})
+    limit = 1000;
 }

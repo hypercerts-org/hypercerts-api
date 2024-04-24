@@ -1,13 +1,13 @@
 import {assertExists} from "./assertExists.js";
 
 export const supabaseUrl = assertExists(
-    process.env.SUPABASE_HC_URL,
-    "SUPABASE_HC_URL"
+    process.env.SUPABASE_DB_URL,
+    "SUPABASE_DB_URL"
 );
 
 export const supabaseApiKey = assertExists(
-    process.env.SUPABASE_HC_METADATA_API_KEY,
-    "SUPABASE_HC_METADATA_API_KEY"
+    process.env.SUPABASE_ANON_API_KEY,
+    "SUPABASE_ANON_API_KEY"
 );
 
 export const web3upKey = assertExists(process.env.KEY, "WEB3UP_KEY");

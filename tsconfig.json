@@ -12,6 +12,8 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "useDefineForClassFields": true,
     "incremental": true,
     "outDir": "./dist",
     "rootDirs": [
@@ -20,7 +22,7 @@
     "plugins": [
       {
         "name": "@0no-co/graphqlsp",
-        "schema": "https://hypercerts-api-staging.up.railway.app/graphql",
+        "schema": "./schema.graphql",
         "tadaOutputLocation": "./src/types/graphql-env.d.ts"
       }
     ]

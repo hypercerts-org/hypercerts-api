@@ -1,4 +1,4 @@
-import {Request, Response} from "express";
+import type {Request, Response} from "express";
 import {
     HypercertClaimdata,
     HypercertMetadata,
@@ -9,7 +9,7 @@ import {
 import {jsonToBlob} from "../../../utils/jsonToBlob.js";
 import {setup} from "../../../client/w3up.js";
 import {StandardMerkleTree} from "@openzeppelin/merkle-tree";
-import {ResponseData} from "../../../types/api";
+import type {ResponseData} from "../../../types/api";
 
 export const metadataHandler = async (
     req: Request,
