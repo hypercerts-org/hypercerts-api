@@ -2,6 +2,12 @@ import {Field, InputType} from "type-graphql";
 import {GraphQLBigInt} from "graphql-scalars";
 
 @InputType()
+export class BooleanSearchOptions {
+    @Field({nullable: true})
+    eq?: boolean;
+}
+
+@InputType()
 export class StringSearchOptions {
     @Field({nullable: true})
     eq?: string;

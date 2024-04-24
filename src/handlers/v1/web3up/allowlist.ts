@@ -1,10 +1,10 @@
-import {Request, Response} from "express";
-import {AllowlistEntry, validateAllowlist} from "@hypercerts-org/sdk";
+import type {Request, Response} from "express";
+import {type AllowlistEntry, validateAllowlist} from "@hypercerts-org/sdk";
 import {jsonToBlob} from "../../../utils/jsonToBlob.js";
 import {setup} from "../../../client/w3up.js";
 import {StandardMerkleTree} from "@openzeppelin/merkle-tree";
 import {isAddress} from "viem";
-import {ResponseData} from "../../../types/api.js";
+import type {ResponseData} from "../../../types/api.js";
 
 type AllowListPostRequest = {
     allowList: string;

@@ -1,30 +1,30 @@
 import {Field, InputType, Int} from "type-graphql";
 import type {WhereOptions} from "./whereOptions.js";
-import {Hypercert} from "../typeDefs/hypercertTypeDefs.js";
 import {NumberSearchOptions, StringSearchOptions} from "./searchOptions.js";
 import {FetchOptions} from "./fetchOptions.js";
 import {ContractWhereInput} from "./contractInput.js";
-import {AttestationWhereInput} from "./attestationInput.js";
-import {FractionWhereInput} from "./fractionInput.js";
+import type {Fraction} from "../typeDefs/fractionTypeDefs.js";
 
 @InputType()
-export class HypercertsWhereInput implements WhereOptions<Hypercert> {
+export class FractionWhereInput implements WhereOptions<Fraction> {
+    @Field(_ => StringSearchOptions, {nullable: true})
+    claims_id?: StringSearchOptions | null;
     @Field(_ => StringSearchOptions, {nullable: true})
     hypercert_id?: StringSearchOptions | null;
     @Field(_ => NumberSearchOptions, {nullable: true})
     creation_block_timestamp?: NumberSearchOptions | null;
     @Field(_ => NumberSearchOptions, {nullable: true})
+    last_block_update_timestamp?: NumberSearchOptions | null;
+    @Field(_ => NumberSearchOptions, {nullable: true})
     token_id?: NumberSearchOptions | null;
-    @Field(_ => ContractWhereInput, {nullable: true})
-    contract?: ContractWhereInput | null;
-    @Field(_ => AttestationWhereInput, {nullable: true})
-    attestations?: AttestationWhereInput | null;
-    @Field(_ => FractionWhereInput, {nullable: true})
-    fractions?: FractionWhereInput | null
+    @Field(_ => NumberSearchOptions, {nullable: true})
+    units?: ContractWhereInput | null;
+    @Field(_ => StringSearchOptions, {nullable: true})
+    owner_address?: StringSearchOptions | null;
 }
 
 @InputType()
-export class HypercertFetchInput implements FetchOptions {
+export class FractionFetchInput implements FetchOptions {
     @Field(_ => Int, {nullable: true})
     offset = 0;
     @Field(_ => Int, {nullable: true})

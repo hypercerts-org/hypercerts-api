@@ -1,4 +1,4 @@
-import express, {Express, Request, Response} from "express";
+import express, {type Express, type Request, type Response} from "express";
 import {createYoga} from "graphql-yoga";
 import "reflect-metadata";
 import {useResponseCache} from '@graphql-yoga/plugin-response-cache'
@@ -9,7 +9,7 @@ import {metadataHandler} from "./handlers/v1/web3up/metadata.js";
 import cors from "cors";
 import {assertExists} from "./utils/assertExists.js";
 import {buildSchema} from "type-graphql";
-import {resolvers} from "./graphql/schemas/resolvers/index.js";
+import {resolvers} from "./graphql/schemas/resolvers/composed.js";
 import {container} from "tsyringe";
 
 // @ts-expect-error BigInt is not supported by JSON
@@ -30,18 +30,28 @@ const app: Express = express();
 app.use(cors());
 
 const defaultQuery = `{
-  hypercerts {
-    hypercert_id
-    creation_block_timestamp
-    last_block_update_timestamp
-    contract {
-      chain_id
-      contract_address
-    }
-    metadata {
-      name
-      description
-      contributors
+ hypercerts(page: {limit: 7}) {
+    totalCount
+    data {
+      attestations {
+        totalCount
+        data {
+          attestation
+        }
+      }
+      contract {
+        chain_id
+        contract_address
+      }
+      fractions {
+        owner_address
+      }
+      metadata {
+        description
+        name
+      }
+      units
+      uri
     }
   }
 }`;

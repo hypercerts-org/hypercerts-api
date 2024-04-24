@@ -1,5 +1,5 @@
 import {Field, ID, ObjectType} from "type-graphql";
-import {Json} from "../../../types/supabase.js";
+import type {Json} from "../../../types/supabase.js";
 import {GraphQLBigInt} from 'graphql-scalars';
 
 
