@@ -1,10 +1,11 @@
-import {Args, Field, FieldResolver, Int, ObjectType, Query, Resolver, Root} from "type-graphql";
+import {Args, Field, FieldResolver, InputType, Int, ObjectType, Query, Resolver, Root} from "type-graphql";
 import {inject, injectable} from "tsyringe";
 import {SupabaseService} from "../../../services/SupabaseService.js";
 import {GetAttestationArgs} from "../args/attestationArgs.js";
 import {Attestation} from "../typeDefs/attestationTypeDefs.js";
 
 @ObjectType()
+@InputType("GetAttestationsResponseInput")
 export default class GetAttestationsResponse {
     @Field(() => [Attestation])
     data?: Attestation[];

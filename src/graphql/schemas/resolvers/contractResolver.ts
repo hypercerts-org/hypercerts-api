@@ -1,4 +1,4 @@
-import {Args, FieldResolver, Query, Resolver, Root} from "type-graphql";
+import {Args, Query, Resolver} from "type-graphql";
 import {inject, injectable} from "tsyringe";
 import {SupabaseService} from "../../../services/SupabaseService.js";
 import {Contract} from "../typeDefs/contractTypeDefs.js";
@@ -16,7 +16,7 @@ class ContractResolver {
 
     @Query(_ => [Contract])
     async contracts(@Args() args: GetContractsArgs) {
-        return this.supabaseService.getContracts(args);
+        return await this.supabaseService.getContracts(args);
     }
 
 }

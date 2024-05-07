@@ -1,8 +1,10 @@
-import {Field, InputType, Int} from "type-graphql";
+import {Field, InputType} from "type-graphql";
 import type {WhereOptions} from "./whereOptions.js";
 import {NumberSearchOptions, StringSearchOptions} from "./searchOptions.js";
-import {FetchParams} from "./fetchOptions.js";
 import type {Attestation} from "../typeDefs/attestationTypeDefs.js";
+import {type OrderOptions} from "./orderOptions.js";
+import {AttestationSortOptions} from "./sortOptions.js";
+import {AttestationSortKeys, SortOrder} from "../enums/sortEnums.js";
 
 @InputType()
 export class AttestationWhereInput implements WhereOptions<Attestation> {
@@ -33,9 +35,9 @@ export class AttestationWhereInput implements WhereOptions<Attestation> {
 }
 
 @InputType()
-export class AttestationFetchInput implements FetchParams {
-    @Field(_ => Int, {nullable: true})
-    offset = 0;
-    @Field(_ => Int, {nullable: true})
-    limit = 100;
+export class AttestationFetchInput implements OrderOptions<Attestation> {
+    @Field(_ => AttestationSortOptions, {nullable: true})
+    by?: { attestation?: AttestationSortKeys }
+    @Field({nullable: true})
+    order?: SortOrder
 }

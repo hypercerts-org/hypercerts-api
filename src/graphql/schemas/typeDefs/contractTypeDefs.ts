@@ -7,7 +7,7 @@ class Contract {
     id?: string;
     @Field(_ => GraphQLBigInt, {nullable: true})
     chain_id?: bigint | number | string;
-    @Field(_ => String, {nullable: true})
+    @Field({nullable: true})
     contract_address?: string;
     @Field(_ => GraphQLBigInt, {nullable: true})
     start_block?: bigint | number | null;

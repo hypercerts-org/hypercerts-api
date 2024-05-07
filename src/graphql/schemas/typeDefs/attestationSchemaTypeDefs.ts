@@ -10,12 +10,12 @@ class AttestationSchema {
     chain_id?: bigint | number | string;
     @Field(_ => ID, {nullable: true})
     eas_schema_id?: string;
-    @Field(_ => String, {nullable: true})
+    @Field({nullable: true})
     resolver?: string;
-    @Field(_ => Boolean, {nullable: true})
+    @Field({nullable: true})
     revocable?: boolean;
-    @Field(_ => String, {nullable: true})
-    schema?: string | null;
+    @Field({nullable: true})
+    schema?: string;
 
     @Field(_ => [Attestation], {nullable: true})
     records?: Attestation[] | null;

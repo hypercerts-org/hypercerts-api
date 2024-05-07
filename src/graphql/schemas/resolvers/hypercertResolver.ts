@@ -25,19 +25,21 @@ class HypercertResolver {
 
     @Query(_ => GetHypercertsResponse)
     async hypercerts(@Args() args: GetHypercertArgs) {
+
         try {
             const res = await this.supabaseService.getHypercerts(args);
 
             if (!res) {
-                return [];
+                throw new Error(`[HypercertResolver::hypercerts] No response from DB`);
             }
 
             const {data, error} = res;
 
             if (error) {
                 console.warn(`[HypercertResolver::hypercerts] Error fetching hypercerts: `, error);
-                return [];
+                return {data: [], totalCount: 0};
             }
+
 
             return {data, totalCount: data.length};
         } catch (e) {
@@ -72,7 +74,7 @@ class HypercertResolver {
     }
 
     @FieldResolver()
-    async contract(@Root() hypercert: Partial<Hypercert>) {
+    async contracts(@Root() hypercert: Partial<Hypercert>) {
         if (!hypercert.contracts_id) {
             return null;
         }
@@ -121,9 +123,13 @@ class HypercertResolver {
                 return null;
             }
 
+            // TODO check on as object assignment; might need to be more specific
             const attestationsAsObject = data.map((att) => {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                return {...att, attestation: att.decoded_attestation ? JSON.parse(att.decoded_attestation as string) : undefined}
+                return {
+                    ...att,
+                    attestation: att.decoded_attestation ? JSON.parse(att.decoded_attestation as string) as object : undefined
+                }
             });
 
             return {data: attestationsAsObject, totalCount: attestationsAsObject.length}

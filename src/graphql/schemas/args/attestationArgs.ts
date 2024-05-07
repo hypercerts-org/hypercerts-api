@@ -1,13 +1,14 @@
 import {ArgsType, Field} from "type-graphql";
 import {AttestationFetchInput, AttestationWhereInput} from "../inputs/attestationInput.js";
 import {GraphQLBigInt} from "graphql-scalars";
+import {PaginationArgs} from "./paginationArgs.js";
 
 @ArgsType()
-export class GetAttestationArgs {
+export class GetAttestationArgs extends PaginationArgs {
     @Field({nullable: true})
     where?: AttestationWhereInput;
     @Field({nullable: true})
-    page?: AttestationFetchInput;
+    sort?: AttestationFetchInput;
 }
 
 
@@ -26,13 +27,13 @@ export class GetAttestationBySchemaIdArgs {
 export class GetAttestationByChainContractTokenArgs {
     @Field(_ => GraphQLBigInt)
     chain_id?: bigint | number | string;
-    @Field(_ => String)
+    @Field()
     contract_address?: string;
     @Field(_ => GraphQLBigInt)
     token_id?: bigint | number | string;
 }
 
 export class GetAttestationByClaimIdArgs {
-    @Field(_ => String)
+    @Field()
     claim_id?: string;
 }

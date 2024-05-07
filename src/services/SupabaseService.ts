@@ -1,14 +1,14 @@
 import {supabase} from "../client/supabase.js";
 import type {SupabaseClient} from "@supabase/supabase-js";
 import type {Database} from "../types/supabase.js";
-import {applyFilters, applyPagination} from "../graphql/schemas/utils.js";
+import {applyFilters} from "../graphql/schemas/utils.js";
 import type {GetContractByIdArgs, GetContractsArgs} from "../graphql/schemas/args/contractArgs.js";
 import type {GetMetadataArgs, GetMetadataByUriArgs} from "../graphql/schemas/args/metadataArgs.js";
 import {GetHypercertArgs, GetHypercertByChainContractTokenArgs,} from "../graphql/schemas/args/hypercertsArgs.js";
 import {GetAttestationSchemaArgs} from "../graphql/schemas/args/attestationSchemaArgs.js";
 import {
     type GetAttestationArgs,
-    GetAttestationByChainContractTokenArgs, GetAttestationByClaimIdArgs,
+    GetAttestationByClaimIdArgs,
     GetAttestationBySchemaIdArgs
 } from "../graphql/schemas/args/attestationArgs.js";
 import type {Contract} from "../graphql/schemas/typeDefs/contractTypeDefs.js";
@@ -16,8 +16,9 @@ import type {Metadata} from "../graphql/schemas/typeDefs/metadataTypeDefs.js";
 import type {Hypercert} from "../graphql/schemas/typeDefs/hypercertTypeDefs.js";
 import type {AttestationSchema} from "../graphql/schemas/typeDefs/attestationSchemaTypeDefs.js";
 import type {Attestation} from "../graphql/schemas/typeDefs/attestationTypeDefs.js";
-import type {Fraction} from "../graphql/schemas/typeDefs/fractionTypeDefs";
+import type {Fraction} from "../graphql/schemas/typeDefs/fractionTypeDefs.js";
 import {GetFractionArgs, GetFractionsByClaimId} from "../graphql/schemas/args/fractionArgs.js";
+import {SortOrder} from "../graphql/schemas/enums/sortEnums.js";
 
 
 export class SupabaseService {
@@ -29,13 +30,10 @@ export class SupabaseService {
 
     // Contracts
 
-    async getContracts({where, page}: GetContractsArgs) {
+    async getContracts(args: GetContractsArgs) {
         let query = this.supabase.from('contracts').select('*');
 
-        query = applyFilters<Contract, typeof query>({query, where});
-        query = applyPagination<typeof query>({query, fetch: page})
-
-        console.log(query);
+        query = applyFilters<Contract, typeof query>({query, where: args.where});
 
         return query;
     }
@@ -52,12 +50,28 @@ export class SupabaseService {
     // Claims
 
     async getHypercerts(args: GetHypercertArgs) {
-        let query = this.supabase.from('claims').select('*');
 
-        const {where, page} = args;
+        const fromString = `* ${args.where?.contracts ? ', contracts!inner (*)' : ''} ${args.where?.attestations ? ', attestations!inner (*)' : ''} ${args.where?.fractions ? ', fractions!inner (*)' : ''} ${args.where?.metadata ? ', metadata!inner (*)' : ''}`
+
+        let query = this.supabase.from('claims').select(fromString);
+
+        const {where, first, offset, limit, sort} = args;
 
         query = applyFilters<Hypercert, typeof query>({query, where: {...where, type: {eq: "claim"}}});
-        query = applyPagination<typeof query>({query, fetch: page})
+
+        if (limit && !offset) query = query.limit(limit);
+
+        if (first && offset) query = query.range(offset, offset + first - 1);
+
+        if (sort) {
+            const ascending = sort?.order !== SortOrder.descending;
+            if (sort.by) {
+                query = query.order(sort.by, {ascending})
+            }
+            if (!sort.by) {
+                query = query.order('id', {ascending})
+            }
+        }
 
         return query;
     }
@@ -76,20 +90,18 @@ export class SupabaseService {
 
     async getFractions(args: GetFractionArgs) {
         let query = this.supabase.from('fractions').select('*');
-        const {where, page} = args;
+        const {where} = args;
 
         query = applyFilters<Fraction, typeof query>({query, where});
-        query = applyPagination<typeof query>({query, fetch: page})
 
         return query;
     }
 
     async getFractionsByClaimId(args: GetFractionsByClaimId) {
         let query = this.supabase.from('fractions').select('*').eq('claims_id', args.claim_id);
-        const {where, page} = args;
+        const {where} = args;
 
         query = applyFilters<Fraction, typeof query>({query, where});
-        query = applyPagination<typeof query>({query, fetch: page})
 
         return query;
     }
@@ -98,10 +110,9 @@ export class SupabaseService {
 
     async getMetadata(args: GetMetadataArgs) {
         let query = this.supabase.from('metadata').select('*');
-        const {where, page} = args;
+        const {where} = args;
 
         query = applyFilters<Metadata, typeof query>({query, where});
-        query = applyPagination<typeof query>({query, fetch: page})
 
         return query;
     }
@@ -122,10 +133,9 @@ export class SupabaseService {
     async getAttestationSchemas(args: GetAttestationSchemaArgs) {
         let query = this.supabase.from('supported_schemas').select('*');
 
-        const {where, page} = args;
+        const {where} = args;
 
         query = applyFilters<AttestationSchema, typeof query>({query, where});
-        query = applyPagination<typeof query>({query, fetch: page})
 
         return query;
     }
@@ -133,10 +143,9 @@ export class SupabaseService {
     async getAttestations(args: GetAttestationArgs) {
         let query = this.supabase.from('attestations').select('*');
 
-        const {where, page} = args;
+        const {where} = args;
 
         query = applyFilters<Attestation, typeof query>({query, where});
-        query = applyPagination<typeof query>({query, fetch: page})
 
         return query;
     }
@@ -149,20 +158,6 @@ export class SupabaseService {
         return this.supabase.rpc("get_attestations_for_claim", {
             claim_id: args.claim_id
         })
-    }
-
-    async getAttestationsByChainContractToken(args: GetAttestationByChainContractTokenArgs) {
-        if (!args.chain_id || !args.contract_address || !args.token_id) {
-            return null;
-        }
-
-        return this.getAttestations({
-            where: {
-                contract_address: {eq: args.contract_address},
-                token_id: {eq: args.token_id.toString()},
-            }
-        })
-
     }
 
     async getAttestationsBySchemaId(args: GetAttestationBySchemaIdArgs

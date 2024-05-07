@@ -1,12 +1,13 @@
 import {ArgsType, Field} from "type-graphql";
 import {ContractFetchInput, ContractWhereInput} from "../inputs/contractInput.js";
+import {PaginationArgs} from "./paginationArgs.js";
 
 @ArgsType()
-export class GetContractsArgs {
+export class GetContractsArgs extends PaginationArgs {
     @Field({nullable: true})
     where?: ContractWhereInput;
     @Field({nullable: true})
-    page?: ContractFetchInput;
+    sort?: ContractFetchInput;
 }
 
 @ArgsType()

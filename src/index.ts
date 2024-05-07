@@ -30,22 +30,13 @@ const app: Express = express();
 app.use(cors());
 
 const defaultQuery = `{
- hypercerts(page: {limit: 7}) {
+hypercerts(
+    where: {metadata: {name: {contains: "Test"}}}
+    limit: 5
+    orderBy: {order: "descending", by: "id"}
+  ) {
     totalCount
     data {
-      attestations {
-        totalCount
-        data {
-          attestation
-        }
-      }
-      contract {
-        chain_id
-        contract_address
-      }
-      fractions {
-        owner_address
-      }
       metadata {
         description
         name
@@ -70,7 +61,6 @@ const yoga = createYoga({
         methods: ["POST"],
     },
     plugins: [
-        // eslint-disable-next-line react-hooks/rules-of-hooks
         useResponseCache({
             // global cache
             session: () => null

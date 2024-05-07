@@ -160,6 +160,13 @@ export type Database = {
             referencedRelation: "contracts"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "claims_uri_fkey"
+            columns: ["uri"]
+            isOneToOne: false
+            referencedRelation: "metadata"
+            referencedColumns: ["uri"]
+          },
         ]
       }
       contract_events: {
