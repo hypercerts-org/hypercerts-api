@@ -1,12 +1,11 @@
-import {Field, ID, InputType, ObjectType} from "type-graphql";
+import {Field, ID, ObjectType} from "type-graphql";
 import {GraphQLBigInt, GraphQLJSON} from 'graphql-scalars';
 import type {Json} from "../../../types/supabase.js";
 import {Hypercert} from "./hypercertTypeDefs.js";
+import {BasicTypeDef} from "./basicTypeDef.js";
 
 @ObjectType()
-class Attestation implements Partial<Attestation> {
-    @Field(_ => ID, {nullable: true})
-    id?: string;
+class Attestation extends BasicTypeDef {
     @Field(_ => ID, {nullable: true})
     supported_schemas_id?: string;
     @Field(_ => ID, {nullable: true})

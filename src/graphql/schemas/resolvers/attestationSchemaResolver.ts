@@ -1,8 +1,17 @@
-import {Args, FieldResolver, Query, Resolver, Root} from "type-graphql";
+import {Args, Field, FieldResolver, Int, ObjectType, Query, Resolver, Root} from "type-graphql";
 import {inject, injectable} from "tsyringe";
 import {SupabaseService} from "../../../services/SupabaseService.js";
 import {AttestationSchema} from "../typeDefs/attestationSchemaTypeDefs.js";
 import {GetAttestationSchemaArgs} from "../args/attestationSchemaArgs.js";
+
+@ObjectType()
+export default class GetAttestationsSchemaResponse {
+    @Field(() => [AttestationSchema])
+    data?: AttestationSchema[];
+
+    @Field(() => Int, {nullable: true})
+    count?: number;
+}
 
 @injectable()
 @Resolver(_ => AttestationSchema)
@@ -13,7 +22,7 @@ class AttestationSchemaResolver {
         private readonly supabaseService: SupabaseService) {
     }
 
-    @Query(_ => [AttestationSchema])
+    @Query(_ => GetAttestationsSchemaResponse)
     async attestationSchemas(@Args() args: GetAttestationSchemaArgs) {
         try {
             const res = await this.supabaseService.getAttestationSchemas(args);
@@ -22,23 +31,23 @@ class AttestationSchemaResolver {
                 return [];
             }
 
-            const {data, error} = res;
+            const {data, error, count} = res;
 
             if (error) {
                 console.warn(`[AttestationSchemaResolver] Error fetching attestation schemas: `, error);
-                return [];
+                return {data};
             }
 
-            return data;
+            return {data, count};
         } catch (e) {
-            throw new Error(`[AttestationSchemaResolver] Error fetching attestation schemas: ${e}`)
+            const error = e as Error;
+            throw new Error(`[AttestationSchemaResolver] Error fetching attestation schemas: ${error.message}`)
         }
     }
 
     @FieldResolver({nullable: true})
     async records(@Root() schema: Partial<AttestationSchema>) {
         try {
-            console.log(schema)
             const res = await this.supabaseService.getAttestationsBySchemaId({supported_schema_id: schema.id!});
 
             if (!res) {
@@ -59,7 +68,8 @@ class AttestationSchemaResolver {
                 }
             });
         } catch (e) {
-            throw new Error(`[AttestationSchemaResolver] Error fetching attestations: ${e}`)
+            const error = e as Error;
+            throw new Error(`[AttestationSchemaResolver] Error fetching attestations: ${error.message}`)
         }
     }
 }

@@ -1,11 +1,10 @@
 import {Field, ID, ObjectType} from "type-graphql";
 import {GraphQLBigInt} from 'graphql-scalars';
 import {Attestation} from "./attestationTypeDefs.js";
+import {BasicTypeDef} from "./basicTypeDef.js";
 
 @ObjectType()
-class AttestationSchema {
-    @Field(_ => ID, {nullable: true})
-    id?: string;
+class AttestationSchema extends BasicTypeDef {
     @Field(_ => GraphQLBigInt, {nullable: true})
     chain_id?: bigint | number | string;
     @Field(_ => ID, {nullable: true})

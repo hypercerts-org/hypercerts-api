@@ -1,18 +1,13 @@
 import {
+    IdSearchOptions,
     NumberArraySearchOptions,
     NumberSearchOptions,
     StringArraySearchOptions,
     StringSearchOptions
-} from "./inputs/searchOptions.js";
-import type {WhereOptions} from "./inputs/whereOptions.js";
-import type {Database} from "../../types/supabase.js";
+} from "../inputs/searchOptions.js";
+import type {WhereOptions} from "../inputs/whereOptions.js";
+import type {Database} from "../../../types/supabase.js";
 import {PostgrestFilterBuilder} from "@supabase/postgrest-js";
-import {MetadataWhereInput} from "./inputs/metadataInput.js";
-import {HypercertsWhereInput} from "./inputs/hypercertsInput.js";
-import {ContractWhereInput} from "./inputs/contractInput.js";
-import {AttestationWhereInput} from "./inputs/attestationInput.js";
-import {FractionWhereInput} from "./inputs/fractionInput.js";
-import {AttestationSchemaWhereInput} from "./inputs/attestationSchemaInput.js";
 
 
 interface ApplyFilters<
@@ -23,10 +18,16 @@ interface ApplyFilters<
     where?: WhereOptions<T>;
 }
 
-const generateNumberFilters = (value: NumberSearchOptions, column: string): [string, string, any][] => {
-    const filters: [string, string, any][] = [];
+type OperandType = string | number | bigint | string[] | bigint[];
+type OperatorType = "eq" | "gt" | "gte" | "lt" | "lte" | 'ilike' | 'contains' | 'startsWith' | 'endsWith'
+
+const generateFilters = (value: NumberSearchOptions | StringSearchOptions, column: string) => {
+
+    const filters: [OperatorType, string, OperandType][] = [];
+
     for (const [operator, operand] of Object.entries(value)) {
         if (!operand) continue;
+
         switch (operator) {
             case 'eq':
             case 'gt':
@@ -34,25 +35,6 @@ const generateNumberFilters = (value: NumberSearchOptions, column: string): [str
             case 'lt':
             case 'lte':
                 filters.push([operator, column, operand]);
-                break;
-        }
-    }
-    return filters;
-}
-
-const generateStringFilters = (value: StringSearchOptions, column: string): [string, string, any][] => {
-    const filters: [string, string, any][] = [];
-    for (const [operator, operand] of Object.entries(value)) {
-        if (!operand) continue;
-
-        // Assert operand is a string
-        if (typeof operand !== 'string') {
-            throw new Error(`Expected operand to be a string, but got ${typeof operand}`);
-        }
-
-        switch (operator) {
-            case 'eq':
-                filters.push(['eq', column, operand]);
                 break;
             case 'contains':
                 filters.push(['ilike', column, `%${operand}%`]);
@@ -65,37 +47,18 @@ const generateStringFilters = (value: StringSearchOptions, column: string): [str
                 break;
         }
     }
-    console.log(filters)
     return filters;
 }
 
-const generateStringArrayFilters = (value: StringArraySearchOptions, column: string): [string, string, any][] => {
-    const filters: [string, string, any][] = [];
-    for (const [operator, operand] of Object.entries(value)) {
-        if (!operand) continue;
 
-        // Assert operand is an array of strings
-        if (!Array.isArray(operand) || !operand.every(item => typeof item === 'string')) {
-            throw new Error(`Expected operand to be an array of strings, but got ${typeof operand}`);
-        }
-
-        switch (operator) {
-            case 'contains':
-                filters.push(['contains', column, operand]);
-                break;
-        }
-    }
-    return filters;
-}
-
-const generateNumberArrayFilters = (value: NumberArraySearchOptions, column: string): [string, string, any][] => {
-    const filters: [string, string, any][] = [];
+const generateArrayFilters = (value: NumberArraySearchOptions | StringArraySearchOptions, column: string) => {
+    const filters: [OperatorType, string, OperandType][] = [];
     for (const [operator, operand] of Object.entries(value)) {
         if (!operand) continue;
 
         // Assert operand is an array of numbers
-        if (!Array.isArray(operand) || !operand.every(item => typeof item === 'number')) {
-            throw new Error(`Expected operand to be an array of numbers, but got ${typeof operand}`);
+        if (!Array.isArray(operand)) {
+            throw new Error(`Expected operand to be an array, but got ${typeof operand}`);
         }
 
         switch (operator) {
@@ -115,7 +78,7 @@ function isStringSearchOptions(value: unknown): value is StringSearchOptions {
     const possibleStringSearchOptions = value as Partial<StringSearchOptions>;
 
     // Check for properties unique to StringSearchOptions
-    const keys = ['contains', 'startsWith', 'endsWith'];
+    const keys = ['eq', 'contains', 'startsWith', 'endsWith'];
     return keys.some(key => key in possibleStringSearchOptions);
 }
 
@@ -127,8 +90,21 @@ function isNumberSearchOptions(value: unknown): value is NumberSearchOptions {
     const possibleNumberSearchOptions = value as Partial<NumberSearchOptions>;
 
     // Check for properties unique to NumberSearchOptions
-    const keys = ['gt', 'gte', 'lt', 'lte'];
+    const keys = ['eq', 'gt', 'gte', 'lt', 'lte'];
     return keys.some(key => key in possibleNumberSearchOptions);
+}
+
+function isIdSearchOptions(value: unknown): value is IdSearchOptions {
+    if (typeof value !== 'object' || value === null) {
+        return false;
+    }
+
+    const possibleIdSearchOptions = value as Partial<NumberSearchOptions>;
+
+    // Check for properties unique to IdSearchOptions
+    const keys = ['eq', 'contains', 'startsWith', 'endsWith'];
+    return keys.some(key => key in possibleIdSearchOptions);
+
 }
 
 function isStringArraySearchOptions(value: unknown): value is StringArraySearchOptions {
@@ -155,6 +131,18 @@ function isNumberArraySearchOptions(value: unknown): value is NumberArraySearchO
     return keys.some(key => key in possibleNumberArraySearchOptions);
 }
 
+const buildFilters = (value: unknown, column: string) => {
+    if (isNumberSearchOptions(value) || isStringSearchOptions(value) || isIdSearchOptions(value)) {
+        return generateFilters(value, column);
+    }
+
+    if (isStringArraySearchOptions(value) || isNumberArraySearchOptions(value)) {
+        return generateArrayFilters(value, column);
+    }
+
+    return []
+}
+
 export const applyFilters =
     <T extends object, QueryType extends PostgrestFilterBuilder<Database['public'], Record<string, unknown>, unknown, unknown, unknown>>({
                                                                                                                                              query,
@@ -166,35 +154,15 @@ export const applyFilters =
         for (const [column, value] of Object.entries(where)) {
             if (!value) continue;
 
-            const generateFilters = (value: unknown, column: string) => {
-                console.log("Generate: ", column, value)
-                if (isNumberSearchOptions(value)) {
-                    return generateNumberFilters(value, column);
-                }
-
-                if (isStringSearchOptions(value)) {
-                    return generateStringFilters(value, column);
-                }
-
-                if (isStringArraySearchOptions(value)) {
-                    return generateStringArrayFilters(value, column);
-                }
-
-                if (isNumberArraySearchOptions(value)) {
-                    return generateNumberArrayFilters(value, column);
-                }
-
-                return []
-            }
-
-            filters.push(...generateFilters(value, column));
+            filters.push(...buildFilters(value, column));
 
             // If the value is an object, recursively apply filters
-            if (value instanceof MetadataWhereInput || value instanceof HypercertsWhereInput || value instanceof ContractWhereInput || value instanceof AttestationWhereInput || value instanceof FractionWhereInput || value instanceof AttestationSchemaWhereInput) {
+            if (typeof value === 'object' && !Array.isArray(value)) {
                 const nestedFilters = [];
                 for (const [_column, _value] of Object.entries(value)) {
                     if (!_value) continue;
-                    nestedFilters.push(...generateFilters(_value, `${column}.${_column}`));
+                    // TODO resolve hacky workaround for hypercerts <> claims alias
+                    nestedFilters.push(...buildFilters(_value, `${column === 'hypercerts' ? 'claims' : column}.${_column}`));
                 }
                 filters.push(...nestedFilters);
             }
@@ -205,7 +173,6 @@ export const applyFilters =
         query = filters
             .reduce(
                 (acc, [filter, ...args]) => {
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
                     return acc[filter](...args)
                 },
                 query

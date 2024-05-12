@@ -1,12 +1,11 @@
-import {Field, ID, InputType, ObjectType} from "type-graphql";
+import {Field, ObjectType} from "type-graphql";
 import type {Json} from "../../../types/supabase.js";
 import {GraphQLBigInt, GraphQLJSON} from 'graphql-scalars';
+import {BasicTypeDef} from "./basicTypeDef.js";
 
 
 @ObjectType()
-class Metadata {
-    @Field(_ => ID, {nullable: true})
-    id?: string;
+class Metadata extends BasicTypeDef {
     @Field({nullable: true})
     name?: string;
     @Field({nullable: true})

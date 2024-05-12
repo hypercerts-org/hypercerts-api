@@ -10,10 +10,14 @@ import {
 
 @InputType()
 export class HypercertSortOptions {
-    @Field(_ => HypercertSortKeys, {nullable: true})
-    hypercert?: HypercertSortKeys;
+    @Field(_ => AttestationSortKeys, {nullable: true})
+    attestations?: AttestationSortKeys;
     @Field(_ => ContractSortKeys, {nullable: true})
     contracts?: ContractSortKeys;
+    @Field(_ => HypercertSortKeys, {nullable: true})
+    hypercerts?: HypercertSortKeys;
+    @Field(_ => FractionSortKeys, {nullable: true})
+    fractions?: FractionSortKeys;
     @Field(_ => MetadataSortKeys, {nullable: true})
     metadata?: MetadataSortKeys;
 }
@@ -45,7 +49,7 @@ export class AttestationSchemaSortOptions {
 @InputType()
 export class FractionSortOptions {
     @Field(_ => FractionSortKeys, {nullable: true})
-    fraction?: FractionSortKeys;
+    fractions?: FractionSortKeys;
     @Field(_ => ContractSortKeys, {nullable: true})
     contracts?: ContractSortKeys;
 }

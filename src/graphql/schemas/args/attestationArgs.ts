@@ -24,16 +24,7 @@ export class GetAttestationBySchemaIdArgs {
     supported_schema_id?: string;
 }
 
-export class GetAttestationByChainContractTokenArgs {
-    @Field(_ => GraphQLBigInt)
-    chain_id?: bigint | number | string;
-    @Field()
-    contract_address?: string;
-    @Field(_ => GraphQLBigInt)
-    token_id?: bigint | number | string;
-}
-
-export class GetAttestationByClaimIdArgs {
+export class GetAttestationByClaimIdArgs extends GetAttestationArgs{
     @Field()
     claim_id?: string;
 }

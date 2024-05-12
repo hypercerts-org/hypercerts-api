@@ -1,8 +1,17 @@
-import {Args, Query, Resolver} from "type-graphql";
+import {Args, Field, Int, ObjectType, Query, Resolver} from "type-graphql";
 import {Metadata} from "../typeDefs/metadataTypeDefs.js";
 import {inject, injectable} from "tsyringe";
 import {SupabaseService} from "../../../services/SupabaseService.js";
 import {GetMetadataArgs} from "../args/metadataArgs.js";
+
+@ObjectType()
+export default class GetMetadataResponse {
+    @Field(() => [Metadata], {nullable: true})
+    data?: Metadata[];
+
+    @Field(() => Int, {nullable: true})
+    count?: number;
+}
 
 @injectable()
 @Resolver(_ => Metadata)
@@ -15,9 +24,26 @@ class MetadataResolver {
 
     @Query(_ => [Metadata])
     async metadata(
-        @Args() {where}: GetMetadataArgs
+        @Args() args: GetMetadataArgs
     ) {
-        return await this.supabaseService.getMetadata({where});
+        try {
+            const res = await this.supabaseService.getMetadata(args);
+
+            if (!res) {
+                console.warn(`[MetadataResolver::metadata] Error fetching metadata: `, res);
+                return {data: []};
+            }
+
+            const {data, error, count} = res;
+
+            if (error) {
+                console.warn(`[MetadataResolver::metadata] Error fetching metadata: `, error);
+            }
+
+            return {data, count: count ? count : data?.length};
+        } catch (e) {
+            throw new Error(`[MetadataResolver::metadata] Error fetching metadata: ${(e as Error).message}`)
+        }
     }
 
 }

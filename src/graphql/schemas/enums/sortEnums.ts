@@ -18,6 +18,7 @@ registerEnumType(SortOrder, {
     },
 });
 
+//TODO add sort by count
 export enum HypercertSortKeys {
     hypercert_id = "hypercert_id",
     creation_block_timestamp = "creation_block_timestamp",
@@ -30,7 +31,7 @@ registerEnumType(HypercertSortKeys, {
 });
 
 export enum ContractSortKeys {
-    contract_id = "contract_id",
+    id = "id",
     contract_address = "contract_address",
     chain_id = "chain_id",
 }
@@ -41,10 +42,11 @@ registerEnumType(ContractSortKeys, {
 });
 
 export enum MetadataSortKeys {
-    metadata_id = "metadata_id",
+    id = "metadata",
     name = "name",
     description = "description",
     allowList = "allowList",
+    uri = "uri",
 }
 
 registerEnumType(MetadataSortKeys, {
@@ -53,7 +55,7 @@ registerEnumType(MetadataSortKeys, {
 });
 
 export enum AttestationSortKeys {
-    attestation_id = "attestation_id",
+    id = "id",
     attestation_uid = "attestation_uid",
     supported_schemas_id = "supported_schemas_id",
     block_timestamp = "block_timestamp",
@@ -68,7 +70,7 @@ registerEnumType(AttestationSortKeys, {
 });
 
 export enum AttestationSchemaSortKeys {
-    schema_id = "schema_id",
+    schema_id = "id",
     resolver = "resolver",
 }
 
@@ -78,9 +80,9 @@ registerEnumType(AttestationSchemaSortKeys, {
 });
 
 export enum FractionSortKeys {
-    fraction_id = "fraction_id",
+    fraction_id = "id",
     units = "units",
-    owner = "owner",
+    owner = "owner_address",
 }
 
 registerEnumType(FractionSortKeys, {

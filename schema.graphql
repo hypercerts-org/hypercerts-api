@@ -9,7 +9,7 @@ type Attestation {
   attester_address: String
   block_timestamp: BigInt
   hypercerts: [Hypercert!]
-  id: ID
+  id: ID!
   recipient_address: String
   resolver: String
   schema: String
@@ -24,7 +24,7 @@ input AttestationFetchInput {
 type AttestationSchema {
   chain_id: BigInt
   eas_schema_id: ID
-  id: ID
+  id: ID!
   records: [Attestation!]
   resolver: String
   revocable: Boolean
@@ -49,7 +49,7 @@ input AttestationSchemaSortOptions {
 input AttestationSchemaWhereInput {
   chain_id: NumberSearchOptions
   eas_schema_id: StringSearchOptions
-  id: StringSearchOptions
+  id: IdSearchOptions
   resolver: StringSearchOptions
   revocable: BooleanSearchOptions
   schema: StringSearchOptions
@@ -57,10 +57,10 @@ input AttestationSchemaWhereInput {
 
 """Keys to sort attestations by"""
 enum AttestationSortKeys {
-  attestation_id
   attestation_uid
   attester_address
   block_timestamp
+  id
   recipient_address
   schema
   supported_schemas_id
@@ -77,7 +77,7 @@ input AttestationWhereInput {
   block_timestamp: NumberSearchOptions
   chain_id: NumberSearchOptions
   contract_address: StringSearchOptions
-  id: StringSearchOptions
+  id: IdSearchOptions
   recipient_address: StringSearchOptions
   resolver: StringSearchOptions
   schema: StringSearchOptions
@@ -97,7 +97,7 @@ input BooleanSearchOptions {
 type Contract {
   chain_id: BigInt
   contract_address: String
-  id: ID
+  id: ID!
   start_block: BigInt
 }
 
@@ -110,7 +110,7 @@ input ContractFetchInput {
 enum ContractSortKeys {
   chain_id
   contract_address
-  contract_id
+  id
 }
 
 input ContractSortOptions {
@@ -120,7 +120,7 @@ input ContractSortOptions {
 input ContractWhereInput {
   chain_id: NumberSearchOptions
   contract_address: StringSearchOptions
-  id: StringSearchOptions
+  id: IdSearchOptions
 }
 
 """Count keys for the count query"""
@@ -138,9 +138,8 @@ enum CountKeys {
 scalar EthBigInt
 
 type Fraction {
-  claims_id: ID
   creation_block_timestamp: BigInt
-  hypercert_id: String
+  hypercert_id: ID
   id: ID!
   last_block_update_timestamp: BigInt
   owner_address: String
@@ -148,14 +147,25 @@ type Fraction {
 }
 
 input FractionFetchInput {
-  by: String
-  order: String
+  by: FractionSortOptions
+  order: SortOrder
+}
+
+"""Keys to sort fractions by"""
+enum FractionSortKeys {
+  fraction_id
+  owner
+  units
+}
+
+input FractionSortOptions {
+  contracts: ContractSortKeys
+  fractions: FractionSortKeys
 }
 
 input FractionWhereInput {
-  claims_id: StringSearchOptions
   creation_block_timestamp: NumberSearchOptions
-  hypercert_id: StringSearchOptions
+  hypercerts: HypercertsWhereInput
   last_block_update_timestamp: NumberSearchOptions
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions
@@ -163,28 +173,47 @@ input FractionWhereInput {
 }
 
 type GetAttestationsResponse {
-  data: [Attestation!]!
-  totalCount: Int!
+  count: Int
+  data: [Attestation!]
+}
+
+type GetAttestationsSchemaResponse {
+  count: Int
+  data: [AttestationSchema!]!
+}
+
+type GetContractsResponse {
+  count: Int
+  data: [Contract!]
+}
+
+type GetFractionsResponse {
+  count: Int
+  data: [Fraction!]
 }
 
 type GetHypercertsResponse {
-  data: [Hypercert!]!
-  totalCount: Int!
+  count: Int
+  data: [Hypercert!]
+}
+
+type GetMetadataResponse {
+  count: Int
+  data: [Metadata!]
 }
 
 type Hypercert {
   attestations: GetAttestationsResponse
-  contracts: Contract
-  contracts_id: String
+  contracts: GetContractsResponse
+  contracts_id: ID
   creation_block_timestamp: BigInt
-  fractions: [Fraction!]
-  hypercert_id: String
-  id: ID
+  fractions: GetFractionsResponse
+  hypercert_id: ID
+  id: ID!
   last_block_update_timestamp: BigInt
-  metadata: Metadata
+  metadata: GetMetadataResponse
   owner_address: String
   token_id: EthBigInt
-  type: String
   units: EthBigInt
   uri: String
 }
@@ -192,6 +221,14 @@ type Hypercert {
 input HypercertFetchInput {
   by: HypercertSortOptions
   order: SortOrder
+}
+
+input HypercertFractionWhereInput {
+  creation_block_timestamp: NumberSearchOptions
+  last_block_update_timestamp: NumberSearchOptions
+  owner_address: StringSearchOptions
+  token_id: NumberSearchOptions
+  units: NumberSearchOptions
 }
 
 """Keys to sort hypercerts by"""
@@ -202,8 +239,10 @@ enum HypercertSortKeys {
 }
 
 input HypercertSortOptions {
+  attestations: AttestationSortKeys
   contracts: ContractSortKeys
-  hypercert: HypercertSortKeys
+  fractions: FractionSortKeys
+  hypercerts: HypercertSortKeys
   metadata: MetadataSortKeys
 }
 
@@ -211,10 +250,17 @@ input HypercertsWhereInput {
   attestations: AttestationWhereInput
   contracts: ContractWhereInput
   creation_block_timestamp: StringSearchOptions
-  fractions: FractionWhereInput
-  hypercert_id: StringSearchOptions
+  fractions: HypercertFractionWhereInput
+  id: IdSearchOptions
   metadata: MetadataWhereInput
   token_id: NumberSearchOptions
+}
+
+input IdSearchOptions {
+  contains: ID
+  endsWith: ID
+  eq: ID
+  startsWith: ID
 }
 
 """
@@ -227,7 +273,7 @@ type Metadata {
   contributors: [String!]
   description: String
   external_url: String
-  id: ID
+  id: ID!
   image: String
   impact_scope: [String!]
   impact_timeframe_from: BigInt
@@ -250,8 +296,9 @@ input MetadataFetchInput {
 enum MetadataSortKeys {
   allowList
   description
-  metadata_id
+  id
   name
+  uri
 }
 
 input MetadataSortOptions {
@@ -276,10 +323,10 @@ input NumberSearchOptions {
 }
 
 type Query {
-  attestationSchemas(count: CountKeys, first: Int, limit: Int, offset: Int, sort: AttestationSchemaFetchInput, where: AttestationSchemaWhereInput): [AttestationSchema!]!
+  attestationSchemas(count: CountKeys, first: Int, limit: Int, offset: Int, sort: AttestationSchemaFetchInput, where: AttestationSchemaWhereInput): GetAttestationsSchemaResponse!
   attestations(count: CountKeys, first: Int, limit: Int, offset: Int, sort: AttestationFetchInput, where: AttestationWhereInput): GetAttestationsResponse!
-  contracts(count: CountKeys, first: Int, limit: Int, offset: Int, sort: ContractFetchInput, where: ContractWhereInput): [Contract!]!
-  fractions(count: CountKeys, first: Int, limit: Int, offset: Int, sort: FractionFetchInput, where: FractionWhereInput): [Fraction!]!
+  contracts(count: CountKeys, first: Int, limit: Int, offset: Int, sort: ContractFetchInput, where: ContractWhereInput): GetContractsResponse!
+  fractions(count: CountKeys, first: Int, limit: Int, offset: Int, sort: FractionFetchInput, where: FractionWhereInput): GetFractionsResponse!
   hypercerts(count: CountKeys, first: Int, limit: Int, offset: Int, sort: HypercertFetchInput, where: HypercertsWhereInput): GetHypercertsResponse!
   metadata(count: CountKeys, first: Int, limit: Int, offset: Int, sort: MetadataFetchInput, where: MetadataWhereInput): [Metadata!]!
 }

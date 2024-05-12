@@ -1,7 +1,7 @@
 import {registerEnumType} from "type-graphql";
 
 export enum CountKeys {
-    COUNT = "count",
+    COUNT = "exact",
     HEAD = "head",
 }
 

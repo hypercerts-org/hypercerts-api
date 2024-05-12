@@ -1,10 +1,25 @@
-import {Field, InputType} from "type-graphql";
+import {Field, ID, InputType} from "type-graphql";
 import {GraphQLBigInt} from "graphql-scalars";
 
 @InputType()
 export class BooleanSearchOptions {
     @Field({nullable: true})
     eq?: boolean;
+}
+
+@InputType()
+export class IdSearchOptions {
+    @Field(_ => ID, {nullable: true})
+    eq?: string;
+
+    @Field(_ => ID, {nullable: true})
+    contains?: string;
+
+    @Field(_ => ID, {nullable: true})
+    startsWith?: string;
+
+    @Field(_ => ID, {nullable: true})
+    endsWith?: string;
 }
 
 @InputType()

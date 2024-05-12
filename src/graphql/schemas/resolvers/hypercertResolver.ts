@@ -1,17 +1,16 @@
-import {Args, Field, FieldResolver, ObjectType, Query, Resolver, Root} from "type-graphql";
+import {Args, Field, FieldResolver, Int, ObjectType, Query, Resolver, Root} from "type-graphql";
 import {Hypercert} from "../typeDefs/hypercertTypeDefs.js";
 import {inject, injectable} from "tsyringe";
 import {SupabaseService} from "../../../services/SupabaseService.js";
 import {GetHypercertArgs} from "../args/hypercertsArgs.js";
-import {Int} from "type-graphql";
 
 @ObjectType()
 export default class GetHypercertsResponse {
-    @Field(() => [Hypercert])
+    @Field(() => [Hypercert], {nullable: true})
     data?: Hypercert[];
 
-    @Field(() => Int)
-    totalCount?: number;
+    @Field(() => Int, {nullable: true})
+    count?: number;
 }
 
 @injectable()
@@ -30,20 +29,20 @@ class HypercertResolver {
             const res = await this.supabaseService.getHypercerts(args);
 
             if (!res) {
-                throw new Error(`[HypercertResolver::hypercerts] No response from DB`);
+                console.warn(`[HypercertResolver::hypercerts] No response from DB`, res);
+                return {data: []};
             }
 
-            const {data, error} = res;
+            const {data, error, count} = res;
 
             if (error) {
                 console.warn(`[HypercertResolver::hypercerts] Error fetching hypercerts: `, error);
-                return {data: [], totalCount: 0};
             }
 
-
-            return {data, totalCount: data.length};
+            return {data, count: count ? count : data?.length};
         } catch (e) {
-            throw new Error(`[HypercertResolver::hypercerts] Error fetching hypercerts: ${e}`)
+            const error = e as Error;
+            throw new Error(`[HypercertResolver::hypercerts] Error fetching hypercerts: ${error.message}`)
         }
     }
 
@@ -54,22 +53,24 @@ class HypercertResolver {
         }
 
         try {
-            const res = await this.supabaseService.getMetadataByUri({uri: hypercert?.uri})
+            const res = await this.supabaseService.getMetadata({where: {uri: {eq: hypercert.uri}}});
 
             if (!res) {
-                return null;
+                console.warn(`[HypercertResolver::metadata] Error fetching metadata for uri ${hypercert.uri}: `, res);
+                return {data: []};
             }
 
-            const {data, error} = res;
+            const {data, error, count} = res;
 
             if (error) {
                 console.warn(`[HypercertResolver::metadata] Error fetching metadata for uri ${hypercert.uri}: `, error);
-                return null;
+                return {data};
             }
 
-            return data;
+            return {data, count: count ? count : data?.length};
         } catch (e) {
-            throw new Error(`[HypercertResolver::metadata] Error fetching metadata for uri ${hypercert.uri}: ${e}`)
+            const error = e as Error;
+            throw new Error(`[HypercertResolver::metadata] Error fetching metadata for uri ${hypercert.uri}: ${error.message}`)
         }
     }
 
@@ -80,23 +81,24 @@ class HypercertResolver {
         }
 
         try {
-            const res = await this.supabaseService.getContractsById({id: hypercert.contracts_id})
+            const res = await this.supabaseService.getContracts({where: {id: {eq: hypercert.contracts_id}}})
 
             if (!res) {
-                console.log(`[HypercertResolver::contract] Contract with id ${hypercert.contracts_id} not found: `, res)
-                return null;
+                console.warn(`[HypercertResolver::contract] Error fetching contract with id ${hypercert.contracts_id}: `, res);
+                return {data: []};
             }
 
-            const {data, error} = res;
+            const {data, error, count} = res;
 
             if (error) {
                 console.warn(`[HypercertResolver::contract] Error fetching contract with id ${hypercert.contracts_id}: `, error);
-                return null;
+                return {data};
             }
 
-            return data;
+            return {data, count: count ? count : data?.length}
         } catch (e) {
-            throw new Error(`[HypercertResolver::contract] Error fetching contract with id ${hypercert.contracts_id}: ${e}`)
+            const error = e as Error;
+            throw new Error(`[HypercertResolver::contract] Error fetching contract with id ${hypercert.contracts_id}: ${error.message}`)
         }
     }
 
@@ -107,34 +109,36 @@ class HypercertResolver {
         }
 
         try {
+
+            console.log(`[HypercertResolver::attestations] Fetching attestations for ${hypercert.id}`)
             const res = await this.supabaseService.getAttestationsByClaimId({
                 claim_id: hypercert.id
             })
 
             if (!res) {
-                console.debug(`[HypercertResolver::attestations] Attestations for ${hypercert.hypercert_id} not found: `, res)
-                return null;
+                console.warn(`[HypercertResolver::attestations] Error fetching attestations for ${hypercert.hypercert_id}}: `, res);
+                return {data: []};
             }
 
-            const {data, error} = res;
+            const {data, error, count} = res;
 
             if (error) {
                 console.error(`[HypercertResolver::attestations] Error fetching attestations for ${hypercert.hypercert_id}}: `, error);
-                return null;
+                return {data};
             }
 
-            // TODO check on as object assignment; might need to be more specific
-            const attestationsAsObject = data.map((att) => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            const parsed = data.map((att) => {
                 return {
                     ...att,
                     attestation: att.decoded_attestation ? JSON.parse(att.decoded_attestation as string) as object : undefined
                 }
             });
 
-            return {data: attestationsAsObject, totalCount: attestationsAsObject.length}
+            return {data: parsed, count: count ? count : parsed?.length}
+
         } catch (e) {
-            throw new Error(`[HypercertResolver::attestations] Error fetching attestations for ${hypercert.hypercert_id}}}: ${e}`)
+            const error = e as Error;
+            throw new Error(`[HypercertResolver::attestations] Error fetching attestations for ${hypercert.hypercert_id}}}: ${error.message}`)
         }
     }
 
@@ -145,23 +149,22 @@ class HypercertResolver {
         }
 
         try {
-            const res = await this.supabaseService.getFractionsByClaimId({
-                claim_id: hypercert.id
-            })
+            console.log(`[HypercertResolver::fractions] Fetching fractions for ${hypercert.id}}`);
+            const res = await this.supabaseService.getFractions({where: {hypercerts: {id: {eq: hypercert.id}}}})
 
             if (!res) {
-                console.debug(`[HypercertResolver::fractions] Fractions for ${hypercert.hypercert_id} not found: `, res)
-                return null;
+                console.warn(`[HypercertResolver::fractions] Error fetching fractions for ${hypercert.hypercert_id}}: `, res);
+                return {data: []};
             }
 
-            const {data, error} = res;
+            const {data, error, count} = res;
 
             if (error) {
                 console.error(`[HypercertResolver::fractions] Error fetching fractions for ${hypercert.hypercert_id}}: `, error);
-                return null;
+                return {data};
             }
 
-            return data
+            return {data, count: count ? count : data?.length}
         } catch (e) {
             throw new Error(`[HypercertResolver::attestations] Error fetching attestations for ${hypercert.hypercert_id}}}: ${e}`)
         }

@@ -11,7 +11,7 @@ export class GetFractionArgs extends PaginationArgs {
 }
 
 @ArgsType()
-export class GetFractionsByClaimId extends GetFractionArgs {
+export class GetFractionsByClaimId {
     @Field(_ => ID)
     claim_id: string = "";
 }

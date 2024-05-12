@@ -1,10 +1,9 @@
-import {Field, ID, ObjectType} from "type-graphql";
+import {Field, ObjectType} from "type-graphql";
 import {GraphQLBigInt} from 'graphql-scalars';
+import {BasicTypeDef} from "./basicTypeDef.js";
 
 @ObjectType()
-class Contract {
-    @Field(_ => ID, {nullable: true})
-    id?: string;
+class Contract extends BasicTypeDef {
     @Field(_ => GraphQLBigInt, {nullable: true})
     chain_id?: bigint | number | string;
     @Field({nullable: true})
