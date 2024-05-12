@@ -7,14 +7,6 @@ import {AttestationWhereInput} from "./attestationInput.js";
 import {MetadataWhereInput} from "./metadataInput.js";
 import {type OrderOptions} from "./orderOptions.js";
 import {HypercertSortOptions} from "./sortOptions.js";
-import {
-    AttestationSortKeys,
-    ContractSortKeys,
-    FractionSortKeys,
-    HypercertSortKeys,
-    MetadataSortKeys,
-    SortOrder
-} from "../enums/sortEnums.js";
 import {Fraction} from "../typeDefs/fractionTypeDefs.js";
 
 
@@ -54,13 +46,5 @@ export class HypercertsWhereInput implements WhereOptions<Hypercert> {
 @InputType()
 export class HypercertFetchInput implements OrderOptions<Hypercert> {
     @Field(_ => HypercertSortOptions, {nullable: true})
-    by?: {
-        attestations?: AttestationSortKeys,
-        contracts?: ContractSortKeys,
-        fractions?: FractionSortKeys,
-        hypercerts?: HypercertSortKeys,
-        metadata?: MetadataSortKeys,
-    }
-    @Field({nullable: true})
-    order?: SortOrder
+    by?: HypercertSortOptions
 }

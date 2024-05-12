@@ -149,24 +149,24 @@ class HypercertResolver {
         }
 
         try {
-            console.log(`[HypercertResolver::fractions] Fetching fractions for ${hypercert.id}}`);
+            console.log(`[HypercertResolver::fractions] Fetching fractions for ${hypercert.id}`);
             const res = await this.supabaseService.getFractions({where: {hypercerts: {id: {eq: hypercert.id}}}})
 
             if (!res) {
-                console.warn(`[HypercertResolver::fractions] Error fetching fractions for ${hypercert.hypercert_id}}: `, res);
+                console.warn(`[HypercertResolver::fractions] Error fetching fractions for ${hypercert.hypercert_id}: `, res);
                 return {data: []};
             }
 
             const {data, error, count} = res;
 
             if (error) {
-                console.error(`[HypercertResolver::fractions] Error fetching fractions for ${hypercert.hypercert_id}}: `, error);
+                console.error(`[HypercertResolver::fractions] Error fetching fractions for ${hypercert.hypercert_id}: `, error);
                 return {data};
             }
 
             return {data, count: count ? count : data?.length}
         } catch (e) {
-            throw new Error(`[HypercertResolver::attestations] Error fetching attestations for ${hypercert.hypercert_id}}}: ${e}`)
+            throw new Error(`[HypercertResolver::attestations] Error fetching attestations for ${hypercert.hypercert_id}: ${(e as Error).toString()}`)
         }
     }
 }

@@ -11,7 +11,4 @@ export class PaginationArgs {
 
     @Field(_ => Int, {nullable: true})
     offset?: number;
-
-    @Field(_ => Int, {nullable: true})
-    limit?: number;
 }

@@ -17,29 +17,31 @@ interface ApplySorting<
 > {
     query: QueryType;
     sort?: OrderOptions<T>;
-    table: string;
 }
 
 export const applySorting = <T extends object, QueryType extends PostgrestFilterBuilder<Database['public'], Record<string, unknown>, unknown, unknown, unknown>>({
                                                                                                                                                                      query,
                                                                                                                                                                      sort,
-                                                                                                                                                                     table
                                                                                                                                                                  }: ApplySorting<T, QueryType>) => {
     if (!sort) return query;
 
-    const sorting = [];
-    for (const [column, value] of Object.entries(sort)) {
+    const sorting: [string, { ascending?: boolean, nullsFirst?: boolean, referencedTable?: string } | undefined][] = [];
+    for (const [_, value] of Object.entries(sort)) {
         if (!value) continue;
 
         // If the value is an object, recursively apply sorting
         if (value instanceof HypercertSortOptions || value instanceof FractionSortOptions || value instanceof ContractSortOptions || value instanceof AttestationSortOptions || value instanceof MetadataSortOptions || value instanceof AttestationSchemaSortOptions) {
-            const nestedSorting = [];
-            for (const [_column, _value] of Object.entries(value)) {
-                if (!_value) continue;
-                let options = {};
-                if (table !== _column) options = Object.assign({referencedTable: _column}, options);
-                if (sort.order === SortOrder.descending) options = Object.assign({ascending: false}, options);
-                nestedSorting.push([_value, options]);
+            const nestedSorting: [string, {
+                ascending?: boolean,
+                nullsFirst?: boolean,
+                referencedTable?: string
+            }][] = [];
+            for (const [_column, _direction] of Object.entries(value)) {
+                if (!_column || !_direction) continue;
+                console.log("Column: ", _column)
+                console.log("Direction: ", _direction)
+                // TODO resolve hacky workaround for hypercerts <> claims alias
+                nestedSorting.push([_column, {ascending: _direction !== SortOrder.descending}]);
             }
             sorting.push(...nestedSorting);
         }

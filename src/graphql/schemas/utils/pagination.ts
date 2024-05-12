@@ -18,9 +18,9 @@ export const applyPagination = <QueryType extends PostgrestFilterBuilder<Databas
 
     const {first, offset} = pagination;
 
-    if (first && offset) query = query.range(offset, offset + first - 1);
+    if (first && !offset) return query.limit(first);
 
-    if (first && !offset) query = query.limit(first);
+    if (first && offset) return query.range(offset, offset + first - 1);
 
     return query;
 

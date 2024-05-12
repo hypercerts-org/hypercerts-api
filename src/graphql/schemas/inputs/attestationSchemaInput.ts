@@ -4,7 +4,6 @@ import {BooleanSearchOptions, IdSearchOptions, NumberSearchOptions, StringSearch
 import type {AttestationSchema} from "../typeDefs/attestationSchemaTypeDefs.js";
 import type {OrderOptions} from "./orderOptions.js";
 import {AttestationSchemaSortOptions} from "./sortOptions.js";
-import {AttestationSchemaSortKeys, SortOrder} from "../enums/sortEnums.js";
 
 @InputType()
 export class AttestationSchemaWhereInput implements WhereOptions<AttestationSchema> {
@@ -25,7 +24,5 @@ export class AttestationSchemaWhereInput implements WhereOptions<AttestationSche
 @InputType()
 export class AttestationSchemaFetchInput implements OrderOptions<AttestationSchema> {
     @Field(_ => AttestationSchemaSortOptions, {nullable: true})
-    by?: { schema?: AttestationSchemaSortKeys }
-    @Field({nullable: true})
-    order?: SortOrder
+    by?: AttestationSchemaSortOptions
 }

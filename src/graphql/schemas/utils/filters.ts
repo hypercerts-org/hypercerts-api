@@ -19,13 +19,13 @@ interface ApplyFilters<
 }
 
 type OperandType = string | number | bigint | string[] | bigint[];
-type OperatorType = "eq" | "gt" | "gte" | "lt" | "lte" | 'ilike' | 'contains' | 'startsWith' | 'endsWith'
+type OperatorType = 'eq' | 'gt' | 'gte' | 'lt' | 'lte' | 'ilike' | 'contains' | 'startsWith' | 'endsWith'
 
 const generateFilters = (value: NumberSearchOptions | StringSearchOptions, column: string) => {
 
     const filters: [OperatorType, string, OperandType][] = [];
 
-    for (const [operator, operand] of Object.entries(value)) {
+    for (const [operator, operand] of Object.entries(value) as [OperatorType, string][]) {
         if (!operand) continue;
 
         switch (operator) {

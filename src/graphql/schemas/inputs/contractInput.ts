@@ -4,7 +4,6 @@ import {Contract} from "../typeDefs/contractTypeDefs.js";
 import {IdSearchOptions, NumberSearchOptions, StringSearchOptions} from "./searchOptions.js";
 import type {OrderOptions} from "./orderOptions.js";
 import {ContractSortOptions} from "./sortOptions.js";
-import {ContractSortKeys, SortOrder} from "../enums/sortEnums.js";
 
 
 @InputType()
@@ -21,7 +20,5 @@ export class ContractWhereInput implements WhereOptions<Contract> {
 @InputType()
 export class ContractFetchInput implements OrderOptions<Contract> {
     @Field(_ => ContractSortOptions, {nullable: true})
-    by?: { contracts?: ContractSortKeys }
-    @Field({nullable: true})
-    order?: SortOrder
+    by?: ContractSortOptions
 }

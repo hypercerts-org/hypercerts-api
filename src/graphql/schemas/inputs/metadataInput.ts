@@ -4,7 +4,6 @@ import {StringArraySearchOptions, StringSearchOptions} from "./searchOptions.js"
 import {Metadata} from "../typeDefs/metadataTypeDefs.js";
 import type {OrderOptions} from "./orderOptions.js";
 import {MetadataSortOptions} from "./sortOptions.js";
-import {MetadataSortKeys, SortOrder} from "../enums/sortEnums.js";
 
 @InputType()
 export class MetadataWhereInput implements WhereOptions<Metadata> {
@@ -25,7 +24,5 @@ export class MetadataWhereInput implements WhereOptions<Metadata> {
 @InputType()
 export class MetadataFetchInput implements OrderOptions<Metadata> {
     @Field(_ => MetadataSortOptions, {nullable: true})
-    by?: { metadata?: MetadataSortKeys }
-    @Field({nullable: true})
-    order?: SortOrder
+    by?: MetadataSortOptions
 }

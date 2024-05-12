@@ -4,7 +4,6 @@ import {NumberSearchOptions, StringSearchOptions} from "./searchOptions.js";
 import {Fraction} from "../typeDefs/fractionTypeDefs.js";
 import type {OrderOptions} from "./orderOptions.js";
 import {FractionSortOptions} from "./sortOptions.js";
-import {ContractSortKeys, FractionSortKeys, SortOrder} from "../enums/sortEnums.js";
 import {HypercertsWhereInput} from "./hypercertsInput.js";
 
 @InputType()
@@ -26,10 +25,5 @@ export class FractionWhereInput implements WhereOptions<Fraction> {
 @InputType()
 export class FractionFetchInput implements OrderOptions<Fraction> {
     @Field(_ => FractionSortOptions, {nullable: true})
-    by?: {
-        fractions?: FractionSortKeys,
-        contracts?: ContractSortKeys,
-    }
-    @Field({nullable: true})
-    order?: SortOrder
+    by?: FractionSortOptions
 }

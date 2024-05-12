@@ -30,11 +30,11 @@ export class SupabaseService {
     async getContracts(args: GetContractsArgs) {
         let query = this.supabase.from('contracts').select('*');
 
-        const {where, sort, limit, offset, first} = args;
+        const {where, sort, offset, first} = args;
 
         query = applyFilters<AttestationSchema, typeof query>({query, where});
-        query = applySorting({query, sort, table: 'contracts'});
-        query = applyPagination({query, pagination: {first, offset, limit}});
+        query = applySorting({query, sort});
+        query = applyPagination({query, pagination: {first, offset}});
 
         return query;
     }
@@ -43,38 +43,40 @@ export class SupabaseService {
 
     async getHypercerts(args: GetHypercertArgs) {
 
-        const fromString = `* ${args.where?.contracts || args.sort?.by?.contracts ? ', contracts!inner (*)' : ''} ${args.where?.metadata || args.sort?.by?.metadata  ? ', metadata!inner (*)' : ''} ${args.where?.attestations || args.sort?.by?.attestations ? ', attestations!inner (*)' : ''} ${args.where?.fractions || args.sort?.by?.fractions ? ', fractions!inner (*)' : ''}`
+        const fromString = `* ${args.where?.contracts ? ', contracts!inner (*)' : ''} ${args.where?.metadata ? ', metadata!inner (*)' : ''} ${args.where?.attestations ? ', attestations!inner (*)' : ''} ${args.where?.fractions ? ', fractions!inner (*)' : ''}`
 
+        // TOOD build method to get count
         let query = this.supabase.from('claims').select(fromString, {
             count: args?.count ? 'exact' : undefined,
             head: args?.count && args.count === CountKeys.HEAD
         });
 
 
-        const {where, first, offset, limit, sort} = args;
+        const {where, first, offset, sort} = args;
 
         query = applyFilters({query, where});
-        query = applySorting({query, sort, table: 'hypercerts'});
-        query = applyPagination({query, pagination: {first, offset, limit}});
+        query = applySorting({query, sort});
+        query = applyPagination({query, pagination: {first, offset}});
 
+        console.log(query);
         return query;
     }
 
     // Fractions
 
     async getFractions(args: GetFractionArgs) {
-        const fromString = `* ${args.where?.hypercerts ? ', claims!inner (*)' : ''}`;
+        const fromString = `*`;
 
         let query = this.supabase.from('fractions').select(fromString, {
             count: args?.count ? 'exact' : undefined,
             head: args?.count && args.count === CountKeys.HEAD
         });
 
-        const {where, first, offset, limit, sort} = args;
+        const {where, first, offset, sort} = args;
 
         query = applyFilters({query, where});
-        query = applySorting({query, sort, table: 'fractions'});
-        query = applyPagination({query, pagination: {first, offset, limit}});
+        query = applySorting({query, sort});
+        query = applyPagination({query, pagination: {first, offset}});
 
         return query;
     }
@@ -83,11 +85,11 @@ export class SupabaseService {
 
     async getMetadata(args: GetMetadataArgs) {
         let query = this.supabase.from('metadata').select('*');
-        const {where, sort, limit, offset, first} = args;
+        const {where, sort, offset, first} = args;
 
         query = applyFilters({query, where});
-        query = applySorting({query, sort, table: 'metadata'});
-        query = applyPagination({query, pagination: {first, offset, limit}});
+        query = applySorting({query, sort});
+        query = applyPagination({query, pagination: {first, offset}});
 
         return query;
     }
@@ -100,11 +102,11 @@ export class SupabaseService {
     async getAttestationSchemas(args: GetAttestationSchemaArgs) {
         let query = this.supabase.from('supported_schemas').select('*');
 
-        const {where, sort, limit, offset, first} = args;
+        const {where, sort, offset, first} = args;
 
         query = applyFilters({query, where});
-        query = applySorting({query, sort, table: 'attestation_schemas'});
-        query = applyPagination({query, pagination: {first, offset, limit}});
+        query = applySorting({query, sort});
+        query = applyPagination({query, pagination: {first, offset}});
 
         return query;
     }
@@ -112,11 +114,11 @@ export class SupabaseService {
     async getAttestations(args: GetAttestationArgs) {
         let query = this.supabase.from('attestations').select('*');
 
-        const {where, sort, limit, offset, first} = args;
+        const {where, sort, offset, first} = args;
 
         query = applyFilters({query, where});
-        query = applySorting({query, sort, table: 'attestations'});
-        query = applyPagination({query, pagination: {first, offset, limit}});
+        query = applySorting({query, sort});
+        query = applyPagination({query, pagination: {first, offset}});
 
         return query;
     }
@@ -131,11 +133,11 @@ export class SupabaseService {
             head: args?.count && args.count === CountKeys.HEAD
         })
 
-        const {where, sort, limit, offset, first} = args;
+        const {where, sort, offset, first} = args;
 
         query = applyFilters({query, where: {...where, claims_id: {eq: args.claim_id}}});
-        query = applySorting({query, sort, table: 'attestations'});
-        query = applyPagination({query, pagination: {first, offset, limit}});
+        query = applySorting({query, sort});
+        query = applyPagination({query, pagination: {first, offset}});
 
         return query;
     }

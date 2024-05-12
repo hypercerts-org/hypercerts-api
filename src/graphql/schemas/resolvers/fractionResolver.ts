@@ -30,12 +30,12 @@ class FractionResolver {
             const {data, error, count} = res;
 
             if (error) {
-                console.warn(`[FractionResolver::fractions] Error fetching hypercerts: `, error);
+                console.warn(`[FractionResolver::fractions] Error fetching fractions: `, error);
             }
 
             return {data, count};
         } catch (e) {
-            throw new Error(`[FractionResolver::fractions] Error fetching hypercerts: ${(e as Error).message}`)
+            throw new Error(`[FractionResolver::fractions] Error fetching fractions: ${(e as Error).message}`)
         }
     }
 }

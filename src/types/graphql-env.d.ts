@@ -142,14 +142,6 @@ export type introspection = {
               "name": "AttestationSortOptions",
               "ofType": null
             }
-          },
-          {
-            "name": "order",
-            "type": {
-              "kind": "ENUM",
-              "name": "SortOrder",
-              "ofType": null
-            }
           }
         ]
       },
@@ -247,26 +239,6 @@ export type introspection = {
               "name": "AttestationSchemaSortOptions",
               "ofType": null
             }
-          },
-          {
-            "name": "order",
-            "type": {
-              "kind": "ENUM",
-              "name": "SortOrder",
-              "ofType": null
-            }
-          }
-        ]
-      },
-      {
-        "kind": "ENUM",
-        "name": "AttestationSchemaSortKeys",
-        "enumValues": [
-          {
-            "name": "resolver"
-          },
-          {
-            "name": "schema_id"
           }
         ]
       },
@@ -275,10 +247,34 @@ export type introspection = {
         "name": "AttestationSchemaSortOptions",
         "inputFields": [
           {
-            "name": "schema",
+            "name": "chain_id",
             "type": {
               "kind": "ENUM",
-              "name": "AttestationSchemaSortKeys",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "eas_schema_id",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "resolver",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "revocable",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
               "ofType": null
             }
           }
@@ -339,41 +335,46 @@ export type introspection = {
         ]
       },
       {
-        "kind": "ENUM",
-        "name": "AttestationSortKeys",
-        "enumValues": [
-          {
-            "name": "attestation_uid"
-          },
-          {
-            "name": "attester_address"
-          },
-          {
-            "name": "block_timestamp"
-          },
-          {
-            "name": "id"
-          },
-          {
-            "name": "recipient_address"
-          },
-          {
-            "name": "schema"
-          },
-          {
-            "name": "supported_schemas_id"
-          }
-        ]
-      },
-      {
         "kind": "INPUT_OBJECT",
         "name": "AttestationSortOptions",
         "inputFields": [
           {
-            "name": "attestation",
+            "name": "attestation_uid",
             "type": {
               "kind": "ENUM",
-              "name": "AttestationSortKeys",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "attester_address",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "block_timestamp",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "recipient_address",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "schema",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
               "ofType": null
             }
           }
@@ -556,29 +557,6 @@ export type introspection = {
               "name": "ContractSortOptions",
               "ofType": null
             }
-          },
-          {
-            "name": "order",
-            "type": {
-              "kind": "ENUM",
-              "name": "SortOrder",
-              "ofType": null
-            }
-          }
-        ]
-      },
-      {
-        "kind": "ENUM",
-        "name": "ContractSortKeys",
-        "enumValues": [
-          {
-            "name": "chain_id"
-          },
-          {
-            "name": "contract_address"
-          },
-          {
-            "name": "id"
           }
         ]
       },
@@ -587,10 +565,26 @@ export type introspection = {
         "name": "ContractSortOptions",
         "inputFields": [
           {
-            "name": "contracts",
+            "name": "chain_id",
             "type": {
               "kind": "ENUM",
-              "name": "ContractSortKeys",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "contract_address",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "contract_id",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
               "ofType": null
             }
           }
@@ -717,29 +711,6 @@ export type introspection = {
               "name": "FractionSortOptions",
               "ofType": null
             }
-          },
-          {
-            "name": "order",
-            "type": {
-              "kind": "ENUM",
-              "name": "SortOrder",
-              "ofType": null
-            }
-          }
-        ]
-      },
-      {
-        "kind": "ENUM",
-        "name": "FractionSortKeys",
-        "enumValues": [
-          {
-            "name": "fraction_id"
-          },
-          {
-            "name": "owner"
-          },
-          {
-            "name": "units"
           }
         ]
       },
@@ -748,18 +719,42 @@ export type introspection = {
         "name": "FractionSortOptions",
         "inputFields": [
           {
-            "name": "contracts",
+            "name": "creation_block_timestamp",
             "type": {
               "kind": "ENUM",
-              "name": "ContractSortKeys",
+              "name": "SortOrder",
               "ofType": null
             }
           },
           {
-            "name": "fractions",
+            "name": "last_block_update_timestamp",
             "type": {
               "kind": "ENUM",
-              "name": "FractionSortKeys",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "owner_address",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "token_id",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "units",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
               "ofType": null
             }
           }
@@ -1150,14 +1145,6 @@ export type introspection = {
               "name": "HypercertSortOptions",
               "ofType": null
             }
-          },
-          {
-            "name": "order",
-            "type": {
-              "kind": "ENUM",
-              "name": "SortOrder",
-              "ofType": null
-            }
           }
         ]
       },
@@ -1208,61 +1195,62 @@ export type introspection = {
         ]
       },
       {
-        "kind": "ENUM",
-        "name": "HypercertSortKeys",
-        "enumValues": [
-          {
-            "name": "creation_block_timestamp"
-          },
-          {
-            "name": "hypercert_id"
-          },
-          {
-            "name": "token_id"
-          }
-        ]
-      },
-      {
         "kind": "INPUT_OBJECT",
         "name": "HypercertSortOptions",
         "inputFields": [
           {
-            "name": "attestations",
+            "name": "creation_block_timestamp",
             "type": {
               "kind": "ENUM",
-              "name": "AttestationSortKeys",
+              "name": "SortOrder",
               "ofType": null
             }
           },
           {
-            "name": "contracts",
+            "name": "hypercert_id",
             "type": {
               "kind": "ENUM",
-              "name": "ContractSortKeys",
+              "name": "SortOrder",
               "ofType": null
             }
           },
           {
-            "name": "fractions",
+            "name": "last_block_update_timestamp",
             "type": {
               "kind": "ENUM",
-              "name": "FractionSortKeys",
+              "name": "SortOrder",
               "ofType": null
             }
           },
           {
-            "name": "hypercerts",
+            "name": "owner_address",
             "type": {
               "kind": "ENUM",
-              "name": "HypercertSortKeys",
+              "name": "SortOrder",
               "ofType": null
             }
           },
           {
-            "name": "metadata",
+            "name": "token_id",
             "type": {
               "kind": "ENUM",
-              "name": "MetadataSortKeys",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "units",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "uri",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
               "ofType": null
             }
           }
@@ -1561,35 +1549,6 @@ export type introspection = {
               "name": "MetadataSortOptions",
               "ofType": null
             }
-          },
-          {
-            "name": "order",
-            "type": {
-              "kind": "ENUM",
-              "name": "SortOrder",
-              "ofType": null
-            }
-          }
-        ]
-      },
-      {
-        "kind": "ENUM",
-        "name": "MetadataSortKeys",
-        "enumValues": [
-          {
-            "name": "allowList"
-          },
-          {
-            "name": "description"
-          },
-          {
-            "name": "id"
-          },
-          {
-            "name": "name"
-          },
-          {
-            "name": "uri"
           }
         ]
       },
@@ -1598,10 +1557,50 @@ export type introspection = {
         "name": "MetadataSortOptions",
         "inputFields": [
           {
-            "name": "metadata",
+            "name": "allow_list_uri",
             "type": {
               "kind": "ENUM",
-              "name": "MetadataSortKeys",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "description",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "external_url",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "metadata_id",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "uri",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
               "ofType": null
             }
           }
@@ -1739,14 +1738,6 @@ export type introspection = {
                 }
               },
               {
-                "name": "limit",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
-              },
-              {
                 "name": "offset",
                 "type": {
                   "kind": "SCALAR",
@@ -1793,14 +1784,6 @@ export type introspection = {
               },
               {
                 "name": "first",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
-              },
-              {
-                "name": "limit",
                 "type": {
                   "kind": "SCALAR",
                   "name": "Int",
@@ -1861,14 +1844,6 @@ export type introspection = {
                 }
               },
               {
-                "name": "limit",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
-              },
-              {
                 "name": "offset",
                 "type": {
                   "kind": "SCALAR",
@@ -1915,14 +1890,6 @@ export type introspection = {
               },
               {
                 "name": "first",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
-              },
-              {
-                "name": "limit",
                 "type": {
                   "kind": "SCALAR",
                   "name": "Int",
@@ -1983,14 +1950,6 @@ export type introspection = {
                 }
               },
               {
-                "name": "limit",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
-              },
-              {
                 "name": "offset",
                 "type": {
                   "kind": "SCALAR",
@@ -2043,14 +2002,6 @@ export type introspection = {
               },
               {
                 "name": "first",
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
-              },
-              {
-                "name": "limit",
                 "type": {
                   "kind": "SCALAR",
                   "name": "Int",
