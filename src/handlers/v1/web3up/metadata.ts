@@ -1,7 +1,7 @@
 import type {Request, Response} from "express";
 import {
-    HypercertClaimdata,
-    HypercertMetadata,
+    type HypercertClaimdata,
+    type HypercertMetadata,
     validateClaimData,
     validateMetaData,
     getFromIPFS,
@@ -9,7 +9,7 @@ import {
 import {jsonToBlob} from "../../../utils/jsonToBlob.js";
 import {setup} from "../../../client/w3up.js";
 import {StandardMerkleTree} from "@openzeppelin/merkle-tree";
-import type {ResponseData} from "../../../types/api";
+import type {ResponseData} from "../../../types/api.js";
 
 export const metadataHandler = async (
     req: Request,
@@ -130,7 +130,6 @@ export const metadataHandler = async (
 
 // Check on required hypercert metadata fields
 const isHypercertMetadata = (data: unknown): data is HypercertMetadata => {
-    console.log("DATA", data);
     return (
         typeof data === "object" &&
         data !== null &&

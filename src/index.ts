@@ -30,30 +30,30 @@ const app: Express = express();
 app.use(cors());
 
 const defaultQuery = `{
- hypercerts(page: {limit: 7}) {
-    totalCount
+    hypercerts(
+    sort: {by: {claim_attestation_count: descending}}
+    count: COUNT
+    first: 10
+  ) {
+    count
     data {
+      hypercert_id
+      metadata {
+        data {
+          name
+        }
+        count
+      }
       attestations {
-        totalCount
+        count
         data {
           attestation
         }
       }
-      contract {
-        chain_id
-        contract_address
-      }
-      fractions {
-        owner_address
-      }
-      metadata {
-        description
-        name
-      }
       units
       uri
     }
-  }
+  } 
 }`;
 
 //TODO ESlint runs with react config, remove NextJS traces
@@ -70,7 +70,6 @@ const yoga = createYoga({
         methods: ["POST"],
     },
     plugins: [
-        // eslint-disable-next-line react-hooks/rules-of-hooks
         useResponseCache({
             // global cache
             session: () => null

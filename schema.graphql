@@ -9,7 +9,7 @@ type Attestation {
   attester_address: String
   block_timestamp: BigInt
   hypercerts: [Hypercert!]
-  id: ID
+  id: ID!
   recipient_address: String
   resolver: String
   schema: String
@@ -17,14 +17,13 @@ type Attestation {
 }
 
 input AttestationFetchInput {
-  limit: Int = 100
-  offset: Int = 0
+  by: AttestationSortOptions
 }
 
 type AttestationSchema {
   chain_id: BigInt
   eas_schema_id: ID
-  id: ID
+  id: ID!
   records: [Attestation!]
   resolver: String
   revocable: Boolean
@@ -32,32 +31,113 @@ type AttestationSchema {
 }
 
 input AttestationSchemaFetchInput {
-  limit: Int = 100
-  offset: Int = 0
+  by: AttestationSchemaSortOptions
+}
+
+input AttestationSchemaSortOptions {
+  chain_id: SortOrder
+  eas_schema_id: SortOrder
+  resolver: SortOrder
+  revocable: SortOrder
 }
 
 input AttestationSchemaWhereInput {
+  attestations: BasicAttestationSchemaWhereInput
   chain_id: NumberSearchOptions
   eas_schema_id: StringSearchOptions
-  id: StringSearchOptions
+  id: IdSearchOptions
   resolver: StringSearchOptions
   revocable: BooleanSearchOptions
   schema: StringSearchOptions
 }
 
+input AttestationSortOptions {
+  attestation_uid: SortOrder
+  attester_address: SortOrder
+  block_timestamp: SortOrder
+  recipient_address: SortOrder
+  schema: SortOrder
+}
+
 input AttestationWhereInput {
+  attestation: StringSearchOptions
+  attestation_uid: StringSearchOptions
+  attestations: BasicAttestationWhereInput
+  attester_address: StringSearchOptions
+  block_timestamp: NumberSearchOptions
+  chain_id: NumberSearchOptions
+  contract_address: StringSearchOptions
+  hypercerts: BasicHypercertWhereInput
+  id: IdSearchOptions
+  metadata: BasicMetadataWhereInput
+  recipient_address: StringSearchOptions
+  resolver: StringSearchOptions
+  schema: StringSearchOptions
+  supported_schemas_id: StringSearchOptions
+  token_id: StringSearchOptions
+}
+
+input BasicAttestationSchemaWhereInput {
+  chain_id: NumberSearchOptions
+  eas_schema_id: StringSearchOptions
+  id: IdSearchOptions
+  resolver: StringSearchOptions
+  revocable: BooleanSearchOptions
+  schema: StringSearchOptions
+}
+
+input BasicAttestationWhereInput {
   attestation: StringSearchOptions
   attestation_uid: StringSearchOptions
   attester_address: StringSearchOptions
   block_timestamp: NumberSearchOptions
   chain_id: NumberSearchOptions
   contract_address: StringSearchOptions
-  id: StringSearchOptions
+  id: IdSearchOptions
   recipient_address: StringSearchOptions
   resolver: StringSearchOptions
   schema: StringSearchOptions
   supported_schemas_id: StringSearchOptions
   token_id: StringSearchOptions
+}
+
+input BasicContractWhereInput {
+  chain_id: NumberSearchOptions
+  contract_address: StringSearchOptions
+  id: IdSearchOptions
+}
+
+input BasicFractionWhereInput {
+  creation_block_timestamp: NumberSearchOptions
+  last_block_update_timestamp: NumberSearchOptions
+  owner_address: StringSearchOptions
+  token_id: NumberSearchOptions
+  units: NumberSearchOptions
+}
+
+input BasicHypercertWhereInput {
+  creation_block_timestamp: NumberSearchOptions
+  id: IdSearchOptions
+  last_block_update_timestamp: NumberSearchOptions
+  owner_address: StringSearchOptions
+  token_id: NumberSearchOptions
+  uri: StringSearchOptions
+}
+
+input BasicMetadataWhereInput {
+  contributors: StringArraySearchOptions
+  creation_block_timestamp: NumberSearchOptions
+  description: StringSearchOptions
+  impact_scope: StringArraySearchOptions
+  impact_timeframe_from: NumberSearchOptions
+  impact_timeframe_to: NumberSearchOptions
+  last_block_update_timestamp: NumberSearchOptions
+  name: StringSearchOptions
+  rights: StringArraySearchOptions
+  uri: StringSearchOptions
+  work_scope: StringArraySearchOptions
+  work_timeframe_from: NumberSearchOptions
+  work_timeframe_to: NumberSearchOptions
 }
 
 """
@@ -72,41 +152,58 @@ input BooleanSearchOptions {
 type Contract {
   chain_id: BigInt
   contract_address: String
-  id: ID
+  id: ID!
   start_block: BigInt
 }
 
 input ContractFetchInput {
-  from: Int = 0
-  limit: Int = 1000
-  to: Int = 1000
+  by: ContractSortOptions
 }
 
-input ContractWhereInput {
-  chain_id: NumberSearchOptions
-  contract_address: StringSearchOptions
-  id: StringSearchOptions
+input ContractSortOptions {
+  chain_id: SortOrder
+  contract_address: SortOrder
+  contract_id: SortOrder
 }
+
+"""Count keys for the count query"""
+enum CountKeys {
+  """
+  Count the number of items in the query and return it along with the data
+  """
+  COUNT
+
+  """Only get the count, not the data"""
+  HEAD
+}
+
+"""Handles uint256 bigint values stored in DB"""
+scalar EthBigInt
 
 type Fraction {
-  claims_id: ID
   creation_block_timestamp: BigInt
-  hypercert_id: String
+  hypercert_id: ID
   id: ID!
   last_block_update_timestamp: BigInt
   owner_address: String
-  units: String
+  units: EthBigInt
 }
 
 input FractionFetchInput {
-  limit: Int = 100
-  offset: Int = 0
+  by: FractionSortOptions
+}
+
+input FractionSortOptions {
+  creation_block_timestamp: SortOrder
+  last_block_update_timestamp: SortOrder
+  owner_address: SortOrder
+  token_id: SortOrder
+  units: SortOrder
 }
 
 input FractionWhereInput {
-  claims_id: StringSearchOptions
   creation_block_timestamp: NumberSearchOptions
-  hypercert_id: StringSearchOptions
+  hypercerts: BasicHypercertWhereInput
   last_block_update_timestamp: NumberSearchOptions
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions
@@ -114,44 +211,84 @@ input FractionWhereInput {
 }
 
 type GetAttestationsResponse {
-  data: [Attestation!]!
-  totalCount: Int!
+  count: Int
+  data: [Attestation!]
+}
+
+type GetAttestationsSchemaResponse {
+  count: Int
+  data: [AttestationSchema!]!
+}
+
+type GetContractsResponse {
+  count: Int
+  data: [Contract!]
+}
+
+type GetFractionsResponse {
+  count: Int
+  data: [Fraction!]
 }
 
 type GetHypercertsResponse {
-  data: [Hypercert!]!
-  totalCount: Int!
+  count: Int
+  data: [Hypercert!]
+}
+
+type GetMetadataResponse {
+  count: Int
+  data: [Metadata!]
 }
 
 type Hypercert {
   attestations: GetAttestationsResponse
-  contract: Contract
-  contracts_id: String
+  contracts: GetContractsResponse
+  contracts_id: ID
   creation_block_timestamp: BigInt
-  fractions: [Fraction!]
-  hypercert_id: String
-  id: ID
+  fractions: GetFractionsResponse
+  hypercert_id: ID
+  id: ID!
   last_block_update_timestamp: BigInt
-  metadata: Metadata
+  metadata: GetMetadataResponse
   owner_address: String
-  token_id: String
-  type: String
-  units: String
+  token_id: EthBigInt
+  units: EthBigInt
   uri: String
 }
 
 input HypercertFetchInput {
-  limit: Int = 100
-  offset: Int = 0
+  by: HypercertSortOptions
+}
+
+input HypercertSortOptions {
+  claim_attestation_count: SortOrder
+  creation_block_timestamp: SortOrder
+  hypercert_id: SortOrder
+  last_block_update_timestamp: SortOrder
+  owner_address: SortOrder
+  token_id: SortOrder
+  units: SortOrder
+  uri: SortOrder
 }
 
 input HypercertsWhereInput {
-  attestations: AttestationWhereInput
-  contract: ContractWhereInput
+  attestations: BasicAttestationWhereInput
+  contracts: BasicContractWhereInput
   creation_block_timestamp: NumberSearchOptions
-  fractions: FractionWhereInput
-  hypercert_id: StringSearchOptions
+  fractions: BasicFractionWhereInput
+  id: IdSearchOptions
+  last_block_update_timestamp: NumberSearchOptions
+  metadata: BasicMetadataWhereInput
+  owner_address: StringSearchOptions
   token_id: NumberSearchOptions
+  uri: StringSearchOptions
+}
+
+input IdSearchOptions {
+  contains: ID
+  endsWith: ID
+  eq: ID
+  startsWith: ID
 }
 
 """
@@ -164,13 +301,13 @@ type Metadata {
   contributors: [String!]
   description: String
   external_url: String
-  id: ID
+  id: ID!
   image: String
   impact_scope: [String!]
   impact_timeframe_from: BigInt
   impact_timeframe_to: BigInt
   name: String
-  properties: String
+  properties: JSON
   rights: [String!]
   uri: String
   work_scope: [String!]
@@ -179,17 +316,26 @@ type Metadata {
 }
 
 input MetadataFetchInput {
-  limit: Int = 100
-  offset: Int = 0
+  by: MetadataSortOptions
+}
+
+input MetadataSortOptions {
+  allow_list_uri: SortOrder
+  description: SortOrder
+  external_url: SortOrder
+  metadata_id: SortOrder
+  name: SortOrder
+  uri: SortOrder
 }
 
 input MetadataWhereInput {
-  contributors: StringArraySearchOptions
-  description: StringSearchOptions
-  impact_scope: StringArraySearchOptions
-  name: StringSearchOptions
+  creation_block_timestamp: NumberSearchOptions
+  id: IdSearchOptions
+  last_block_update_timestamp: NumberSearchOptions
+  metadata: BasicMetadataWhereInput
+  owner_address: StringSearchOptions
+  token_id: NumberSearchOptions
   uri: StringSearchOptions
-  work_scope: StringArraySearchOptions
 }
 
 input NumberSearchOptions {
@@ -201,12 +347,21 @@ input NumberSearchOptions {
 }
 
 type Query {
-  attestationSchemas(page: AttestationSchemaFetchInput, where: AttestationSchemaWhereInput): [AttestationSchema!]!
-  attestations(page: AttestationFetchInput, where: AttestationWhereInput): GetAttestationsResponse!
-  contracts(page: ContractFetchInput, where: ContractWhereInput): [Contract!]!
-  fractions(page: FractionFetchInput, where: FractionWhereInput): [Fraction!]!
-  hypercerts(page: HypercertFetchInput, where: HypercertsWhereInput): GetHypercertsResponse!
-  metadata(page: MetadataFetchInput, where: MetadataWhereInput): [Metadata!]!
+  attestationSchemas(count: CountKeys, first: Int, offset: Int, sort: AttestationSchemaFetchInput, where: AttestationSchemaWhereInput): GetAttestationsSchemaResponse!
+  attestations(count: CountKeys, first: Int, offset: Int, sort: AttestationFetchInput, where: AttestationWhereInput): GetAttestationsResponse!
+  contracts(count: CountKeys, first: Int, offset: Int, sort: ContractFetchInput, where: BasicContractWhereInput): GetContractsResponse!
+  fractions(count: CountKeys, first: Int, offset: Int, sort: FractionFetchInput, where: FractionWhereInput): GetFractionsResponse!
+  hypercerts(count: CountKeys, first: Int, offset: Int, sort: HypercertFetchInput, where: HypercertsWhereInput): GetHypercertsResponse!
+  metadata(count: CountKeys, first: Int, offset: Int, sort: MetadataFetchInput, where: MetadataWhereInput): [Metadata!]!
+}
+
+"""The direction to sort the query results"""
+enum SortOrder {
+  """Ascending order"""
+  ascending
+
+  """Descending order"""
+  descending
 }
 
 input StringArraySearchOptions {

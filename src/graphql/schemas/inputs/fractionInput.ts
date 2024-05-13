@@ -1,32 +1,26 @@
-import {Field, InputType, Int} from "type-graphql";
+import {Field, InputType} from "type-graphql";
 import type {WhereOptions} from "./whereOptions.js";
 import {NumberSearchOptions, StringSearchOptions} from "./searchOptions.js";
-import {FetchOptions} from "./fetchOptions.js";
-import {ContractWhereInput} from "./contractInput.js";
-import type {Fraction} from "../typeDefs/fractionTypeDefs.js";
+import {Fraction} from "../typeDefs/fractionTypeDefs.js";
+import type {OrderOptions} from "./orderOptions.js";
+import {FractionSortOptions} from "./sortOptions.js";
 
 @InputType()
-export class FractionWhereInput implements WhereOptions<Fraction> {
+export class BasicFractionWhereInput implements WhereOptions<Fraction> {
+    @Field(_ => NumberSearchOptions, {nullable: true})
+    creation_block_timestamp?: NumberSearchOptions;
+    @Field(_ => NumberSearchOptions, {nullable: true})
+    last_block_update_timestamp?: NumberSearchOptions;
+    @Field(_ => NumberSearchOptions, {nullable: true})
+    token_id?: NumberSearchOptions;
+    @Field(_ => NumberSearchOptions, {nullable: true})
+    units?: NumberSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})
-    claims_id?: StringSearchOptions | null;
-    @Field(_ => StringSearchOptions, {nullable: true})
-    hypercert_id?: StringSearchOptions | null;
-    @Field(_ => NumberSearchOptions, {nullable: true})
-    creation_block_timestamp?: NumberSearchOptions | null;
-    @Field(_ => NumberSearchOptions, {nullable: true})
-    last_block_update_timestamp?: NumberSearchOptions | null;
-    @Field(_ => NumberSearchOptions, {nullable: true})
-    token_id?: NumberSearchOptions | null;
-    @Field(_ => NumberSearchOptions, {nullable: true})
-    units?: ContractWhereInput | null;
-    @Field(_ => StringSearchOptions, {nullable: true})
-    owner_address?: StringSearchOptions | null;
+    owner_address?: StringSearchOptions;
 }
 
 @InputType()
-export class FractionFetchInput implements FetchOptions {
-    @Field(_ => Int, {nullable: true})
-    offset = 0;
-    @Field(_ => Int, {nullable: true})
-    limit = 100;
+export class FractionFetchInput implements OrderOptions<Fraction> {
+    @Field(_ => FractionSortOptions, {nullable: true})
+    by?: FractionSortOptions
 }

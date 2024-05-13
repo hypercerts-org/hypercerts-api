@@ -13,54 +13,25 @@ export type Database = {
         Row: {
           data: Json | null
           id: string
+          parsed: boolean | null
           root: string | null
           uri: string | null
         }
         Insert: {
           data?: Json | null
           id?: string
+          parsed?: boolean | null
           root?: string | null
           uri?: string | null
         }
         Update: {
           data?: Json | null
           id?: string
+          parsed?: boolean | null
           root?: string | null
           uri?: string | null
         }
         Relationships: []
-      }
-      allow_list_records: {
-        Row: {
-          entry: number
-          hc_allow_list_id: string
-          id: string
-          units: number
-          user_address: string
-        }
-        Insert: {
-          entry: number
-          hc_allow_list_id: string
-          id?: string
-          units: number
-          user_address: string
-        }
-        Update: {
-          entry?: number
-          hc_allow_list_id?: string
-          id?: string
-          units?: number
-          user_address?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "allow_list_records_hc_allow_list_id_fkey"
-            columns: ["hc_allow_list_id"]
-            isOneToOne: false
-            referencedRelation: "hypercert_allow_lists"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       attestations: {
         Row: {
@@ -69,6 +40,7 @@ export type Database = {
           attester_address: string
           block_timestamp: number
           chain_id: number | null
+          claims_id: string | null
           contract_address: string | null
           decoded_attestation: Json
           id: string
@@ -82,6 +54,7 @@ export type Database = {
           attester_address: string
           block_timestamp: number
           chain_id?: number | null
+          claims_id?: string | null
           contract_address?: string | null
           decoded_attestation: Json
           id?: string
@@ -95,6 +68,7 @@ export type Database = {
           attester_address?: string
           block_timestamp?: number
           chain_id?: number | null
+          claims_id?: string | null
           contract_address?: string | null
           decoded_attestation?: Json
           id?: string
@@ -103,6 +77,13 @@ export type Database = {
           token_id?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "attestations_claims_id_fkey"
+            columns: ["claims_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "attestations_supported_schemas_id_fkey"
             columns: ["supported_schemas_id"]
@@ -121,10 +102,10 @@ export type Database = {
           last_block_update_timestamp: number | null
           owner_address: string | null
           token_id: number
-          type: Database["public"]["Enums"]["token_type"] | null
           units: number | null
           uri: string | null
           value: number | null
+          claim_attestation_count: number | null
         }
         Insert: {
           contracts_id: string
@@ -134,7 +115,6 @@ export type Database = {
           last_block_update_timestamp?: number | null
           owner_address?: string | null
           token_id: number
-          type?: Database["public"]["Enums"]["token_type"] | null
           units?: number | null
           uri?: string | null
           value?: number | null
@@ -147,7 +127,6 @@ export type Database = {
           last_block_update_timestamp?: number | null
           owner_address?: string | null
           token_id?: number
-          type?: Database["public"]["Enums"]["token_type"] | null
           units?: number | null
           uri?: string | null
           value?: number | null
@@ -160,38 +139,42 @@ export type Database = {
             referencedRelation: "contracts"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "claims_uri_fkey"
+            columns: ["uri"]
+            isOneToOne: false
+            referencedRelation: "metadata"
+            referencedColumns: ["uri"]
+          },
         ]
       }
       contract_events: {
         Row: {
-          contract_id: string
-          event_id: string
-          id: string
+          contracts_id: string
+          events_id: string
           last_block_indexed: number | null
         }
         Insert: {
-          contract_id: string
-          event_id: string
-          id?: string
+          contracts_id: string
+          events_id: string
           last_block_indexed?: number | null
         }
         Update: {
-          contract_id?: string
-          event_id?: string
-          id?: string
+          contracts_id?: string
+          events_id?: string
           last_block_indexed?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "contract_events_contract_id_fkey"
-            columns: ["contract_id"]
+            foreignKeyName: "contract_events_contracts_id_fkey"
+            columns: ["contracts_id"]
             isOneToOne: false
             referencedRelation: "contracts"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "contract_events_event_id_fkey"
-            columns: ["event_id"]
+            foreignKeyName: "contract_events_events_id_fkey"
+            columns: ["events_id"]
             isOneToOne: false
             referencedRelation: "events"
             referencedColumns: ["id"]
@@ -246,7 +229,6 @@ export type Database = {
           last_block_update_timestamp: number | null
           owner_address: string | null
           token_id: number
-          type: Database["public"]["Enums"]["token_type"] | null
           units: number | null
           value: number | null
         }
@@ -258,7 +240,6 @@ export type Database = {
           last_block_update_timestamp?: number | null
           owner_address?: string | null
           token_id: number
-          type?: Database["public"]["Enums"]["token_type"] | null
           units?: number | null
           value?: number | null
         }
@@ -270,7 +251,6 @@ export type Database = {
           last_block_update_timestamp?: number | null
           owner_address?: string | null
           token_id?: number
-          type?: Database["public"]["Enums"]["token_type"] | null
           units?: number | null
           value?: number | null
         }
@@ -284,24 +264,59 @@ export type Database = {
           },
         ]
       }
+      hypercert_allow_list_records: {
+        Row: {
+          entry: number
+          hypercert_allow_lists_id: string
+          id: string
+          units: number
+          user_address: string
+        }
+        Insert: {
+          entry: number
+          hypercert_allow_lists_id: string
+          id?: string
+          units: number
+          user_address: string
+        }
+        Update: {
+          entry?: number
+          hypercert_allow_lists_id?: string
+          id?: string
+          units?: number
+          user_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hypercert_allow_list_records_hypercert_allow_lists_id_fkey"
+            columns: ["hypercert_allow_lists_id"]
+            isOneToOne: false
+            referencedRelation: "hypercert_allow_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hypercert_allow_lists: {
         Row: {
-          allow_list_data_id: string
+          allow_list_data_id: string | null
           claims_id: string
           id: string
           parsed: boolean | null
+          root: string | null
         }
         Insert: {
-          allow_list_data_id: string
+          allow_list_data_id?: string | null
           claims_id: string
           id?: string
           parsed?: boolean | null
+          root?: string | null
         }
         Update: {
-          allow_list_data_id?: string
+          allow_list_data_id?: string | null
           claims_id?: string
           id?: string
           parsed?: boolean | null
+          root?: string | null
         }
         Relationships: [
           {
@@ -314,7 +329,7 @@ export type Database = {
           {
             foreignKeyName: "hypercert_allow_lists_claims_id_fkey"
             columns: ["claims_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "claims"
             referencedColumns: ["id"]
           },
@@ -332,6 +347,7 @@ export type Database = {
           impact_timeframe_from: number | null
           impact_timeframe_to: number | null
           name: string | null
+          parsed: boolean | null
           properties: Json | null
           rights: string[] | null
           uri: string | null
@@ -350,6 +366,7 @@ export type Database = {
           impact_timeframe_from?: number | null
           impact_timeframe_to?: number | null
           name?: string | null
+          parsed?: boolean | null
           properties?: Json | null
           rights?: string[] | null
           uri?: string | null
@@ -368,6 +385,7 @@ export type Database = {
           impact_timeframe_from?: number | null
           impact_timeframe_to?: number | null
           name?: string | null
+          parsed?: boolean | null
           properties?: Json | null
           rights?: string[] | null
           uri?: string | null
@@ -375,7 +393,15 @@ export type Database = {
           work_timeframe_from?: number | null
           work_timeframe_to?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "metadata_allow_list_uri_fkey"
+            columns: ["allow_list_uri"]
+            isOneToOne: false
+            referencedRelation: "allow_list_data"
+            referencedColumns: ["uri"]
+          },
+        ]
       }
       supported_schemas: {
         Row: {
@@ -412,47 +438,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      find_missing_allow_list_uris_and_roots: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          allow_list_id: string
-          allow_list_uri: string
-          allow_list_root: string
-        }[]
-      }
-      get_attestations_for_claim: {
+      claim_attestation_count: {
         Args: {
-          claim_id: string
+          "": unknown
         }
-        Returns: {
-          id: string
-          supported_schemas_id: string
-          attestation_uid: string
-          chain_id: number
-          contract_address: string
-          token_id: number
-          recipient_address: string
-          attester_address: string
-          attestation: Json
-          decoded_attestation: Json
-          block_timestamp: number
-        }[]
-      }
-      get_attested_claims: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          id: string
-          contracts_id: string
-          token_id: number
-          hypercert_id: string
-          creation_block_timestamp: number
-          last_block_update_timestamp: number
-          owner_address: string
-          value: number
-          units: number
-          uri: string
-          type: Database["public"]["Enums"]["token_type"]
-        }[]
+        Returns: number
       }
       get_missing_metadata_uris: {
         Args: Record<PropertyKey, never>
@@ -460,59 +450,58 @@ export type Database = {
           missing_uri: string
         }[]
       }
-      get_or_create_claim: {
-        Args: {
-          p_contracts_id: string
-          p_token_id: number
-        }
-        Returns: {
-          contracts_id: string
-          creation_block_timestamp: number | null
-          hypercert_id: string | null
-          id: string
-          last_block_update_timestamp: number | null
-          owner_address: string | null
-          token_id: number
-          type: Database["public"]["Enums"]["token_type"] | null
-          units: number | null
-          uri: string | null
-          value: number | null
-        }
-      }
-      get_unattested_claims: {
+      get_or_create_claim:
+        | {
+            Args: {
+              p_chain_id: number
+              p_contract_address: string
+              p_token_id: number
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_contracts_id: string
+              p_token_id: number
+            }
+            Returns: {
+              contracts_id: string
+              creation_block_timestamp: number | null
+              hypercert_id: string | null
+              id: string
+              last_block_update_timestamp: number | null
+              owner_address: string | null
+              token_id: number
+              units: number | null
+              uri: string | null
+              value: number | null
+            }
+          }
+      get_unparsed_hypercert_allow_lists: {
         Args: Record<PropertyKey, never>
         Returns: {
-          id: string
-          contracts_id: string
-          token_id: number
-          hypercert_id: string
-          creation_block_timestamp: number
-          last_block_update_timestamp: number
-          owner_address: string
-          value: number
-          units: number
-          uri: string
-          type: Database["public"]["Enums"]["token_type"]
+          claim_id: string
+          al_data_id: string
+          data: Json
         }[]
       }
-      search_contract_events: {
+      store_allow_list_records: {
         Args: {
-          p_chain: number
-          p_event: string
+          _claims_id: string
+          _allow_list_data_id: string
+          _records: Json[]
         }
-        Returns: {
-          id: string
-          contract_id: string
-          contract_address: string
-          start_block: number
-          event_name: string
-          event_abi: string
-          last_block_indexed: number
-        }[]
+        Returns: undefined
       }
-      store_allow_list_data_and_hypercert_allow_list_batch: {
+      store_fraction: {
         Args: {
-          p_allow_list_data: Database["public"]["CompositeTypes"]["allow_list_data_type"][]
+          _fractions: Database["public"]["CompositeTypes"]["fraction_type"][]
+        }
+        Returns: undefined
+      }
+      store_hypercert_allow_list_roots: {
+        Args: {
+          p_hc_allow_list_roots: Database["public"]["CompositeTypes"]["hc_allow_list_root_type"][]
         }
         Returns: undefined
       }
@@ -524,10 +513,18 @@ export type Database = {
       }
     }
     Enums: {
-      token_type: "claim" | "fraction"
+      [_ in never]: never
     }
     CompositeTypes: {
-      allow_list_data_type: {
+      fraction_type: {
+        claims_id: string | null
+        token_id: number | null
+        creation_block_timestamp: number | null
+        last_block_update_timestamp: number | null
+        owner_address: string | null
+        value: number | null
+      }
+      hc_allow_list_root_type: {
         contract_id: string | null
         token_id: number | null
         root: string | null

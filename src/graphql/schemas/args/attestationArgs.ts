@@ -1,13 +1,25 @@
-import {ArgsType, Field} from "type-graphql";
-import {AttestationFetchInput, AttestationWhereInput} from "../inputs/attestationInput.js";
-import {GraphQLBigInt} from "graphql-scalars";
+import {ArgsType, Field, InputType} from "type-graphql";
+import {AttestationFetchInput, BasicAttestationWhereInput} from "../inputs/attestationInput.js";
+import {PaginationArgs} from "./paginationArgs.js";
+import {BasicHypercertWhereInput} from "../inputs/hypercertsInput.js";
+import {BasicMetadataWhereInput} from "../inputs/metadataInput.js";
+
+@InputType()
+export class AttestationWhereInput extends BasicAttestationWhereInput {
+    @Field(_ => BasicAttestationWhereInput, {nullable: true})
+    attestations?: BasicAttestationWhereInput;
+    @Field(_ => BasicHypercertWhereInput, {nullable: true})
+    hypercerts?: BasicHypercertWhereInput;
+    @Field(_ => BasicMetadataWhereInput, {nullable: true})
+    metadata?: BasicMetadataWhereInput;
+}
 
 @ArgsType()
-export class GetAttestationArgs {
+export class GetAttestationArgs extends PaginationArgs {
     @Field({nullable: true})
     where?: AttestationWhereInput;
     @Field({nullable: true})
-    page?: AttestationFetchInput;
+    sort?: AttestationFetchInput;
 }
 
 
@@ -23,16 +35,7 @@ export class GetAttestationBySchemaIdArgs {
     supported_schema_id?: string;
 }
 
-export class GetAttestationByChainContractTokenArgs {
-    @Field(_ => GraphQLBigInt)
-    chain_id?: bigint | number | string;
-    @Field(_ => String)
-    contract_address?: string;
-    @Field(_ => GraphQLBigInt)
-    token_id?: bigint | number | string;
-}
-
-export class GetAttestationByClaimIdArgs {
-    @Field(_ => String)
+export class GetAttestationByClaimIdArgs extends GetAttestationArgs {
+    @Field()
     claim_id?: string;
 }

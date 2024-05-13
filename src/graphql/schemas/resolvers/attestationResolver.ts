@@ -6,11 +6,11 @@ import {Attestation} from "../typeDefs/attestationTypeDefs.js";
 
 @ObjectType()
 export default class GetAttestationsResponse {
-    @Field(() => [Attestation])
+    @Field(() => [Attestation], {nullable: true})
     data?: Attestation[];
 
-    @Field(() => Int)
-    totalCount?: number;
+    @Field(() => Int, {nullable: true})
+    count?: number;
 }
 
 @injectable()
@@ -27,27 +27,24 @@ class AttestationResolver {
         try {
             const res = await this.supabaseService.getAttestations(args);
 
-            if (!res) {
-                return [];
-            }
-
-            const {data, error} = res;
+            const {data, error, count} = res;
 
             if (error) {
                 console.warn(`[AttestationResolver] Error fetching attestations: `, error);
-                return [];
+                return {data, count: null};
             }
 
-            const newData = data.map(item => {
+            const newData = data ? data.map(item => {
                 return {
                     ...item,
                     attestation: item.decoded_attestation ? JSON.parse(item.decoded_attestation as string) : item.attestation,
                 };
-            });
+            }) : data;
 
-            return {data: newData, totalCount: newData.length};
+            return {data: newData, count: count ? count : newData?.length};
         } catch (e) {
-            throw new Error(`[AttestationResolver] Error fetching attestations: ${e}`)
+            const error = e as Error;
+            throw new Error(`[AttestationResolver] Error fetching attestations: ${error.message}`)
         }
     }
 
@@ -60,11 +57,12 @@ class AttestationResolver {
         if (!isHypercertPointer(_att)) return null;
 
         try {
-            const res = await this.supabaseService.getHypercertsByChainContractToken({
-                chain_id: _att.chain_id,
-                contract_address: _att.contract_address,
-                token_id: _att.token_id
-            });
+            const res = await this.supabaseService.getHypercerts({
+                where: {
+                    contracts: {chain_id: {eq: BigInt(_att.chain_id)}, contract_address: {eq: _att.contract_address}},
+                    token_id: {eq: BigInt(_att.token_id)}
+                }
+            })
 
             if (!res) {
                 console.warn(`[AttestationResolver] Error fetching hypercerts: `, res);
@@ -80,7 +78,8 @@ class AttestationResolver {
 
             return data;
         } catch (e) {
-            throw new Error(`[AttestationResolver] Error fetching hypercerts: ${e}`)
+            const error = e as Error;
+            throw new Error(`[AttestationResolver] Error fetching hypercerts: ${error.message}`)
         }
     }
 }
