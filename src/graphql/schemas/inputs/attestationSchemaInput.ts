@@ -6,7 +6,7 @@ import type {OrderOptions} from "./orderOptions.js";
 import {AttestationSchemaSortOptions} from "./sortOptions.js";
 
 @InputType()
-export class AttestationSchemaWhereInput implements WhereOptions<AttestationSchema> {
+export class BasicAttestationSchemaWhereInput implements WhereOptions<AttestationSchema> {
     @Field(_ => IdSearchOptions, {nullable: true})
     id?: IdSearchOptions | null;
     @Field(_ => StringSearchOptions, {nullable: true})

@@ -1,7 +1,18 @@
-import {ArgsType, Field} from "type-graphql";
-import {AttestationFetchInput, AttestationWhereInput} from "../inputs/attestationInput.js";
-import {GraphQLBigInt} from "graphql-scalars";
+import {ArgsType, Field, InputType} from "type-graphql";
+import {AttestationFetchInput, BasicAttestationWhereInput} from "../inputs/attestationInput.js";
 import {PaginationArgs} from "./paginationArgs.js";
+import {BasicHypercertWhereInput} from "../inputs/hypercertsInput.js";
+import {BasicMetadataWhereInput} from "../inputs/metadataInput.js";
+
+@InputType()
+export class AttestationWhereInput extends BasicAttestationWhereInput {
+    @Field(_ => BasicAttestationWhereInput, {nullable: true})
+    attestations?: BasicAttestationWhereInput;
+    @Field(_ => BasicHypercertWhereInput, {nullable: true})
+    hypercerts?: BasicHypercertWhereInput;
+    @Field(_ => BasicMetadataWhereInput, {nullable: true})
+    metadata?: BasicMetadataWhereInput;
+}
 
 @ArgsType()
 export class GetAttestationArgs extends PaginationArgs {
@@ -24,7 +35,7 @@ export class GetAttestationBySchemaIdArgs {
     supported_schema_id?: string;
 }
 
-export class GetAttestationByClaimIdArgs extends GetAttestationArgs{
+export class GetAttestationByClaimIdArgs extends GetAttestationArgs {
     @Field()
     claim_id?: string;
 }

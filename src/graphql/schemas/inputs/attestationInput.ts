@@ -4,9 +4,11 @@ import {IdSearchOptions, NumberSearchOptions, StringSearchOptions} from "./searc
 import type {Attestation} from "../typeDefs/attestationTypeDefs.js";
 import {type OrderOptions} from "./orderOptions.js";
 import {AttestationSortOptions} from "./sortOptions.js";
+import {BasicHypercertWhereInput} from "./hypercertsInput.js";
+import {BasicMetadataWhereInput} from "./metadataInput.js";
 
 @InputType()
-export class AttestationWhereInput implements WhereOptions<Attestation> {
+export class BasicAttestationWhereInput implements WhereOptions<Attestation> {
     @Field(_ => IdSearchOptions, {nullable: true})
     id?: IdSearchOptions
     @Field(_ => StringSearchOptions, {nullable: true})
@@ -32,6 +34,8 @@ export class AttestationWhereInput implements WhereOptions<Attestation> {
     @Field(_ => StringSearchOptions, {nullable: true})
     token_id?: StringSearchOptions;
 }
+
+
 
 @InputType()
 export class AttestationFetchInput implements OrderOptions<Attestation> {

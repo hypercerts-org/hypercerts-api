@@ -42,6 +42,7 @@ input AttestationSchemaSortOptions {
 }
 
 input AttestationSchemaWhereInput {
+  attestations: BasicAttestationSchemaWhereInput
   chain_id: NumberSearchOptions
   eas_schema_id: StringSearchOptions
   id: IdSearchOptions
@@ -61,6 +62,33 @@ input AttestationSortOptions {
 input AttestationWhereInput {
   attestation: StringSearchOptions
   attestation_uid: StringSearchOptions
+  attestations: BasicAttestationWhereInput
+  attester_address: StringSearchOptions
+  block_timestamp: NumberSearchOptions
+  chain_id: NumberSearchOptions
+  contract_address: StringSearchOptions
+  hypercerts: BasicHypercertWhereInput
+  id: IdSearchOptions
+  metadata: BasicMetadataWhereInput
+  recipient_address: StringSearchOptions
+  resolver: StringSearchOptions
+  schema: StringSearchOptions
+  supported_schemas_id: StringSearchOptions
+  token_id: StringSearchOptions
+}
+
+input BasicAttestationSchemaWhereInput {
+  chain_id: NumberSearchOptions
+  eas_schema_id: StringSearchOptions
+  id: IdSearchOptions
+  resolver: StringSearchOptions
+  revocable: BooleanSearchOptions
+  schema: StringSearchOptions
+}
+
+input BasicAttestationWhereInput {
+  attestation: StringSearchOptions
+  attestation_uid: StringSearchOptions
   attester_address: StringSearchOptions
   block_timestamp: NumberSearchOptions
   chain_id: NumberSearchOptions
@@ -71,6 +99,45 @@ input AttestationWhereInput {
   schema: StringSearchOptions
   supported_schemas_id: StringSearchOptions
   token_id: StringSearchOptions
+}
+
+input BasicContractWhereInput {
+  chain_id: NumberSearchOptions
+  contract_address: StringSearchOptions
+  id: IdSearchOptions
+}
+
+input BasicFractionWhereInput {
+  creation_block_timestamp: NumberSearchOptions
+  last_block_update_timestamp: NumberSearchOptions
+  owner_address: StringSearchOptions
+  token_id: NumberSearchOptions
+  units: NumberSearchOptions
+}
+
+input BasicHypercertWhereInput {
+  creation_block_timestamp: NumberSearchOptions
+  id: IdSearchOptions
+  last_block_update_timestamp: NumberSearchOptions
+  owner_address: StringSearchOptions
+  token_id: NumberSearchOptions
+  uri: StringSearchOptions
+}
+
+input BasicMetadataWhereInput {
+  contributors: StringArraySearchOptions
+  creation_block_timestamp: NumberSearchOptions
+  description: StringSearchOptions
+  impact_scope: StringArraySearchOptions
+  impact_timeframe_from: NumberSearchOptions
+  impact_timeframe_to: NumberSearchOptions
+  last_block_update_timestamp: NumberSearchOptions
+  name: StringSearchOptions
+  rights: StringArraySearchOptions
+  uri: StringSearchOptions
+  work_scope: StringArraySearchOptions
+  work_timeframe_from: NumberSearchOptions
+  work_timeframe_to: NumberSearchOptions
 }
 
 """
@@ -97,12 +164,6 @@ input ContractSortOptions {
   chain_id: SortOrder
   contract_address: SortOrder
   contract_id: SortOrder
-}
-
-input ContractWhereInput {
-  chain_id: NumberSearchOptions
-  contract_address: StringSearchOptions
-  id: IdSearchOptions
 }
 
 """Count keys for the count query"""
@@ -142,7 +203,7 @@ input FractionSortOptions {
 
 input FractionWhereInput {
   creation_block_timestamp: NumberSearchOptions
-  hypercerts: HypercertsWhereInput
+  hypercerts: BasicHypercertWhereInput
   last_block_update_timestamp: NumberSearchOptions
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions
@@ -199,15 +260,8 @@ input HypercertFetchInput {
   by: HypercertSortOptions
 }
 
-input HypercertFractionWhereInput {
-  creation_block_timestamp: NumberSearchOptions
-  last_block_update_timestamp: NumberSearchOptions
-  owner_address: StringSearchOptions
-  token_id: NumberSearchOptions
-  units: NumberSearchOptions
-}
-
 input HypercertSortOptions {
+  claim_attestation_count: SortOrder
   creation_block_timestamp: SortOrder
   hypercert_id: SortOrder
   last_block_update_timestamp: SortOrder
@@ -218,13 +272,16 @@ input HypercertSortOptions {
 }
 
 input HypercertsWhereInput {
-  attestations: AttestationWhereInput
-  contracts: ContractWhereInput
-  creation_block_timestamp: StringSearchOptions
-  fractions: HypercertFractionWhereInput
+  attestations: BasicAttestationWhereInput
+  contracts: BasicContractWhereInput
+  creation_block_timestamp: NumberSearchOptions
+  fractions: BasicFractionWhereInput
   id: IdSearchOptions
-  metadata: MetadataWhereInput
+  last_block_update_timestamp: NumberSearchOptions
+  metadata: BasicMetadataWhereInput
+  owner_address: StringSearchOptions
   token_id: NumberSearchOptions
+  uri: StringSearchOptions
 }
 
 input IdSearchOptions {
@@ -272,12 +329,13 @@ input MetadataSortOptions {
 }
 
 input MetadataWhereInput {
-  contributors: StringArraySearchOptions
-  description: StringSearchOptions
-  impact_scope: StringArraySearchOptions
-  name: StringSearchOptions
+  creation_block_timestamp: NumberSearchOptions
+  id: IdSearchOptions
+  last_block_update_timestamp: NumberSearchOptions
+  metadata: BasicMetadataWhereInput
+  owner_address: StringSearchOptions
+  token_id: NumberSearchOptions
   uri: StringSearchOptions
-  work_scope: StringArraySearchOptions
 }
 
 input NumberSearchOptions {
@@ -291,7 +349,7 @@ input NumberSearchOptions {
 type Query {
   attestationSchemas(count: CountKeys, first: Int, offset: Int, sort: AttestationSchemaFetchInput, where: AttestationSchemaWhereInput): GetAttestationsSchemaResponse!
   attestations(count: CountKeys, first: Int, offset: Int, sort: AttestationFetchInput, where: AttestationWhereInput): GetAttestationsResponse!
-  contracts(count: CountKeys, first: Int, offset: Int, sort: ContractFetchInput, where: ContractWhereInput): GetContractsResponse!
+  contracts(count: CountKeys, first: Int, offset: Int, sort: ContractFetchInput, where: BasicContractWhereInput): GetContractsResponse!
   fractions(count: CountKeys, first: Int, offset: Int, sort: FractionFetchInput, where: FractionWhereInput): GetFractionsResponse!
   hypercerts(count: CountKeys, first: Int, offset: Int, sort: HypercertFetchInput, where: HypercertsWhereInput): GetHypercertsResponse!
   metadata(count: CountKeys, first: Int, offset: Int, sort: MetadataFetchInput, where: MetadataWhereInput): [Metadata!]!

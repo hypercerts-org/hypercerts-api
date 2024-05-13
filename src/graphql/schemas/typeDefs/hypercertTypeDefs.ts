@@ -11,6 +11,7 @@ import GetContractsResponse from "../resolvers/contractResolver.js";
 @ObjectType()
 class Hypercert extends BasicTypeDef {
 
+
     // Hypercert table fields
     @Field(_ => ID, {nullable: true})
     contracts_id?: string;

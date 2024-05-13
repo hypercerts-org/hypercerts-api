@@ -7,7 +7,7 @@ import {ContractSortOptions} from "./sortOptions.js";
 
 
 @InputType()
-export class ContractWhereInput implements WhereOptions<Contract> {
+export class BasicContractWhereInput implements WhereOptions<Contract> {
     @Field(_ => IdSearchOptions, {nullable: true})
     id?: IdSearchOptions | null;
     @Field(_ => StringSearchOptions, {nullable: true})

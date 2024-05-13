@@ -4,12 +4,9 @@ import {NumberSearchOptions, StringSearchOptions} from "./searchOptions.js";
 import {Fraction} from "../typeDefs/fractionTypeDefs.js";
 import type {OrderOptions} from "./orderOptions.js";
 import {FractionSortOptions} from "./sortOptions.js";
-import {HypercertsWhereInput} from "./hypercertsInput.js";
 
 @InputType()
-export class FractionWhereInput implements WhereOptions<Fraction> {
-    @Field(_ => HypercertsWhereInput, {nullable: true})
-    hypercerts?: HypercertsWhereInput;
+export class BasicFractionWhereInput implements WhereOptions<Fraction> {
     @Field(_ => NumberSearchOptions, {nullable: true})
     creation_block_timestamp?: NumberSearchOptions;
     @Field(_ => NumberSearchOptions, {nullable: true})

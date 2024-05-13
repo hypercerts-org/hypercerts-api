@@ -27,6 +27,8 @@ export class HypercertSortOptions implements SortOptions<Hypercert> {
     last_block_update_timestamp?: SortOrder;
     @Field(_ => SortOrder, {nullable: true})
     uri?: SortOrder;
+    @Field(_ => SortOrder, {nullable: true})
+    claim_attestation_count?: SortOrder;
 }
 
 @InputType()

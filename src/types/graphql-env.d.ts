@@ -285,6 +285,14 @@ export type introspection = {
         "name": "AttestationSchemaWhereInput",
         "inputFields": [
           {
+            "name": "attestations",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "BasicAttestationSchemaWhereInput",
+              "ofType": null
+            }
+          },
+          {
             "name": "chain_id",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -401,6 +409,186 @@ export type introspection = {
             }
           },
           {
+            "name": "attestations",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "BasicAttestationWhereInput",
+              "ofType": null
+            }
+          },
+          {
+            "name": "attester_address",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "block_timestamp",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "chain_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "contract_address",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "hypercerts",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "BasicHypercertWhereInput",
+              "ofType": null
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "IdSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "metadata",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "BasicMetadataWhereInput",
+              "ofType": null
+            }
+          },
+          {
+            "name": "recipient_address",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "resolver",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "schema",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "supported_schemas_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "token_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "BasicAttestationSchemaWhereInput",
+        "inputFields": [
+          {
+            "name": "chain_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "eas_schema_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "IdSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "resolver",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "revocable",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "BooleanSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "schema",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "BasicAttestationWhereInput",
+        "inputFields": [
+          {
+            "name": "attestation",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "attestation_uid",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
             "name": "attester_address",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -477,6 +665,246 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "BasicContractWhereInput",
+        "inputFields": [
+          {
+            "name": "chain_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "contract_address",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "IdSearchOptions",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "BasicFractionWhereInput",
+        "inputFields": [
+          {
+            "name": "creation_block_timestamp",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "last_block_update_timestamp",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "owner_address",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "token_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "units",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "BasicHypercertWhereInput",
+        "inputFields": [
+          {
+            "name": "creation_block_timestamp",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "IdSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "last_block_update_timestamp",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "owner_address",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "token_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "uri",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "BasicMetadataWhereInput",
+        "inputFields": [
+          {
+            "name": "contributors",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringArraySearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "creation_block_timestamp",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "description",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "impact_scope",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringArraySearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "impact_timeframe_from",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "impact_timeframe_to",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "last_block_update_timestamp",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "rights",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringArraySearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "uri",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "work_scope",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringArraySearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "work_timeframe_from",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "work_timeframe_to",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
               "ofType": null
             }
           }
@@ -585,36 +1013,6 @@ export type introspection = {
             "type": {
               "kind": "ENUM",
               "name": "SortOrder",
-              "ofType": null
-            }
-          }
-        ]
-      },
-      {
-        "kind": "INPUT_OBJECT",
-        "name": "ContractWhereInput",
-        "inputFields": [
-          {
-            "name": "chain_id",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
-              "ofType": null
-            }
-          },
-          {
-            "name": "contract_address",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "StringSearchOptions",
-              "ofType": null
-            }
-          },
-          {
-            "name": "id",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "IdSearchOptions",
               "ofType": null
             }
           }
@@ -776,7 +1174,7 @@ export type introspection = {
             "name": "hypercerts",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "HypercertsWhereInput",
+              "name": "BasicHypercertWhereInput",
               "ofType": null
             }
           },
@@ -1150,54 +1548,16 @@ export type introspection = {
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "HypercertFractionWhereInput",
-        "inputFields": [
-          {
-            "name": "creation_block_timestamp",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
-              "ofType": null
-            }
-          },
-          {
-            "name": "last_block_update_timestamp",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
-              "ofType": null
-            }
-          },
-          {
-            "name": "owner_address",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "StringSearchOptions",
-              "ofType": null
-            }
-          },
-          {
-            "name": "token_id",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
-              "ofType": null
-            }
-          },
-          {
-            "name": "units",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
-              "ofType": null
-            }
-          }
-        ]
-      },
-      {
-        "kind": "INPUT_OBJECT",
         "name": "HypercertSortOptions",
         "inputFields": [
+          {
+            "name": "claim_attestation_count",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
           {
             "name": "creation_block_timestamp",
             "type": {
@@ -1264,7 +1624,7 @@ export type introspection = {
             "name": "attestations",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "AttestationWhereInput",
+              "name": "BasicAttestationWhereInput",
               "ofType": null
             }
           },
@@ -1272,7 +1632,7 @@ export type introspection = {
             "name": "contracts",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "ContractWhereInput",
+              "name": "BasicContractWhereInput",
               "ofType": null
             }
           },
@@ -1280,7 +1640,7 @@ export type introspection = {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "StringSearchOptions",
+              "name": "NumberSearchOptions",
               "ofType": null
             }
           },
@@ -1288,7 +1648,7 @@ export type introspection = {
             "name": "fractions",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "HypercertFractionWhereInput",
+              "name": "BasicFractionWhereInput",
               "ofType": null
             }
           },
@@ -1301,10 +1661,26 @@ export type introspection = {
             }
           },
           {
+            "name": "last_block_update_timestamp",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
             "name": "metadata",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "MetadataWhereInput",
+              "name": "BasicMetadataWhereInput",
+              "ofType": null
+            }
+          },
+          {
+            "name": "owner_address",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
               "ofType": null
             }
           },
@@ -1313,6 +1689,14 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "uri",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
               "ofType": null
             }
           }
@@ -1611,15 +1995,39 @@ export type introspection = {
         "name": "MetadataWhereInput",
         "inputFields": [
           {
-            "name": "contributors",
+            "name": "creation_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "StringArraySearchOptions",
+              "name": "NumberSearchOptions",
               "ofType": null
             }
           },
           {
-            "name": "description",
+            "name": "id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "IdSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "last_block_update_timestamp",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "metadata",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "BasicMetadataWhereInput",
+              "ofType": null
+            }
+          },
+          {
+            "name": "owner_address",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
@@ -1627,18 +2035,10 @@ export type introspection = {
             }
           },
           {
-            "name": "impact_scope",
+            "name": "token_id",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "StringArraySearchOptions",
-              "ofType": null
-            }
-          },
-          {
-            "name": "name",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "StringSearchOptions",
+              "name": "NumberSearchOptions",
               "ofType": null
             }
           },
@@ -1647,14 +2047,6 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
-              "ofType": null
-            }
-          },
-          {
-            "name": "work_scope",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "StringArraySearchOptions",
               "ofType": null
             }
           }
@@ -1863,7 +2255,7 @@ export type introspection = {
                 "name": "where",
                 "type": {
                   "kind": "INPUT_OBJECT",
-                  "name": "ContractWhereInput",
+                  "name": "BasicContractWhereInput",
                   "ofType": null
                 }
               }

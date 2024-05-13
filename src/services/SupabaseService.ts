@@ -1,16 +1,12 @@
 import {supabase} from "../client/supabase.js";
 import type {SupabaseClient} from "@supabase/supabase-js";
-import type {Database} from "../types/supabase.js";
+import type {Database, Tables} from "../types/supabase.js";
 import {applyFilters} from "../graphql/schemas/utils/filters.js";
 import type {GetContractsArgs} from "../graphql/schemas/args/contractArgs.js";
 import type {GetMetadataArgs} from "../graphql/schemas/args/metadataArgs.js";
 import {GetHypercertArgs,} from "../graphql/schemas/args/hypercertsArgs.js";
 import {GetAttestationSchemaArgs} from "../graphql/schemas/args/attestationSchemaArgs.js";
-import {
-    type GetAttestationArgs,
-    GetAttestationByClaimIdArgs,
-    GetAttestationBySchemaIdArgs
-} from "../graphql/schemas/args/attestationArgs.js";
+import {type GetAttestationArgs} from "../graphql/schemas/args/attestationArgs.js";
 import type {AttestationSchema} from "../graphql/schemas/typeDefs/attestationSchemaTypeDefs.js";
 import {GetFractionArgs} from "../graphql/schemas/args/fractionArgs.js";
 import {applySorting} from "../graphql/schemas/utils/sorting.js";
@@ -58,7 +54,6 @@ export class SupabaseService {
         query = applySorting({query, sort});
         query = applyPagination({query, pagination: {first, offset}});
 
-        console.log(query);
         return query;
     }
 
@@ -112,7 +107,9 @@ export class SupabaseService {
     }
 
     async getAttestations(args: GetAttestationArgs) {
-        let query = this.supabase.from('attestations').select('*');
+        const fromString = `* ${args.where?.hypercerts ? ', claims!inner (*)' : ''} ${args.where?.metadata ? ', metadata!inner (*)' : ''}`
+
+        let query = this.supabase.from('attestations').select(fromString);
 
         const {where, sort, offset, first} = args;
 
@@ -120,35 +117,6 @@ export class SupabaseService {
         query = applySorting({query, sort});
         query = applyPagination({query, pagination: {first, offset}});
 
-        return query;
+        return query.returns<Partial<Tables<"attestations">>[]>();
     }
-
-    async getAttestationsByClaimId(args: GetAttestationByClaimIdArgs) {
-        if (!args.claim_id) {
-            return null;
-        }
-
-        let query = this.supabase.from('attestations').select('*', {
-            count: args?.count ? 'exact' : undefined,
-            head: args?.count && args.count === CountKeys.HEAD
-        })
-
-        const {where, sort, offset, first} = args;
-
-        query = applyFilters({query, where: {...where, claims_id: {eq: args.claim_id}}});
-        query = applySorting({query, sort});
-        query = applyPagination({query, pagination: {first, offset}});
-
-        return query;
-    }
-
-    async getAttestationsBySchemaId(args: GetAttestationBySchemaIdArgs
-    ) {
-        if (!args.supported_schema_id) {
-            return null;
-        }
-
-        return this.supabase.from('attestations').select('*').eq('supported_schemas_id', args.supported_schema_id);
-    }
-
 }

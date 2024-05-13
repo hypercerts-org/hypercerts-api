@@ -7,12 +7,12 @@ import {
 } from "../inputs/searchOptions.js";
 import type {WhereOptions} from "../inputs/whereOptions.js";
 import type {Database} from "../../../types/supabase.js";
-import {PostgrestFilterBuilder} from "@supabase/postgrest-js";
+import {PostgrestTransformBuilder} from "@supabase/postgrest-js";
 
 
 interface ApplyFilters<
     T extends object,
-    QueryType extends PostgrestFilterBuilder<Database['public'], Record<string, unknown>, unknown, unknown, unknown>
+    QueryType extends PostgrestTransformBuilder<Database['public'], Record<string, unknown>, unknown, unknown, unknown>
 > {
     query: QueryType;
     where?: WhereOptions<T>;
@@ -144,7 +144,7 @@ const buildFilters = (value: unknown, column: string) => {
 }
 
 export const applyFilters =
-    <T extends object, QueryType extends PostgrestFilterBuilder<Database['public'], Record<string, unknown>, unknown, unknown, unknown>>({
+    <T extends object, QueryType extends PostgrestTransformBuilder<Database['public'], Record<string, unknown>, unknown, unknown, unknown>>({
                                                                                                                                              query,
                                                                                                                                              where
                                                                                                                                          }: ApplyFilters<T, QueryType>) => {

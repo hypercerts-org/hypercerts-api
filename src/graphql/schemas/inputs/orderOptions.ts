@@ -2,7 +2,7 @@ import {
     AttestationSchemaSortOptions,
     AttestationSortOptions,
     ContractSortOptions, FractionSortOptions,
-    type HypercertSortOptions,
+    HypercertSortOptions,
     MetadataSortOptions
 } from "./sortOptions.js";
 

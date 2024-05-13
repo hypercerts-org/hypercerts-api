@@ -111,9 +111,8 @@ class HypercertResolver {
         try {
 
             console.log(`[HypercertResolver::attestations] Fetching attestations for ${hypercert.id}`)
-            const res = await this.supabaseService.getAttestationsByClaimId({
-                claim_id: hypercert.id
-            })
+
+            const res = await this.supabaseService.getAttestations({where: {hypercerts: {id: {eq: hypercert.id}}}})
 
             if (!res) {
                 console.warn(`[HypercertResolver::attestations] Error fetching attestations for ${hypercert.hypercert_id}}: `, res);

@@ -31,15 +31,29 @@ app.use(cors());
 
 const defaultQuery = `{
     hypercerts(
-      sort: {by: {fractions: owner}, order: descending}
-      count: COUNT
-      first: 10
-    ) {
-      count
-      data {
-        hypercert_id
+    sort: {by: {claim_attestation_count: descending}}
+    count: COUNT
+    first: 10
+  ) {
+    count
+    data {
+      hypercert_id
+      metadata {
+        data {
+          name
+        }
+        count
       }
-    } 
+      attestations {
+        count
+        data {
+          attestation
+        }
+      }
+      units
+      uri
+    }
+  } 
 }`;
 
 //TODO ESlint runs with react config, remove NextJS traces
