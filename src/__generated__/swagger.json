@@ -1,0 +1,157 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"ValidationError": {
+				"properties": {
+					"success": {
+						"type": "boolean",
+						"enum": [
+							false
+						],
+						"nullable": false
+					},
+					"message": {
+						"type": "string",
+						"enum": [
+							"Validation failed"
+						],
+						"nullable": false
+					},
+					"errors": {
+						"properties": {},
+						"additionalProperties": {},
+						"type": "object"
+					}
+				},
+				"required": [
+					"success",
+					"message",
+					"errors"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateAllowListRequest": {
+				"description": "Request body for creating a new allowlist.",
+				"properties": {
+					"allowList": {
+						"type": "string",
+						"description": "The dump of the OpenZeppelin MerkleTree containing [address, uint256] entries. See https://github.com/OpenZeppelin/merkle-tree for more information."
+					},
+					"totalUnits": {
+						"type": "string",
+						"description": "The total amount of units distributed via the allowlist. The total should amount to 1 eth in wei (1e18) units."
+					}
+				},
+				"required": [
+					"allowList",
+					"totalUnits"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "Hypercerts API",
+		"version": "1.0.0",
+		"description": "API for uploading allow lists and hypercert metadata. Visit /graphql for the GraphQL API.",
+		"contact": {
+			"url": "https://hypercerts.org"
+		}
+	},
+	"paths": {
+		"/v1/allowlists": {
+			"post": {
+				"operationId": "CreateAllowList",
+				"responses": {
+					"201": {
+						"description": "Data uploaded successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"cid": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"cid"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"errors": {},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"message",
+												"success"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ValidationError"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Validation failed",
+											"errors": {
+												"allowList": "Invalid allowList. Length is  0"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Submits a new allowlist for validation and storage on IPFS. While we maintain a database of allowlists, the allowlist itself is stored on IPFS.\nTry to keep a backup of the allowlist for recovery purposes.\n\nProvide the dump of the OpenZeppelin MerkleTree and the total units.",
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateAllowListRequest"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}

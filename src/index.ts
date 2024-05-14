@@ -1,16 +1,12 @@
-import express, {type Express, type Request, type Response} from "express";
-import {createYoga} from "graphql-yoga";
+import express, {type Express} from "express";
 import "reflect-metadata";
-import {useResponseCache} from '@graphql-yoga/plugin-response-cache'
-
-import {allowlistHandler} from "./handlers/v1/web3up/allowlist.js";
-import {metadataHandler} from "./handlers/v1/web3up/metadata.js";
-
 import cors from "cors";
 import {assertExists} from "./utils/assertExists.js";
-import {buildSchema} from "type-graphql";
-import {resolvers} from "./graphql/schemas/resolvers/composed.js";
-import {container} from "tsyringe";
+import {yoga} from "./client/graphql.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerJson from "./__generated__/swagger.json" assert {type: "json"}
+import {RegisterRoutes} from "./__generated__/routes/routes.js";
+import bodyParser from "body-parser";
 
 // @ts-expect-error BigInt is not supported by JSON
 BigInt.prototype.toJSON = function () {
@@ -27,81 +23,25 @@ const PORT = assertExists(process.env.PORT, "PORT");
 
 const app: Express = express();
 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(cors());
 
-const defaultQuery = `{
-    hypercerts(
-    sort: {by: {claim_attestation_count: descending}}
-    count: COUNT
-    first: 10
-  ) {
-    count
-    data {
-      hypercert_id
-      metadata {
-        data {
-          name
-        }
-        count
-      }
-      attestations {
-        count
-        data {
-          attestation
-        }
-      }
-      units
-      uri
-    }
-  } 
-}`;
-
-//TODO ESlint runs with react config, remove NextJS traces
-const yoga = createYoga({
-    schema: await buildSchema({
-        resolvers,
-        // Registry 3rd party IOC container
-        container: {get: cls => container.resolve(cls)},
-        // Create 'schema.graphql' file with schema definition in current directory
-        emitSchemaFile: true,
-    }),
-    graphiql: {defaultQuery},
-    cors: {
-        methods: ["POST"],
-    },
-    plugins: [
-        useResponseCache({
-            // global cache
-            session: () => null
-        })
-    ]
-});
-
-app.get("/", (_: Request, res: Response) => {
-    res.send("Express + TypeScript Server");
-});
-
-app.post("/api/v1/:dataToStore", (req: Request, res: Response) => {
-    if (req.params.dataToStore === "allowlist") {
-        console.log("allowlistHandler");
-        return allowlistHandler(req, res);
-    }
-
-    if (req.params.dataToStore === "metadata") {
-        console.log("metadataHandler");
-        return metadataHandler(req, res);
-    }
-
-    return res.status(404).send("Not Found");
-});
+app.use(
+    "/docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerJson)
+);
 
 // Bind GraphQL Yoga to the graphql endpoint to avoid rendering the playground on any path
 app.use(yoga.graphqlEndpoint, yoga);
 
+RegisterRoutes(app);
+
 app.listen(PORT, () => {
     console.log(
-        `Running a GraphQL API server at http://localhost:${PORT}/graphql`
+        `🕸️ Running a GraphQL API server at http://localhost:${PORT}/graphql`
     );
 });
 
-console.log(`🚀 Server ready at http://localhost:${PORT}/`);
+console.log(`🚀 Running a REST API at http://localhost:${PORT}/`);

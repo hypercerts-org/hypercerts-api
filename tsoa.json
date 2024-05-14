@@ -1,0 +1,21 @@
+{
+  "entryFile": "src/index.ts",
+  "controllerPathGlobs": [
+    "src/controllers/*Controller.ts"
+  ],
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "spec": {
+    "outputDirectory": "src/__generated__",
+    "specVersion": 3,
+    "name": "Hypercerts API",
+    "contact": {
+      "url": "https://hypercerts.org"
+    },
+    "description": "API for uploading allow lists and hypercert metadata. Visit /graphql for the GraphQL API.",
+    "version": "1.0.0"
+  },
+  "routes": {
+    "routesDir": "src/__generated__/routes",
+    "esm": true
+  }
+}
