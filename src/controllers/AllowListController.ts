@@ -6,6 +6,7 @@ import {StorageService} from "../services/StorageService.js";
 import {parseAndValidateMerkleTree} from "../utils/parseAndValidateMerkleTreeDump.js";
 import {ValidationError} from "../types/api.js";
 import {tryParseMerkleTree} from "../utils/isParsableToMerkleTree.js";
+import {StandardMerkleTree} from "@openzeppelin/merkle-tree";
 
 /**
  *  Request body for creating a new allowlist.
@@ -25,8 +26,8 @@ interface CreateAllowListRequest {
 
 
 const AllowListPostRequest = z.object({
-    allowList: z.string({description: 'The dump of the OpenZeppelin MerkleTree'}).refine(tryParseMerkleTree, { message: "Invalid allowList. Could not parse to OpenZeppelin MerkleTree" }),
-    totalUnits: z.string({description: 'The total units of the allowlist'}).refine(isParsableToBigInt, { message: "Total units should be a valid BigInt" }),
+    allowList: z.string({description: 'The dump of the OpenZeppelin MerkleTree'}).refine(tryParseMerkleTree, {message: "Invalid allowList. Could not parse to OpenZeppelin MerkleTree"}),
+    totalUnits: z.string({description: 'The total units of the allowlist'}).refine(isParsableToBigInt, {message: "Total units should be a valid BigInt"}),
 })
 
 
@@ -46,7 +47,7 @@ export class AllowListController extends Controller {
         message: "Validation failed",
         errors: {allowList: "Invalid allowList. Length is  0"}
     })
-    public async createAllowList(@Body() requestBody: CreateAllowListRequest) {
+    public async storeAllowList(@Body() requestBody: CreateAllowListRequest) {
         const storage = await StorageService.init();
 
         const reqData = AllowListPostRequest.safeParse(requestBody);
@@ -56,13 +57,20 @@ export class AllowListController extends Controller {
             return {success: false, message: "Input validation failed", errors: reqData.error.issues};
         }
 
-        const {_merkleTree, valid, errors} = parseAndValidateMerkleTree(reqData.data);
+        const {data, valid, errors} = parseAndValidateMerkleTree(reqData.data);
 
-        if (!valid || !_merkleTree) {
+        if (!valid || !data) {
             this.setStatus(422)
             // TODO fix typing of error return type
-            return {success: false, message: "Errors while validating allow list", errors: errors?.issues ? errors.issues.toString() : errors};
+            return {
+                success: false,
+                message: "Errors while validating allow list",
+                // @ts-expect-error Types should be better declared because issues are not always known
+                errors: errors?.issues ? errors.issues.toString() : errors
+            };
         }
+
+        const _merkleTree = data as StandardMerkleTree<[string, bigint]>;
 
         const cid = await storage.uploadFile({file: jsonToBlob(JSON.stringify(_merkleTree.dump()))});
         this.setStatus(201)

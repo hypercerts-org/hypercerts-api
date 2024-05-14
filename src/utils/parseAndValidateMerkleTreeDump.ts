@@ -1,7 +1,6 @@
 import {z} from "zod";
 import {isAddress} from "viem";
 import {isParsableToBigInt} from "./isParsableToBigInt.js";
-import {StandardMerkleTree} from "@openzeppelin/merkle-tree";
 import {validateAllowlist} from "@hypercerts-org/sdk";
 import {parseMerkleTree} from "./parseMerkleTree.js";
 
@@ -32,9 +31,7 @@ export const parseAndValidateMerkleTree = ({allowList, totalUnits}: {
     const result = MerkleTreeSchema.safeParse(merkleEntries);
 
     if (!result.success) {
-        // Handle validation errors
-        console.error(result.error);
-        return {_merkleTree, valid: false, errors: result.error};
+        return {data: _merkleTree, valid: false, errors: result.error};
     }
 
     const allowListEntries = result.data
@@ -44,11 +41,10 @@ export const parseAndValidateMerkleTree = ({allowList, totalUnits}: {
         .flatMap((entry) => (entry ? [entry] : []));
 
 
-    const {valid, errors} = validateAllowlist(
+    return validateAllowlist(
         allowListEntries,
         BigInt(totalUnits)
     );
 
-    return {_merkleTree, valid, errors};
 }
 
