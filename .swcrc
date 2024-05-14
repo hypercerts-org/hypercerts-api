@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/swcrc",
   "jsc": {
-    "experimental": { "keepImportAssertions": true },
+    "experimental": { "keepImportAssertions": true, "emitAssertForImportAttributes": true },
     "parser": {
       "syntax": "typescript",
       "decorators": true,
