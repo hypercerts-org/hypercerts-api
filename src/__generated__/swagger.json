@@ -1,0 +1,522 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"Record_string.string-or-string-Array_": {
+				"properties": {},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
+			"ValidationError": {
+				"properties": {
+					"success": {
+						"type": "boolean",
+						"enum": [
+							false
+						],
+						"nullable": false
+					},
+					"message": {
+						"type": "string",
+						"enum": [
+							"Validation failed"
+						],
+						"nullable": false
+					},
+					"errors": {
+						"properties": {},
+						"additionalProperties": {},
+						"type": "object"
+					}
+				},
+				"required": [
+					"success",
+					"message",
+					"errors"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"HypercertClaimdata": {
+				"description": "Properties of an impact claim",
+				"properties": {
+					"impact_scope": {
+						"properties": {
+							"display_value": {
+								"type": "string"
+							},
+							"excludes": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							"value": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							"name": {
+								"type": "string"
+							}
+						},
+						"additionalProperties": {},
+						"type": "object",
+						"description": "Scopes of impact"
+					},
+					"work_scope": {
+						"properties": {
+							"display_value": {
+								"type": "string"
+							},
+							"excludes": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							"value": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							"name": {
+								"type": "string"
+							}
+						},
+						"additionalProperties": {},
+						"type": "object",
+						"description": "Scopes of work"
+					},
+					"work_timeframe": {
+						"properties": {
+							"display_value": {
+								"type": "string"
+							},
+							"value": {
+								"items": {
+									"type": "number",
+									"format": "double"
+								},
+								"type": "array"
+							},
+							"name": {
+								"type": "string"
+							}
+						},
+						"additionalProperties": {},
+						"type": "object",
+						"description": "Work time period. The value is UNIX time in seconds from epoch."
+					},
+					"impact_timeframe": {
+						"properties": {
+							"display_value": {
+								"type": "string"
+							},
+							"value": {
+								"items": {
+									"type": "number",
+									"format": "double"
+								},
+								"type": "array"
+							},
+							"name": {
+								"type": "string"
+							}
+						},
+						"additionalProperties": {},
+						"type": "object",
+						"description": "Impact time period. The value is UNIX time in seconds from epoch."
+					},
+					"contributors": {
+						"properties": {
+							"display_value": {
+								"type": "string"
+							},
+							"value": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							"name": {
+								"type": "string"
+							}
+						},
+						"additionalProperties": {},
+						"type": "object",
+						"description": "Contributors"
+					},
+					"rights": {
+						"properties": {
+							"display_value": {
+								"type": "string"
+							},
+							"excludes": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							"value": {
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							"name": {
+								"type": "string"
+							}
+						},
+						"additionalProperties": {},
+						"type": "object",
+						"description": "Rights"
+					}
+				},
+				"required": [
+					"impact_scope",
+					"work_scope",
+					"work_timeframe",
+					"impact_timeframe",
+					"contributors"
+				],
+				"type": "object",
+				"additionalProperties": {}
+			},
+			"HypercertMetadata": {
+				"description": "Claim data for hypercert. ERC1155 Metadata compliant",
+				"properties": {
+					"name": {
+						"type": "string",
+						"description": "Identifies the asset to which this token represents"
+					},
+					"description": {
+						"type": "string",
+						"description": "Describes the asset to which this token represents"
+					},
+					"external_url": {
+						"type": "string",
+						"description": "An url pointing to the external website of the project"
+					},
+					"image": {
+						"type": "string",
+						"description": "A URI pointing to a resource with mime type image/* representing the asset to which this token represents. Consider making any images at a width between 320 and 1080 pixels and aspect ratio between 1.91:1 and 4:5 inclusive."
+					},
+					"version": {
+						"type": "string",
+						"description": "The version of Hypercert schema used to describe this hypercert"
+					},
+					"ref": {
+						"type": "string",
+						"description": "Describes the asset to which this token represents"
+					},
+					"allowList": {
+						"type": "string",
+						"description": "A CID pointer to the merke tree proof json on ipfs"
+					},
+					"properties": {
+						"items": {
+							"properties": {
+								"value": {
+									"type": "string"
+								},
+								"trait_type": {
+									"type": "string"
+								}
+							},
+							"additionalProperties": {},
+							"type": "object"
+						},
+						"type": "array"
+					},
+					"hypercert": {
+						"$ref": "#/components/schemas/HypercertClaimdata"
+					}
+				},
+				"required": [
+					"name",
+					"description",
+					"image"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateAllowListRequest": {
+				"description": "Request body for creating a new allowlist.",
+				"properties": {
+					"allowList": {
+						"type": "string",
+						"description": "The dump of the OpenZeppelin MerkleTree containing [address, uint256] entries. See https://github.com/OpenZeppelin/merkle-tree for more information."
+					},
+					"totalUnits": {
+						"type": "string",
+						"description": "The total amount of units distributed via the allowlist. The total should amount to 1 eth in wei (1e18) units."
+					}
+				},
+				"required": [
+					"allowList",
+					"totalUnits"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "Hypercerts API",
+		"version": "1.0.0",
+		"description": "API for uploading allow lists and hypercert metadata. Visit /graphql for the GraphQL API.",
+		"contact": {
+			"url": "https://hypercerts.org"
+		}
+	},
+	"paths": {
+		"/v1/metadata": {
+			"post": {
+				"operationId": "StoreMetadata",
+				"responses": {
+					"201": {
+						"description": "Data uploaded successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"cid": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"cid"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"errors": {
+													"anyOf": [
+														{
+															"type": "string"
+														},
+														{
+															"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+														}
+													]
+												},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"message",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"errors": {
+													"anyOf": [
+														{
+															"properties": {
+																"receivedAllowlistCID": {},
+																"name": {
+																	"type": "string"
+																},
+																"message": {
+																	"type": "string"
+																}
+															},
+															"required": [
+																"name",
+																"message"
+															],
+															"type": "object"
+														},
+														{
+															"properties": {
+																"receivedAllowlistCID": {},
+																"name": {},
+																"message": {
+																	"type": "string"
+																}
+															},
+															"required": [
+																"message"
+															],
+															"type": "object"
+														},
+														{
+															"properties": {
+																"name": {},
+																"receivedAllowlistCID": {
+																	"type": "string"
+																},
+																"message": {
+																	"type": "string"
+																}
+															},
+															"required": [
+																"receivedAllowlistCID",
+																"message"
+															],
+															"type": "object"
+														}
+													]
+												},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"message",
+												"success"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ValidationError"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Validation failed",
+											"errors": {
+												"metadata": "Invalid metadata."
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Submits a new hypercert metadata object for validation and storage on IPFS. While we maintain a database of allowlists, the allowlist itself is stored on IPFS.",
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/HypercertMetadata"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/allowlists": {
+			"post": {
+				"operationId": "StoreAllowList",
+				"responses": {
+					"201": {
+						"description": "Data uploaded successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"cid": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"cid"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"errors": {},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"message",
+												"success"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ValidationError"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Validation failed",
+											"errors": {
+												"allowList": "Invalid allowList. Length is  0"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Submits a new allowlist for validation and storage on IPFS. While we maintain a database of allowlists, the allowlist itself is stored on IPFS.\nTry to keep a backup of the allowlist for recovery purposes.\n\nProvide the dump of the OpenZeppelin MerkleTree and the total units.",
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateAllowListRequest"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}
