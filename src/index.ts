@@ -42,6 +42,8 @@ app.listen(PORT, () => {
     console.log(
         `🕸️ Running a GraphQL API server at http://localhost:${PORT}/graphql`
     );
+
+    console.log(`🚀 Running Swagger docs at http://localhost:${PORT}/docs`);
+
 });
 
-console.log(`🚀 Running a REST API at http://localhost:${PORT}/`);
