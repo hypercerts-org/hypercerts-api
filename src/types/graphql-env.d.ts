@@ -759,6 +759,14 @@ export type introspection = {
             }
           },
           {
+            "name": "hypercert_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
             "name": "id",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -1653,6 +1661,14 @@ export type introspection = {
             }
           },
           {
+            "name": "hypercert_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
             "name": "id",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -1999,6 +2015,14 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "hypercert_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
               "ofType": null
             }
           },

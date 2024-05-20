@@ -117,6 +117,7 @@ input BasicFractionWhereInput {
 
 input BasicHypercertWhereInput {
   creation_block_timestamp: NumberSearchOptions
+  hypercert_id: StringSearchOptions
   id: IdSearchOptions
   last_block_update_timestamp: NumberSearchOptions
   owner_address: StringSearchOptions
@@ -276,6 +277,7 @@ input HypercertsWhereInput {
   contracts: BasicContractWhereInput
   creation_block_timestamp: NumberSearchOptions
   fractions: BasicFractionWhereInput
+  hypercert_id: StringSearchOptions
   id: IdSearchOptions
   last_block_update_timestamp: NumberSearchOptions
   metadata: BasicMetadataWhereInput
@@ -330,6 +332,7 @@ input MetadataSortOptions {
 
 input MetadataWhereInput {
   creation_block_timestamp: NumberSearchOptions
+  hypercert_id: StringSearchOptions
   id: IdSearchOptions
   last_block_update_timestamp: NumberSearchOptions
   metadata: BasicMetadataWhereInput
