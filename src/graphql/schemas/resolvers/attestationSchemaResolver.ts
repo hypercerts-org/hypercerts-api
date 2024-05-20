@@ -48,7 +48,7 @@ class AttestationSchemaResolver {
     @FieldResolver({nullable: true})
     async records(@Root() schema: Partial<AttestationSchema>) {
         try {
-            const res = await this.supabaseService.getAttestationsBySchemaId({supported_schema_id: schema.id!});
+            const res = await this.supabaseService.getAttestations({where: {supported_schemas_id: {eq: schema.id}}});
 
             if (!res) {
                 return [];
@@ -64,7 +64,7 @@ class AttestationSchemaResolver {
             return data.map((attestation) => {
                 return {
                     ...attestation,
-                    attestation: JSON.parse(attestation.decoded_attestation as string)
+                    attestation: JSON.parse(attestation.data as string)
                 }
             });
         } catch (e) {

@@ -22,7 +22,7 @@ const defaultQuery = `{
       attestations {
         count
         data {
-          attestation
+          data 
         }
       }
       units

@@ -37,7 +37,7 @@ class AttestationResolver {
             const newData = data ? data.map(item => {
                 return {
                     ...item,
-                    attestation: item.decoded_attestation ? JSON.parse(item.decoded_attestation as string) : item.attestation,
+                    attestation: item.data ? JSON.parse(item.data as string) : item.attestation,
                 };
             }) : data;
 
@@ -50,9 +50,9 @@ class AttestationResolver {
 
     @FieldResolver({nullable: true})
     async hypercerts(@Root() attestation: Attestation) {
-        if (!attestation.attestation) return null;
+        if (!attestation.data) return null;
 
-        const _att = attestation.attestation;
+        const _att = attestation.data;
 
         if (!isHypercertPointer(_att)) return null;
 

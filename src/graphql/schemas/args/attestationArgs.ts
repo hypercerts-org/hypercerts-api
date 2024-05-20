@@ -26,7 +26,7 @@ export class GetAttestationArgs extends PaginationArgs {
 @ArgsType()
 export class GetAttestationByUidArgs {
     @Field()
-    attestation_uid?: string;
+    uid?: string;
 }
 
 @ArgsType()

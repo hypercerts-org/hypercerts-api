@@ -56,11 +56,11 @@ registerEnumType(MetadataSortKeys, {
 
 export enum AttestationSortKeys {
     id = "id",
-    attestation_uid = "attestation_uid",
+    uid = "uid",
     supported_schemas_id = "supported_schemas_id",
     block_timestamp = "block_timestamp",
-    attester_address = "attester_address",
-    recipient_address = "recipient_address",
+    attester = "attester",
+    recipient = "recipient",
     schema = "schema",
 }
 
