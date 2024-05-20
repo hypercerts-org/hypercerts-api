@@ -22,25 +22,7 @@ export type introspection = {
         "name": "Attestation",
         "fields": [
           {
-            "name": "attestation",
-            "type": {
-              "kind": "SCALAR",
-              "name": "JSON",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
-            "name": "attestation_uid",
-            "type": {
-              "kind": "SCALAR",
-              "name": "ID",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
-            "name": "attester_address",
+            "name": "attester",
             "type": {
               "kind": "SCALAR",
               "name": "String",
@@ -53,6 +35,15 @@ export type introspection = {
             "type": {
               "kind": "SCALAR",
               "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "data",
+            "type": {
+              "kind": "SCALAR",
+              "name": "JSON",
               "ofType": null
             },
             "args": []
@@ -85,7 +76,7 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "recipient_address",
+            "name": "recipient",
             "type": {
               "kind": "SCALAR",
               "name": "String",
@@ -119,17 +110,26 @@ export type introspection = {
               "ofType": null
             },
             "args": []
+          },
+          {
+            "name": "uid",
+            "type": {
+              "kind": "SCALAR",
+              "name": "ID",
+              "ofType": null
+            },
+            "args": []
           }
         ],
         "interfaces": []
       },
       {
         "kind": "SCALAR",
-        "name": "ID"
+        "name": "String"
       },
       {
         "kind": "SCALAR",
-        "name": "String"
+        "name": "ID"
       },
       {
         "kind": "INPUT_OBJECT",
@@ -401,14 +401,6 @@ export type introspection = {
             }
           },
           {
-            "name": "attestation_uid",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "StringSearchOptions",
-              "ofType": null
-            }
-          },
-          {
             "name": "attestations",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -417,7 +409,7 @@ export type introspection = {
             }
           },
           {
-            "name": "attester_address",
+            "name": "attester",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
@@ -473,7 +465,7 @@ export type introspection = {
             }
           },
           {
-            "name": "recipient_address",
+            "name": "recipient",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
@@ -506,6 +498,14 @@ export type introspection = {
           },
           {
             "name": "token_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "uid",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
@@ -581,15 +581,7 @@ export type introspection = {
             }
           },
           {
-            "name": "attestation_uid",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "StringSearchOptions",
-              "ofType": null
-            }
-          },
-          {
-            "name": "attester_address",
+            "name": "attester",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
@@ -629,7 +621,7 @@ export type introspection = {
             }
           },
           {
-            "name": "recipient_address",
+            "name": "recipient",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
@@ -662,6 +654,14 @@ export type introspection = {
           },
           {
             "name": "token_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "uid",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",

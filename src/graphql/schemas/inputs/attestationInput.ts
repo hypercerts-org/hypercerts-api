@@ -4,23 +4,21 @@ import {IdSearchOptions, NumberSearchOptions, StringSearchOptions} from "./searc
 import type {Attestation} from "../typeDefs/attestationTypeDefs.js";
 import {type OrderOptions} from "./orderOptions.js";
 import {AttestationSortOptions} from "./sortOptions.js";
-import {BasicHypercertWhereInput} from "./hypercertsInput.js";
-import {BasicMetadataWhereInput} from "./metadataInput.js";
 
 @InputType()
 export class BasicAttestationWhereInput implements WhereOptions<Attestation> {
     @Field(_ => IdSearchOptions, {nullable: true})
     id?: IdSearchOptions
     @Field(_ => StringSearchOptions, {nullable: true})
-    attestation_uid?: NumberSearchOptions;
+    uid?: StringSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})
     supported_schemas_id?: StringSearchOptions;
     @Field(_ => NumberSearchOptions, {nullable: true})
     block_timestamp?: NumberSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})
-    attester_address?: StringSearchOptions;
+    attester?: StringSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})
-    recipient_address?: StringSearchOptions;
+    recipient?: StringSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})
     resolver?: StringSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})

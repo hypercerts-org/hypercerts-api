@@ -4,16 +4,16 @@
 # -----------------------------------------------
 
 type Attestation {
-  attestation: JSON
-  attestation_uid: ID
-  attester_address: String
+  attester: String
   block_timestamp: BigInt
+  data: JSON
   hypercerts: [Hypercert!]
   id: ID!
-  recipient_address: String
+  recipient: String
   resolver: String
   schema: String
   supported_schemas_id: ID
+  uid: ID
 }
 
 input AttestationFetchInput {
@@ -61,20 +61,20 @@ input AttestationSortOptions {
 
 input AttestationWhereInput {
   attestation: StringSearchOptions
-  attestation_uid: StringSearchOptions
   attestations: BasicAttestationWhereInput
-  attester_address: StringSearchOptions
+  attester: StringSearchOptions
   block_timestamp: NumberSearchOptions
   chain_id: NumberSearchOptions
   contract_address: StringSearchOptions
   hypercerts: BasicHypercertWhereInput
   id: IdSearchOptions
   metadata: BasicMetadataWhereInput
-  recipient_address: StringSearchOptions
+  recipient: StringSearchOptions
   resolver: StringSearchOptions
   schema: StringSearchOptions
   supported_schemas_id: StringSearchOptions
   token_id: StringSearchOptions
+  uid: StringSearchOptions
 }
 
 input BasicAttestationSchemaWhereInput {
@@ -88,17 +88,17 @@ input BasicAttestationSchemaWhereInput {
 
 input BasicAttestationWhereInput {
   attestation: StringSearchOptions
-  attestation_uid: StringSearchOptions
-  attester_address: StringSearchOptions
+  attester: StringSearchOptions
   block_timestamp: NumberSearchOptions
   chain_id: NumberSearchOptions
   contract_address: StringSearchOptions
   id: IdSearchOptions
-  recipient_address: StringSearchOptions
+  recipient: StringSearchOptions
   resolver: StringSearchOptions
   schema: StringSearchOptions
   supported_schemas_id: StringSearchOptions
   token_id: StringSearchOptions
+  uid: StringSearchOptions
 }
 
 input BasicContractWhereInput {
