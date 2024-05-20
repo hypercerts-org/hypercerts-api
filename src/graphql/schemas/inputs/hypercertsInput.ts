@@ -19,6 +19,8 @@ export class BasicHypercertWhereInput implements WhereOptions<Hypercert> {
     last_block_update_timestamp?: NumberSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})
     uri?: StringSearchOptions;
+    @Field(_ => StringSearchOptions, {nullable: true})
+    hypercert_id?: StringSearchOptions;
 }
 
 @InputType()
