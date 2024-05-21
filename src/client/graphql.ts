@@ -13,11 +13,11 @@ const defaultQuery = `{
     count
     data {
       hypercert_id
+      contract {
+          chain_id
+      }
       metadata {
-        data {
           name
-        }
-        count
       }
       attestations {
         count

@@ -5,7 +5,7 @@ import {SupabaseService} from "../../../services/SupabaseService.js";
 import {GetMetadataArgs} from "../args/metadataArgs.js";
 
 @ObjectType()
-export default class GetMetadataResponse {
+export class GetMetadataResponse {
     @Field(() => [Metadata], {nullable: true})
     data?: Metadata[];
 

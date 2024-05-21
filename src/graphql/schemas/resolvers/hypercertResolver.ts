@@ -53,21 +53,21 @@ class HypercertResolver {
         }
 
         try {
-            const res = await this.supabaseService.getMetadata({where: {uri: {eq: hypercert.uri}}});
+            const res = await this.supabaseService.getMetadata({where: {uri: {eq: hypercert.uri}}}).maybeSingle();
 
             if (!res) {
                 console.warn(`[HypercertResolver::metadata] Error fetching metadata for uri ${hypercert.uri}: `, res);
-                return {data: []};
+                return;
             }
 
-            const {data, error, count} = res;
+            const {data, error} = res;
 
             if (error) {
                 console.warn(`[HypercertResolver::metadata] Error fetching metadata for uri ${hypercert.uri}: `, error);
-                return {data};
+                return;
             }
 
-            return {data, count: count ? count : data?.length};
+            return data;
         } catch (e) {
             const error = e as Error;
             throw new Error(`[HypercertResolver::metadata] Error fetching metadata for uri ${hypercert.uri}: ${error.message}`)
@@ -75,27 +75,27 @@ class HypercertResolver {
     }
 
     @FieldResolver()
-    async contracts(@Root() hypercert: Partial<Hypercert>) {
+    async contract(@Root() hypercert: Partial<Hypercert>) {
         if (!hypercert.contracts_id) {
             return null;
         }
 
         try {
-            const res = await this.supabaseService.getContracts({where: {id: {eq: hypercert.contracts_id}}})
+            const res = await this.supabaseService.getContracts({where: {id: {eq: hypercert.contracts_id}}}).maybeSingle()
 
             if (!res) {
                 console.warn(`[HypercertResolver::contract] Error fetching contract with id ${hypercert.contracts_id}: `, res);
-                return {data: []};
+                return;
             }
 
             const {data, error, count} = res;
 
             if (error) {
                 console.warn(`[HypercertResolver::contract] Error fetching contract with id ${hypercert.contracts_id}: `, error);
-                return {data};
+                return;
             }
 
-            return {data, count: count ? count : data?.length}
+            return data;
         } catch (e) {
             const error = e as Error;
             throw new Error(`[HypercertResolver::contract] Error fetching contract with id ${hypercert.contracts_id}: ${error.message}`)

@@ -10,7 +10,7 @@ import {BasicFractionWhereInput} from "../inputs/fractionInput.js";
 @InputType()
 export class HypercertsWhereInput extends BasicHypercertWhereInput {
     @Field(_ => BasicContractWhereInput, {nullable: true})
-    contracts?: BasicContractWhereInput;
+    contract?: BasicContractWhereInput;
     @Field(_ => BasicMetadataWhereInput, {nullable: true})
     metadata?: BasicMetadataWhereInput;
     @Field(_ => BasicAttestationWhereInput, {nullable: true})

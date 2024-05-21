@@ -23,7 +23,7 @@ export class SupabaseService {
 
     // Contracts
 
-    async getContracts(args: GetContractsArgs) {
+    getContracts(args: GetContractsArgs) {
         let query = this.supabase.from('contracts').select('*');
 
         const {where, sort, offset, first} = args;
@@ -37,7 +37,7 @@ export class SupabaseService {
 
     // Claims
 
-    async getHypercerts(args: GetHypercertArgs) {
+    getHypercerts(args: GetHypercertArgs) {
 
         const fromString = `* ${args.where?.contracts ? ', contracts!inner (*)' : ''} ${args.where?.metadata ? ', metadata!inner (*)' : ''} ${args.where?.attestations ? ', attestations!inner (*)' : ''} ${args.where?.fractions ? ', fractions!inner (*)' : ''}`
 
@@ -59,7 +59,7 @@ export class SupabaseService {
 
     // Fractions
 
-    async getFractions(args: GetFractionArgs) {
+    getFractions(args: GetFractionArgs) {
         const fromString = `*`;
 
         let query = this.supabase.from('fractions').select(fromString, {
@@ -78,7 +78,7 @@ export class SupabaseService {
 
     // Metadata
 
-    async getMetadata(args: GetMetadataArgs) {
+    getMetadata(args: GetMetadataArgs) {
         let query = this.supabase.from('metadata').select('*');
         const {where, sort, offset, first} = args;
 
@@ -94,7 +94,7 @@ export class SupabaseService {
 
     // Attestations
 
-    async getAttestationSchemas(args: GetAttestationSchemaArgs) {
+    getAttestationSchemas(args: GetAttestationSchemaArgs) {
         let query = this.supabase.from('supported_schemas').select('*');
 
         const {where, sort, offset, first} = args;
@@ -106,7 +106,7 @@ export class SupabaseService {
         return query;
     }
 
-    async getAttestations(args: GetAttestationArgs) {
+    getAttestations(args: GetAttestationArgs) {
         const fromString = `* ${args.where?.hypercerts ? ', claims!inner (*)' : ''} ${args.where?.metadata ? ', metadata!inner (*)' : ''}`
 
         let query = this.supabase.from('attestations').select(fromString);
