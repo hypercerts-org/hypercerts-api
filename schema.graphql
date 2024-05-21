@@ -236,21 +236,16 @@ type GetHypercertsResponse {
   data: [Hypercert!]
 }
 
-type GetMetadataResponse {
-  count: Int
-  data: [Metadata!]
-}
-
 type Hypercert {
   attestations: GetAttestationsResponse
-  contracts: GetContractsResponse
+  contract: Contract
   contracts_id: ID
   creation_block_timestamp: BigInt
   fractions: GetFractionsResponse
   hypercert_id: ID
   id: ID!
   last_block_update_timestamp: BigInt
-  metadata: GetMetadataResponse
+  metadata: Metadata
   owner_address: String
   token_id: EthBigInt
   units: EthBigInt
@@ -274,7 +269,7 @@ input HypercertSortOptions {
 
 input HypercertsWhereInput {
   attestations: BasicAttestationWhereInput
-  contracts: BasicContractWhereInput
+  contract: BasicContractWhereInput
   creation_block_timestamp: NumberSearchOptions
   fractions: BasicFractionWhereInput
   hypercert_id: StringSearchOptions

@@ -4,8 +4,8 @@ import GetAttestationsResponse from "../resolvers/attestationResolver.js";
 import {EthBigInt} from "../../scalars/ethBigInt.js";
 import {BasicTypeDef} from "./basicTypeDef.js";
 import GetFractionsResponse from "../resolvers/fractionResolver.js";
-import GetMetadataResponse from "../resolvers/metadataResolver.js";
-import GetContractsResponse from "../resolvers/contractResolver.js";
+import {Metadata} from "./metadataTypeDefs.js";
+import {Contract} from "./contractTypeDefs.js";
 
 
 @ObjectType()
@@ -31,14 +31,14 @@ class Hypercert extends BasicTypeDef {
     uri?: string;
 
     // Resolved fields
-    @Field(_ => GetAttestationsResponse, {nullable: true})
-    attestations?: GetAttestationsResponse;
-    @Field(_ => GetContractsResponse, {nullable: true})
-    contracts?: GetContractsResponse;
+    @Field(_ => Contract, {nullable: true})
+    contract?: Contract;
+    @Field(_ => Metadata, {nullable: true})
+    metadata?: Metadata;
     @Field(_ => GetFractionsResponse, {nullable: true})
     fractions?: GetFractionsResponse;
-    @Field(_ => GetMetadataResponse, {nullable: true})
-    metadata?: GetMetadataResponse;
+    @Field(_ => GetAttestationsResponse, {nullable: true})
+    attestations?: GetAttestationsResponse;
 }
 
 

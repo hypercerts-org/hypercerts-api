@@ -1384,37 +1384,6 @@ export type introspection = {
       },
       {
         "kind": "OBJECT",
-        "name": "GetMetadataResponse",
-        "fields": [
-          {
-            "name": "count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
-            "name": "data",
-            "type": {
-              "kind": "LIST",
-              "ofType": {
-                "kind": "NON_NULL",
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "Metadata",
-                  "ofType": null
-                }
-              }
-            },
-            "args": []
-          }
-        ],
-        "interfaces": []
-      },
-      {
-        "kind": "OBJECT",
         "name": "Hypercert",
         "fields": [
           {
@@ -1427,10 +1396,10 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "contracts",
+            "name": "contract",
             "type": {
               "kind": "OBJECT",
-              "name": "GetContractsResponse",
+              "name": "Contract",
               "ofType": null
             },
             "args": []
@@ -1496,7 +1465,7 @@ export type introspection = {
             "name": "metadata",
             "type": {
               "kind": "OBJECT",
-              "name": "GetMetadataResponse",
+              "name": "Metadata",
               "ofType": null
             },
             "args": []
@@ -1637,7 +1606,7 @@ export type introspection = {
             }
           },
           {
-            "name": "contracts",
+            "name": "contract",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "BasicContractWhereInput",
