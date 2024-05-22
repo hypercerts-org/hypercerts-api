@@ -1,3 +1,4 @@
+import './instrument.js';
 import express, {type Express} from "express";
 import "reflect-metadata";
 import cors from "cors";
@@ -7,6 +8,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerJson from "./__generated__/swagger.json" assert {type: "json"}
 import {RegisterRoutes} from "./__generated__/routes/routes.js";
 import bodyParser from "body-parser";
+import * as Sentry from '@sentry/node';
 
 // @ts-expect-error BigInt is not supported by JSON
 BigInt.prototype.toJSON = function () {
@@ -43,11 +45,13 @@ app.get('/health', (req, res) => {
     res.status(200).send(data);
 });
 
-
 // Bind GraphQL Yoga to the graphql endpoint to avoid rendering the playground on any path
 app.use(yoga.graphqlEndpoint, yoga);
 
 RegisterRoutes(app);
+
+// The error handler must be registered before any other error middleware and after all controllers
+Sentry.setupExpressErrorHandler(app);
 
 app.listen(PORT, () => {
     console.log(
