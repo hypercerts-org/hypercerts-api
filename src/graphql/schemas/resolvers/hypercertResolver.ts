@@ -88,7 +88,7 @@ class HypercertResolver {
                 return;
             }
 
-            const {data, error, count} = res;
+            const {data, error} = res;
 
             if (error) {
                 console.warn(`[HypercertResolver::contract] Error fetching contract with id ${hypercert.contracts_id}: `, error);
