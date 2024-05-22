@@ -33,6 +33,17 @@ app.use(
     swaggerUi.setup(swaggerJson)
 );
 
+app.get('/health', (req, res) => {
+    const data = {
+        uptime: process.uptime(),
+        message: 'OK',
+        date: new Date()
+    }
+
+    res.status(200).send(data);
+});
+
+
 // Bind GraphQL Yoga to the graphql endpoint to avoid rendering the playground on any path
 app.use(yoga.graphqlEndpoint, yoga);
 
