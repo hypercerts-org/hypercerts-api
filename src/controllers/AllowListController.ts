@@ -1,17 +1,14 @@
 import {jsonToBlob} from "../utils/jsonToBlob.js";
-import {z} from "zod";
-import {Body, Controller, Post, Response, Route, SuccessResponse} from "tsoa";
-import {isParsableToBigInt} from "../utils/isParsableToBigInt.js";
+import {Body, Controller, Post, Response, Route, SuccessResponse, Tags} from "tsoa";
 import {StorageService} from "../services/StorageService.js";
 import {parseAndValidateMerkleTree} from "../utils/parseAndValidateMerkleTreeDump.js";
-import {ValidationError} from "../types/api.js";
-import {tryParseMerkleTree} from "../utils/isParsableToMerkleTree.js";
+import {StoreResponse, ValidationResponse} from "../types/api.js";
 import {StandardMerkleTree} from "@openzeppelin/merkle-tree";
 
 /**
  *  Request body for creating a new allowlist.
  */
-interface CreateAllowListRequest {
+export interface CreateAllowListRequest {
     /**
      * The dump of the OpenZeppelin MerkleTree containing [address, uint256] entries. See https://github.com/OpenZeppelin/merkle-tree for more information.
      * @isString Should be string
@@ -25,13 +22,8 @@ interface CreateAllowListRequest {
 }
 
 
-const AllowListPostRequest = z.object({
-    allowList: z.string({description: 'The dump of the OpenZeppelin MerkleTree'}).refine(tryParseMerkleTree, {message: "Invalid allowList. Could not parse to OpenZeppelin MerkleTree"}),
-    totalUnits: z.string({description: 'The total units of the allowlist'}).refine(isParsableToBigInt, {message: "Total units should be a valid BigInt"}),
-})
-
-
 @Route("v1/allowlists")
+@Tags("Allowlists")
 export class AllowListController extends Controller {
 
     /**
@@ -41,40 +33,65 @@ export class AllowListController extends Controller {
      * Provide the dump of the OpenZeppelin MerkleTree and the total units.
      */
     @Post()
-    @SuccessResponse(201, "Data uploaded successfully")
-    @Response<ValidationError>(422, "Unprocessable content", {
+    @SuccessResponse(201, "Data uploaded successfully", "application/json")
+    @Response<StoreResponse>(422, "Unprocessable content", {
         success: false,
-        message: "Validation failed",
+        message: "Errors while validating allow list",
         errors: {allowList: "Invalid allowList. Length is  0"}
     })
     public async storeAllowList(@Body() requestBody: CreateAllowListRequest) {
         const storage = await StorageService.init();
 
-        const reqData = AllowListPostRequest.safeParse(requestBody);
+        const result = parseAndValidateMerkleTree(requestBody);
 
-        if (!reqData.success) {
+        if (!result.valid || !result.data) {
             this.setStatus(422)
-            return {success: false, message: "Input validation failed", errors: reqData.error.issues};
-        }
-
-        const {data, valid, errors} = parseAndValidateMerkleTree(reqData.data);
-
-        if (!valid || !data) {
-            this.setStatus(422)
-            // TODO fix typing of error return type
             return {
                 success: false,
                 message: "Errors while validating allow list",
-                // @ts-expect-error Types should be better declared because issues are not always known
-                errors: errors?.issues ? errors.issues.toString() : errors
+                errors: result.errors
             };
         }
 
-        const _merkleTree = data as StandardMerkleTree<[string, bigint]>;
+        const _merkleTree = result.data as StandardMerkleTree<[string, bigint]>;
 
         const cid = await storage.uploadFile({file: jsonToBlob(JSON.stringify(_merkleTree.dump()))});
         this.setStatus(201)
 
-        return cid
+        return {
+            success: true,
+            data: cid,
+        }
+    }
+
+    /**
+     * Submits a new allowlist for validation.
+     *
+     * Provide the dump of the OpenZeppelin MerkleTree and the total units.
+     */
+    @Post("/validate")
+    @SuccessResponse(200, "Valid allowlist object", "application/json")
+    @Response<ValidationResponse>(422, "Unprocessable content", {
+        valid: false,
+        message: "Metadata validation failed",
+        errors: {allowList: "Invalid allowList. Length is  0"}
+    })
+    public async validateAllowList(@Body() requestBody: CreateAllowListRequest) {
+        const result = parseAndValidateMerkleTree(requestBody);
+
+        if (!result.valid || !result.data) {
+            this.setStatus(422)
+            return {
+                success: false,
+                message: "Errors while validating allow list",
+                errors: result.errors
+            };
+        }
+
+        this.setStatus(201)
+        return {
+            valid: true,
+            message: "Allowlist is a valid hypercerts allowlist object."
+        }
     }
 }

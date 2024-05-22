@@ -9,38 +9,70 @@
 		"schemas": {
 			"Record_string.string-or-string-Array_": {
 				"properties": {},
+				"additionalProperties": {
+					"anyOf": [
+						{
+							"type": "string"
+						},
+						{
+							"items": {
+								"type": "string"
+							},
+							"type": "array"
+						}
+					]
+				},
 				"type": "object",
 				"description": "Construct a type with a set of properties K of type T"
 			},
-			"ValidationError": {
+			"Error": {
 				"properties": {
-					"success": {
-						"type": "boolean",
-						"enum": [
-							false
-						],
-						"nullable": false
+					"name": {
+						"type": "string"
 					},
 					"message": {
-						"type": "string",
-						"enum": [
-							"Validation failed"
-						],
-						"nullable": false
+						"type": "string"
 					},
-					"errors": {
-						"properties": {},
-						"additionalProperties": {},
-						"type": "object"
+					"stack": {
+						"type": "string"
 					}
 				},
 				"required": [
-					"success",
-					"message",
-					"errors"
+					"name",
+					"message"
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"StoreResponse": {
+				"properties": {
+					"errors": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+							},
+							{
+								"items": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"type": "array"
+							}
+						]
+					},
+					"message": {
+						"type": "string"
+					},
+					"data": {},
+					"success": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"message",
+					"success"
+				],
+				"type": "object",
+				"description": "Response object for a store request."
 			},
 			"HypercertClaimdata": {
 				"description": "Properties of an impact claim",
@@ -248,6 +280,25 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"ValidationResponse": {
+				"properties": {
+					"errors": {
+						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+					},
+					"message": {
+						"type": "string"
+					},
+					"valid": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"message",
+					"valid"
+				],
+				"type": "object",
+				"description": "Response object for a validation request."
+			},
 			"CreateAllowListRequest": {
 				"description": "Request body for creating a new allowlist.",
 				"properties": {
@@ -305,27 +356,121 @@
 												"errors": {
 													"anyOf": [
 														{
-															"type": "string"
+															"properties": {
+																"receivedAllowlistCID": {},
+																"name": {
+																	"type": "string"
+																},
+																"message": {
+																	"type": "string"
+																}
+															},
+															"required": [
+																"name",
+																"message"
+															],
+															"type": "object"
 														},
 														{
-															"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+															"properties": {
+																"receivedAllowlistCID": {},
+																"name": {},
+																"message": {
+																	"type": "string"
+																}
+															},
+															"required": [
+																"message"
+															],
+															"type": "object"
+														},
+														{
+															"properties": {
+																"name": {},
+																"receivedAllowlistCID": {
+																	"type": "string"
+																},
+																"message": {
+																	"type": "string"
+																}
+															},
+															"required": [
+																"receivedAllowlistCID",
+																"message"
+															],
+															"type": "object"
 														}
 													]
 												},
 												"message": {
 													"type": "string"
 												},
-												"success": {
+												"valid": {
 													"type": "boolean"
 												}
 											},
 											"required": [
 												"errors",
 												"message",
-												"success"
+												"valid"
 											],
 											"type": "object"
-										},
+										}
+									]
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StoreResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Validation failed",
+											"errors": {
+												"metadata": "Invalid metadata."
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Submits a new hypercert metadata object for validation and storage on IPFS. While we maintain a database of allowlists, the allowlist itself is stored on IPFS.",
+				"tags": [
+					"Metadata"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/HypercertMetadata"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/metadata/validate": {
+			"post": {
+				"operationId": "ValidateMetadata",
+				"responses": {
+					"200": {
+						"description": "Valid metadata",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
 										{
 											"properties": {
 												"errors": {
@@ -380,14 +525,30 @@
 												"message": {
 													"type": "string"
 												},
-												"success": {
+												"valid": {
 													"type": "boolean"
 												}
 											},
 											"required": [
 												"errors",
 												"message",
-												"success"
+												"valid"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"errors": {},
+												"message": {
+													"type": "string"
+												},
+												"valid": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"message",
+												"valid"
 											],
 											"type": "object"
 										}
@@ -401,12 +562,12 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ValidationError"
+									"$ref": "#/components/schemas/ValidationResponse"
 								},
 								"examples": {
 									"Example 1": {
 										"value": {
-											"success": false,
+											"valid": false,
 											"message": "Validation failed",
 											"errors": {
 												"metadata": "Invalid metadata."
@@ -418,7 +579,10 @@
 						}
 					}
 				},
-				"description": "Submits a new hypercert metadata object for validation and storage on IPFS. While we maintain a database of allowlists, the allowlist itself is stored on IPFS.",
+				"description": "Submits a new hypercert metadata object for validation.",
+				"tags": [
+					"Metadata"
+				],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
@@ -445,18 +609,10 @@
 									"anyOf": [
 										{
 											"properties": {
-												"cid": {
-													"type": "string"
-												}
-											},
-											"required": [
-												"cid"
-											],
-											"type": "object"
-										},
-										{
-											"properties": {
-												"errors": {},
+												"data": {},
+												"errors": {
+													"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+												},
 												"message": {
 													"type": "string"
 												},
@@ -467,6 +623,31 @@
 											"required": [
 												"errors",
 												"message",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"errors": {},
+												"message": {},
+												"data": {
+													"properties": {
+														"cid": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"cid"
+													],
+													"type": "object"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"data",
 												"success"
 											],
 											"type": "object"
@@ -481,13 +662,13 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ValidationError"
+									"$ref": "#/components/schemas/StoreResponse"
 								},
 								"examples": {
 									"Example 1": {
 										"value": {
 											"success": false,
-											"message": "Validation failed",
+											"message": "Errors while validating allow list",
 											"errors": {
 												"allowList": "Invalid allowList. Length is  0"
 											}
@@ -499,6 +680,101 @@
 					}
 				},
 				"description": "Submits a new allowlist for validation and storage on IPFS. While we maintain a database of allowlists, the allowlist itself is stored on IPFS.\nTry to keep a backup of the allowlist for recovery purposes.\n\nProvide the dump of the OpenZeppelin MerkleTree and the total units.",
+				"tags": [
+					"Allowlists"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateAllowListRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/allowlists/validate": {
+			"post": {
+				"operationId": "ValidateAllowList",
+				"responses": {
+					"200": {
+						"description": "Valid allowlist object",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"valid": {},
+												"errors": {
+													"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+												},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"message",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"errors": {},
+												"success": {},
+												"message": {
+													"type": "string"
+												},
+												"valid": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"message",
+												"valid"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ValidationResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"valid": false,
+											"message": "Metadata validation failed",
+											"errors": {
+												"allowList": "Invalid allowList. Length is  0"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Submits a new allowlist for validation.\n\nProvide the dump of the OpenZeppelin MerkleTree and the total units.",
+				"tags": [
+					"Allowlists"
+				],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
