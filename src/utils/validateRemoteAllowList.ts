@@ -20,7 +20,7 @@ export const validateRemoteAllowList = async (metadata: HypercertMetadata) => {
             valid: false,
             data: allowList,
             errors: {
-                message: `Error getting allowlist from IPFS. CID: ${metadata.allowList}`,
+                message: `Error fetching allow list from provided URI: ${metadata.allowList}`,
                 name: error.name,
             },
         }

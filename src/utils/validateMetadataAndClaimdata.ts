@@ -1,9 +1,9 @@
-import {validateClaimData, validateMetaData} from "@hypercerts-org/sdk";
+import {validateClaimData, validateMetaData, HypercertMetadata} from "@hypercerts-org/sdk";
 import {isHypercertMetadata} from "./isHypercertsMetadata.js";
 import {ValidationResult} from "../types/api.js";
 
 
-export const validateMetadataAndClaimdata = (data: unknown): ValidationResult => {
+export const validateMetadataAndClaimdata = (data: HypercertMetadata): ValidationResult => {
     // Check if object is hypercert metadata object
     if (!isHypercertMetadata(data)) {
         return {
@@ -17,14 +17,15 @@ export const validateMetadataAndClaimdata = (data: unknown): ValidationResult =>
     const {valid: claimDataValid, errors: claimDataErrors} =
         validateClaimData(data.hypercert);
 
-    if (!claimDataValid) {
-        return {
-            data,
-            valid: false,
-            errors: claimDataErrors,
-        };
-    }
+    // Check if hypercert metadata is valid
+    const {valid: metadataValid, errors: metadataErrors} =
+        validateMetaData(data);
 
-    // Check if metadata is valid
-    return validateMetaData(data)
+    return {
+        valid: claimDataValid && metadataValid,
+        errors: {
+            ...claimDataErrors,
+            ...metadataErrors,
+        },
+    };
 }

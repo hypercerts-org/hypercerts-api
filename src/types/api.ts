@@ -1,22 +1,41 @@
-import {AllowlistEntry, EvaluationData, HypercertClaimdata, HypercertMetadata} from "@hypercerts-org/sdk"
-import {StandardMerkleTree} from "@openzeppelin/merkle-tree";
-
-export type ResponseData<T> = {
+/**
+ * Response object for a store request.
+ *
+ * @example {
+ *     success: true,
+ *     data: { cid: "QmXt3..."}, }
+ * }
+ */
+export type StoreResponse<T = void> = {
     success: boolean;
+    data?: T
     message: string;
-    data?: T;
-    errors?: Error[] | Record<string, string | string[]>;
+    errors?: Record<string, string | string[]> | Error[];
 };
 
-export interface ValidationError {
-    success: false;
-    message: "Validation failed";
-    errors: { [name: string]: unknown };
-}
+/**
+ * Response object for a validation request.
+ *
+ * @example {
+ *     valid: true,
+ *     message: "Metadata valid",
+ * }
+ *
+ * @example {
+ *     valid: false,
+ *     message: "Metadata validation failed",
+ *     data: { metadata: "No claim data provided"}, }
+ * }
+ */
+export type ValidationResponse = {
+    valid: boolean;
+    message: string;
+    errors?: Record<string, string | string[]>;
+};
 
-// TODO expose results from SDK and expend with MerkleTree
+
 export type ValidationResult<T = void> = {
-    data: StandardMerkleTree<T[]> | AllowlistEntry[] | EvaluationData | HypercertClaimdata | HypercertMetadata | unknown;
+    data?: T;
     valid: boolean;
     errors: Record<string, string | string[]>;
 };
