@@ -1,0 +1,2 @@
+update claims set hypercert_id = concat(chain_id, '-', hypercert_id);
+update fraction_sponsor_metadata set hypercert_id = concat(chain_id, '-', hypercert_id), fraction_id = concat(chain_id, '-', fraction_id);

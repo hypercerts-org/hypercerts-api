@@ -1,0 +1,3 @@
+alter table hyperboard_registries
+    rename constraint hyperboard_registries_registry_id_fkey to hyperboard_registries_registries_id_fk;
+
