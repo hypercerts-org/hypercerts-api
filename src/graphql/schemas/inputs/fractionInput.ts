@@ -1,12 +1,14 @@
 import {Field, InputType} from "type-graphql";
 import type {WhereOptions} from "./whereOptions.js";
-import {NumberSearchOptions, StringSearchOptions} from "./searchOptions.js";
+import {IdSearchOptions, NumberSearchOptions, StringSearchOptions} from "./searchOptions.js";
 import {Fraction} from "../typeDefs/fractionTypeDefs.js";
 import type {OrderOptions} from "./orderOptions.js";
 import {FractionSortOptions} from "./sortOptions.js";
 
 @InputType()
 export class BasicFractionWhereInput implements WhereOptions<Fraction> {
+    @Field(_ => IdSearchOptions, {nullable: true})
+    hypercert_id?: IdSearchOptions
     @Field(_ => NumberSearchOptions, {nullable: true})
     creation_block_timestamp?: NumberSearchOptions;
     @Field(_ => NumberSearchOptions, {nullable: true})
