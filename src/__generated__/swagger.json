@@ -299,6 +299,142 @@
 				"type": "object",
 				"description": "Response object for a validation request."
 			},
+			"ApiResponse": {
+				"properties": {
+					"errors": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+							},
+							{
+								"items": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"type": "array"
+							}
+						]
+					},
+					"message": {
+						"type": "string"
+					},
+					"data": {},
+					"success": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"message",
+					"success"
+				],
+				"type": "object"
+			},
+			"CreateOrderRequest": {
+				"properties": {
+					"signature": {
+						"type": "string"
+					},
+					"chainId": {
+						"type": "number",
+						"format": "double"
+					},
+					"quoteType": {
+						"type": "number",
+						"format": "double"
+					},
+					"globalNonce": {
+						"type": "string"
+					},
+					"subsetNonce": {
+						"type": "number",
+						"format": "double"
+					},
+					"orderNonce": {
+						"type": "string"
+					},
+					"strategyId": {
+						"type": "number",
+						"format": "double"
+					},
+					"collectionType": {
+						"type": "number",
+						"format": "double"
+					},
+					"collection": {
+						"type": "string"
+					},
+					"currency": {
+						"type": "string"
+					},
+					"signer": {
+						"type": "string"
+					},
+					"startTime": {
+						"type": "number",
+						"format": "double"
+					},
+					"endTime": {
+						"type": "number",
+						"format": "double"
+					},
+					"price": {
+						"type": "string"
+					},
+					"itemIds": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"amounts": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"additionalParameters": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"signature",
+					"chainId",
+					"quoteType",
+					"globalNonce",
+					"subsetNonce",
+					"orderNonce",
+					"strategyId",
+					"collectionType",
+					"collection",
+					"currency",
+					"signer",
+					"startTime",
+					"endTime",
+					"price",
+					"itemIds",
+					"amounts",
+					"additionalParameters"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UpdateOrderNonceRequest": {
+				"properties": {
+					"address": {
+						"type": "string"
+					},
+					"chainId": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"address",
+					"chainId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"CreateAllowListRequest": {
 				"description": "Request body for creating a new allowlist.",
 				"properties": {
@@ -591,6 +727,264 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/HypercertMetadata"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/marketplace/order": {
+			"post": {
+				"operationId": "StoreMetadata",
+				"responses": {
+					"201": {
+						"description": "Order created successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"properties": {
+												"subsetNonce": {
+													"type": "number",
+													"format": "double"
+												},
+												"strategyId": {
+													"type": "number",
+													"format": "double"
+												},
+												"startTime": {
+													"type": "number",
+													"format": "double"
+												},
+												"signer": {
+													"type": "string"
+												},
+												"signature": {
+													"type": "string"
+												},
+												"quoteType": {
+													"type": "number",
+													"format": "double"
+												},
+												"price": {
+													"type": "string"
+												},
+												"orderNonce": {
+													"type": "string"
+												},
+												"id": {
+													"type": "string"
+												},
+												"globalNonce": {
+													"type": "string"
+												},
+												"endTime": {
+													"type": "number",
+													"format": "double"
+												},
+												"currency": {
+													"type": "string"
+												},
+												"createdAt": {
+													"type": "string"
+												},
+												"collectionType": {
+													"type": "number",
+													"format": "double"
+												},
+												"collection": {
+													"type": "string"
+												},
+												"chainId": {
+													"type": "number",
+													"format": "double"
+												},
+												"additionalParameters": {
+													"type": "string"
+												},
+												"hash": {
+													"type": "string"
+												},
+												"status": {
+													"type": "string"
+												},
+												"amounts": {
+													"items": {
+														"type": "number",
+														"format": "double"
+													},
+													"type": "array"
+												},
+												"itemIds": {
+													"items": {
+														"type": "string"
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"subsetNonce",
+												"strategyId",
+												"startTime",
+												"signer",
+												"signature",
+												"quoteType",
+												"price",
+												"orderNonce",
+												"id",
+												"globalNonce",
+												"endTime",
+												"currency",
+												"createdAt",
+												"collectionType",
+												"collection",
+												"chainId",
+												"additionalParameters",
+												"hash",
+												"status",
+												"amounts",
+												"itemIds"
+											],
+											"type": "object"
+										},
+										"success": {
+											"type": "boolean"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"data",
+										"success",
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Order could not be created"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Submits a new order for validation and storage on the database.",
+				"tags": [
+					"Marketplace"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateOrderRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/marketplace/order-nonce": {
+			"post": {
+				"operationId": "UpdateOrderNonce",
+				"responses": {
+					"201": {
+						"description": "Order nonce updated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"properties": {
+												"nonce_counter": {
+													"type": "number",
+													"format": "double"
+												},
+												"created_at": {
+													"type": "string"
+												},
+												"chain_id": {
+													"type": "number",
+													"format": "double"
+												},
+												"address": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"nonce_counter",
+												"created_at",
+												"chain_id",
+												"address"
+											],
+											"type": "object"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Order nonce could not be updated"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Submits a new order nonce for a given address and chain ID.",
+				"tags": [
+					"Marketplace"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateOrderNonceRequest"
 							}
 						}
 					}

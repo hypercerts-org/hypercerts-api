@@ -1,6 +1,6 @@
 import {Args, Field, FieldResolver, Int, ObjectType, Query, Resolver, Root} from "type-graphql";
 import {inject, injectable} from "tsyringe";
-import {SupabaseService} from "../../../services/SupabaseService.js";
+import {SupabaseCachingService} from "../../../services/SupabaseCachingService.js";
 import {AttestationSchema} from "../typeDefs/attestationSchemaTypeDefs.js";
 import {GetAttestationSchemaArgs} from "../args/attestationSchemaArgs.js";
 
@@ -18,8 +18,8 @@ export default class GetAttestationsSchemaResponse {
 class AttestationSchemaResolver {
 
     constructor(
-        @inject(SupabaseService)
-        private readonly supabaseService: SupabaseService) {
+        @inject(SupabaseCachingService)
+        private readonly supabaseService: SupabaseCachingService) {
     }
 
     @Query(_ => GetAttestationsSchemaResponse)

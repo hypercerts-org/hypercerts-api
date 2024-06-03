@@ -1,7 +1,7 @@
 import {Args, Field, Int, ObjectType, Query, Resolver} from "type-graphql";
 import {Metadata} from "../typeDefs/metadataTypeDefs.js";
 import {inject, injectable} from "tsyringe";
-import {SupabaseService} from "../../../services/SupabaseService.js";
+import {SupabaseCachingService} from "../../../services/SupabaseCachingService.js";
 import {GetMetadataArgs} from "../args/metadataArgs.js";
 
 @ObjectType()
@@ -18,8 +18,8 @@ export class GetMetadataResponse {
 class MetadataResolver {
 
     constructor(
-        @inject(SupabaseService)
-        private readonly supabaseService: SupabaseService) {
+        @inject(SupabaseCachingService)
+        private readonly supabaseService: SupabaseCachingService) {
     }
 
     @Query(_ => [Metadata])

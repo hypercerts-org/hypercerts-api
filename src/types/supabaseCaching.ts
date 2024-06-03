@@ -6,7 +6,7 @@ export type Json =
     | { [key: string]: Json | undefined }
     | Json[]
 
-export type Database = {
+export type CachingDatabase = {
     graphql_public: {
         Tables: {
             [_ in never]: never
@@ -529,7 +529,7 @@ export type Database = {
             }
             store_fraction: {
                 Args: {
-                    _fractions: Database["public"]["CompositeTypes"]["fraction_type"][]
+                    _fractions: CachingDatabase["public"]["CompositeTypes"]["fraction_type"][]
                 }
                 Returns: {
                     fraction_id: string
@@ -537,19 +537,19 @@ export type Database = {
             }
             store_hypercert_allow_list_roots: {
                 Args: {
-                    p_hc_allow_list_roots: Database["public"]["CompositeTypes"]["hc_allow_list_root_type"][]
+                    p_hc_allow_list_roots: CachingDatabase["public"]["CompositeTypes"]["hc_allow_list_root_type"][]
                 }
                 Returns: undefined
             }
             transfer_fractions_batch: {
                 Args: {
-                    p_transfers: Database["public"]["CompositeTypes"]["transfer_fractions_type"][]
+                    p_transfers: CachingDatabase["public"]["CompositeTypes"]["transfer_fractions_type"][]
                 }
                 Returns: undefined
             }
             transfer_units_batch: {
                 Args: {
-                    p_transfers: Database["public"]["CompositeTypes"]["transfer_units_type"][]
+                    p_transfers: CachingDatabase["public"]["CompositeTypes"]["transfer_units_type"][]
                 }
                 Returns: undefined
             }
@@ -895,18 +895,18 @@ export type Database = {
     }
 }
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
+type PublicSchema = CachingDatabase[Extract<keyof CachingDatabase, "public">]
 
 export type Tables<
     PublicTableNameOrOptions extends | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
-        | { schema: keyof Database },
-    TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-        ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-            Database[PublicTableNameOrOptions["schema"]]["Views"])
+        | { schema: keyof CachingDatabase },
+    TableName extends PublicTableNameOrOptions extends { schema: keyof CachingDatabase }
+        ? keyof (CachingDatabase[PublicTableNameOrOptions["schema"]]["Tables"] &
+            CachingDatabase[PublicTableNameOrOptions["schema"]]["Views"])
         : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-    ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = PublicTableNameOrOptions extends { schema: keyof CachingDatabase }
+    ? (CachingDatabase[PublicTableNameOrOptions["schema"]]["Tables"] &
+        CachingDatabase[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
             Row: infer R
         }
         ? R
@@ -923,12 +923,12 @@ export type Tables<
 
 export type TablesInsert<
     PublicTableNameOrOptions extends | keyof PublicSchema["Tables"]
-        | { schema: keyof Database },
-    TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-        ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+        | { schema: keyof CachingDatabase },
+    TableName extends PublicTableNameOrOptions extends { schema: keyof CachingDatabase }
+        ? keyof CachingDatabase[PublicTableNameOrOptions["schema"]]["Tables"]
         : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-    ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = PublicTableNameOrOptions extends { schema: keyof CachingDatabase }
+    ? CachingDatabase[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
             Insert: infer I
         }
         ? I
@@ -943,12 +943,12 @@ export type TablesInsert<
 
 export type TablesUpdate<
     PublicTableNameOrOptions extends | keyof PublicSchema["Tables"]
-        | { schema: keyof Database },
-    TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-        ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+        | { schema: keyof CachingDatabase },
+    TableName extends PublicTableNameOrOptions extends { schema: keyof CachingDatabase }
+        ? keyof CachingDatabase[PublicTableNameOrOptions["schema"]]["Tables"]
         : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-    ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = PublicTableNameOrOptions extends { schema: keyof CachingDatabase }
+    ? CachingDatabase[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
             Update: infer U
         }
         ? U
@@ -963,12 +963,12 @@ export type TablesUpdate<
 
 export type Enums<
     PublicEnumNameOrOptions extends | keyof PublicSchema["Enums"]
-        | { schema: keyof Database },
-    EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-        ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+        | { schema: keyof CachingDatabase },
+    EnumName extends PublicEnumNameOrOptions extends { schema: keyof CachingDatabase }
+        ? keyof CachingDatabase[PublicEnumNameOrOptions["schema"]]["Enums"]
         : never = never,
-> = PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+> = PublicEnumNameOrOptions extends { schema: keyof CachingDatabase }
+    ? CachingDatabase[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
     : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
         ? PublicSchema["Enums"][PublicEnumNameOrOptions]
         : never

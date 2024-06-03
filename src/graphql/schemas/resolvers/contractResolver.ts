@@ -1,6 +1,6 @@
 import {Args, Field, Int, ObjectType, Query, Resolver} from "type-graphql";
 import {inject, injectable} from "tsyringe";
-import {SupabaseService} from "../../../services/SupabaseService.js";
+import {SupabaseCachingService} from "../../../services/SupabaseCachingService.js";
 import {Contract} from "../typeDefs/contractTypeDefs.js";
 import {GetContractsArgs} from "../args/contractArgs.js";
 
@@ -19,8 +19,8 @@ export default class GetContractsResponse {
 class ContractResolver {
 
     constructor(
-        @inject(SupabaseService)
-        private readonly supabaseService: SupabaseService) {
+        @inject(SupabaseCachingService)
+        private readonly supabaseService: SupabaseCachingService) {
     }
 
     @Query(_ => GetContractsResponse)

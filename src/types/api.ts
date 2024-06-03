@@ -40,3 +40,9 @@ export type ValidationResult<T = void> = {
     errors: Record<string, string | string[]>;
 };
 
+export type ApiResponse<T = void> = {
+    success: boolean;
+    data?: T;
+    message: string;
+    errors?: Record<string, string | string[]> | Error[];
+};
