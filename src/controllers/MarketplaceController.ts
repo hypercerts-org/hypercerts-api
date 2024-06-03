@@ -113,13 +113,12 @@ export class MarketplaceController extends Controller {
 
         const claimTokens = await Promise.all(
           tokenIds.map(
-            // TODO: Query for fraction not hypercert
-            (id) => hypercertClient.indexer.hypercertById({ id })
+            (id) => hypercertClient.indexer.fractionById({ fractionId: id })
           ),
         );
 
         // Check if all fractions exist
-        if (claimTokens.some((claimToken) => !claimToken.claimToken)) {
+        if (claimTokens.some((claimToken) => !claimToken?.fractions)) {
             this.setStatus(401);
             return {
                 message: "Not all fractions in itemIds exist",
@@ -128,11 +127,13 @@ export class MarketplaceController extends Controller {
             };
         }
 
+        const allFractions = claimTokens.flatMap((claimToken) => claimToken?.fractions?.data || []);
+
         // Check if all fractions are owned by signer
         if (
-          !claimTokens.every(
+          !allFractions.every(
             (claimToken) =>
-              claimToken.claimToken?.owner.toLowerCase() ===
+              claimToken?.owner_address?.toLowerCase() ===
               recoveredAddress.toLowerCase(),
           )
         ) {

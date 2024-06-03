@@ -16,7 +16,7 @@
     "@graphql-tools/merge": "^9.0.3",
     "@graphql-yoga/plugin-response-cache": "^3.5.0",
     "@hypercerts-org/marketplace-sdk":  "0.1.6",
-    "@hypercerts-org/sdk": "2.0.0-alpha.10",
+    "@hypercerts-org/sdk": "2.0.0-alpha.11",
     "@ipld/car": "^5.2.5",
     "@openzeppelin/merkle-tree": "^1.0.5",
     "@sentry/integrations": "^7.114.0",
