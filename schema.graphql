@@ -109,6 +109,7 @@ input BasicContractWhereInput {
 
 input BasicFractionWhereInput {
   creation_block_timestamp: NumberSearchOptions
+  hypercert_id: IdSearchOptions
   last_block_update_timestamp: NumberSearchOptions
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions
@@ -204,6 +205,7 @@ input FractionSortOptions {
 
 input FractionWhereInput {
   creation_block_timestamp: NumberSearchOptions
+  hypercert_id: IdSearchOptions
   hypercerts: BasicHypercertWhereInput
   last_block_update_timestamp: NumberSearchOptions
   owner_address: StringSearchOptions

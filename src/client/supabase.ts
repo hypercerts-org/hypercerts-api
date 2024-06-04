@@ -1,4 +1,4 @@
-import {supabaseCachingApiKey, supabaseCachingUrl} from "../utils/constants.js";
+import {supabaseCachingApiKey, supabaseCachingUrl, supabaseDataServiceApiKey, supabaseDataUrl} from "../utils/constants.js";
 import {createClient} from "@supabase/supabase-js";
 import {type CachingDatabase as CachingDatabaseTypes } from "../types/supabaseCaching.js";
 import {type Database as DataDatabaseTypes} from "../types/supabaseData.js";
@@ -10,6 +10,6 @@ export const supabaseCaching = createClient<CachingDatabaseTypes>(
 );
 
 export const supabaseData = createClient<DataDatabaseTypes>(
-  supabaseCachingUrl,
-  supabaseCachingApiKey
+  supabaseDataUrl,
+  supabaseDataServiceApiKey
 );

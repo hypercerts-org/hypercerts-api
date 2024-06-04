@@ -239,7 +239,7 @@ export function RegisterRoutes(app: Router) {
                 response,
                 next,
                 validatedArgs,
-                successStatus: 201,
+                successStatus: 200,
               });
             } catch (err) {
                 return next(err);

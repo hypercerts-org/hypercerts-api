@@ -6,7 +6,7 @@ export const supabaseCachingUrl = assertExists(
 );
 
 export const supabaseCachingApiKey = assertExists(
-    process.env.SUPABASE_ANON_API_KEY,
+    process.env.SUPABASE_CACHING_ANON_API_KEY,
     "SUPABASE_CACHING_ANON_API_KEY"
 );
 
@@ -15,9 +15,9 @@ export const supabaseDataUrl = assertExists(
     "SUPABASE_DATA_DB_URL"
 );
 
-export const supabaseDataApiKey = assertExists(
-  process.env.SUPABASE_DATA_DB_URL,
-  "SUPABASE_DATA_DB_URL"
+export const supabaseDataServiceApiKey = assertExists(
+  process.env.SUPABASE_DATA_SERVICE_API_KEY,
+  "SUPABASE_DATA_SERVICE_API_KEY"
 );
 
 

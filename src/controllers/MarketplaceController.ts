@@ -185,14 +185,14 @@ export class MarketplaceController extends Controller {
     }
 
     /**
-     * Submits a new order nonce for a given address and chain ID.
+     * Updates and returns the order nonce for a user on a specific chain.
      */
     @Post("/order-nonce")
-    @SuccessResponse(201, "Order nonce updated successfully")
     @Response<ApiResponse>(422, "Unprocessable content", {
         success: false,
         message: "Order nonce could not be updated",
     })
+    @SuccessResponse(200, "Order nonce updated successfully")
     public async updateOrderNonce(@Body() requestBody: UpdateOrderNonceRequest) {
         const inputSchema = z
           .object({
@@ -211,7 +211,7 @@ export class MarketplaceController extends Controller {
           });
         const parsedQuery = inputSchema.safeParse(requestBody);
         if (!parsedQuery.success) {
-            this.setStatus(400);
+            this.setStatus(422);
             return{
                 success: false,
                 message: parsedQuery.error.message,
@@ -235,17 +235,26 @@ export class MarketplaceController extends Controller {
         }
 
         if (!currentNonce) {
-            const { data: newNonce } = await supabase.createNonce(lowerCaseAddress, chainId);
+            const { data: newNonce, error } = await supabase.createNonce(lowerCaseAddress, chainId);
+            if (error) {
+                this.setStatus(500);
+                return {
+                    success: false,
+                    message: error.message,
+                    data: null,
+                };
+            }
             this.setStatus(200);
             return {
                 success: true,
-                message: "Success",
+                message: "Success aaa",
                 data: newNonce,
             };
         }
 
         const { data: updatedNonce, error: updatedNonceError } = await supabase
           .updateNonce(lowerCaseAddress, chainId, currentNonce.nonce_counter + 1);
+
 
         if (updatedNonceError) {
             this.setStatus(500);
@@ -259,7 +268,7 @@ export class MarketplaceController extends Controller {
         this.setStatus(200);
         return {
             success: true,
-            message: "Success",
+            message: "Success aaa",
             data: updatedNonce,
         };
     }

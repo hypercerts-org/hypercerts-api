@@ -906,7 +906,7 @@
 			"post": {
 				"operationId": "UpdateOrderNonce",
 				"responses": {
-					"201": {
+					"200": {
 						"description": "Order nonce updated successfully",
 						"content": {
 							"application/json": {
@@ -973,7 +973,7 @@
 						}
 					}
 				},
-				"description": "Submits a new order nonce for a given address and chain ID.",
+				"description": "Updates and returns the order nonce for a user on a specific chain.",
 				"tags": [
 					"Marketplace"
 				],
