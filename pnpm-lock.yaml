@@ -18,8 +18,8 @@ importers:
         specifier: ^3.5.0
         version: 3.5.0(@envelop/core@5.0.0)(graphql-yoga@5.1.1(graphql@16.8.1))(graphql@16.8.1)
       '@hypercerts-org/marketplace-sdk':
-        specifier: 0.1.6
-        version: 0.1.6(ethers@6.12.2)(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)
+        specifier: 0.2.0
+        version: 0.2.0(ethers@6.12.2)(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)
       '@hypercerts-org/sdk':
         specifier: 2.0.0-alpha.11
         version: 2.0.0-alpha.11(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)
@@ -1301,8 +1301,8 @@ packages:
   '@hypercerts-org/contracts@1.1.2':
     resolution: {integrity: sha512-+Y7TD1LX1c2FyU7OYuQ/NUFfcKaW5fIZ9R/Xr+DhNUbi7KstHhhdVEl1hmSExuvySbAD3wNKFaQWdlBRxT520Q==}
 
-  '@hypercerts-org/marketplace-sdk@0.1.6':
-    resolution: {integrity: sha512-jyg/y5PBOya9hvodb8h3G3CZNLNyP8SVCK9dMSJQ5F5vMrh9kNmOk+jAL1Q/V9M7Rwfie3yVjb0IAT/Wb50GYA==}
+  '@hypercerts-org/marketplace-sdk@0.2.0':
+    resolution: {integrity: sha512-Gv/DUe4DOMtKLnQKA8u1e/E+ToeCY/aqpTF0gzYX8J5OBErAqdrACzcp5l9CdjyuMjnreptkDJfjCAUwb2LEww==}
     engines: {node: '>= 16.15.1 <= 20.x'}
     peerDependencies:
       ethers: ^6.6.2
@@ -8055,7 +8055,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@hypercerts-org/marketplace-sdk@0.1.6(ethers@6.12.2)(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)':
+  '@hypercerts-org/marketplace-sdk@0.2.0(ethers@6.12.2)(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)':
     dependencies:
       '@hypercerts-org/sdk': 2.0.0-alpha.5(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)
       '@supabase/supabase-js': 2.42.5
