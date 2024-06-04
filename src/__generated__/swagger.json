@@ -733,9 +733,9 @@
 				}
 			}
 		},
-		"/v1/marketplace/order": {
+		"/v1/marketplace/orders": {
 			"post": {
-				"operationId": "StoreMetadata",
+				"operationId": "StoreOrder",
 				"responses": {
 					"201": {
 						"description": "Order created successfully",

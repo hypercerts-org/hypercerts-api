@@ -186,11 +186,11 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/v1/marketplace/order',
+        app.post('/v1/marketplace/orders',
             ...(fetchMiddlewares<RequestHandler>(MarketplaceController)),
-            ...(fetchMiddlewares<RequestHandler>(MarketplaceController.prototype.storeMetadata)),
+            ...(fetchMiddlewares<RequestHandler>(MarketplaceController.prototype.storeOrder)),
 
-            async function MarketplaceController_storeMetadata(request: ExRequest, response: ExResponse, next: any) {
+            async function MarketplaceController_storeOrder(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
                     requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateOrderRequest"},
             };
@@ -204,7 +204,7 @@ export function RegisterRoutes(app: Router) {
                 const controller = new MarketplaceController();
 
               await templateService.apiHandler({
-                methodName: 'storeMetadata',
+                methodName: 'storeOrder',
                 controller,
                 response,
                 next,
