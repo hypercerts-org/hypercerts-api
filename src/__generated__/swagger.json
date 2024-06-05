@@ -742,125 +742,149 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"properties": {
-										"data": {
+									"anyOf": [
+										{
 											"properties": {
-												"subsetNonce": {
-													"type": "number",
-													"format": "double"
-												},
-												"strategyId": {
-													"type": "number",
-													"format": "double"
-												},
-												"startTime": {
-													"type": "number",
-													"format": "double"
-												},
-												"signer": {
+												"error": {},
+												"data": {},
+												"message": {
 													"type": "string"
 												},
-												"signature": {
-													"type": "string"
-												},
-												"quoteType": {
-													"type": "number",
-													"format": "double"
-												},
-												"price": {
-													"type": "string"
-												},
-												"orderNonce": {
-													"type": "string"
-												},
-												"id": {
-													"type": "string"
-												},
-												"globalNonce": {
-													"type": "string"
-												},
-												"endTime": {
-													"type": "number",
-													"format": "double"
-												},
-												"currency": {
-													"type": "string"
-												},
-												"createdAt": {
-													"type": "string"
-												},
-												"collectionType": {
-													"type": "number",
-													"format": "double"
-												},
-												"collection": {
-													"type": "string"
-												},
-												"chainId": {
-													"type": "number",
-													"format": "double"
-												},
-												"additionalParameters": {
-													"type": "string"
-												},
-												"hash": {
-													"type": "string"
-												},
-												"status": {
-													"type": "string"
-												},
-												"amounts": {
-													"items": {
-														"type": "number",
-														"format": "double"
-													},
-													"type": "array"
-												},
-												"itemIds": {
-													"items": {
-														"type": "string"
-													},
-													"type": "array"
+												"success": {
+													"type": "boolean"
 												}
 											},
 											"required": [
-												"subsetNonce",
-												"strategyId",
-												"startTime",
-												"signer",
-												"signature",
-												"quoteType",
-												"price",
-												"orderNonce",
-												"id",
-												"globalNonce",
-												"endTime",
-												"currency",
-												"createdAt",
-												"collectionType",
-												"collection",
-												"chainId",
-												"additionalParameters",
-												"hash",
-												"status",
-												"amounts",
-												"itemIds"
+												"error",
+												"data",
+												"message",
+												"success"
 											],
 											"type": "object"
 										},
-										"success": {
-											"type": "boolean"
-										},
-										"message": {
-											"type": "string"
+										{
+											"properties": {
+												"error": {},
+												"data": {
+													"properties": {
+														"subsetNonce": {
+															"type": "number",
+															"format": "double"
+														},
+														"strategyId": {
+															"type": "number",
+															"format": "double"
+														},
+														"startTime": {
+															"type": "number",
+															"format": "double"
+														},
+														"signer": {
+															"type": "string"
+														},
+														"signature": {
+															"type": "string"
+														},
+														"quoteType": {
+															"type": "number",
+															"format": "double"
+														},
+														"price": {
+															"type": "string"
+														},
+														"orderNonce": {
+															"type": "string"
+														},
+														"id": {
+															"type": "string"
+														},
+														"globalNonce": {
+															"type": "string"
+														},
+														"endTime": {
+															"type": "number",
+															"format": "double"
+														},
+														"currency": {
+															"type": "string"
+														},
+														"createdAt": {
+															"type": "string"
+														},
+														"collectionType": {
+															"type": "number",
+															"format": "double"
+														},
+														"collection": {
+															"type": "string"
+														},
+														"chainId": {
+															"type": "number",
+															"format": "double"
+														},
+														"additionalParameters": {
+															"type": "string"
+														},
+														"hash": {
+															"type": "string"
+														},
+														"status": {
+															"type": "string"
+														},
+														"amounts": {
+															"items": {
+																"type": "number",
+																"format": "double"
+															},
+															"type": "array"
+														},
+														"itemIds": {
+															"items": {
+																"type": "string"
+															},
+															"type": "array"
+														}
+													},
+													"required": [
+														"subsetNonce",
+														"strategyId",
+														"startTime",
+														"signer",
+														"signature",
+														"quoteType",
+														"price",
+														"orderNonce",
+														"id",
+														"globalNonce",
+														"endTime",
+														"currency",
+														"createdAt",
+														"collectionType",
+														"collection",
+														"chainId",
+														"additionalParameters",
+														"hash",
+														"status",
+														"amounts",
+														"itemIds"
+													],
+													"type": "object"
+												},
+												"success": {
+													"type": "boolean"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"success",
+												"message"
+											],
+											"type": "object"
 										}
-									},
-									"required": [
-										"data",
-										"success",
-										"message"
-									],
-									"type": "object"
+									]
 								}
 							}
 						}

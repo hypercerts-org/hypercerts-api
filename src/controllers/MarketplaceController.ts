@@ -115,18 +115,20 @@ export class MarketplaceController extends Controller {
       )
       .refine(
         ({ collection, chainId }) =>
-          // @ts-ignore
-          addressesByNetwork[chainId]?.MINTER === collection.toLowerCase(),
+          // @ts-expect-error Typing issue with chainId
+          addressesByNetwork[chainId]?.MINTER?.toLowerCase() ===
+          collection.toLowerCase(),
         `Collection address does not match the minter address for chainId`,
       );
     const parsedBody = inputSchema.safeParse(requestBody);
+
     if (!parsedBody.success) {
-      console.error(parsedBody.error);
       this.setStatus(400);
       return {
         success: false,
         message: "Invalid input",
         data: null,
+        error: JSON.parse(parsedBody.error.toString()),
       };
     }
     const { signature, chainId, ...makerOrder } = parsedBody.data;
