@@ -36,7 +36,7 @@ class FractionResolver {
   @Query((_) => GetFractionsResponse)
   async fractions(@Args() args: GetFractionArgs) {
     try {
-      const res = await this.supabaseDataService.getOrders(args);
+      const res = await this.supabaseCachingService.getFractions(args);
 
       const { data, error, count } = res;
 

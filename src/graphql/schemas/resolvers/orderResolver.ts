@@ -3,6 +3,7 @@ import { inject, injectable } from "tsyringe";
 import { Order } from "../typeDefs/orderTypeDefs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { GetOrdersArgs } from "../args/orderArgs.js";
+import { SupabaseCachingService } from "../../../services/SupabaseCachingService.js";
 
 @ObjectType()
 export default class GetOrdersResponse {
@@ -19,6 +20,8 @@ class OrderResolver {
   constructor(
     @inject(SupabaseDataService)
     private readonly supabaseService: SupabaseDataService,
+    @inject(SupabaseCachingService)
+    private readonly supabaseCachingService: SupabaseCachingService,
   ) {}
 
   @Query((_) => GetOrdersResponse)
@@ -43,6 +46,34 @@ class OrderResolver {
       );
     }
   }
+
+  // @Field()
+  // async fraction(@Root() order: Order) {
+  //   if (!order || !order.itemIds || order.itemIds.length === 0) {
+  //     return null;
+  //   }
+  //   const res = await this.supabaseCachingService.getFractions({
+  //     where: {
+  //       token_id: { eq: BigInt(order.itemIds[0]) },
+  //     },
+  //   });
+  //
+  //   if (!res) {
+  //     console.warn(`[OrderResolver::fraction] Error fetching fraction: `, res);
+  //     return null;
+  //   }
+  //
+  //   const { data, error } = res;
+  //
+  //   if (error) {
+  //     console.warn(
+  //       `[OrderResolver::fraction] Error fetching fraction: `,
+  //       error,
+  //     );
+  //   }
+  //
+  //   return data?.[0];
+  // }
 }
 
 export { OrderResolver };

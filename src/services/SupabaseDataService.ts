@@ -61,11 +61,12 @@ export class SupabaseDataService {
       .throwOnError();
   }
 
-  getOrdersForFraction(fractionId: string) {
+  getOrdersForFraction(fractionIds: string | string[]) {
+    const ids = Array.isArray(fractionIds) ? fractionIds : [fractionIds];
     return this.supabaseData
       .from("marketplace_orders")
       .select("*")
-      .overlaps("itemIds", [fractionId])
+      .overlaps("itemIds", ids)
       .order("createdAt", { ascending: false })
       .throwOnError();
   }

@@ -1549,6 +1549,15 @@ export type introspection = {
             "args": []
           },
           {
+            "name": "orders",
+            "type": {
+              "kind": "OBJECT",
+              "name": "GetOrdersResponse",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
             "name": "owner_address",
             "type": {
               "kind": "SCALAR",
@@ -2186,6 +2195,24 @@ export type introspection = {
             "args": []
           },
           {
+            "name": "amounts",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Float",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "args": []
+          },
+          {
             "name": "chainId",
             "type": {
               "kind": "NON_NULL",
@@ -2277,6 +2304,24 @@ export type introspection = {
                 "kind": "SCALAR",
                 "name": "ID",
                 "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "itemIds",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                }
               }
             },
             "args": []

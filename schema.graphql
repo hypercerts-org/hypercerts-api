@@ -259,6 +259,7 @@ type Hypercert {
   id: ID!
   last_block_update_timestamp: BigInt
   metadata: Metadata
+  orders: GetOrdersResponse
   owner_address: String
   token_id: EthBigInt
   units: EthBigInt
@@ -359,6 +360,7 @@ input NumberSearchOptions {
 
 type Order {
   additionalParameters: String!
+  amounts: [Float!]!
   chainId: BigInt!
   collection: String!
   collectionType: Float!
@@ -367,6 +369,7 @@ type Order {
   endTime: Float!
   globalNonce: String!
   id: ID!
+  itemIds: [String!]!
   orderNonce: String!
   price: String!
   quoteType: Float!
