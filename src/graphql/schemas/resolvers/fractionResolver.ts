@@ -13,6 +13,7 @@ import { SupabaseCachingService } from "../../../services/SupabaseCachingService
 import { Fraction } from "../typeDefs/fractionTypeDefs.js";
 import { GetFractionArgs } from "../args/fractionArgs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
+import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 
 @ObjectType()
 export default class GetFractionsResponse {
@@ -57,13 +58,22 @@ class FractionResolver {
 
   @FieldResolver()
   async orders(@Root() fraction: Partial<Fraction>) {
-    if (!fraction.id) {
+    if (!fraction.hypercert_id) {
+      return null;
+    }
+
+    const { id } = parseClaimOrFractionId(fraction.hypercert_id);
+
+    if (!id) {
+      console.warn(
+        `[FractionResolver::orders] Error parsing hypercert_id for fraction ${fraction.id}`,
+      );
       return null;
     }
 
     try {
       const res = await this.supabaseDataService.getOrdersForFraction(
-        fraction.id,
+        id.toString(),
       );
 
       if (!res) {
@@ -74,7 +84,7 @@ class FractionResolver {
         return { data: [] };
       }
 
-      const { data, error } = res;
+      const { data, error, count } = res;
 
       if (error) {
         console.warn(
@@ -84,8 +94,7 @@ class FractionResolver {
         return { data: [] };
       }
 
-      // TODO: Get proper count instead of length
-      return { data: data || [], count: data?.length };
+      return { data: data || [], count: count || 0 };
     } catch (e) {
       const error = e as Error;
       throw new Error(
