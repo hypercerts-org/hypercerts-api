@@ -5,6 +5,8 @@ import { TsoaRoute, fetchMiddlewares, ExpressTemplateService } from '@tsoa/runti
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MetadataController } from './../../controllers/MetadataController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { MarketplaceController } from './../../controllers/MarketplaceController.js';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AllowListController } from './../../controllers/AllowListController.js';
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
 
@@ -65,6 +67,44 @@ const models: TsoaRoute.Models = {
     "ValidationResponse": {
         "dataType": "refAlias",
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"ref":"Record_string.string-or-string-Array_"},"message":{"dataType":"string","required":true},"valid":{"dataType":"boolean","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ApiResponse": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string","required":true},"data":{"dataType":"void"},"success":{"dataType":"boolean","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateOrderRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "signature": {"dataType":"string","required":true},
+            "chainId": {"dataType":"double","required":true},
+            "quoteType": {"dataType":"double","required":true},
+            "globalNonce": {"dataType":"string","required":true},
+            "subsetNonce": {"dataType":"double","required":true},
+            "orderNonce": {"dataType":"string","required":true},
+            "strategyId": {"dataType":"double","required":true},
+            "collectionType": {"dataType":"double","required":true},
+            "collection": {"dataType":"string","required":true},
+            "currency": {"dataType":"string","required":true},
+            "signer": {"dataType":"string","required":true},
+            "startTime": {"dataType":"double","required":true},
+            "endTime": {"dataType":"double","required":true},
+            "price": {"dataType":"string","required":true},
+            "itemIds": {"dataType":"array","array":{"dataType":"string"},"required":true},
+            "amounts": {"dataType":"array","array":{"dataType":"double"},"required":true},
+            "additionalParameters": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateOrderNonceRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "address": {"dataType":"string","required":true},
+            "chainId": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateAllowListRequest": {
@@ -135,6 +175,66 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'validateMetadata',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/marketplace/orders',
+            ...(fetchMiddlewares<RequestHandler>(MarketplaceController)),
+            ...(fetchMiddlewares<RequestHandler>(MarketplaceController.prototype.storeOrder)),
+
+            async function MarketplaceController_storeOrder(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateOrderRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new MarketplaceController();
+
+              await templateService.apiHandler({
+                methodName: 'storeOrder',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/marketplace/order-nonce',
+            ...(fetchMiddlewares<RequestHandler>(MarketplaceController)),
+            ...(fetchMiddlewares<RequestHandler>(MarketplaceController.prototype.updateOrderNonce)),
+
+            async function MarketplaceController_updateOrderNonce(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UpdateOrderNonceRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new MarketplaceController();
+
+              await templateService.apiHandler({
+                methodName: 'updateOrderNonce',
                 controller,
                 response,
                 next,

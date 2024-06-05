@@ -1,0 +1,22 @@
+create table public.marketplace_orders (
+    id uuid not null default gen_random_uuid (),
+    "createdAt" timestamp with time zone not null default now(),
+    "quoteType" bigint not null,
+    "globalNonce" text not null,
+    "orderNonce" text not null,
+    "strategyId" bigint not null,
+    "collectionType" bigint not null,
+    collection text not null,
+    currency text not null,
+    signer text not null,
+    "startTime" bigint not null,
+    "endTime" bigint not null,
+    price text not null,
+    signature text not null,
+    "additionalParameters" text not null,
+    "chainId" bigint not null,
+    "subsetNonce" bigint not null,
+    "itemIds" text[] not null,
+    amounts bigint[] not null,
+    constraint marketplace_orders_pkey primary key (id)
+) tablespace pg_default;

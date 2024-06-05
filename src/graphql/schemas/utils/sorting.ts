@@ -1,5 +1,5 @@
 import {PostgrestTransformBuilder} from "@supabase/postgrest-js";
-import type {Database} from "../../../types/supabase.js";
+import type {CachingDatabase} from "../../../types/supabase.js";
 import type {OrderOptions} from "../inputs/orderOptions.js";
 import {
     AttestationSchemaSortOptions,
@@ -13,13 +13,13 @@ import {SortOrder} from "../enums/sortEnums.js";
 
 interface ApplySorting<
     T extends object,
-    QueryType extends PostgrestTransformBuilder<Database['public'], Record<string, unknown>, unknown, unknown, unknown>
+    QueryType extends PostgrestTransformBuilder<CachingDatabase['public'], Record<string, unknown>, unknown, unknown, unknown>
 > {
     query: QueryType;
     sort?: OrderOptions<T>;
 }
 
-export const applySorting = <T extends object, QueryType extends PostgrestTransformBuilder<Database['public'], Record<string, unknown>, unknown, unknown, unknown>>({
+export const applySorting = <T extends object, QueryType extends PostgrestTransformBuilder<CachingDatabase['public'], Record<string, unknown>, unknown, unknown, unknown>>({
                                                                                                                                                                         query,
                                                                                                                                                                         sort,
                                                                                                                                                                     }: ApplySorting<T, QueryType>) => {

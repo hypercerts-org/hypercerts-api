@@ -1,7 +1,7 @@
 import {Args, Field, FieldResolver, Int, ObjectType, Query, Resolver, Root} from "type-graphql";
 import {Hypercert} from "../typeDefs/hypercertTypeDefs.js";
 import {inject, injectable} from "tsyringe";
-import {SupabaseService} from "../../../services/SupabaseService.js";
+import {SupabaseCachingService} from "../../../services/SupabaseCachingService.js";
 import {GetHypercertArgs} from "../args/hypercertsArgs.js";
 
 @ObjectType()
@@ -18,8 +18,8 @@ export default class GetHypercertsResponse {
 class HypercertResolver {
 
     constructor(
-        @inject(SupabaseService)
-        private readonly supabaseService: SupabaseService) {
+        @inject(SupabaseCachingService)
+        private readonly supabaseService: SupabaseCachingService) {
     }
 
     @Query(_ => GetHypercertsResponse)

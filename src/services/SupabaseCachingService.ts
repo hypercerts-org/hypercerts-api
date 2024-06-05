@@ -1,6 +1,6 @@
-import {supabase} from "../client/supabase.js";
+import {supabaseCaching} from "../client/supabase.js";
 import type {SupabaseClient} from "@supabase/supabase-js";
-import type {Database, Tables} from "../types/supabase.js";
+import type {CachingDatabase, Tables} from "../types/supabaseCaching.js";
 import {applyFilters} from "../graphql/schemas/utils/filters.js";
 import type {GetContractsArgs} from "../graphql/schemas/args/contractArgs.js";
 import type {GetMetadataArgs} from "../graphql/schemas/args/metadataArgs.js";
@@ -14,17 +14,17 @@ import {applyPagination} from "../graphql/schemas/utils/pagination.js";
 import {CountKeys} from "../graphql/schemas/enums/countEnums.js";
 
 
-export class SupabaseService {
-    private supabase: SupabaseClient<Database>;
+export class SupabaseCachingService {
+    private supabaseCaching: SupabaseClient<CachingDatabase>;
 
     constructor() {
-        this.supabase = supabase;
+        this.supabaseCaching = supabaseCaching;
     }
 
     // Contracts
 
     getContracts(args: GetContractsArgs) {
-        let query = this.supabase.from('contracts').select('*');
+        let query = this.supabaseCaching.from('contracts').select('*');
 
         const {where, sort, offset, first} = args;
 
@@ -42,7 +42,7 @@ export class SupabaseService {
         const fromString = `* ${args.where?.contracts ? ', contracts!inner (*)' : ''} ${args.where?.metadata ? ', metadata!inner (*)' : ''} ${args.where?.attestations ? ', attestations!inner (*)' : ''} ${args.where?.fractions ? ', fractions!inner (*)' : ''}`
 
         // TOOD build method to get count
-        let query = this.supabase.from('claims').select(fromString, {
+        let query = this.supabaseCaching.from('claims').select(fromString, {
             count: args?.count ? 'exact' : undefined,
             head: args?.count && args.count === CountKeys.HEAD
         });
@@ -62,7 +62,7 @@ export class SupabaseService {
     getFractions(args: GetFractionArgs) {
         const fromString = `*`;
 
-        let query = this.supabase.from('fractions').select(fromString, {
+        let query = this.supabaseCaching.from('fractions').select(fromString, {
             count: args?.count ? 'exact' : undefined,
             head: args?.count && args.count === CountKeys.HEAD
         });
@@ -79,7 +79,7 @@ export class SupabaseService {
     // Metadata
 
     getMetadata(args: GetMetadataArgs) {
-        let query = this.supabase.from('metadata').select('*');
+        let query = this.supabaseCaching.from('metadata').select('*');
         const {where, sort, offset, first} = args;
 
         query = applyFilters({query, where});
@@ -95,7 +95,7 @@ export class SupabaseService {
     // Attestations
 
     getAttestationSchemas(args: GetAttestationSchemaArgs) {
-        let query = this.supabase.from('supported_schemas').select('*');
+        let query = this.supabaseCaching.from('supported_schemas').select('*');
 
         const {where, sort, offset, first} = args;
 
@@ -109,7 +109,7 @@ export class SupabaseService {
     getAttestations(args: GetAttestationArgs) {
         const fromString = `* ${args.where?.hypercerts ? ', claims!inner (*)' : ''} ${args.where?.metadata ? ', metadata!inner (*)' : ''}`
 
-        let query = this.supabase.from('attestations').select(fromString);
+        let query = this.supabaseCaching.from('attestations').select(fromString);
 
         const {where, sort, offset, first} = args;
 
