@@ -1,43 +1,98 @@
-import {Args, Field, Int, ObjectType, Query, Resolver} from "type-graphql";
-import {inject, injectable} from "tsyringe";
-import {SupabaseCachingService} from "../../../services/SupabaseCachingService.js";
-import {Fraction} from "../typeDefs/fractionTypeDefs.js";
-import {GetFractionArgs} from "../args/fractionArgs.js";
+import {
+  Args,
+  Field,
+  FieldResolver,
+  Int,
+  ObjectType,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
+import { inject, injectable } from "tsyringe";
+import { SupabaseCachingService } from "../../../services/SupabaseCachingService.js";
+import { Fraction } from "../typeDefs/fractionTypeDefs.js";
+import { GetFractionArgs } from "../args/fractionArgs.js";
+import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 
 @ObjectType()
 export default class GetFractionsResponse {
-    @Field(() => [Fraction], {nullable: true})
-    data?: Fraction[];
+  @Field(() => [Fraction], { nullable: true })
+  data?: Fraction[];
 
-    @Field(() => Int, {nullable: true})
-    count?: number;
+  @Field(() => Int, { nullable: true })
+  count?: number;
 }
 
 @injectable()
-@Resolver(_ => Fraction)
+@Resolver((_) => Fraction)
 class FractionResolver {
+  constructor(
+    @inject(SupabaseCachingService)
+    private readonly supabaseCachingService: SupabaseCachingService,
+    @inject(SupabaseDataService)
+    private readonly supabaseDataService: SupabaseDataService,
+  ) {}
 
-    constructor(
-        @inject(SupabaseCachingService)
-        private readonly supabaseService: SupabaseCachingService) {
+  @Query((_) => GetFractionsResponse)
+  async fractions(@Args() args: GetFractionArgs) {
+    try {
+      const res = await this.supabaseDataService.getOrders(args);
+
+      const { data, error, count } = res;
+
+      if (error) {
+        console.warn(
+          `[FractionResolver::fractions] Error fetching fractions: `,
+          error,
+        );
+      }
+
+      return { data, count };
+    } catch (e) {
+      throw new Error(
+        `[FractionResolver::fractions] Error fetching fractions: ${(e as Error).message}`,
+      );
+    }
+  }
+
+  @FieldResolver()
+  async orders(@Root() fraction: Partial<Fraction>) {
+    if (!fraction.id) {
+      return null;
     }
 
-    @Query(_ => GetFractionsResponse)
-    async fractions(@Args() args: GetFractionArgs) {
-        try {
-            const res = await this.supabaseService.getFractions(args);
+    try {
+      const res = await this.supabaseDataService.getOrdersForFraction(
+        fraction.id,
+      );
 
-            const {data, error, count} = res;
+      if (!res) {
+        console.warn(
+          `[FractionResolver::orders] Error fetching orders for fraction ${fraction.id}: `,
+          res,
+        );
+        return { data: [] };
+      }
 
-            if (error) {
-                console.warn(`[FractionResolver::fractions] Error fetching fractions: `, error);
-            }
+      const { data, error } = res;
 
-            return {data, count};
-        } catch (e) {
-            throw new Error(`[FractionResolver::fractions] Error fetching fractions: ${(e as Error).message}`)
-        }
+      if (error) {
+        console.warn(
+          `[FractionResolver::orders] Error fetching orders for fraction ${fraction.id}: `,
+          error,
+        );
+        return { data: [] };
+      }
+
+      // TODO: Get proper count instead of length
+      return { data: data || [], count: data?.length };
+    } catch (e) {
+      const error = e as Error;
+      throw new Error(
+        `[FractionResolver::orders] Error fetching orders for fraction ${fraction.id}: ${error.message}`,
+      );
     }
+  }
 }
 
-export {FractionResolver};
+export { FractionResolver };
