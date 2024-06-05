@@ -7,6 +7,7 @@
     "dev": "nodemon",
     "build": "rimraf dist && tsoa spec-and-routes && swc src --out-dir dist --copy-files",
     "start": "node -r dotenv/config dist/src/index.js",
+    "integration": "concurrently \"pnpm --dir ./lib/hypercerts-indexer run dev\" \"pnpm run dev\"",
     "supabase:reset:all": "concurrently \"npm run supabase:reset:data\" \"npm run supabase:reset:cache\"",
     "supabase:start:all": "concurrently \"npm run supabase:start:data\" \"npm run supabase:start:cache\"",
     "supabase:types:all": "concurrently \"npm run supabase:types:data\" \"npm run supabase:types:cache\"",
@@ -16,6 +17,7 @@
     "supabase:start:data": "supabase start",
     "supabase:types:cache": "supabase gen types typescript --local --workdir ./lib/hypercerts-indexer > ./src/types/supabaseCaching.ts",
     "supabase:types:data": "supabase gen types typescript --local > ./src/types/supabaseData.ts",
+    "preintegration": "pnpm --dir ./lib/hypercerts-indexer i",
     "lint": "eslint",
     "test": "vitest"
   },
