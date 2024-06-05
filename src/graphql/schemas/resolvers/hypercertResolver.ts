@@ -13,6 +13,7 @@ import { inject, injectable } from "tsyringe";
 import { SupabaseCachingService } from "../../../services/SupabaseCachingService.js";
 import { GetHypercertArgs } from "../args/hypercertsArgs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
+import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 
 @ObjectType()
 export default class GetHypercertsResponse {
@@ -28,7 +29,7 @@ export default class GetHypercertsResponse {
 class HypercertResolver {
   constructor(
     @inject(SupabaseCachingService)
-    private readonly supabaseService: SupabaseCachingService,
+    private readonly supabaseCachingService: SupabaseCachingService,
     @inject(SupabaseDataService)
     private readonly supabaseDataService: SupabaseDataService,
   ) {}
@@ -36,7 +37,7 @@ class HypercertResolver {
   @Query((_) => GetHypercertsResponse)
   async hypercerts(@Args() args: GetHypercertArgs) {
     try {
-      const res = await this.supabaseService.getHypercerts(args);
+      const res = await this.supabaseCachingService.getHypercerts(args);
 
       if (!res) {
         console.warn(
@@ -71,7 +72,7 @@ class HypercertResolver {
     }
 
     try {
-      const res = await this.supabaseService
+      const res = await this.supabaseCachingService
         .getMetadata({ where: { uri: { eq: hypercert.uri } } })
         .maybeSingle();
 
@@ -109,7 +110,7 @@ class HypercertResolver {
     }
 
     try {
-      const res = await this.supabaseService
+      const res = await this.supabaseCachingService
         .getContracts({ where: { id: { eq: hypercert.contracts_id } } })
         .maybeSingle();
 
@@ -151,7 +152,7 @@ class HypercertResolver {
         `[HypercertResolver::attestations] Fetching attestations for ${hypercert.id}`,
       );
 
-      const res = await this.supabaseService.getAttestations({
+      const res = await this.supabaseCachingService.getAttestations({
         where: { hypercerts: { id: { eq: hypercert.id } } },
       });
 
@@ -201,7 +202,7 @@ class HypercertResolver {
       console.log(
         `[HypercertResolver::fractions] Fetching fractions for ${hypercert.id}`,
       );
-      const res = await this.supabaseService.getFractions({
+      const res = await this.supabaseCachingService.getFractions({
         where: { hypercerts: { id: { eq: hypercert.id } } },
       });
 
@@ -241,7 +242,7 @@ class HypercertResolver {
       console.log(
         `[HypercertResolver::orders] Fetching orders for ${hypercert.id}`,
       );
-      const fractionsRes = await this.supabaseService.getFractions({
+      const fractionsRes = await this.supabaseCachingService.getFractions({
         where: { hypercerts: { id: { eq: hypercert.id } } },
       });
 
@@ -263,9 +264,11 @@ class HypercertResolver {
         return { data: [] };
       }
 
-      const tokenIds = fractionsData.map((fraction) =>
-        fraction.token_id.toString(),
-      );
+      const tokenIds = fractionsData
+        .filter((fraction) => !!fraction?.hypercert_id)
+        .map((fraction) =>
+          parseClaimOrFractionId(fraction?.hypercert_id || "").id.toString(),
+        );
       const ordersRes =
         await this.supabaseDataService.getOrdersForFraction(tokenIds);
 
@@ -277,19 +280,23 @@ class HypercertResolver {
         return { data: [] };
       }
 
-      const { data: ordersData, error: ordersError } = ordersRes;
+      const {
+        data: ordersData,
+        error: ordersError,
+        count: ordersCount,
+      } = ordersRes;
 
       if (ordersError) {
         console.error(
           `[HypercertResolver::orders] Error fetching orders for ${hypercert.hypercert_id}: `,
           ordersError,
         );
-        return { data: [] };
+        return { data: [], count: 0 };
       }
 
       return {
         data: ordersData || [],
-        count: 0,
+        count: ordersCount || 0,
       };
     } catch (e) {
       throw new Error(
