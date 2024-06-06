@@ -1,0 +1,3 @@
+[submodule "lib/hypercerts-indexer"]
+	path = lib/hypercerts-indexer
+	url = https://github.com/hypercerts-org/hypercerts-indexer
