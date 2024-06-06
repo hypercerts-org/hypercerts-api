@@ -142,6 +142,11 @@ input BasicMetadataWhereInput {
   work_timeframe_to: NumberSearchOptions
 }
 
+input BasicOrderWhereInput {
+  chain_id: NumberSearchOptions
+  id: IdSearchOptions
+}
+
 """
 The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
@@ -187,6 +192,7 @@ type Fraction {
   hypercert_id: ID
   id: ID!
   last_block_update_timestamp: BigInt
+  orders: GetOrdersResponse
   owner_address: String
   units: EthBigInt
 }
@@ -238,6 +244,11 @@ type GetHypercertsResponse {
   data: [Hypercert!]
 }
 
+type GetOrdersResponse {
+  count: Int
+  data: [Order!]
+}
+
 type Hypercert {
   attestations: GetAttestationsResponse
   contract: Contract
@@ -248,6 +259,7 @@ type Hypercert {
   id: ID!
   last_block_update_timestamp: BigInt
   metadata: Metadata
+  orders: GetOrdersResponse
   owner_address: String
   token_id: EthBigInt
   units: EthBigInt
@@ -346,6 +358,32 @@ input NumberSearchOptions {
   lte: BigInt
 }
 
+type Order {
+  additionalParameters: String!
+  amounts: [Float!]!
+  chainId: BigInt!
+  collection: String!
+  collectionType: Float!
+  createdAt: String!
+  currency: String!
+  endTime: Float!
+  globalNonce: String!
+  id: ID!
+  itemIds: [String!]!
+  orderNonce: String!
+  price: String!
+  quoteType: Float!
+  signature: String!
+  signer: String!
+  startTime: Float!
+  strategyId: Float!
+  subsetNonce: Float!
+}
+
+input OrderFetchInput {
+  by: ContractSortOptions
+}
+
 type Query {
   attestationSchemas(count: CountKeys, first: Int, offset: Int, sort: AttestationSchemaFetchInput, where: AttestationSchemaWhereInput): GetAttestationsSchemaResponse!
   attestations(count: CountKeys, first: Int, offset: Int, sort: AttestationFetchInput, where: AttestationWhereInput): GetAttestationsResponse!
@@ -353,6 +391,7 @@ type Query {
   fractions(count: CountKeys, first: Int, offset: Int, sort: FractionFetchInput, where: FractionWhereInput): GetFractionsResponse!
   hypercerts(count: CountKeys, first: Int, offset: Int, sort: HypercertFetchInput, where: HypercertsWhereInput): GetHypercertsResponse!
   metadata(count: CountKeys, first: Int, offset: Int, sort: MetadataFetchInput, where: MetadataWhereInput): [Metadata!]!
+  orders(count: CountKeys, first: Int, offset: Int, sort: OrderFetchInput, where: BasicOrderWhereInput): GetOrdersResponse!
 }
 
 """The direction to sort the query results"""
