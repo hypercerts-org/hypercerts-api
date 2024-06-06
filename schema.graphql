@@ -117,10 +117,9 @@ input BasicFractionWhereInput {
 }
 
 input BasicHypercertWhereInput {
-  creation_block_timestamp: NumberSearchOptions
+  block_number: NumberSearchOptions
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
-  last_block_update_timestamp: NumberSearchOptions
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions
   uri: StringSearchOptions
@@ -251,9 +250,9 @@ type GetOrdersResponse {
 
 type Hypercert {
   attestations: GetAttestationsResponse
+  block_number: BigInt
   contract: Contract
   contracts_id: ID
-  creation_block_timestamp: BigInt
   fractions: GetFractionsResponse
   hypercert_id: ID
   id: ID!
@@ -271,8 +270,8 @@ input HypercertFetchInput {
 }
 
 input HypercertSortOptions {
+  block_number: SortOrder
   claim_attestation_count: SortOrder
-  creation_block_timestamp: SortOrder
   hypercert_id: SortOrder
   last_block_update_timestamp: SortOrder
   owner_address: SortOrder
@@ -283,12 +282,11 @@ input HypercertSortOptions {
 
 input HypercertsWhereInput {
   attestations: BasicAttestationWhereInput
+  block_number: NumberSearchOptions
   contract: BasicContractWhereInput
-  creation_block_timestamp: NumberSearchOptions
   fractions: BasicFractionWhereInput
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
-  last_block_update_timestamp: NumberSearchOptions
   metadata: BasicMetadataWhereInput
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions
@@ -340,10 +338,9 @@ input MetadataSortOptions {
 }
 
 input MetadataWhereInput {
-  creation_block_timestamp: NumberSearchOptions
+  block_number: NumberSearchOptions
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
-  last_block_update_timestamp: NumberSearchOptions
   metadata: BasicMetadataWhereInput
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions

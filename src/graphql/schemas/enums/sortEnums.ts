@@ -21,7 +21,7 @@ registerEnumType(SortOrder, {
 //TODO add sort by count
 export enum HypercertSortKeys {
     hypercert_id = "hypercert_id",
-    creation_block_timestamp = "creation_block_timestamp",
+    block_number = "block_number",
     token_id = "token_id",
 }
 

@@ -59,7 +59,7 @@ class AttestationResolver {
         try {
             const res = await this.supabaseService.getHypercerts({
                 where: {
-                    contracts: {chain_id: {eq: BigInt(_att.chain_id)}, contract_address: {eq: _att.contract_address}},
+                    contract: {chain_id: {eq: BigInt(_att.chain_id)}, contract_address: {eq: _att.contract_address}},
                     token_id: {eq: BigInt(_att.token_id)}
                 }
             })

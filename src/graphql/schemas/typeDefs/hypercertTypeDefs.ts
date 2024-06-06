@@ -14,7 +14,7 @@ class Hypercert extends BasicTypeDef {
   @Field((_) => ID, { nullable: true })
   contracts_id?: string;
   @Field((_) => GraphQLBigInt, { nullable: true })
-  creation_block_timestamp?: bigint | number;
+  block_number?: bigint | number;
   @Field((_) => ID, { nullable: true })
   hypercert_id?: string;
   @Field((_) => GraphQLBigInt, { nullable: true })

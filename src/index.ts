@@ -1,5 +1,5 @@
 import './instrument.js';
-import express, {type Express} from "express";
+import express, {type Express, Router} from "express";
 import "reflect-metadata";
 import cors from "cors";
 import {assertExists} from "./utils/assertExists.js";
@@ -25,15 +25,9 @@ const PORT = assertExists(process.env.PORT, "PORT");
 
 const app: Express = express();
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cors());
-
-app.use(
-    "/docs",
-    swaggerUi.serve,
-    swaggerUi.setup(swaggerJson)
-);
 
 app.get('/health', (req, res) => {
     const data = {
@@ -48,6 +42,12 @@ app.get('/health', (req, res) => {
 // Bind GraphQL Yoga to the graphql endpoint to avoid rendering the playground on any path
 app.use(yoga.graphqlEndpoint, yoga);
 
+app.use(
+    "/spec",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerJson)
+);
+
 RegisterRoutes(app);
 
 // The error handler must be registered before any other error middleware and after all controllers
@@ -58,7 +58,7 @@ app.listen(PORT, () => {
         `🕸️ Running a GraphQL API server at http://localhost:${PORT}/graphql`
     );
 
-    console.log(`🚀 Running Swagger docs at http://localhost:${PORT}/docs`);
+    console.log(`🚀 Running Swagger docs at http://localhost:${PORT}/`);
 
 });
 

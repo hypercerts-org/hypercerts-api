@@ -16,7 +16,7 @@ export class HypercertSortOptions implements SortOptions<Hypercert> {
     @Field(_ => SortOrder, {nullable: true})
     hypercert_id?: SortOrder;
     @Field(_ => SortOrder, {nullable: true})
-    creation_block_timestamp?: SortOrder;
+    block_number?: SortOrder;
     @Field(_ => SortOrder, {nullable: true})
     token_id?: SortOrder;
     @Field(_ => SortOrder, {nullable: true})

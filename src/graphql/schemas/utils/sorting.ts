@@ -1,5 +1,5 @@
 import {PostgrestTransformBuilder} from "@supabase/postgrest-js";
-import type {CachingDatabase} from "../../../types/supabase.js";
+import type {Database as CachingDatabase} from "../../../types/supabaseCaching.js";
 import type {OrderOptions} from "../inputs/orderOptions.js";
 import {
     AttestationSchemaSortOptions,
@@ -38,16 +38,12 @@ export const applySorting = <T extends object, QueryType extends PostgrestTransf
             }][] = [];
             for (const [_column, _direction] of Object.entries(value)) {
                 if (!_column || !_direction) continue;
-                console.log("Column: ", _column)
-                console.log("Direction: ", _direction)
                 // TODO resolve hacky workaround for hypercerts <> claims alias
                 nestedSorting.push([_column, {ascending: _direction !== SortOrder.descending}]);
             }
             sorting.push(...nestedSorting);
         }
     }
-
-    console.log(sorting);
 
     query = sorting
         .reduce(
@@ -56,8 +52,6 @@ export const applySorting = <T extends object, QueryType extends PostgrestTransf
             },
             query
         )
-
-    console.log(query);
 
     return query as unknown as QueryType;
 }

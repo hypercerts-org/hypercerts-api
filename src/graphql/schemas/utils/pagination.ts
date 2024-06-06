@@ -1,5 +1,5 @@
 import {PostgrestTransformBuilder} from "@supabase/postgrest-js";
-import type {CachingDatabase} from "../../../types/supabase.js";
+import type {Database as CachingDatabase} from "../../../types/supabaseCaching.js";
 import {PaginationArgs} from "../args/paginationArgs.js";
 
 interface ApplyPagination<
