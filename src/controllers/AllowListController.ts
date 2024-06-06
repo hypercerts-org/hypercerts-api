@@ -21,7 +21,6 @@ export interface CreateAllowListRequest {
     totalUnits: string;
 }
 
-
 @Route("v1/allowlists")
 @Tags("Allowlists")
 export class AllowListController extends Controller {

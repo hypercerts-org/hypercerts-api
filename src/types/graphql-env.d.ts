@@ -759,7 +759,7 @@ export type introspection = {
         "name": "BasicHypercertWhereInput",
         "inputFields": [
           {
-            "name": "creation_block_timestamp",
+            "name": "block_number",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "NumberSearchOptions",
@@ -779,14 +779,6 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "IdSearchOptions",
-              "ofType": null
-            }
-          },
-          {
-            "name": "last_block_update_timestamp",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
               "ofType": null
             }
           },
@@ -1474,6 +1466,15 @@ export type introspection = {
             "args": []
           },
           {
+            "name": "block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
             "name": "contract",
             "type": {
               "kind": "OBJECT",
@@ -1487,15 +1488,6 @@ export type introspection = {
             "type": {
               "kind": "SCALAR",
               "name": "ID",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
-            "name": "creation_block_timestamp",
-            "type": {
-              "kind": "SCALAR",
-              "name": "BigInt",
               "ofType": null
             },
             "args": []
@@ -1615,7 +1607,7 @@ export type introspection = {
         "name": "HypercertSortOptions",
         "inputFields": [
           {
-            "name": "claim_attestation_count",
+            "name": "block_number",
             "type": {
               "kind": "ENUM",
               "name": "SortOrder",
@@ -1623,7 +1615,7 @@ export type introspection = {
             }
           },
           {
-            "name": "creation_block_timestamp",
+            "name": "claim_attestation_count",
             "type": {
               "kind": "ENUM",
               "name": "SortOrder",
@@ -1693,18 +1685,18 @@ export type introspection = {
             }
           },
           {
-            "name": "contract",
+            "name": "block_number",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "BasicContractWhereInput",
+              "name": "NumberSearchOptions",
               "ofType": null
             }
           },
           {
-            "name": "creation_block_timestamp",
+            "name": "contract",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BasicContractWhereInput",
               "ofType": null
             }
           },
@@ -1729,14 +1721,6 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "IdSearchOptions",
-              "ofType": null
-            }
-          },
-          {
-            "name": "last_block_update_timestamp",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
               "ofType": null
             }
           },
@@ -2067,7 +2051,7 @@ export type introspection = {
         "name": "MetadataWhereInput",
         "inputFields": [
           {
-            "name": "creation_block_timestamp",
+            "name": "block_number",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "NumberSearchOptions",
@@ -2087,14 +2071,6 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "IdSearchOptions",
-              "ofType": null
-            }
-          },
-          {
-            "name": "last_block_update_timestamp",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
               "ofType": null
             }
           },

@@ -10,13 +10,11 @@ export class BasicHypercertWhereInput implements WhereOptions<Hypercert> {
     @Field(_ => IdSearchOptions, {nullable: true})
     id?: IdSearchOptions
     @Field(_ => NumberSearchOptions, {nullable: true})
-    creation_block_timestamp?: NumberSearchOptions;
+    block_number?: NumberSearchOptions;
     @Field(_ => NumberSearchOptions, {nullable: true})
     token_id?: NumberSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})
     owner_address?: StringSearchOptions;
-    @Field(_ => NumberSearchOptions, {nullable: true})
-    last_block_update_timestamp?: NumberSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})
     uri?: StringSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})

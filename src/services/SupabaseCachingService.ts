@@ -1,6 +1,6 @@
 import { supabaseCaching } from "../client/supabase.js";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { CachingDatabase, Tables } from "../types/supabaseCaching.js";
+import type { Database as CachingDatabase, Tables } from "../types/supabaseCaching.js";
 import { applyFilters } from "../graphql/schemas/utils/filters.js";
 import type { GetContractsArgs } from "../graphql/schemas/args/contractArgs.js";
 import type { GetMetadataArgs } from "../graphql/schemas/args/metadataArgs.js";
@@ -37,7 +37,7 @@ export class SupabaseCachingService {
   // Claims
 
   getHypercerts(args: GetHypercertArgs) {
-    const fromString = `* ${args.where?.contracts ? ", contracts!inner (*)" : ""} ${args.where?.metadata ? ", metadata!inner (*)" : ""} ${args.where?.attestations ? ", attestations!inner (*)" : ""} ${args.where?.fractions ? ", fractions!inner (*)" : ""}`;
+    const fromString = `* ${args.where?.contract ? ", contracts!inner (*)" : ""} ${args.where?.metadata ? ", metadata!inner (*)" : ""} ${args.where?.attestations ? ", attestations!inner (*)" : ""} ${args.where?.fractions ? ", fractions!inner (*)" : ""}`;
 
     // TOOD build method to get count
     let query = this.supabaseCaching.from("claims").select(fromString, {

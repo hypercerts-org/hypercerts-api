@@ -43,6 +43,7 @@ export const yoga = createYoga({
     cors: {
         methods: ["POST"],
     },
+    graphqlEndpoint: "/v1/graphql",
     plugins: [
         useResponseCache({
             // global cache
