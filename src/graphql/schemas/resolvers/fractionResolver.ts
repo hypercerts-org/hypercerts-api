@@ -104,9 +104,11 @@ class FractionResolver {
         }
     }
 
+    // TODO currently always resolves empty
     @FieldResolver()
     async metadata(@Root() fraction: Partial<Fraction>) {
         if (!fraction.claims_id) {
+            console.log(`[FractionResolver::metadata] No claims_id for fraction ${fraction.id}`)
             return null;
         }
 
@@ -115,7 +117,7 @@ class FractionResolver {
                 `[FractionResolver::metadata] Fetching metadata for fraction ${fraction.id} on claims ${fraction.claims_id}`,
             );
             const res = await this.supabaseCachingService.getMetadata(
-                {where: {hypercerts: {id: {contains: fraction.claims_id}}}},
+                {where: {hypercerts: {id: {eq: fraction.claims_id}}}},
             );
 
             if (!res) {
@@ -130,7 +132,7 @@ class FractionResolver {
 
             if (error) {
                 console.warn(
-                    `[FractionResolver::metadata] Error fetching metadata for fraction ${fraction.id}: `,
+                    `[FractionResolver::metadata] Error found fetching metadata for fraction ${fraction.id}: `,
                     error,
                 );
                 return {data: []};
@@ -140,7 +142,7 @@ class FractionResolver {
         } catch (e) {
             const error = e as Error;
             throw new Error(
-                `[FractionResolver::metadata] Error fetching metadata for fraction ${fraction.id}: ${error.message}`,
+                `[FractionResolver::metadata] Unexpected error fetching metadata for fraction ${fraction.id}: ${error.message}`,
             );
         }
     }

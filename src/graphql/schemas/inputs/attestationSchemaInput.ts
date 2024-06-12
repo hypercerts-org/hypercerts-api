@@ -10,7 +10,7 @@ export class BasicAttestationSchemaWhereInput implements WhereOptions<Attestatio
     @Field(_ => IdSearchOptions, {nullable: true})
     id?: IdSearchOptions | null;
     @Field(_ => StringSearchOptions, {nullable: true})
-    eas_schema_id?: StringSearchOptions | null;
+    uid?: StringSearchOptions | null;
     @Field(_ => NumberSearchOptions, {nullable: true})
     chain_id?: NumberSearchOptions | null;
     @Field(_ => StringSearchOptions, {nullable: true})

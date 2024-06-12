@@ -88,6 +88,8 @@ export class SupabaseCachingService {
         query = applySorting({query, sort});
         query = applyPagination({query, pagination: {first, offset}});
 
+        console.log(query);
+
         return query;
     }
 

@@ -159,15 +159,6 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "eas_schema_id",
-            "type": {
-              "kind": "SCALAR",
-              "name": "ID",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
             "name": "id",
             "type": {
               "kind": "NON_NULL",
@@ -217,6 +208,15 @@ export type introspection = {
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "uid",
+            "type": {
+              "kind": "SCALAR",
+              "name": "ID",
               "ofType": null
             },
             "args": []
@@ -301,14 +301,6 @@ export type introspection = {
             }
           },
           {
-            "name": "eas_schema_id",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "StringSearchOptions",
-              "ofType": null
-            }
-          },
-          {
             "name": "id",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -334,6 +326,14 @@ export type introspection = {
           },
           {
             "name": "schema",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "uid",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
@@ -527,14 +527,6 @@ export type introspection = {
             }
           },
           {
-            "name": "eas_schema_id",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "StringSearchOptions",
-              "ofType": null
-            }
-          },
-          {
             "name": "id",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -560,6 +552,14 @@ export type introspection = {
           },
           {
             "name": "schema",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "uid",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
@@ -786,7 +786,7 @@ export type introspection = {
             "name": "id",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "IdSearchOptions",
+              "name": "StringSearchOptions",
               "ofType": null
             }
           },
@@ -1794,7 +1794,7 @@ export type introspection = {
             "name": "id",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "IdSearchOptions",
+              "name": "StringSearchOptions",
               "ofType": null
             }
           },

@@ -8,7 +8,7 @@ class AttestationSchema extends BasicTypeDef {
     @Field(_ => GraphQLBigInt, {nullable: true})
     chain_id?: bigint | number | string;
     @Field(_ => ID, {nullable: true})
-    eas_schema_id?: string;
+    uid?: string;
     @Field({nullable: true})
     resolver?: string;
     @Field({nullable: true})

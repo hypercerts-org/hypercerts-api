@@ -22,12 +22,12 @@ input AttestationFetchInput {
 
 type AttestationSchema {
   chain_id: BigInt
-  eas_schema_id: ID
   id: ID!
   records: [Attestation!]
   resolver: String
   revocable: Boolean
   schema: String
+  uid: ID
 }
 
 input AttestationSchemaFetchInput {
@@ -44,11 +44,11 @@ input AttestationSchemaSortOptions {
 input AttestationSchemaWhereInput {
   attestations: BasicAttestationSchemaWhereInput
   chain_id: NumberSearchOptions
-  eas_schema_id: StringSearchOptions
   id: IdSearchOptions
   resolver: StringSearchOptions
   revocable: BooleanSearchOptions
   schema: StringSearchOptions
+  uid: StringSearchOptions
 }
 
 input AttestationSortOptions {
@@ -79,11 +79,11 @@ input AttestationWhereInput {
 
 input BasicAttestationSchemaWhereInput {
   chain_id: NumberSearchOptions
-  eas_schema_id: StringSearchOptions
   id: IdSearchOptions
   resolver: StringSearchOptions
   revocable: BooleanSearchOptions
   schema: StringSearchOptions
+  uid: StringSearchOptions
 }
 
 input BasicAttestationWhereInput {
@@ -120,7 +120,7 @@ input BasicHypercertWhereInput {
   block_number: NumberSearchOptions
   creator_address: StringSearchOptions
   hypercert_id: StringSearchOptions
-  id: IdSearchOptions
+  id: StringSearchOptions
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions
   uri: StringSearchOptions
@@ -296,7 +296,7 @@ input HypercertsWhereInput {
   creator_address: StringSearchOptions
   fractions: BasicFractionWhereInput
   hypercert_id: StringSearchOptions
-  id: IdSearchOptions
+  id: StringSearchOptions
   metadata: BasicMetadataWhereInput
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions
