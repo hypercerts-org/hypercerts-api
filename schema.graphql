@@ -109,7 +109,8 @@ input BasicContractWhereInput {
 
 input BasicFractionWhereInput {
   creation_block_timestamp: NumberSearchOptions
-  hypercert_id: IdSearchOptions
+  hypercert_id: StringSearchOptions
+  id: IdSearchOptions
   last_block_update_timestamp: NumberSearchOptions
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions
@@ -120,7 +121,7 @@ input BasicHypercertWhereInput {
   block_number: NumberSearchOptions
   creator_address: StringSearchOptions
   hypercert_id: StringSearchOptions
-  id: StringSearchOptions
+  id: IdSearchOptions
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions
   uri: StringSearchOptions
@@ -130,6 +131,7 @@ input BasicMetadataWhereInput {
   contributors: StringArraySearchOptions
   creation_block_timestamp: NumberSearchOptions
   description: StringSearchOptions
+  id: IdSearchOptions
   impact_scope: StringArraySearchOptions
   impact_timeframe_from: NumberSearchOptions
   impact_timeframe_to: NumberSearchOptions
@@ -193,7 +195,7 @@ type Fraction {
   hypercert_id: ID
   id: ID!
   last_block_update_timestamp: BigInt
-  metadata: GetMetadataResponse
+  metadata: Metadata
   orders: GetOrdersResponse
   owner_address: String
   units: EthBigInt
@@ -213,8 +215,9 @@ input FractionSortOptions {
 
 input FractionWhereInput {
   creation_block_timestamp: NumberSearchOptions
-  hypercert_id: IdSearchOptions
+  hypercert_id: StringSearchOptions
   hypercerts: BasicHypercertWhereInput
+  id: IdSearchOptions
   last_block_update_timestamp: NumberSearchOptions
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions
@@ -296,7 +299,7 @@ input HypercertsWhereInput {
   creator_address: StringSearchOptions
   fractions: BasicFractionWhereInput
   hypercert_id: StringSearchOptions
-  id: StringSearchOptions
+  id: IdSearchOptions
   metadata: BasicMetadataWhereInput
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions
@@ -304,10 +307,7 @@ input HypercertsWhereInput {
 }
 
 input IdSearchOptions {
-  contains: ID
-  endsWith: ID
-  eq: ID
-  startsWith: ID
+  eq: UUID
 }
 
 """
@@ -352,6 +352,7 @@ input MetadataWhereInput {
   creation_block_timestamp: NumberSearchOptions
   description: StringSearchOptions
   hypercerts: BasicHypercertWhereInput
+  id: IdSearchOptions
   impact_scope: StringArraySearchOptions
   impact_timeframe_from: NumberSearchOptions
   impact_timeframe_to: NumberSearchOptions
@@ -404,7 +405,7 @@ type Query {
   contracts(count: CountKeys, first: Int, offset: Int, sort: ContractFetchInput, where: BasicContractWhereInput): GetContractsResponse!
   fractions(count: CountKeys, first: Int, offset: Int, sort: FractionFetchInput, where: FractionWhereInput): GetFractionsResponse!
   hypercerts(count: CountKeys, first: Int, offset: Int, sort: HypercertFetchInput, where: HypercertsWhereInput): GetHypercertsResponse!
-  metadata(count: CountKeys, first: Int, offset: Int, sort: MetadataFetchInput, where: MetadataWhereInput): [Metadata!]!
+  metadata(count: CountKeys, first: Int, offset: Int, sort: MetadataFetchInput, where: MetadataWhereInput): GetMetadataResponse!
   orders(count: CountKeys, first: Int, offset: Int, sort: OrderFetchInput, where: BasicOrderWhereInput): GetOrdersResponse!
 }
 
@@ -427,3 +428,8 @@ input StringSearchOptions {
   eq: String
   startsWith: String
 }
+
+"""
+A field whose value is a generic Universally Unique Identifier: https://en.wikipedia.org/wiki/Universally_unique_identifier.
+"""
+scalar UUID

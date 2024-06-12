@@ -1,6 +1,6 @@
 import {supabaseCaching} from "../client/supabase.js";
 import type {SupabaseClient} from "@supabase/supabase-js";
-import type {Database as CachingDatabase, Tables} from "../types/supabaseCaching.js";
+import type {Database as CachingDatabase} from "../types/supabaseCaching.js";
 import {applyFilters} from "../graphql/schemas/utils/filters.js";
 import type {GetContractsArgs} from "../graphql/schemas/args/contractArgs.js";
 import type {GetMetadataArgs} from "../graphql/schemas/args/metadataArgs.js";
@@ -75,7 +75,7 @@ export class SupabaseCachingService {
     // Metadata
 
     getMetadata(args: GetMetadataArgs) {
-        const fromString = `* ${args.where?.hypercerts ? ", claims!inner (*)" : ""}`;
+        const fromString = `* ${args.where?.hypercerts ? ", claims!inner(*)" : ""}`;
 
 
         let query = this.supabaseCaching.from("metadata").select(fromString, {
@@ -87,8 +87,6 @@ export class SupabaseCachingService {
         query = applyFilters({query, where});
         query = applySorting({query, sort});
         query = applyPagination({query, pagination: {first, offset}});
-
-        console.log(query);
 
         return query;
     }

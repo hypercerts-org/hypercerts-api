@@ -4,6 +4,7 @@ import { EthBigInt } from "../../scalars/ethBigInt.js";
 import { BasicTypeDef } from "./basicTypeDef.js";
 import GetOrdersResponse from "../resolvers/orderResolver.js";
 import {GetMetadataResponse} from "../resolvers/metadataResolver.js";
+import {Metadata} from "./metadataTypeDefs.js";
 
 @ObjectType()
 class Fraction extends BasicTypeDef {
@@ -23,8 +24,8 @@ class Fraction extends BasicTypeDef {
   // Resolved fields
   @Field(() => GetOrdersResponse, { nullable: true })
   orders?: GetOrdersResponse;
-  @Field(() => GetMetadataResponse, { nullable: true })
-  metadata?: GetMetadataResponse;
+  @Field(() => Metadata, { nullable: true })
+  metadata?: Metadata;
 }
 
 export { Fraction };

@@ -1,12 +1,14 @@
 import {Field, InputType} from "type-graphql";
 import type {WhereOptions} from "./whereOptions.js";
-import {NumberSearchOptions, StringArraySearchOptions, StringSearchOptions} from "./searchOptions.js";
+import {IdSearchOptions, NumberSearchOptions, StringArraySearchOptions, StringSearchOptions} from "./searchOptions.js";
 import {Metadata} from "../typeDefs/metadataTypeDefs.js";
 import type {OrderOptions} from "./orderOptions.js";
 import {MetadataSortOptions} from "./sortOptions.js";
 
 @InputType()
 export class BasicMetadataWhereInput implements WhereOptions<Metadata> {
+    @Field(_ => IdSearchOptions, {nullable: true})
+    id?: IdSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})
     name?: StringSearchOptions | null;
     @Field(_ => StringSearchOptions, {nullable: true})
@@ -33,7 +35,6 @@ export class BasicMetadataWhereInput implements WhereOptions<Metadata> {
     impact_timeframe_from?: NumberSearchOptions | null;
     @Field(_ => NumberSearchOptions, {nullable: true})
     impact_timeframe_to?: NumberSearchOptions | null;
-
 }
 
 @InputType()

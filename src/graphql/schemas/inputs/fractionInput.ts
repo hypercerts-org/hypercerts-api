@@ -8,7 +8,9 @@ import {FractionSortOptions} from "./sortOptions.js";
 @InputType()
 export class BasicFractionWhereInput implements WhereOptions<Fraction> {
     @Field(_ => IdSearchOptions, {nullable: true})
-    hypercert_id?: IdSearchOptions
+    id?: IdSearchOptions;
+    @Field(_ => StringSearchOptions, {nullable: true})
+    hypercert_id?: StringSearchOptions
     @Field(_ => NumberSearchOptions, {nullable: true})
     creation_block_timestamp?: NumberSearchOptions;
     @Field(_ => NumberSearchOptions, {nullable: true})
