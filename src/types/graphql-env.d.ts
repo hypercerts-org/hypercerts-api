@@ -159,15 +159,6 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "eas_schema_id",
-            "type": {
-              "kind": "SCALAR",
-              "name": "ID",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
             "name": "id",
             "type": {
               "kind": "NON_NULL",
@@ -217,6 +208,15 @@ export type introspection = {
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "uid",
+            "type": {
+              "kind": "SCALAR",
+              "name": "ID",
               "ofType": null
             },
             "args": []
@@ -301,14 +301,6 @@ export type introspection = {
             }
           },
           {
-            "name": "eas_schema_id",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "StringSearchOptions",
-              "ofType": null
-            }
-          },
-          {
             "name": "id",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -334,6 +326,14 @@ export type introspection = {
           },
           {
             "name": "schema",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "uid",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
@@ -527,14 +527,6 @@ export type introspection = {
             }
           },
           {
-            "name": "eas_schema_id",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "StringSearchOptions",
-              "ofType": null
-            }
-          },
-          {
             "name": "id",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -560,6 +552,14 @@ export type introspection = {
           },
           {
             "name": "schema",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "uid",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
@@ -716,6 +716,14 @@ export type introspection = {
             "name": "hypercert_id",
             "type": {
               "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "INPUT_OBJECT",
               "name": "IdSearchOptions",
               "ofType": null
             }
@@ -763,6 +771,14 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "creator_address",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
               "ofType": null
             }
           },
@@ -833,6 +849,14 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "IdSearchOptions",
               "ofType": null
             }
           },
@@ -1069,6 +1093,15 @@ export type introspection = {
         "name": "Fraction",
         "fields": [
           {
+            "name": "claims_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "SCALAR",
@@ -1103,6 +1136,15 @@ export type introspection = {
             "type": {
               "kind": "SCALAR",
               "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "metadata",
+            "type": {
+              "kind": "OBJECT",
+              "name": "Metadata",
               "ofType": null
             },
             "args": []
@@ -1213,7 +1255,7 @@ export type introspection = {
             "name": "hypercert_id",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "IdSearchOptions",
+              "name": "StringSearchOptions",
               "ofType": null
             }
           },
@@ -1222,6 +1264,14 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "BasicHypercertWhereInput",
+              "ofType": null
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "IdSearchOptions",
               "ofType": null
             }
           },
@@ -1423,6 +1473,37 @@ export type introspection = {
       },
       {
         "kind": "OBJECT",
+        "name": "GetMetadataResponse",
+        "fields": [
+          {
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "data",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Metadata",
+                  "ofType": null
+                }
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
         "name": "GetOrdersResponse",
         "fields": [
           {
@@ -1488,6 +1569,15 @@ export type introspection = {
             "type": {
               "kind": "SCALAR",
               "name": "ID",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "creator_address",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "args": []
@@ -1701,6 +1791,14 @@ export type introspection = {
             }
           },
           {
+            "name": "creator_address",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
             "name": "fractions",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -1763,34 +1861,10 @@ export type introspection = {
         "name": "IdSearchOptions",
         "inputFields": [
           {
-            "name": "contains",
-            "type": {
-              "kind": "SCALAR",
-              "name": "ID",
-              "ofType": null
-            }
-          },
-          {
-            "name": "endsWith",
-            "type": {
-              "kind": "SCALAR",
-              "name": "ID",
-              "ofType": null
-            }
-          },
-          {
             "name": "eq",
             "type": {
               "kind": "SCALAR",
-              "name": "ID",
-              "ofType": null
-            }
-          },
-          {
-            "name": "startsWith",
-            "type": {
-              "kind": "SCALAR",
-              "name": "ID",
+              "name": "UUID",
               "ofType": null
             }
           }
@@ -2051,7 +2125,15 @@ export type introspection = {
         "name": "MetadataWhereInput",
         "inputFields": [
           {
-            "name": "block_number",
+            "name": "contributors",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringArraySearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "creation_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "NumberSearchOptions",
@@ -2059,10 +2141,18 @@ export type introspection = {
             }
           },
           {
-            "name": "hypercert_id",
+            "name": "description",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "hypercerts",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "BasicHypercertWhereInput",
               "ofType": null
             }
           },
@@ -2075,15 +2165,39 @@ export type introspection = {
             }
           },
           {
-            "name": "metadata",
+            "name": "impact_scope",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "BasicMetadataWhereInput",
+              "name": "StringArraySearchOptions",
               "ofType": null
             }
           },
           {
-            "name": "owner_address",
+            "name": "impact_timeframe_from",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "impact_timeframe_to",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "last_block_update_timestamp",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "name",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
@@ -2091,10 +2205,10 @@ export type introspection = {
             }
           },
           {
-            "name": "token_id",
+            "name": "rights",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "StringArraySearchOptions",
               "ofType": null
             }
           },
@@ -2103,6 +2217,30 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "work_scope",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringArraySearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "work_timeframe_from",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "work_timeframe_to",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
               "ofType": null
             }
           }
@@ -2693,15 +2831,9 @@ export type introspection = {
             "type": {
               "kind": "NON_NULL",
               "ofType": {
-                "kind": "LIST",
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "Metadata",
-                    "ofType": null
-                  }
-                }
+                "kind": "OBJECT",
+                "name": "GetMetadataResponse",
+                "ofType": null
               }
             },
             "args": [
@@ -2872,6 +3004,10 @@ export type introspection = {
             }
           }
         ]
+      },
+      {
+        "kind": "SCALAR",
+        "name": "UUID"
       }
     ],
     "directives": []

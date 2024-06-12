@@ -22,7 +22,7 @@ class MetadataResolver {
         private readonly supabaseService: SupabaseCachingService) {
     }
 
-    @Query(_ => [Metadata])
+    @Query(_ => GetMetadataResponse)
     async metadata(
         @Args() args: GetMetadataArgs
     ) {
@@ -37,12 +37,14 @@ class MetadataResolver {
             const {data, error, count} = res;
 
             if (error) {
-                console.warn(`[MetadataResolver::metadata] Error fetching metadata: `, error);
+                console.warn(`[MetadataResolver::metadata] Error found while fetching metadata: `, error);
             }
+
+            console.log(data)
 
             return {data, count: count ? count : data?.length};
         } catch (e) {
-            throw new Error(`[MetadataResolver::metadata] Error fetching metadata: ${(e as Error).message}`)
+            throw new Error(`[MetadataResolver::metadata] Unexpected error fetching metadata: ${(e as Error).message}`)
         }
     }
 

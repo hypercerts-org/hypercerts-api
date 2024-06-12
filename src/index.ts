@@ -55,10 +55,10 @@ Sentry.setupExpressErrorHandler(app);
 
 app.listen(PORT, () => {
     console.log(
-        `🕸️ Running a GraphQL API server at http://localhost:${PORT}/graphql`
+        `🕸️ Running a GraphQL API server at http://localhost:${PORT}/v1/graphql`
     );
 
-    console.log(`🚀 Running Swagger docs at http://localhost:${PORT}/`);
+    console.log(`🚀 Running Swagger docs at http://localhost:${PORT}/spec`);
 
 });
 

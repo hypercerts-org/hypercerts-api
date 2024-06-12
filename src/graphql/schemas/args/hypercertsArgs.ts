@@ -6,6 +6,7 @@ import {BasicContractWhereInput} from "../inputs/contractInput.js";
 import {BasicMetadataWhereInput} from "../inputs/metadataInput.js";
 import {BasicAttestationWhereInput} from "../inputs/attestationInput.js";
 import {BasicFractionWhereInput} from "../inputs/fractionInput.js";
+import {IdSearchOptions} from "../inputs/searchOptions.js";
 
 @InputType()
 export class HypercertsWhereInput extends BasicHypercertWhereInput {
@@ -29,7 +30,7 @@ export class GetHypercertArgs extends PaginationArgs {
 
 @ArgsType()
 export class GetHypercertByIdArgs {
-    @Field({nullable: true})
+    @Field(_ => IdSearchOptions, {nullable: true})
     id?: string;
     @Field({nullable: true})
     hypercert_id?: string;
