@@ -145,9 +145,9 @@ const buildFilters = (value: unknown, column: string) => {
 
 export const applyFilters =
     <T extends object, QueryType extends PostgrestTransformBuilder<CachingDatabase['public'], Record<string, unknown>, unknown, unknown, unknown>>({
-                                                                                                                                             query,
-                                                                                                                                             where
-                                                                                                                                         }: ApplyFilters<T, QueryType>) => {
+                                                                                                                                                       query,
+                                                                                                                                                       where
+                                                                                                                                                   }: ApplyFilters<T, QueryType>) => {
         if (!where) return query;
 
         const filters = [];
@@ -162,7 +162,7 @@ export const applyFilters =
                 for (const [_column, _value] of Object.entries(value)) {
                     if (!_value) continue;
                     // TODO resolve hacky workaround for hypercerts <> claims alias
-                    nestedFilters.push(...buildFilters(_value, `${column === 'hypercerts' ? 'claims' : column}.${_column}`));
+                    nestedFilters.push(...buildFilters(_value, `${(column === 'hypercerts' || column === 'hypercert') ? 'claims' : column}.${_column}`));
                 }
                 filters.push(...nestedFilters);
             }

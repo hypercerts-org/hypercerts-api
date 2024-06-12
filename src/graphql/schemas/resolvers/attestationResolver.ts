@@ -30,14 +30,16 @@ class AttestationResolver {
             const {data, error, count} = res;
 
             if (error) {
-                console.warn(`[AttestationResolver] Error fetching attestations: `, error);
+                console.warn(`[AttestationResolver] Errors found while fetching attestations: `, error);
                 return {data, count: null};
             }
+
+            console.log(data);
 
             const newData = data ? data.map(item => {
                 return {
                     ...item,
-                    attestation: item.data ? JSON.parse(item.data as string) : item.attestation,
+                    attestation: item.data
                 };
             }) : data;
 

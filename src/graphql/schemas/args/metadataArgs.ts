@@ -4,9 +4,9 @@ import {PaginationArgs} from "./paginationArgs.js";
 import {BasicHypercertWhereInput} from "../inputs/hypercertsInput.js";
 
 @InputType()
-export class MetadataWhereInput extends BasicHypercertWhereInput {
-    @Field(_ => BasicMetadataWhereInput, {nullable: true})
-    metadata?: BasicMetadataWhereInput;
+export class MetadataWhereInput extends BasicMetadataWhereInput {
+    @Field(_ => BasicHypercertWhereInput, {nullable: true})
+    hypercerts?: BasicHypercertWhereInput;
 }
 
 @ArgsType()

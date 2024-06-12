@@ -767,6 +767,14 @@ export type introspection = {
             }
           },
           {
+            "name": "creator_address",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
             "name": "hypercert_id",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -1069,6 +1077,15 @@ export type introspection = {
         "name": "Fraction",
         "fields": [
           {
+            "name": "claims_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "SCALAR",
@@ -1103,6 +1120,15 @@ export type introspection = {
             "type": {
               "kind": "SCALAR",
               "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "metadata",
+            "type": {
+              "kind": "OBJECT",
+              "name": "GetMetadataResponse",
               "ofType": null
             },
             "args": []
@@ -1423,6 +1449,37 @@ export type introspection = {
       },
       {
         "kind": "OBJECT",
+        "name": "GetMetadataResponse",
+        "fields": [
+          {
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "data",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Metadata",
+                  "ofType": null
+                }
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
         "name": "GetOrdersResponse",
         "fields": [
           {
@@ -1488,6 +1545,15 @@ export type introspection = {
             "type": {
               "kind": "SCALAR",
               "name": "ID",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "creator_address",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "args": []
@@ -1697,6 +1763,14 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "BasicContractWhereInput",
+              "ofType": null
+            }
+          },
+          {
+            "name": "creator_address",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
               "ofType": null
             }
           },
@@ -2051,7 +2125,15 @@ export type introspection = {
         "name": "MetadataWhereInput",
         "inputFields": [
           {
-            "name": "block_number",
+            "name": "contributors",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringArraySearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "creation_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "NumberSearchOptions",
@@ -2059,7 +2141,7 @@ export type introspection = {
             }
           },
           {
-            "name": "hypercert_id",
+            "name": "description",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
@@ -2067,34 +2149,58 @@ export type introspection = {
             }
           },
           {
-            "name": "id",
+            "name": "hypercerts",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "IdSearchOptions",
+              "name": "BasicHypercertWhereInput",
               "ofType": null
             }
           },
           {
-            "name": "metadata",
+            "name": "impact_scope",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "BasicMetadataWhereInput",
+              "name": "StringArraySearchOptions",
               "ofType": null
             }
           },
           {
-            "name": "owner_address",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "StringSearchOptions",
-              "ofType": null
-            }
-          },
-          {
-            "name": "token_id",
+            "name": "impact_timeframe_from",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "impact_timeframe_to",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "last_block_update_timestamp",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "rights",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringArraySearchOptions",
               "ofType": null
             }
           },
@@ -2103,6 +2209,30 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "work_scope",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringArraySearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "work_timeframe_from",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "work_timeframe_to",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
               "ofType": null
             }
           }

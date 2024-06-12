@@ -118,6 +118,7 @@ input BasicFractionWhereInput {
 
 input BasicHypercertWhereInput {
   block_number: NumberSearchOptions
+  creator_address: StringSearchOptions
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
   owner_address: StringSearchOptions
@@ -187,10 +188,12 @@ enum CountKeys {
 scalar EthBigInt
 
 type Fraction {
+  claims_id: String
   creation_block_timestamp: BigInt
   hypercert_id: ID
   id: ID!
   last_block_update_timestamp: BigInt
+  metadata: GetMetadataResponse
   orders: GetOrdersResponse
   owner_address: String
   units: EthBigInt
@@ -243,6 +246,11 @@ type GetHypercertsResponse {
   data: [Hypercert!]
 }
 
+type GetMetadataResponse {
+  count: Int
+  data: [Metadata!]
+}
+
 type GetOrdersResponse {
   count: Int
   data: [Order!]
@@ -253,6 +261,7 @@ type Hypercert {
   block_number: BigInt
   contract: Contract
   contracts_id: ID
+  creator_address: String
   fractions: GetFractionsResponse
   hypercert_id: ID
   id: ID!
@@ -284,6 +293,7 @@ input HypercertsWhereInput {
   attestations: BasicAttestationWhereInput
   block_number: NumberSearchOptions
   contract: BasicContractWhereInput
+  creator_address: StringSearchOptions
   fractions: BasicFractionWhereInput
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
@@ -338,13 +348,20 @@ input MetadataSortOptions {
 }
 
 input MetadataWhereInput {
-  block_number: NumberSearchOptions
-  hypercert_id: StringSearchOptions
-  id: IdSearchOptions
-  metadata: BasicMetadataWhereInput
-  owner_address: StringSearchOptions
-  token_id: NumberSearchOptions
+  contributors: StringArraySearchOptions
+  creation_block_timestamp: NumberSearchOptions
+  description: StringSearchOptions
+  hypercerts: BasicHypercertWhereInput
+  impact_scope: StringArraySearchOptions
+  impact_timeframe_from: NumberSearchOptions
+  impact_timeframe_to: NumberSearchOptions
+  last_block_update_timestamp: NumberSearchOptions
+  name: StringSearchOptions
+  rights: StringArraySearchOptions
   uri: StringSearchOptions
+  work_scope: StringArraySearchOptions
+  work_timeframe_from: NumberSearchOptions
+  work_timeframe_to: NumberSearchOptions
 }
 
 input NumberSearchOptions {
