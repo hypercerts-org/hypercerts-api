@@ -20,6 +20,8 @@ class Hypercert extends BasicTypeDef {
   @Field((_) => GraphQLBigInt, { nullable: true })
   last_block_update_timestamp?: bigint | number;
   @Field({ nullable: true })
+  creator_address?: string;
+  @Field({ nullable: true })
   owner_address?: string;
   @Field((_) => EthBigInt, { nullable: true })
   token_id?: bigint | number;

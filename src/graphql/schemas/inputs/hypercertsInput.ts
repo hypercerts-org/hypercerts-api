@@ -16,6 +16,8 @@ export class BasicHypercertWhereInput implements WhereOptions<Hypercert> {
     @Field(_ => StringSearchOptions, {nullable: true})
     owner_address?: StringSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})
+    creator_address?: StringSearchOptions;
+    @Field(_ => StringSearchOptions, {nullable: true})
     uri?: StringSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})
     hypercert_id?: StringSearchOptions;

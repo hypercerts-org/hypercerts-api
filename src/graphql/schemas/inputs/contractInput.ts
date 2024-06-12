@@ -9,11 +9,11 @@ import {ContractSortOptions} from "./sortOptions.js";
 @InputType()
 export class BasicContractWhereInput implements WhereOptions<Contract> {
     @Field(_ => IdSearchOptions, {nullable: true})
-    id?: IdSearchOptions | null;
+    id?: IdSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})
-    contract_address?: StringSearchOptions | null;
+    contract_address?: StringSearchOptions;
     @Field(_ => NumberSearchOptions, {nullable: true})
-    chain_id?: NumberSearchOptions | null;
+    chain_id?: NumberSearchOptions;
 }
 
 

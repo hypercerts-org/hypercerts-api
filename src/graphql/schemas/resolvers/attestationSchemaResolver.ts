@@ -64,7 +64,7 @@ class AttestationSchemaResolver {
             return data.map((attestation) => {
                 return {
                     ...attestation,
-                    attestation: JSON.parse(attestation.data as string)
+                    attestation: attestation.data
                 }
             });
         } catch (e) {

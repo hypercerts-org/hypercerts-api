@@ -3,6 +3,14 @@ import {inject, injectable} from "tsyringe";
 import {SupabaseCachingService} from "../../../services/SupabaseCachingService.js";
 import {GetAttestationArgs} from "../args/attestationArgs.js";
 import {Attestation} from "../typeDefs/attestationTypeDefs.js";
+import {z} from "zod";
+import {isAddress} from "viem"
+
+const HypercertPointer = z.object({
+    chain_id: z.coerce.bigint(),
+    contract_address: z.string().refine(isAddress, {message: 'Invalid contract address'}),
+    token_id: z.coerce.bigint()
+});
 
 @ObjectType()
 export default class GetAttestationsResponse {
@@ -30,14 +38,16 @@ class AttestationResolver {
             const {data, error, count} = res;
 
             if (error) {
-                console.warn(`[AttestationResolver] Error fetching attestations: `, error);
+                console.warn(`[AttestationResolver] Errors found while fetching attestations: `, error);
                 return {data, count: null};
             }
+
+            console.log(data);
 
             const newData = data ? data.map(item => {
                 return {
                     ...item,
-                    attestation: item.data ? JSON.parse(item.data as string) : item.attestation,
+                    attestation: item.data
                 };
             }) : data;
 
@@ -54,13 +64,15 @@ class AttestationResolver {
 
         const _att = attestation.data;
 
-        if (!isHypercertPointer(_att)) return null;
+        if (!HypercertPointer.safeParse(_att).success) return null;
+
+        const pointer = HypercertPointer.parse(_att);
 
         try {
             const res = await this.supabaseService.getHypercerts({
                 where: {
-                    contract: {chain_id: {eq: BigInt(_att.chain_id)}, contract_address: {eq: _att.contract_address}},
-                    token_id: {eq: BigInt(_att.token_id)}
+                    contract: {chain_id: {eq: pointer.chain_id}, contract_address: {eq: pointer.contract_address}},
+                    token_id: {eq: pointer.token_id}
                 }
             })
 
@@ -82,10 +94,6 @@ class AttestationResolver {
             throw new Error(`[AttestationResolver] Error fetching hypercerts: ${error.message}`)
         }
     }
-}
-
-function isHypercertPointer(obj: any): obj is { chain_id: string, contract_address: string, token_id: string } {
-    return obj && typeof obj.chain_id === 'string' && typeof obj.contract_address === 'string' && typeof obj.token_id === 'string';
 }
 
 export {
