@@ -157,8 +157,7 @@ export class MarketplaceController extends Controller {
     }
 
     const hypercertClient = new HypercertClient({
-      chain: { id: chainId },
-      indexerEnvironment: "all",
+      environment: "test",
     });
     const tokenIds = makerOrder.itemIds.map(
       (id) => `${chainId}-${makerOrder.collection.toLowerCase()}-${id}`,
