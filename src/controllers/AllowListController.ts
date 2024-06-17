@@ -52,9 +52,7 @@ export class AllowListController extends Controller {
             };
         }
 
-        const _merkleTree = result.data as StandardMerkleTree<[string, bigint]>;
-
-        const cid = await storage.uploadFile({file: jsonToBlob(JSON.stringify(_merkleTree.dump()))});
+        const cid = await storage.uploadFile({file: jsonToBlob(requestBody.allowList)});
         this.setStatus(201)
 
         return {
