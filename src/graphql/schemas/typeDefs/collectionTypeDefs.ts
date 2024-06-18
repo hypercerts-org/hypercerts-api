@@ -1,13 +1,14 @@
 import { Field, ObjectType } from "type-graphql";
 import { BasicTypeDef } from "./basicTypeDef.js";
+import {GraphQLBigInt} from "graphql-scalars";
 
 @ObjectType()
 class Collection extends BasicTypeDef {
   @Field()
   name?: string;
-  @Field()
+  @Field({name: "admin_address"})
   admin_id?: string;
-  @Field()
+  @Field(() => GraphQLBigInt, {nullable: true})
   chain_id?: number;
   @Field()
   background_image?: string;

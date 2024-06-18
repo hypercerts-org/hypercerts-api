@@ -1017,7 +1017,7 @@ export type introspection = {
         "name": "Collection",
         "fields": [
           {
-            "name": "admin_id",
+            "name": "admin_address",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
@@ -1043,12 +1043,9 @@ export type introspection = {
           {
             "name": "chain_id",
             "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Float",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
             },
             "args": []
           },
@@ -1102,10 +1099,6 @@ export type introspection = {
           }
         ],
         "interfaces": []
-      },
-      {
-        "kind": "SCALAR",
-        "name": "Float"
       },
       {
         "kind": "INPUT_OBJECT",
@@ -2708,6 +2701,10 @@ export type introspection = {
           }
         ],
         "interfaces": []
+      },
+      {
+        "kind": "SCALAR",
+        "name": "Float"
       },
       {
         "kind": "INPUT_OBJECT",
