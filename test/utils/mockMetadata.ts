@@ -65,3 +65,22 @@ const jsonContent = `{
 }`;
 
 export const mockMetadata = JSON.parse(jsonContent);
+
+export const incorrectMetadata = {
+    "name": "Example Hypercert",
+    "description": "This is where the description of the hypercert will go.",
+    "external_url": "https://hypercerts.xyz",
+    "image": "ipfs://bafybeifs7abhcooeelyjxmnlrcd5kuupfl5czhtyub2imzxzccrhzz3bem",
+    "version": "1.0.0",
+    "properties": [
+        {
+            "trait_type": "Example Property 1",
+            "value": "Some text here"
+        },
+        {
+            "trait_type": "Example Property 2",
+            "value": "More text here"
+        }
+    ]
+}
+

@@ -12,7 +12,6 @@ export class StorageService {
         this.client = client;
     }
 
-
     public static async init() {
         const client = await setup();
         return new StorageService(client);

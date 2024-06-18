@@ -24,26 +24,40 @@ export class MetadataController extends Controller {
     public async storeMetadata(@Body() requestBody: HypercertMetadata) {
         const storage = await StorageService.init();
 
-        const metadataValidationResult = validateMetadataAndClaimdata(requestBody);
+        try {
+            const metadataValidationResult = validateMetadataAndClaimdata(requestBody);
 
-        const allowListValidationResult = await validateRemoteAllowList(requestBody);
+            const allowListValidationResult = await validateRemoteAllowList(requestBody);
 
-        if (!allowListValidationResult.valid || !metadataValidationResult.valid) {
+            if (!allowListValidationResult.valid || !metadataValidationResult.valid) {
+                this.setStatus(422)
+                return {
+                    success: false,
+                    valid: false,
+                    message: "Errors while validating allow list",
+                    errors: {
+                        ...metadataValidationResult.errors,
+                        ...allowListValidationResult.errors
+                    }
+                };
+            }
+
+            const cid = await storage.uploadFile({file: jsonToBlob(metadataValidationResult.data)});
+            this.setStatus(201)
+
+            return {
+                success: true,
+                data: cid,
+            }
+        } catch (e) {
             this.setStatus(422)
             return {
-                valid: false,
-                message: "Errors while validating allow list",
-                errors: {
-                    ...metadataValidationResult.errors,
-                    ...allowListValidationResult.errors
-                }
+                success: false,
+                message: "Error while storing metadata",
+                errors: {metadata: (e as Error).message}
             };
         }
 
-        const cid = await storage.uploadFile({file: jsonToBlob(metadataValidationResult.data)});
-        this.setStatus(201)
-
-        return cid
     }
 
     /**
@@ -59,26 +73,39 @@ export class MetadataController extends Controller {
     })
     public async validateMetadata(@Body() requestBody: HypercertMetadata) {
 
-        const metadataValidationResult = validateMetadataAndClaimdata(requestBody);
+        try {
 
-        const allowListValidationResult = await validateRemoteAllowList(requestBody);
+            const metadataValidationResult = validateMetadataAndClaimdata(requestBody);
 
-        if (!allowListValidationResult.valid || !metadataValidationResult.valid) {
+            const allowListValidationResult = await validateRemoteAllowList(requestBody);
+
+            if (!allowListValidationResult.valid || !metadataValidationResult.valid) {
+                this.setStatus(422)
+                return {
+                    success: true,
+                    valid: false,
+                    message: "Errors while validating metadata and/or allow list",
+                    errors: {
+                        ...metadataValidationResult.errors,
+                        ...allowListValidationResult.errors
+                    }
+                };
+            }
+
+            this.setStatus(200)
+            return {
+                success: true,
+                valid: true,
+                message: "Metadata is valid hypercert metadata",
+            }
+
+        } catch (e) {
             this.setStatus(422)
             return {
-                valid: false,
-                message: "Errors while validating allow list",
-                errors: {
-                    ...metadataValidationResult.errors,
-                    ...allowListValidationResult.errors
-                }
+                success: false,
+                message: "Error while validating metadata",
+                errors: {metadata: (e as Error).message}
             };
-        }
-
-        this.setStatus(200)
-        return {
-            valid: true,
-            message: "Validation successful",
         }
     }
 }
