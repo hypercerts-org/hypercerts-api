@@ -31,7 +31,7 @@ class CollectionResolver {
 
       if (error) {
         console.warn(
-          `[ContractResolver::collections] Error fetching collections: `,
+          `[CollectionResolver::collections] Error fetching collections: `,
           error,
         );
         return { data };
@@ -40,7 +40,7 @@ class CollectionResolver {
       return { data, count: count ? count : data?.length };
     } catch (e) {
       throw new Error(
-        `[ContractResolver::orders] Error fetching collections: ${(e as Error).message}`,
+        `[CollectionResolver::collections] Error fetching collections: ${(e as Error).message}`,
       );
     }
   }
