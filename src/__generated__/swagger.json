@@ -478,21 +478,12 @@
 									"anyOf": [
 										{
 											"properties": {
-												"cid": {
-													"type": "string"
-												}
-											},
-											"required": [
-												"cid"
-											],
-											"type": "object"
-										},
-										{
-											"properties": {
+												"data": {},
 												"errors": {
 													"anyOf": [
 														{
 															"properties": {
+																"metadata": {},
 																"receivedAllowlistCID": {},
 																"name": {
 																	"type": "string"
@@ -509,6 +500,7 @@
 														},
 														{
 															"properties": {
+																"metadata": {},
 																"receivedAllowlistCID": {},
 																"name": {},
 																"message": {
@@ -522,6 +514,7 @@
 														},
 														{
 															"properties": {
+																"metadata": {},
 																"name": {},
 																"receivedAllowlistCID": {
 																	"type": "string"
@@ -543,12 +536,71 @@
 												},
 												"valid": {
 													"type": "boolean"
+												},
+												"success": {
+													"type": "boolean"
 												}
 											},
 											"required": [
 												"errors",
 												"message",
-												"valid"
+												"valid",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"errors": {},
+												"message": {},
+												"valid": {},
+												"data": {
+													"properties": {
+														"cid": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"cid"
+													],
+													"type": "object"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"data",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"data": {},
+												"valid": {},
+												"errors": {
+													"properties": {
+														"metadata": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"metadata"
+													],
+													"type": "object"
+												},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"message",
+												"success"
 											],
 											"type": "object"
 										}
@@ -613,6 +665,7 @@
 													"anyOf": [
 														{
 															"properties": {
+																"metadata": {},
 																"receivedAllowlistCID": {},
 																"name": {
 																	"type": "string"
@@ -629,6 +682,7 @@
 														},
 														{
 															"properties": {
+																"metadata": {},
 																"receivedAllowlistCID": {},
 																"name": {},
 																"message": {
@@ -642,6 +696,7 @@
 														},
 														{
 															"properties": {
+																"metadata": {},
 																"name": {},
 																"receivedAllowlistCID": {
 																	"type": "string"
@@ -663,12 +718,16 @@
 												},
 												"valid": {
 													"type": "boolean"
+												},
+												"success": {
+													"type": "boolean"
 												}
 											},
 											"required": [
 												"errors",
 												"message",
-												"valid"
+												"valid",
+												"success"
 											],
 											"type": "object"
 										},
@@ -680,11 +739,43 @@
 												},
 												"valid": {
 													"type": "boolean"
+												},
+												"success": {
+													"type": "boolean"
 												}
 											},
 											"required": [
 												"message",
-												"valid"
+												"valid",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"valid": {},
+												"errors": {
+													"properties": {
+														"metadata": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"metadata"
+													],
+													"type": "object"
+												},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"message",
+												"success"
 											],
 											"type": "object"
 										}
@@ -1034,6 +1125,9 @@
 												"message": {
 													"type": "string"
 												},
+												"valid": {
+													"type": "boolean"
+												},
 												"success": {
 													"type": "boolean"
 												}
@@ -1041,6 +1135,7 @@
 											"required": [
 												"errors",
 												"message",
+												"valid",
 												"success"
 											],
 											"type": "object"
@@ -1049,6 +1144,7 @@
 											"properties": {
 												"errors": {},
 												"message": {},
+												"valid": {},
 												"data": {
 													"properties": {
 														"cid": {
@@ -1066,6 +1162,35 @@
 											},
 											"required": [
 												"data",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"data": {},
+												"valid": {},
+												"errors": {
+													"properties": {
+														"allowList": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"allowList"
+													],
+													"type": "object"
+												},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"message",
 												"success"
 											],
 											"type": "object"
@@ -1127,9 +1252,60 @@
 									"anyOf": [
 										{
 											"properties": {
-												"valid": {},
 												"errors": {
 													"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+												},
+												"message": {
+													"type": "string"
+												},
+												"valid": {
+													"type": "boolean"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"message",
+												"valid",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"errors": {},
+												"message": {
+													"type": "string"
+												},
+												"valid": {
+													"type": "boolean"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"message",
+												"valid",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"valid": {},
+												"errors": {
+													"properties": {
+														"allowList": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"allowList"
+													],
+													"type": "object"
 												},
 												"message": {
 													"type": "string"
@@ -1142,23 +1318,6 @@
 												"errors",
 												"message",
 												"success"
-											],
-											"type": "object"
-										},
-										{
-											"properties": {
-												"errors": {},
-												"success": {},
-												"message": {
-													"type": "string"
-												},
-												"valid": {
-													"type": "boolean"
-												}
-											},
-											"required": [
-												"message",
-												"valid"
 											],
 											"type": "object"
 										}
