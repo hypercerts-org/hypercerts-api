@@ -101,6 +101,12 @@ input BasicAttestationWhereInput {
   uid: StringSearchOptions
 }
 
+input BasicCollectionWhereInput {
+  admin_id: StringSearchOptions
+  chain_id: NumberSearchOptions
+  id: IdSearchOptions
+}
+
 input BasicContractWhereInput {
   chain_id: NumberSearchOptions
   contract_address: StringSearchOptions
@@ -156,6 +162,20 @@ scalar BigInt
 
 input BooleanSearchOptions {
   eq: Boolean
+}
+
+type Collection {
+  admin_id: String!
+  background_image: String!
+  chain_id: Float!
+  grayscale_image: Boolean!
+  id: ID!
+  name: String!
+  tile_border_color: String!
+}
+
+input CollectionFetchInput {
+  by: ContractSortOptions
 }
 
 type Contract {
@@ -232,6 +252,11 @@ type GetAttestationsResponse {
 type GetAttestationsSchemaResponse {
   count: Int
   data: [AttestationSchema!]!
+}
+
+type GetCollectionsResponse {
+  count: Int
+  data: [Collection!]
 }
 
 type GetContractsResponse {
@@ -402,6 +427,7 @@ input OrderFetchInput {
 type Query {
   attestationSchemas(count: CountKeys, first: Int, offset: Int, sort: AttestationSchemaFetchInput, where: AttestationSchemaWhereInput): GetAttestationsSchemaResponse!
   attestations(count: CountKeys, first: Int, offset: Int, sort: AttestationFetchInput, where: AttestationWhereInput): GetAttestationsResponse!
+  collections(count: CountKeys, first: Int, offset: Int, sort: CollectionFetchInput, where: BasicCollectionWhereInput): GetCollectionsResponse!
   contracts(count: CountKeys, first: Int, offset: Int, sort: ContractFetchInput, where: BasicContractWhereInput): GetContractsResponse!
   fractions(count: CountKeys, first: Int, offset: Int, sort: FractionFetchInput, where: FractionWhereInput): GetFractionsResponse!
   hypercerts(count: CountKeys, first: Int, offset: Int, sort: HypercertFetchInput, where: HypercertsWhereInput): GetHypercertsResponse!
