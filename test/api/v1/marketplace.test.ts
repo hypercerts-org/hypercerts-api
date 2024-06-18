@@ -1,7 +1,6 @@
 import {describe, test, vi} from "vitest";
 import {expect} from "chai";
 import {MarketplaceController} from "../../../src/controllers/MarketplaceController.js";
-import {faker} from "@faker-js/faker";
 
 const mocks = vi.hoisted(() => {
     return {
@@ -18,8 +17,6 @@ vi.mock('../../../src/services/SupabaseDataService', async () => {
 
 describe("Order storage at v1/marketplace/orders", async () => {
     const controller = new MarketplaceController();
-
-    console.log(faker.string.hexadecimal({length: 32}))
 
     const order = {
         "quoteType": 1,
@@ -44,7 +41,6 @@ describe("Order storage at v1/marketplace/orders", async () => {
     const storageResponse = {
         data: order
     }
-
 
     test("Submits a new order for validation and storage on the database.", async () => {
         mocks.storeOrder.mockResolvedValue(storageResponse);
