@@ -9,7 +9,7 @@ import {Metadata} from "./metadataTypeDefs.js";
 class Fraction extends BasicTypeDef {
     @Field({nullable: true, description: "Address of the owner of the fractions"})
     owner_address?: string;
-    @Field((_) => EthBigInt, {nullable: true, "Units held by the fraction"})
+    @Field((_) => EthBigInt, {nullable: true, description: "Units held by the fraction"})
     units?: bigint | number;
     @Field((_) => GraphQLBigInt, {nullable: true})
     creation_block_timestamp?: bigint | number;
