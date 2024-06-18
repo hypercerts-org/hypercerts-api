@@ -5,6 +5,7 @@ import { FractionResolver } from "./fractionResolver.js";
 import { AttestationResolver } from "./attestationResolver.js";
 import { AttestationSchemaResolver } from "./attestationSchemaResolver.js";
 import { OrderResolver } from "./orderResolver.js";
+import { CollectionResolver } from "./collectionResolver.js";
 
 export const resolvers = [
   ContractResolver,
@@ -14,4 +15,5 @@ export const resolvers = [
   AttestationResolver,
   AttestationSchemaResolver,
   OrderResolver,
+  CollectionResolver
 ] as const;

@@ -101,6 +101,12 @@ input BasicAttestationWhereInput {
   uid: StringSearchOptions
 }
 
+input BasicCollectionWhereInput {
+  admin_id: StringSearchOptions
+  chain_id: NumberSearchOptions
+  id: IdSearchOptions
+}
+
 input BasicContractWhereInput {
   chain_id: NumberSearchOptions
   contract_address: StringSearchOptions
@@ -157,6 +163,20 @@ input BooleanSearchOptions {
   eq: Boolean
 }
 
+type Collection {
+  admin_address: String!
+  background_image: String!
+  chain_id: BigInt
+  grayscale_image: Boolean!
+  id: ID!
+  name: String!
+  tile_border_color: String!
+}
+
+input CollectionFetchInput {
+  by: ContractSortOptions
+}
+
 """Pointer to a contract deployed on a chain"""
 type Contract {
   """The ID of the chain on which the contract is deployed"""
@@ -196,12 +216,24 @@ scalar EthBigInt
 
 type Fraction {
   creation_block_timestamp: BigInt
+
+  """
+  The ID of the fraction concatenated from the chain ID, contract address, and token ID
+  """
   fraction_id: ID
   id: ID!
   last_block_update_timestamp: BigInt
+
+  """The metadata for the fraction"""
   metadata: Metadata
+
+  """Marketplace orders related to this fraction"""
   orders: GetOrdersResponse
+
+  """Address of the owner of the fractions"""
   owner_address: String
+
+  """Units held by the fraction"""
   units: EthBigInt
 }
 
@@ -236,6 +268,11 @@ type GetAttestationsResponse {
 type GetAttestationsSchemaResponse {
   count: Int
   data: [AttestationSchema!]!
+}
+
+type GetCollectionsResponse {
+  count: Int
+  data: [Collection!]
 }
 
 type GetContractsResponse {
@@ -429,6 +466,7 @@ input OrderFetchInput {
 type Query {
   attestationSchemas(count: CountKeys, first: Int, offset: Int, sort: AttestationSchemaFetchInput, where: AttestationSchemaWhereInput): GetAttestationsSchemaResponse!
   attestations(count: CountKeys, first: Int, offset: Int, sort: AttestationFetchInput, where: AttestationWhereInput): GetAttestationsResponse!
+  collections(count: CountKeys, first: Int, offset: Int, sort: CollectionFetchInput, where: BasicCollectionWhereInput): GetCollectionsResponse!
   contracts(count: CountKeys, first: Int, offset: Int, sort: ContractFetchInput, where: BasicContractWhereInput): GetContractsResponse!
   fractions(count: CountKeys, first: Int, offset: Int, sort: FractionFetchInput, where: FractionWhereInput): GetFractionsResponse!
   hypercerts(count: CountKeys, first: Int, offset: Int, sort: HypercertFetchInput, where: HypercertsWhereInput): GetHypercertsResponse!

@@ -1,6 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database as DataDatabase } from "../types/supabaseData.js";
 import { supabaseData } from "../client/supabase.js";
+import {GetCollectionArgs} from "../graphql/schemas/args/collectionArgs.js";
+import {applyFilters} from "../graphql/schemas/utils/filters.js";
+import {applySorting} from "../graphql/schemas/utils/sorting.js";
+import {applyPagination} from "../graphql/schemas/utils/pagination.js";
 
 export class SupabaseDataService {
   private supabaseData: SupabaseClient<DataDatabase>;
@@ -69,5 +73,17 @@ export class SupabaseDataService {
       .overlaps("itemIds", ids)
       .order("createdAt", { ascending: false })
       .throwOnError();
+  }
+
+  getCollections(args: GetCollectionArgs) {
+    let query = this.supabaseData.from("hyperboards").select("*");
+
+    const {where, sort, offset, first} = args;
+
+    query = applyFilters({query, where});
+    query = applySorting({query, sort});
+    query = applyPagination({query, pagination: {first, offset}});
+
+    return query;
   }
 }
