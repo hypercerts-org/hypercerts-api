@@ -128,7 +128,6 @@ input BasicHypercertWhereInput {
   creator_address: StringSearchOptions
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
-  owner_address: StringSearchOptions
   token_id: NumberSearchOptions
   uri: StringSearchOptions
 }
@@ -178,10 +177,16 @@ input CollectionFetchInput {
   by: ContractSortOptions
 }
 
+"""Pointer to a contract deployed on a chain"""
 type Contract {
+  """The ID of the chain on which the contract is deployed"""
   chain_id: BigInt
+
+  """The address of the contract"""
   contract_address: String
   id: ID!
+
+  """The block number at which the contract was deployed"""
   start_block: BigInt
 }
 
@@ -210,14 +215,25 @@ enum CountKeys {
 scalar EthBigInt
 
 type Fraction {
-  claims_id: String
   creation_block_timestamp: BigInt
-  hypercert_id: ID
+
+  """
+  The ID of the fraction concatenated from the chain ID, contract address, and token ID
+  """
+  fraction_id: ID
   id: ID!
   last_block_update_timestamp: BigInt
+
+  """The metadata for the fraction"""
   metadata: Metadata
+
+  """Marketplace orders related to this fraction"""
   orders: GetOrdersResponse
+
+  """Address of the owner of the fractions"""
   owner_address: String
+
+  """Units held by the fraction"""
   units: EthBigInt
 }
 
@@ -285,20 +301,44 @@ type GetOrdersResponse {
 }
 
 type Hypercert {
+  """Attestations for the hypercert or parts of its data"""
   attestations: GetAttestationsResponse
+
+  """The block number at which the hypercert was stored on chain"""
   block_number: BigInt
+
+  """The contract that the hypercert is associated with"""
   contract: Contract
+
+  """The UUID of the contract as stored in the database"""
   contracts_id: ID
+
+  """The address of the creator of the hypercert"""
   creator_address: String
+
+  """Transferable fractions representing partial ownership of the hypercert"""
   fractions: GetFractionsResponse
+
+  """
+  Concatenation of [chainID]-[contractAddress]-[tokenID] to discern hypercerts across chains
+  """
   hypercert_id: ID
   id: ID!
   last_block_update_timestamp: BigInt
+
+  """The metadata for the hypercert as referenced by the uri"""
   metadata: Metadata
+
+  """Marketplace orders related to this hypercert"""
   orders: GetOrdersResponse
-  owner_address: String
+
+  """The token ID of the hypercert"""
   token_id: EthBigInt
+
+  """The total units held by the hypercert"""
   units: EthBigInt
+
+  """References the metadata for this claim"""
   uri: String
 }
 
@@ -326,7 +366,6 @@ input HypercertsWhereInput {
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
   metadata: BasicMetadataWhereInput
-  owner_address: StringSearchOptions
   token_id: NumberSearchOptions
   uri: StringSearchOptions
 }
