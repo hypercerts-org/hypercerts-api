@@ -3,7 +3,6 @@ import {Body, Controller, Post, Response, Route, SuccessResponse, Tags} from "ts
 import {StorageService} from "../services/StorageService.js";
 import {parseAndValidateMerkleTree} from "../utils/parseAndValidateMerkleTreeDump.js";
 import {StoreResponse, ValidationResponse} from "../types/api.js";
-import {StandardMerkleTree} from "@openzeppelin/merkle-tree";
 
 /**
  *  Request body for creating a new allowlist.
@@ -41,24 +40,36 @@ export class AllowListController extends Controller {
     public async storeAllowList(@Body() requestBody: CreateAllowListRequest) {
         const storage = await StorageService.init();
 
-        const result = parseAndValidateMerkleTree(requestBody);
+        try {
 
-        if (!result.valid || !result.data) {
+            const result = parseAndValidateMerkleTree(requestBody);
+
+            if (!result.valid || !result.data) {
+                this.setStatus(422)
+                return {
+                    success: true,
+                    valid: false,
+                    message: "Errors while validating allow list",
+                    errors: result.errors
+                };
+            }
+
+            const cid = await storage.uploadFile({file: jsonToBlob(requestBody.allowList)});
+            this.setStatus(201)
+
+            return {
+                success: true,
+                data: cid,
+            }
+        } catch (e) {
             this.setStatus(422)
             return {
                 success: false,
-                message: "Errors while validating allow list",
-                errors: result.errors
+                message: "Errors while storing allow list",
+                errors: {allowList: (e as Error).message}
             };
         }
 
-        const cid = await storage.uploadFile({file: jsonToBlob(requestBody.allowList)});
-        this.setStatus(201)
-
-        return {
-            success: true,
-            data: cid,
-        }
     }
 
     /**
@@ -74,21 +85,33 @@ export class AllowListController extends Controller {
         errors: {allowList: "Invalid allowList. Length is  0"}
     })
     public async validateAllowList(@Body() requestBody: CreateAllowListRequest) {
-        const result = parseAndValidateMerkleTree(requestBody);
+        try {
+            const result = parseAndValidateMerkleTree(requestBody);
 
-        if (!result.valid || !result.data) {
+            if (!result.valid || !result.data) {
+                this.setStatus(422)
+                return {
+                    success: true,
+                    valid: false,
+                    message: "Errors while validating allow list",
+                    errors: result.errors
+                };
+            }
+
+            this.setStatus(201)
+            return {
+                success: true,
+                valid: true,
+                message: "Allowlist is a valid hypercerts allowlist object."
+            }
+        } catch (e) {
             this.setStatus(422)
             return {
                 success: false,
                 message: "Errors while validating allow list",
-                errors: result.errors
+                errors: {allowList: (e as Error).message}
             };
         }
 
-        this.setStatus(201)
-        return {
-            valid: true,
-            message: "Allowlist is a valid hypercerts allowlist object."
-        }
     }
 }

@@ -21,6 +21,7 @@ import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { isAddress } from "viem";
 import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
 
+// TODO improve typings: bigints, Hex, Address, etc..
 export interface CreateOrderRequest {
   signature: string;
   chainId: number;
