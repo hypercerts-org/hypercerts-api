@@ -144,6 +144,9 @@ importers:
       '@eslint/js':
         specifier: ^9.0.0
         version: 9.0.0
+      '@faker-js/faker':
+        specifier: ^8.4.1
+        version: 8.4.1
       '@graphql-codegen/cli':
         specifier: 5.0.2
         version: 5.0.2(@types/node@20.10.6)(encoding@0.1.13)(enquirer@2.4.1)(graphql@16.8.1)(typescript@5.3.3)
