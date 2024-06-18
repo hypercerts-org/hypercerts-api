@@ -799,14 +799,6 @@ export type introspection = {
             }
           },
           {
-            "name": "owner_address",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "StringSearchOptions",
-              "ofType": null
-            }
-          },
-          {
             "name": "token_id",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -1093,15 +1085,6 @@ export type introspection = {
         "name": "Fraction",
         "fields": [
           {
-            "name": "claims_id",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "SCALAR",
@@ -1111,7 +1094,7 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "hypercert_id",
+            "name": "fraction_id",
             "type": {
               "kind": "SCALAR",
               "name": "ID",
@@ -1640,15 +1623,6 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "owner_address",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
             "name": "token_id",
             "type": {
               "kind": "SCALAR",
@@ -1827,14 +1801,6 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "BasicMetadataWhereInput",
-              "ofType": null
-            }
-          },
-          {
-            "name": "owner_address",
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "StringSearchOptions",
               "ofType": null
             }
           },

@@ -122,7 +122,6 @@ input BasicHypercertWhereInput {
   creator_address: StringSearchOptions
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
-  owner_address: StringSearchOptions
   token_id: NumberSearchOptions
   uri: StringSearchOptions
 }
@@ -190,9 +189,8 @@ enum CountKeys {
 scalar EthBigInt
 
 type Fraction {
-  claims_id: String
   creation_block_timestamp: BigInt
-  hypercert_id: ID
+  fraction_id: ID
   id: ID!
   last_block_update_timestamp: BigInt
   metadata: Metadata
@@ -271,7 +269,6 @@ type Hypercert {
   last_block_update_timestamp: BigInt
   metadata: Metadata
   orders: GetOrdersResponse
-  owner_address: String
   token_id: EthBigInt
   units: EthBigInt
   uri: String
@@ -301,7 +298,6 @@ input HypercertsWhereInput {
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
   metadata: BasicMetadataWhereInput
-  owner_address: StringSearchOptions
   token_id: NumberSearchOptions
   uri: StringSearchOptions
 }
