@@ -1675,6 +1675,24 @@ export type introspection = {
               }
             },
             "args": []
+          },
+          {
+            "name": "lowestAvailablePrice",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "totalUnitsForSale",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
           }
         ],
         "interfaces": []
