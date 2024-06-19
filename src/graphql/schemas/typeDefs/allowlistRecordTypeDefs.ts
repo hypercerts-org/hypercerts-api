@@ -6,7 +6,7 @@ import {BasicTypeDef} from "./basicTypeDef.js";
 class AllowlistRecord extends BasicTypeDef {
     @Field({nullable: true, description: "The hypercert ID the claimable fraction belongs to"})
     hypercert_id?: string;
-    @Field({nullable: true, description: "The token ID of the hypercert"})
+    @Field({nullable: true, description: "The token ID of the hypercert the claimable fraction belongs to"})
     token_id?: string;
     @Field({nullable: true, description: "The leaf of the Merkle tree for the claimable fraction"})
     leaf?: string;
