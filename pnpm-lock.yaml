@@ -18,11 +18,11 @@ importers:
         specifier: ^3.5.0
         version: 3.5.0(@envelop/core@5.0.0)(graphql-yoga@5.1.1(graphql@16.8.1))(graphql@16.8.1)
       '@hypercerts-org/marketplace-sdk':
-        specifier: 0.2.0
-        version: 0.2.0(ethers@6.12.2)(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)
+        specifier: 0.3.5
+        version: 0.3.5(ethers@6.12.2)(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)
       '@hypercerts-org/sdk':
-        specifier: 2.0.0-alpha.11
-        version: 2.0.0-alpha.11(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)
+        specifier: 2.0.0-alpha.20
+        version: 2.0.0-alpha.20(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)
       '@ipld/car':
         specifier: ^5.2.5
         version: 5.2.5
@@ -236,6 +236,14 @@ packages:
 
   '@0no-co/graphql.web@1.0.4':
     resolution: {integrity: sha512-W3ezhHGfO0MS1PtGloaTpg0PbaT8aZSmmaerL7idtU5F7oCI+uu25k+MsMS31BVFlp4aMkHSrNRxiD72IlK8TA==}
+    peerDependencies:
+      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+    peerDependenciesMeta:
+      graphql:
+        optional: true
+
+  '@0no-co/graphql.web@1.0.7':
+    resolution: {integrity: sha512-E3Qku4mTzdrlwVWGPxklDnME5ANrEGetvYw4i2GCRlppWXXE4QD66j7pwb8HelZwS6LnqEChhrSOGCXpbiu6MQ==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
     peerDependenciesMeta:
@@ -1298,20 +1306,17 @@ packages:
   '@humanwhocodes/object-schema@2.0.1':
     resolution: {integrity: sha512-dvuCeX5fC9dXgJn9t+X5atfmgQAzUOWqS1254Gh0m6i8wKd10ebXkfNKiRK+1GWi/yTvvLDHpoxLr0xxxeslWw==}
 
-  '@hypercerts-org/contracts@1.1.2':
-    resolution: {integrity: sha512-+Y7TD1LX1c2FyU7OYuQ/NUFfcKaW5fIZ9R/Xr+DhNUbi7KstHhhdVEl1hmSExuvySbAD3wNKFaQWdlBRxT520Q==}
+  '@hypercerts-org/contracts@2.0.0-alpha.0':
+    resolution: {integrity: sha512-xkvl2goo1Uz39TdALs4ypjxarmxk4Lu0X8JZc5+TdmVw/hsaywjE5WpPgil/AFE5Ccm3qyNGVsY6fz6co5GvVg==}
 
-  '@hypercerts-org/marketplace-sdk@0.2.0':
-    resolution: {integrity: sha512-Gv/DUe4DOMtKLnQKA8u1e/E+ToeCY/aqpTF0gzYX8J5OBErAqdrACzcp5l9CdjyuMjnreptkDJfjCAUwb2LEww==}
+  '@hypercerts-org/marketplace-sdk@0.3.5':
+    resolution: {integrity: sha512-beuSM57O4zhwgYZvdH+cGOUGV6vkakW8Un5Y71uWBgzOyKDC8AxAF7BNWlJGDt9iKZxUId+8lzfKkAmMm1C6iQ==}
     engines: {node: '>= 16.15.1 <= 20.x'}
     peerDependencies:
       ethers: ^6.6.2
 
-  '@hypercerts-org/sdk@2.0.0-alpha.11':
-    resolution: {integrity: sha512-9nUXf1GJNSpBD/FvTNJrq49dcvtBbihJk1RvbqjMoEIiittXh51P2mhWf1mpha6MTx+KXcpsPZg+iOv4AUiYTQ==}
-
-  '@hypercerts-org/sdk@2.0.0-alpha.5':
-    resolution: {integrity: sha512-OQL6jNliFg73J6+XfPoYAEiFmHfI6Uxj4bGDJyMY/6e55UHDCorDkml5bGawxApl8Ldj1E0AZcPaj/687jPg2g==}
+  '@hypercerts-org/sdk@2.0.0-alpha.20':
+    resolution: {integrity: sha512-HZIvgAHaRByJnyLDDEGvFRC1e1Um5JuMIo+YmfelP2ErZ2SAg5VGjNvkwlmXMWSpmP9I3mXRzwjhrHd7b+So1A==}
 
   '@inquirer/checkbox@2.3.5':
     resolution: {integrity: sha512-3V0OSykTkE/38GG1DhxRGLBmqefgzRg2EK5A375zz+XEvIWfAHcac31e+zlBDPypRHxhmXc/Oh6v9eOPbH3nAg==}
@@ -2487,6 +2492,9 @@ packages:
   '@urql/core@4.3.0':
     resolution: {integrity: sha512-wT+FeL8DG4x5o6RfHEnONNFVDM3616ouzATMYUClB6CB+iIu2mwfBKd7xSUxYOZmwtxna5/hDRQdMl3nbQZlnw==}
 
+  '@urql/core@5.0.4':
+    resolution: {integrity: sha512-gl86J6B6gWXvvkx5omZ+CaGiPQ0chCUGM0jBsm0zTtkDQPRqufv0NSUN6sp2JhGGtTOB0NR6Pd+w7XAVGGyUOA==}
+
   '@vitest/expect@1.1.3':
     resolution: {integrity: sha512-MnJqsKc1Ko04lksF9XoRJza0bGGwTtqfbyrsYv5on4rcEkdo+QgUdITenBQBUltKzdxW7K3rWh+nXRULwsdaVg==}
 
@@ -2782,6 +2790,9 @@ packages:
 
   axios@1.6.5:
     resolution: {integrity: sha512-Ii012v05KEVuUoFWmMW/UQv9aRIc3ZwkWDcM+h5Il8izZCtRVpDUfwpoFf7eOtajT3QiGR4yDUx7lPqHJULgbg==}
+
+  axios@1.7.2:
+    resolution: {integrity: sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==}
 
   babel-plugin-syntax-trailing-function-commas@7.0.0-beta.0:
     resolution: {integrity: sha512-Xj9XuRuz3nTSbaTXWv3itLOcxyF4oPD8douBBmj7U9BBC6nEBYfyOJYQMf/8PJAFotC62UY5dFfIGEPr7WswzQ==}
@@ -3753,6 +3764,15 @@ packages:
 
   follow-redirects@1.15.4:
     resolution: {integrity: sha512-Cr4D/5wlrb0z9dgERpUL3LrmPKVDsETIJhaCMeDfuFYcqa5bldGV6wBsAN6X/vxlXQtFBMrXdXxdL8CbDTGniw==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+
+  follow-redirects@1.15.6:
+    resolution: {integrity: sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -6153,8 +6173,8 @@ packages:
       typescript:
         optional: true
 
-  viem@2.13.3:
-    resolution: {integrity: sha512-3tlwDRKHSelupFjbFMdUxF41f79ktyH2F9PAQ9Dltbs1DpdDlR1x+Ksa0th6qkyjjAbpDZP3F5nMTJv/1GVPdQ==}
+  viem@2.15.1:
+    resolution: {integrity: sha512-Vrveen3vDOJyPf8Q8TDyWePG2pTdK6IpSi4P6qlvAP+rXkAeqRvwYBy9AmGm+BeYpCETAyTT0SrCP6458XSt+w==}
     peerDependencies:
       typescript: '>=5.0.4'
     peerDependenciesMeta:
@@ -6339,6 +6359,18 @@ packages:
       utf-8-validate:
         optional: true
 
+  ws@8.17.1:
+    resolution: {integrity: sha512-6XQFvXTkbfUOZOKKILFG1PDK2NDQs4azKQl26T0YS5CxqWLgXajbPZ+h4gZekJyRqFU8pvnbAbbs/3TgRPy+GQ==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
   ws@8.5.0:
     resolution: {integrity: sha512-BWX0SWVgLPzYwF8lTzEy1egjhS4S4OEAHfsO8o65WOVsrnSRGaSiUaa9e0ggGlkMTtBlmOpEXiie9RUcBO86qg==}
     engines: {node: '>=10.0.0'}
@@ -6439,6 +6471,10 @@ packages:
 snapshots:
 
   '@0no-co/graphql.web@1.0.4(graphql@16.8.1)':
+    optionalDependencies:
+      graphql: 16.8.1
+
+  '@0no-co/graphql.web@1.0.7(graphql@16.8.1)':
     optionalDependencies:
       graphql: 16.8.1
 
@@ -8045,7 +8081,7 @@ snapshots:
 
   '@humanwhocodes/object-schema@2.0.1': {}
 
-  '@hypercerts-org/contracts@1.1.2(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)':
+  '@hypercerts-org/contracts@2.0.0-alpha.0(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)':
     dependencies:
       hardhat: 2.19.4(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)
     transitivePeerDependencies:
@@ -8055,9 +8091,9 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@hypercerts-org/marketplace-sdk@0.2.0(ethers@6.12.2)(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)':
+  '@hypercerts-org/marketplace-sdk@0.3.5(ethers@6.12.2)(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)':
     dependencies:
-      '@hypercerts-org/sdk': 2.0.0-alpha.5(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)
+      '@hypercerts-org/sdk': 2.0.0-alpha.20(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)
       '@supabase/supabase-js': 2.42.5
       ethers: 6.12.2
       merkletreejs: 0.3.11
@@ -8071,53 +8107,24 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@hypercerts-org/sdk@2.0.0-alpha.11(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)':
+  '@hypercerts-org/sdk@2.0.0-alpha.20(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)':
     dependencies:
       '@ethereum-attestation-service/eas-sdk': 1.3.7(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)
       '@ethersproject/abstract-signer': 5.7.0
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.8.1)
-      '@hypercerts-org/contracts': 1.1.2(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)
+      '@hypercerts-org/contracts': 2.0.0-alpha.0(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)
       '@openzeppelin/merkle-tree': 1.0.5
-      '@urql/core': 4.3.0(graphql@16.8.1)
+      '@urql/core': 5.0.4(graphql@16.8.1)
       '@whatwg-node/fetch': 0.9.15
       ajv: 8.12.0
-      axios: 1.6.5(debug@4.3.4)
+      axios: 1.7.2
       dotenv: 16.4.5
       ethers: 5.7.2
       fast-deep-equal: 3.1.3
       graphql: 16.8.1
       loglevel: 1.8.1
       urql: 4.0.6(graphql@16.8.1)(react@18.2.0)
-      viem: 2.13.3(typescript@5.3.3)(zod@3.23.8)
-      wonka: 6.3.4
-    transitivePeerDependencies:
-      - bufferutil
-      - debug
-      - react
-      - supports-color
-      - ts-node
-      - typescript
-      - utf-8-validate
-      - zod
-
-  '@hypercerts-org/sdk@2.0.0-alpha.5(react@18.2.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)(zod@3.23.8)':
-    dependencies:
-      '@ethereum-attestation-service/eas-sdk': 1.3.7(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)
-      '@ethersproject/abstract-signer': 5.7.0
-      '@graphql-typed-document-node/core': 3.2.0(graphql@16.8.1)
-      '@hypercerts-org/contracts': 1.1.2(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.3.3))(typescript@5.3.3)
-      '@openzeppelin/merkle-tree': 1.0.5
-      '@urql/core': 4.3.0(graphql@16.8.1)
-      '@whatwg-node/fetch': 0.9.15
-      ajv: 8.12.0
-      axios: 1.6.5(debug@4.3.4)
-      dotenv: 16.4.5
-      ethers: 5.7.2
-      fast-deep-equal: 3.1.3
-      graphql: 16.8.1
-      loglevel: 1.8.1
-      urql: 4.0.6(graphql@16.8.1)(react@18.2.0)
-      viem: 2.13.3(typescript@5.3.3)(zod@3.23.8)
+      viem: 2.15.1(typescript@5.3.3)(zod@3.23.8)
       wonka: 6.3.4
     transitivePeerDependencies:
       - bufferutil
@@ -9677,6 +9684,13 @@ snapshots:
     transitivePeerDependencies:
       - graphql
 
+  '@urql/core@5.0.4(graphql@16.8.1)':
+    dependencies:
+      '@0no-co/graphql.web': 1.0.7(graphql@16.8.1)
+      wonka: 6.3.4
+    transitivePeerDependencies:
+      - graphql
+
   '@vitest/expect@1.1.3':
     dependencies:
       '@vitest/spy': 1.1.3
@@ -10036,6 +10050,14 @@ snapshots:
   axios@1.6.5(debug@4.3.4):
     dependencies:
       follow-redirects: 1.15.4(debug@4.3.4)
+      form-data: 4.0.0
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+
+  axios@1.7.2:
+    dependencies:
+      follow-redirects: 1.15.6
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -11313,6 +11335,8 @@ snapshots:
     optionalDependencies:
       debug: 4.3.4(supports-color@8.1.1)
 
+  follow-redirects@1.15.6: {}
+
   foreground-child@3.1.1:
     dependencies:
       cross-spawn: 7.0.3
@@ -11988,9 +12012,9 @@ snapshots:
     dependencies:
       ws: 8.13.0
 
-  isows@1.0.4(ws@8.13.0):
+  isows@1.0.4(ws@8.17.1):
     dependencies:
-      ws: 8.13.0
+      ws: 8.17.1
 
   it-all@1.0.6: {}
 
@@ -13509,7 +13533,7 @@ snapshots:
 
   sync-multihash-sha2@1.0.0:
     dependencies:
-      '@noble/hashes': 1.3.3
+      '@noble/hashes': 1.4.0
 
   tar@6.2.1:
     dependencies:
@@ -13823,7 +13847,7 @@ snapshots:
       - utf-8-validate
       - zod
 
-  viem@2.13.3(typescript@5.3.3)(zod@3.23.8):
+  viem@2.15.1(typescript@5.3.3)(zod@3.23.8):
     dependencies:
       '@adraffy/ens-normalize': 1.10.0
       '@noble/curves': 1.2.0
@@ -13831,8 +13855,8 @@ snapshots:
       '@scure/bip32': 1.3.2
       '@scure/bip39': 1.2.1
       abitype: 1.0.0(typescript@5.3.3)(zod@3.23.8)
-      isows: 1.0.4(ws@8.13.0)
-      ws: 8.13.0
+      isows: 1.0.4(ws@8.17.1)
+      ws: 8.17.1
     optionalDependencies:
       typescript: 5.3.3
     transitivePeerDependencies:
@@ -13991,6 +14015,8 @@ snapshots:
   ws@8.13.0: {}
 
   ws@8.16.0: {}
+
+  ws@8.17.1: {}
 
   ws@8.5.0: {}
 
