@@ -298,6 +298,8 @@ type GetMetadataResponse {
 type GetOrdersResponse {
   count: Int
   data: [Order!]
+  lowestAvailablePrice: BigInt
+  totalUnitsForSale: BigInt
 }
 
 type Hypercert {

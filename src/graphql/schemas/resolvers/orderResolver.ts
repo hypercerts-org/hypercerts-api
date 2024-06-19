@@ -4,6 +4,7 @@ import { Order } from "../typeDefs/orderTypeDefs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { GetOrdersArgs } from "../args/orderArgs.js";
 import { SupabaseCachingService } from "../../../services/SupabaseCachingService.js";
+import {GraphQLBigInt} from "graphql-scalars";
 
 @ObjectType()
 export default class GetOrdersResponse {
@@ -12,6 +13,13 @@ export default class GetOrdersResponse {
 
   @Field(() => Int, { nullable: true })
   count?: number;
+
+  @Field(() => GraphQLBigInt, { nullable: true })
+  totalUnitsForSale?: bigint;
+
+  @Field(() => GraphQLBigInt, { nullable: true })
+  lowestAvailablePrice?: bigint;
+
 }
 
 @injectable()
