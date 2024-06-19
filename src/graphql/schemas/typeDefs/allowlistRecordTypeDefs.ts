@@ -22,6 +22,8 @@ class AllowlistRecord extends BasicTypeDef {
     units?: bigint | number;
     @Field(() => GraphQLBigInt, {nullable: true, description: "The total number of units held by the hypercert"})
     total_units?: bigint | number;
+    @Field(() => String, {nullable: true, description: "The root of the allow list Merkle tree"})
+    root?: string;
 }
 
 export {AllowlistRecord};
