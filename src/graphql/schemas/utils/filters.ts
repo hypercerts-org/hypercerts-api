@@ -9,7 +9,6 @@ import type {WhereOptions} from "../inputs/whereOptions.js";
 import type {Database as CachingDatabase} from "../../../types/supabaseCaching.js";
 import {PostgrestTransformBuilder} from "@supabase/postgrest-js";
 
-
 interface ApplyFilters<
     T extends object,
     QueryType extends PostgrestTransformBuilder<CachingDatabase['public'], Record<string, unknown>, unknown, unknown, unknown>
@@ -159,10 +158,12 @@ export const applyFilters =
             // If the value is an object, recursively apply filters
             if (typeof value === 'object' && !Array.isArray(value)) {
                 const nestedFilters = [];
+                // TODO resolve better handling of column name exceptions
                 for (const [_column, _value] of Object.entries(value)) {
                     if (!_value) continue;
-                    // TODO resolve hacky workaround for hypercerts <> claims alias
-                    nestedFilters.push(...buildFilters(_value, `${(column === 'hypercerts' || column === 'hypercert') ? 'claims' : column}.${_column}`));
+                    if(column === 'hypercerts' || column === 'hypercert') nestedFilters.push(...buildFilters(_value, `claims.${_column}`));
+                    else if(column === 'contract') nestedFilters.push(...buildFilters(_value, `contracts.${_column}`));
+                    else nestedFilters.push(...buildFilters(_value, `${column}.${_column}`));
                 }
                 filters.push(...nestedFilters);
             }

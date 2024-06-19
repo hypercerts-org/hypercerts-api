@@ -14,6 +14,7 @@ import { SupabaseCachingService } from "../../../services/SupabaseCachingService
 import { GetHypercertArgs } from "../args/hypercertsArgs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
+import {decodeAbiParameters, parseAbiParameters} from "viem";
 
 @ObjectType()
 export default class GetHypercertsResponse {
@@ -294,7 +295,37 @@ class HypercertResolver {
         return { data: [], count: 0 };
       }
 
+      // For each fraction, find all orders and find the max units for sale for that fraction
+      const totalUnitsForSale = fractionsData.map((fraction) => {
+        const ordersForFraction = ordersData.filter(
+          (order) =>
+            parseClaimOrFractionId(fraction.hypercert_id).id.toString() ===
+            order.itemIds[0],
+        );
+
+        const unitsPerOrder = ordersForFraction.map((order) => {
+          const decodedParams = decodeAbiParameters(
+            parseAbiParameters("uint256 minUnitAmount, uint256 maxUnitAmount, uint256 minUnitsToKeep, bool sellLeftOverFraction"),
+            order.additionalParameters as `0x{string}`,
+          );
+          const unitsToKeep = decodedParams[2];
+          const units = BigInt(fraction.units);
+          return units - unitsToKeep;
+        });
+
+        // Find max units per order
+        return unitsPerOrder.reduce((acc, val) => {
+            return val > acc ? val : acc;
+          }, BigInt(0));
+      }).reduce((acc, val) => acc + val, BigInt(0));
+
+      const lowestAvailablePrice = ordersData.reduce((acc, val) => {
+        return BigInt(val.price) < acc ? BigInt(val.price) : acc;
+      }, BigInt(ordersData[0]?.price || 0));
+
       return {
+        totalUnitsForSale,
+        lowestAvailablePrice,
         data: ordersData || [],
         count: ordersCount || 0,
       };
