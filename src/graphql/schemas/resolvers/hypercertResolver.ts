@@ -321,7 +321,7 @@ class HypercertResolver {
 
       const lowestAvailablePrice = ordersData.reduce((acc, val) => {
         return BigInt(val.price) < acc ? BigInt(val.price) : acc;
-      }, BigInt(ordersData[0].price));
+      }, BigInt(ordersData[0]?.price || 0));
 
       return {
         totalUnitsForSale,
