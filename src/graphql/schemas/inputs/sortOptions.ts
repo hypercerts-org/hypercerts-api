@@ -117,4 +117,6 @@ export class AllowlistRecordSortOptions implements SortOptions<Hypercert> {
     units?: SortOrder;
     @Field(_ => SortOrder, {nullable: true})
     total_units?: SortOrder;
+    @Field(_ => SortOrder, {nullable: true})
+    root?: SortOrder;
 }
