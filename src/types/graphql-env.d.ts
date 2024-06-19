@@ -19,6 +19,220 @@ export type introspection = {
     "types": [
       {
         "kind": "OBJECT",
+        "name": "AllowlistRecord",
+        "fields": [
+          {
+            "name": "claimed",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "entry",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "hypercert_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "leaf",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "proof",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "token_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "total_units",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "units",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "user_address",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "SCALAR",
+        "name": "Boolean"
+      },
+      {
+        "kind": "SCALAR",
+        "name": "Float"
+      },
+      {
+        "kind": "SCALAR",
+        "name": "String"
+      },
+      {
+        "kind": "SCALAR",
+        "name": "ID"
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "AllowlistRecordFetchInput",
+        "inputFields": [
+          {
+            "name": "by",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "AllowlistRecordSortOptions",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "AllowlistRecordSortOptions",
+        "inputFields": [
+          {
+            "name": "claimed",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "entry",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "hypercert_id",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "leaf",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "proof",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "token_id",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "total_units",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "units",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "user_address",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
         "name": "Attestation",
         "fields": [
           {
@@ -124,14 +338,6 @@ export type introspection = {
         "interfaces": []
       },
       {
-        "kind": "SCALAR",
-        "name": "String"
-      },
-      {
-        "kind": "SCALAR",
-        "name": "ID"
-      },
-      {
         "kind": "INPUT_OBJECT",
         "name": "AttestationFetchInput",
         "inputFields": [
@@ -223,10 +429,6 @@ export type introspection = {
           }
         ],
         "interfaces": []
-      },
-      {
-        "kind": "SCALAR",
-        "name": "Boolean"
       },
       {
         "kind": "INPUT_OBJECT",
@@ -506,6 +708,84 @@ export type introspection = {
           },
           {
             "name": "uid",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "BasicAllowlistRecordWhereInput",
+        "inputFields": [
+          {
+            "name": "claimed",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "BooleanSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "entry",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "hypercert_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "leaf",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "proof",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringArraySearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "token_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "total_units",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "units",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "user_address",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringSearchOptions",
@@ -1426,6 +1706,41 @@ export type introspection = {
       },
       {
         "kind": "OBJECT",
+        "name": "GetAllowlistRecordResponse",
+        "fields": [
+          {
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "data",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "AllowlistRecord",
+                  "ofType": null
+                }
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "SCALAR",
+        "name": "Int"
+      },
+      {
+        "kind": "OBJECT",
         "name": "GetAttestationsResponse",
         "fields": [
           {
@@ -1454,10 +1769,6 @@ export type introspection = {
           }
         ],
         "interfaces": []
-      },
-      {
-        "kind": "SCALAR",
-        "name": "Int"
       },
       {
         "kind": "OBJECT",
@@ -2687,10 +2998,6 @@ export type introspection = {
         "interfaces": []
       },
       {
-        "kind": "SCALAR",
-        "name": "Float"
-      },
-      {
         "kind": "INPUT_OBJECT",
         "name": "OrderFetchInput",
         "inputFields": [
@@ -2708,6 +3015,59 @@ export type introspection = {
         "kind": "OBJECT",
         "name": "Query",
         "fields": [
+          {
+            "name": "allowlistRecords",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "GetAllowlistRecordResponse",
+                "ofType": null
+              }
+            },
+            "args": [
+              {
+                "name": "count",
+                "type": {
+                  "kind": "ENUM",
+                  "name": "CountKeys",
+                  "ofType": null
+                }
+              },
+              {
+                "name": "first",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              {
+                "name": "offset",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              {
+                "name": "sort",
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "AllowlistRecordFetchInput",
+                  "ofType": null
+                }
+              },
+              {
+                "name": "where",
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "BasicAllowlistRecordWhereInput",
+                  "ofType": null
+                }
+              }
+            ]
+          },
           {
             "name": "attestationSchemas",
             "type": {

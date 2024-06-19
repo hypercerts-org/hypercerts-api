@@ -96,3 +96,25 @@ export class FractionSortOptions implements SortOptions<Fraction> {
     @Field(_ => SortOrder, {nullable: true})
     owner_address?: SortOrder;
 }
+
+@InputType()
+export class AllowlistRecordSortOptions implements SortOptions<Hypercert> {
+    @Field(_ => SortOrder, {nullable: true})
+    hypercert_id?: SortOrder;
+    @Field(_ => SortOrder, {nullable: true})
+    token_id?: SortOrder;
+    @Field(_ => SortOrder, {nullable: true})
+    leaf?: SortOrder;
+    @Field(_ => SortOrder, {nullable: true})
+    entry?: SortOrder;
+    @Field(_ => SortOrder, {nullable: true})
+    user_address?: SortOrder;
+    @Field(_ => SortOrder, {nullable: true})
+    claimed?: SortOrder;
+    @Field(_ => SortOrder, {nullable: true})
+    proof?: SortOrder;
+    @Field(_ => SortOrder, {nullable: true})
+    units?: SortOrder;
+    @Field(_ => SortOrder, {nullable: true})
+    total_units?: SortOrder;
+}

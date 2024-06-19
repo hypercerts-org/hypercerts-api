@@ -3,11 +3,12 @@ import {
     AttestationSortOptions,
     ContractSortOptions, FractionSortOptions,
     HypercertSortOptions,
-    MetadataSortOptions
+    MetadataSortOptions,
+    AllowlistRecordSortOptions
 } from "./sortOptions.js";
 
 
 export type OrderOptions<T extends object> = {
-    by?: HypercertSortOptions | ContractSortOptions | MetadataSortOptions | AttestationSortOptions | AttestationSchemaSortOptions | FractionSortOptions | null;
+    by?: HypercertSortOptions | ContractSortOptions | MetadataSortOptions | AttestationSortOptions | AttestationSchemaSortOptions | FractionSortOptions | AllowlistRecordSortOptions | null;
 }
 
