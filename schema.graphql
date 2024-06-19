@@ -3,6 +3,53 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+"""Records of allow list entries for claimable fractions"""
+type AllowlistRecord {
+  """Whether the fraction has been claimed"""
+  claimed: Boolean
+
+  """The entry index of the Merkle tree for the claimable fraction"""
+  entry: Float
+
+  """The hypercert ID the claimable fraction belongs to"""
+  hypercert_id: String
+  id: ID!
+
+  """The leaf of the Merkle tree for the claimable fraction"""
+  leaf: String
+
+  """The proof for the claimable fraction"""
+  proof: [String!]
+
+  """The token ID of the hypercert"""
+  token_id: String
+
+  """The total number of units held by the hypercert"""
+  total_units: BigInt
+
+  """The number of units of the claimable fraction"""
+  units: BigInt
+
+  """The address of the user who can claim the fraction"""
+  user_address: String
+}
+
+input AllowlistRecordFetchInput {
+  by: AllowlistRecordSortOptions
+}
+
+input AllowlistRecordSortOptions {
+  claimed: SortOrder
+  entry: SortOrder
+  hypercert_id: SortOrder
+  leaf: SortOrder
+  proof: SortOrder
+  token_id: SortOrder
+  total_units: SortOrder
+  units: SortOrder
+  user_address: SortOrder
+}
+
 type Attestation {
   attester: String
   block_timestamp: BigInt
@@ -75,6 +122,18 @@ input AttestationWhereInput {
   supported_schemas_id: StringSearchOptions
   token_id: StringSearchOptions
   uid: StringSearchOptions
+}
+
+input BasicAllowlistRecordWhereInput {
+  claimed: BooleanSearchOptions
+  entry: NumberSearchOptions
+  hypercert_id: StringSearchOptions
+  leaf: StringSearchOptions
+  proof: StringArraySearchOptions
+  token_id: NumberSearchOptions
+  total_units: NumberSearchOptions
+  units: NumberSearchOptions
+  user_address: StringSearchOptions
 }
 
 input BasicAttestationSchemaWhereInput {
@@ -258,6 +317,11 @@ input FractionWhereInput {
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions
   units: NumberSearchOptions
+}
+
+type GetAllowlistRecordResponse {
+  count: Int
+  data: [AllowlistRecord!]
 }
 
 type GetAttestationsResponse {
@@ -466,6 +530,7 @@ input OrderFetchInput {
 }
 
 type Query {
+  allowlistRecords(count: CountKeys, first: Int, offset: Int, sort: AllowlistRecordFetchInput, where: BasicAllowlistRecordWhereInput): GetAllowlistRecordResponse!
   attestationSchemas(count: CountKeys, first: Int, offset: Int, sort: AttestationSchemaFetchInput, where: AttestationSchemaWhereInput): GetAttestationsSchemaResponse!
   attestations(count: CountKeys, first: Int, offset: Int, sort: AttestationFetchInput, where: AttestationWhereInput): GetAttestationsResponse!
   collections(count: CountKeys, first: Int, offset: Int, sort: CollectionFetchInput, where: BasicCollectionWhereInput): GetCollectionsResponse!

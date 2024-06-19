@@ -93,6 +93,18 @@ export class SupabaseCachingService {
 
     // Allow lists
 
+    getAllowlistRecords(args: Get) {
+        let query = this.supabaseCaching.from("claimable_fractions_with_proofs").select("*");
+
+        const {where, sort, offset, first} = args;
+
+        query = applyFilters({query, where});
+        query = applySorting({query, sort});
+        query = applyPagination({query, pagination: {first, offset}});
+
+        return query;
+    }
+
     // Attestations
 
     getAttestationSchemas(args: GetAttestationSchemaArgs) {
