@@ -7,7 +7,6 @@ import {yoga} from "./client/graphql.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerJson from "./__generated__/swagger.json" assert {type: "json"}
 import {RegisterRoutes} from "./__generated__/routes/routes.js";
-import bodyParser from "body-parser";
 import * as Sentry from '@sentry/node';
 
 // @ts-expect-error BigInt is not supported by JSON
@@ -25,8 +24,8 @@ const PORT = assertExists(process.env.PORT, "PORT");
 
 const app: Express = express();
 
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
+app.use(express.urlencoded({extended: true, limit: '1mb'}));
+app.use(express.json({limit: '1mb'}));
 app.use(cors());
 
 app.get('/health', (req, res) => {

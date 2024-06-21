@@ -21,7 +21,10 @@ type AllowlistRecord {
   """The proof for the claimable fraction"""
   proof: [String!]
 
-  """The token ID of the hypercert"""
+  """The root of the allow list Merkle tree"""
+  root: String
+
+  """The token ID of the hypercert the claimable fraction belongs to"""
   token_id: String
 
   """The total number of units held by the hypercert"""
@@ -44,6 +47,7 @@ input AllowlistRecordSortOptions {
   hypercert_id: SortOrder
   leaf: SortOrder
   proof: SortOrder
+  root: SortOrder
   token_id: SortOrder
   total_units: SortOrder
   units: SortOrder
@@ -130,6 +134,7 @@ input BasicAllowlistRecordWhereInput {
   hypercert_id: StringSearchOptions
   leaf: StringSearchOptions
   proof: StringArraySearchOptions
+  root: StringSearchOptions
   token_id: NumberSearchOptions
   total_units: NumberSearchOptions
   units: NumberSearchOptions
