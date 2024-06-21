@@ -8,7 +8,6 @@ import {
   Tags,
 } from "tsoa";
 import { ApiResponse } from "../types/api.js";
-import { HypercertClient } from "@hypercerts-org/sdk";
 import {
   addressesByNetwork,
   HypercertExchangeClient,
@@ -20,7 +19,7 @@ import { z } from "zod";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { isAddress } from "viem";
 import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
-import {indexerEnvironment} from "../utils/constants.js";
+import { getFractionsById } from "../utils/getFractionsById.js";
 
 export interface CreateOrderRequest {
   signature: string;
@@ -84,19 +83,19 @@ export class MarketplaceController extends Controller {
       })
       .refine(
         ({ chainId }) => isParsableToBigInt(chainId),
-        `ChainId is not parseable as bigint`,
+        `ChainId is not parseable as bigint`
       )
       .refine(
         ({ globalNonce }) => isParsableToBigInt(globalNonce),
-        `globalNonce is not parseable as bigint`,
+        `globalNonce is not parseable as bigint`
       )
       .refine(
         ({ orderNonce }) => isParsableToBigInt(orderNonce),
-        `orderNonce is not parseable as bigint`,
+        `orderNonce is not parseable as bigint`
       )
       .refine(
         ({ price }) => isParsableToBigInt(price),
-        `price is not parseable as bigint`,
+        `price is not parseable as bigint`
       )
       .refine(({ currency }) => isAddress(currency), `Invalid currency address`)
       .refine(({ signer }) => isAddress(signer), `Invalid signer address`)
@@ -104,22 +103,22 @@ export class MarketplaceController extends Controller {
       .refine(({ amounts }) => amounts.length > 0, `amounts must not be empty`)
       .refine(
         ({ itemIds, amounts }) => itemIds.length === amounts.length,
-        "itemIds and amounts must have the same length",
+        "itemIds and amounts must have the same length"
       )
       .refine(
         ({ startTime, endTime }) => startTime < endTime,
-        "startTime must be less than endTime",
+        "startTime must be less than endTime"
       )
       .refine(
         ({ collection }) => isAddress(collection),
-        `Invalid collection address`,
+        `Invalid collection address`
       )
       .refine(
         ({ collection, chainId }) =>
           // @ts-expect-error Typing issue with chainId
           addressesByNetwork[chainId]?.MINTER?.toLowerCase() ===
           collection.toLowerCase(),
-        `Collection address does not match the minter address for chainId`,
+        `Collection address does not match the minter address for chainId`
       );
     const parsedBody = inputSchema.safeParse(requestBody);
 
@@ -137,7 +136,7 @@ export class MarketplaceController extends Controller {
     const hec = new HypercertExchangeClient(
       chainId,
       // @ts-expect-error Typing issue with provider
-      new ethers.JsonRpcProvider(),
+      new ethers.JsonRpcProvider()
     );
     const typedData = hec.getTypedDataDomain();
 
@@ -145,7 +144,7 @@ export class MarketplaceController extends Controller {
       typedData,
       utils.makerTypes,
       makerOrder,
-      signature,
+      signature
     );
 
     if (!(recoveredAddress.toLowerCase() === makerOrder.signer.toLowerCase())) {
@@ -157,21 +156,16 @@ export class MarketplaceController extends Controller {
       };
     }
 
-    const hypercertClient = new HypercertClient({
-      environment: indexerEnvironment as "production" | "test"
-    });
     const tokenIds = makerOrder.itemIds.map(
-      (id) => `${chainId}-${makerOrder.collection.toLowerCase()}-${id}`,
+      (id) => `${chainId}-${makerOrder.collection.toLowerCase()}-${id}`
     );
 
-    const claimTokens = await Promise.all(
-      tokenIds.map((id) =>
-        hypercertClient.indexer.fractionById({ fractionId: id }),
-      ),
+    const fractions = await Promise.all(
+      tokenIds.map((fractionId) => getFractionsById(fractionId))
     );
 
     // Check if all fractions exist
-    if (claimTokens.some((claimToken) => !claimToken?.fractions)) {
+    if (fractions.some((fraction) => !fraction)) {
       this.setStatus(401);
       return {
         message: "Not all fractions in itemIds exist",
@@ -180,16 +174,14 @@ export class MarketplaceController extends Controller {
       };
     }
 
-    const allFractions = claimTokens.flatMap(
-      (claimToken) => claimToken?.fractions?.data || [],
-    );
+    const allFractions = fractions.flatMap((fraction) => fraction || []);
 
     // Check if all fractions are owned by signer
     if (
       !allFractions.every(
         (claimToken) =>
           claimToken?.owner_address?.toLowerCase() ===
-          recoveredAddress.toLowerCase(),
+          recoveredAddress.toLowerCase()
       )
     ) {
       this.setStatus(401);
@@ -293,7 +285,7 @@ export class MarketplaceController extends Controller {
     if (!currentNonce) {
       const { data: newNonce, error } = await supabase.createNonce(
         lowerCaseAddress,
-        chainId,
+        chainId
       );
       if (error) {
         this.setStatus(500);
@@ -315,7 +307,7 @@ export class MarketplaceController extends Controller {
       await supabase.updateNonce(
         lowerCaseAddress,
         chainId,
-        currentNonce.nonce_counter + 1,
+        currentNonce.nonce_counter + 1
       );
 
     if (updatedNonceError) {
