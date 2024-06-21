@@ -1,7 +1,4 @@
 import { graphql } from "gql.tada";
-import { hypercertClient } from "../client/hypercerts.js";
-import { indexerEnvironment } from "./constants.js";
-import { CONSTANTS } from "@hypercerts-org/sdk";
 import { urqlClient } from "../client/graphql.js";
 
 const fractionsByIdQuery = graphql(`
