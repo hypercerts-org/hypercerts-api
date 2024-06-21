@@ -85,6 +85,15 @@ export type introspection = {
             "args": []
           },
           {
+            "name": "root",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
             "name": "token_id",
             "type": {
               "kind": "SCALAR",
@@ -191,6 +200,14 @@ export type introspection = {
           },
           {
             "name": "proof",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "root",
             "type": {
               "kind": "ENUM",
               "name": "SortOrder",
@@ -757,6 +774,14 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringArraySearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "root",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
               "ofType": null
             }
           },
