@@ -20,6 +20,7 @@ import { z } from "zod";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { isAddress } from "viem";
 import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
+import {indexerEnvironment} from "../utils/constants.js";
 
 export interface CreateOrderRequest {
   signature: string;
@@ -157,8 +158,7 @@ export class MarketplaceController extends Controller {
     }
 
     const hypercertClient = new HypercertClient({
-      chain: { id: chainId },
-      indexerEnvironment: "all",
+      environment: indexerEnvironment as "production" | "test"
     });
     const tokenIds = makerOrder.itemIds.map(
       (id) => `${chainId}-${makerOrder.collection.toLowerCase()}-${id}`,

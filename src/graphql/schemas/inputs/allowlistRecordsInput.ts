@@ -31,6 +31,8 @@ export class BasicAllowlistRecordWhereInput implements WhereOptions<AllowlistRec
     units?: NumberSearchOptions;
     @Field(() => NumberSearchOptions, {nullable: true})
     total_units?: NumberSearchOptions;
+    @Field(() => StringSearchOptions, {nullable: true})
+    root?: StringSearchOptions;
 }
 
 @InputType()
