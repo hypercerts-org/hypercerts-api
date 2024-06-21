@@ -23,3 +23,8 @@ export const supabaseDataServiceApiKey = assertExists(
 
 export const web3upKey = assertExists(process.env.KEY, "WEB3UP_KEY");
 export const web3upProof = assertExists(process.env.PROOF, "WEB3UP_PROOF");
+
+export const indexerEnvironment = assertExists(
+    process.env.INDEXER_ENVIRONMENT,
+    "INDEXER_ENVIRONMENT"
+);
