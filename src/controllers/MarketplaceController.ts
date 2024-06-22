@@ -8,7 +8,6 @@ import {
   Tags,
 } from "tsoa";
 import { ApiResponse } from "../types/api.js";
-import { HypercertClient } from "@hypercerts-org/sdk";
 import {
   addressesByNetwork,
   HypercertExchangeClient,
@@ -20,7 +19,7 @@ import { z } from "zod";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { isAddress } from "viem";
 import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
-import {indexerEnvironment} from "../utils/constants.js";
+import { getFractionsById } from "../utils/getFractionsById.js";
 
 export interface CreateOrderRequest {
   signature: string;
@@ -157,21 +156,16 @@ export class MarketplaceController extends Controller {
       };
     }
 
-    const hypercertClient = new HypercertClient({
-      environment: indexerEnvironment as "production" | "test"
-    });
     const tokenIds = makerOrder.itemIds.map(
       (id) => `${chainId}-${makerOrder.collection.toLowerCase()}-${id}`,
     );
 
-    const claimTokens = await Promise.all(
-      tokenIds.map((id) =>
-        hypercertClient.indexer.fractionById({ fractionId: id }),
-      ),
+    const fractions = await Promise.all(
+      tokenIds.map((fractionId) => getFractionsById(fractionId)),
     );
 
     // Check if all fractions exist
-    if (claimTokens.some((claimToken) => !claimToken?.fractions)) {
+    if (fractions.some((fraction) => !fraction)) {
       this.setStatus(401);
       return {
         message: "Not all fractions in itemIds exist",
@@ -180,9 +174,7 @@ export class MarketplaceController extends Controller {
       };
     }
 
-    const allFractions = claimTokens.flatMap(
-      (claimToken) => claimToken?.fractions?.data || [],
-    );
+    const allFractions = fractions.flatMap((fraction) => fraction || []);
 
     // Check if all fractions are owned by signer
     if (
