@@ -218,6 +218,11 @@ input BasicOrderWhereInput {
   id: IdSearchOptions
 }
 
+input BasicSaleWhereInput {
+  hypercert_id: StringSearchOptions
+  transaction_hash: IdSearchOptions
+}
+
 """
 The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
@@ -408,6 +413,9 @@ type Hypercert {
   """Marketplace orders related to this hypercert"""
   orders: GetOrdersResponse
 
+  """Sales related to this hypercert"""
+  sales: [Sale!]
+
   """The token ID of the hypercert"""
   token_id: EthBigInt
 
@@ -549,7 +557,7 @@ type Query {
   hypercerts(count: CountKeys, first: Int, offset: Int, sort: HypercertFetchInput, where: HypercertsWhereInput): GetHypercertsResponse!
   metadata(count: CountKeys, first: Int, offset: Int, sort: MetadataFetchInput, where: MetadataWhereInput): GetMetadataResponse!
   orders(count: CountKeys, first: Int, offset: Int, sort: OrderFetchInput, where: BasicOrderWhereInput): GetOrdersResponse!
-  sales(count: CountKeys, first: Int, offset: Int, sort: CollectionFetchInput, where: BasicCollectionWhereInput): GetSalesResponse!
+  sales(count: CountKeys, first: Int, offset: Int, sort: SaleFetchInput, where: BasicSaleWhereInput): GetSalesResponse!
 }
 
 type Sale {
@@ -567,6 +575,10 @@ type Sale {
   seller: String!
   strategy_id: BigInt
   transaction_hash: String!
+}
+
+input SaleFetchInput {
+  by: ContractSortOptions
 }
 
 """The direction to sort the query results"""

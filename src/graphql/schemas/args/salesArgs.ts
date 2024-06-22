@@ -1,16 +1,13 @@
 import { ArgsType, Field } from "type-graphql";
 import { PaginationArgs } from "./paginationArgs.js";
-import {
-  BasicCollectionWhereInput,
-  CollectionFetchInput,
-} from "../inputs/collectionInput.js";
+import { BasicSaleWhereInput, SaleFetchInput } from "../inputs/salesInput.js";
 
 @ArgsType()
 export class GetSalesArgs extends PaginationArgs {
   @Field({ nullable: true })
-  where?: BasicCollectionWhereInput;
+  where?: BasicSaleWhereInput;
   @Field({ nullable: true })
-  sort?: CollectionFetchInput;
+  sort?: SaleFetchInput;
 }
 
 @ArgsType()

@@ -1292,6 +1292,28 @@ export type introspection = {
         ]
       },
       {
+        "kind": "INPUT_OBJECT",
+        "name": "BasicSaleWhereInput",
+        "inputFields": [
+          {
+            "name": "hypercert_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "transaction_hash",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "IdSearchOptions",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
         "kind": "SCALAR",
         "name": "BigInt"
       },
@@ -2167,6 +2189,21 @@ export type introspection = {
               "kind": "OBJECT",
               "name": "GetOrdersResponse",
               "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "sales",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Sale",
+                  "ofType": null
+                }
+              }
             },
             "args": []
           },
@@ -3587,7 +3624,7 @@ export type introspection = {
                 "name": "sort",
                 "type": {
                   "kind": "INPUT_OBJECT",
-                  "name": "CollectionFetchInput",
+                  "name": "SaleFetchInput",
                   "ofType": null
                 }
               },
@@ -3595,7 +3632,7 @@ export type introspection = {
                 "name": "where",
                 "type": {
                   "kind": "INPUT_OBJECT",
-                  "name": "BasicCollectionWhereInput",
+                  "name": "BasicSaleWhereInput",
                   "ofType": null
                 }
               }
@@ -3742,6 +3779,20 @@ export type introspection = {
           }
         ],
         "interfaces": []
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "SaleFetchInput",
+        "inputFields": [
+          {
+            "name": "by",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "ContractSortOptions",
+              "ofType": null
+            }
+          }
+        ]
       },
       {
         "kind": "ENUM",
