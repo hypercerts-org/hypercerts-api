@@ -1304,6 +1304,14 @@ export type introspection = {
             }
           },
           {
+            "name": "item_ids",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringArraySearchOptions",
+              "ofType": null
+            }
+          },
+          {
             "name": "transaction_hash",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -1606,6 +1614,21 @@ export type introspection = {
               "kind": "SCALAR",
               "name": "String",
               "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "sales",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Sale",
+                  "ofType": null
+                }
+              }
             },
             "args": []
           },

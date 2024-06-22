@@ -220,6 +220,7 @@ input BasicOrderWhereInput {
 
 input BasicSaleWhereInput {
   hypercert_id: StringSearchOptions
+  item_ids: StringArraySearchOptions
   transaction_hash: IdSearchOptions
 }
 
@@ -301,6 +302,9 @@ type Fraction {
 
   """Address of the owner of the fractions"""
   owner_address: String
+
+  """Sales related to this fraction"""
+  sales: [Sale!]
 
   """Units held by the fraction"""
   units: EthBigInt

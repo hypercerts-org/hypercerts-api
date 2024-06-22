@@ -1,6 +1,10 @@
 import { Field, InputType } from "type-graphql";
 import type { WhereOptions } from "./whereOptions.js";
-import { IdSearchOptions, StringSearchOptions } from "./searchOptions.js";
+import {
+  IdSearchOptions,
+  StringArraySearchOptions,
+  StringSearchOptions,
+} from "./searchOptions.js";
 import { ContractSortOptions } from "./sortOptions.js";
 import { Sale } from "../typeDefs/salesTypeDefs.js";
 import { SaleOptions } from "./saleOptions.js";
@@ -12,6 +16,9 @@ export class BasicSaleWhereInput implements WhereOptions<Sale> {
 
   @Field(() => StringSearchOptions, { nullable: true })
   hypercert_id?: StringSearchOptions | null;
+
+  @Field(() => StringArraySearchOptions, { nullable: true })
+  item_ids?: StringArraySearchOptions | null;
 }
 
 @InputType()

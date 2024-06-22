@@ -31,17 +31,14 @@ class SalesResolver {
       console.log(data);
 
       if (error) {
-        console.warn(
-          `[SalesResolver::sales] Error fetching collections: `,
-          error,
-        );
+        console.warn(`[SalesResolver::sales] Error fetching sales: `, error);
         return { data };
       }
 
       return { data, count: count ? count : data?.length };
     } catch (e) {
       throw new Error(
-        `[SalesResolver::sales] Error fetching collections: ${(e as Error).message}`,
+        `[SalesResolver::sales] Error fetching sales: ${(e as Error).message}`,
       );
     }
   }
