@@ -371,6 +371,11 @@ type GetOrdersResponse {
   totalUnitsForSale: BigInt
 }
 
+type GetSalesResponse {
+  count: Int
+  data: [Sale!]
+}
+
 type Hypercert {
   """Attestations for the hypercert or parts of its data"""
   attestations: GetAttestationsResponse
@@ -544,6 +549,24 @@ type Query {
   hypercerts(count: CountKeys, first: Int, offset: Int, sort: HypercertFetchInput, where: HypercertsWhereInput): GetHypercertsResponse!
   metadata(count: CountKeys, first: Int, offset: Int, sort: MetadataFetchInput, where: MetadataWhereInput): GetMetadataResponse!
   orders(count: CountKeys, first: Int, offset: Int, sort: OrderFetchInput, where: BasicOrderWhereInput): GetOrdersResponse!
+  sales(count: CountKeys, first: Int, offset: Int, sort: CollectionFetchInput, where: BasicCollectionWhereInput): GetSalesResponse!
+}
+
+type Sale {
+  """Number of units sold for each fraction"""
+  amounts: [String!]
+  buyer: String!
+  collection: String!
+  creation_block_timestamp: BigInt
+  currency: String!
+  hypercert_id: String!
+  id: ID!
+
+  """Token ids of the sold fractions"""
+  item_ids: [String!]
+  seller: String!
+  strategy_id: BigInt
+  transaction_hash: String!
 }
 
 """The direction to sort the query results"""
