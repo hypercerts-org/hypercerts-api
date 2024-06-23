@@ -147,4 +147,11 @@ export class SupabaseCachingService {
 
     return query;
   }
+
+  getSalesForTokenIds(tokenIds: bigint[]) {
+    return this.supabaseCaching
+      .from("sales")
+      .select("*", { count: "exact", head: false })
+      .overlaps("item_ids", tokenIds);
+  }
 }

@@ -167,9 +167,7 @@ class FractionResolver {
     }
 
     try {
-      const res = await this.supabaseCachingService.getSales({
-        where: { item_ids: { contains: [id.toString()] } },
-      });
+      const res = await this.supabaseCachingService.getSalesForTokenIds([id]);
 
       if (!res) {
         console.warn(
