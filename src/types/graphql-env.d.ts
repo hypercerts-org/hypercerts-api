@@ -1075,6 +1075,14 @@ export type introspection = {
             }
           },
           {
+            "name": "fraction_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
             "name": "hypercert_id",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -1606,6 +1614,15 @@ export type introspection = {
             "args": []
           },
           {
+            "name": "hypercert_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "ID",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
             "name": "id",
             "type": {
               "kind": "NON_NULL",
@@ -1665,15 +1682,9 @@ export type introspection = {
           {
             "name": "sales",
             "type": {
-              "kind": "LIST",
-              "ofType": {
-                "kind": "NON_NULL",
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "Sale",
-                  "ofType": null
-                }
-              }
+              "kind": "OBJECT",
+              "name": "GetSalesResponse",
+              "ofType": null
             },
             "args": []
           },
@@ -1758,6 +1769,14 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "fraction_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
               "ofType": null
             }
           },
@@ -3733,7 +3752,7 @@ export type introspection = {
                 "kind": "NON_NULL",
                 "ofType": {
                   "kind": "SCALAR",
-                  "name": "String",
+                  "name": "EthBigInt",
                   "ofType": null
                 }
               }
@@ -3797,12 +3816,9 @@ export type introspection = {
           {
             "name": "hypercert_id",
             "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "args": []
           },
@@ -3826,7 +3842,7 @@ export type introspection = {
                 "kind": "NON_NULL",
                 "ofType": {
                   "kind": "SCALAR",
-                  "name": "String",
+                  "name": "EthBigInt",
                   "ofType": null
                 }
               }
@@ -3849,7 +3865,7 @@ export type introspection = {
             "name": "strategy_id",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []

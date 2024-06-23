@@ -182,6 +182,7 @@ input BasicContractWhereInput {
 
 input BasicFractionWhereInput {
   creation_block_timestamp: NumberSearchOptions
+  fraction_id: StringSearchOptions
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
   last_block_update_timestamp: NumberSearchOptions
@@ -292,9 +293,14 @@ type Fraction {
   creation_block_timestamp: BigInt
 
   """
-  The ID of the fraction concatenated from the chain ID, contract address, and token ID
+  The ID of the fraction concatenated from the chain ID, contract address, and token ID of the fraction
   """
   fraction_id: ID
+
+  """
+  The ID of the fraction concatenated from the chain ID, contract address, and ID of the hypercert claim
+  """
+  hypercert_id: ID
   id: ID!
   last_update_block_number: BigInt
   last_update_block_timestamp: BigInt
@@ -309,7 +315,7 @@ type Fraction {
   owner_address: String
 
   """Sales related to this fraction"""
-  sales: [Sale!]
+  sales: GetSalesResponse
 
   """Units held by the fraction"""
   units: EthBigInt
@@ -329,6 +335,7 @@ input FractionSortOptions {
 
 input FractionWhereInput {
   creation_block_timestamp: NumberSearchOptions
+  fraction_id: StringSearchOptions
   hypercert_id: StringSearchOptions
   hypercerts: BasicHypercertWhereInput
   id: IdSearchOptions
@@ -571,19 +578,37 @@ type Query {
 
 type Sale {
   """Number of units sold for each fraction"""
-  amounts: [String!]
+  amounts: [EthBigInt!]
+
+  """The address of the buyer"""
   buyer: String!
+
+  """The address of the contract minting the tradable fractions"""
   collection: String!
+
+  """The block number of the transaction creating the sale"""
   creation_block_number: BigInt
+
+  """The timestamp of the block creating the sale"""
   creation_block_timestamp: BigInt
+
+  """The address of the token accepted for this order"""
   currency: String!
-  hypercert_id: String!
+
+  """The ID of the hypercert token referenced in the order"""
+  hypercert_id: String
   id: ID!
 
   """Token ids of the sold fractions"""
-  item_ids: [String!]
+  item_ids: [EthBigInt!]
+
+  """The address of the seller"""
   seller: String!
-  strategy_id: BigInt
+
+  """The ID of the strategy registered with the exchange contracts"""
+  strategy_id: EthBigInt
+
+  """The transactions hash of the sale"""
   transaction_hash: String!
 }
 

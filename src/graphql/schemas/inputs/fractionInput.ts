@@ -7,24 +7,26 @@ import {FractionSortOptions} from "./sortOptions.js";
 
 @InputType()
 export class BasicFractionWhereInput implements WhereOptions<Fraction> {
-    @Field(_ => IdSearchOptions, {nullable: true})
+    @Field(() => IdSearchOptions, {nullable: true})
     id?: IdSearchOptions;
-    @Field(_ => StringSearchOptions, {nullable: true})
+    @Field(() => StringSearchOptions, {nullable: true})
     hypercert_id?: StringSearchOptions
-    @Field(_ => NumberSearchOptions, {nullable: true})
+    @Field(() => StringSearchOptions, {nullable: true})
+    fraction_id?: StringSearchOptions
+    @Field(() => NumberSearchOptions, {nullable: true})
     creation_block_timestamp?: NumberSearchOptions;
-    @Field(_ => NumberSearchOptions, {nullable: true})
+    @Field(() => NumberSearchOptions, {nullable: true})
     last_block_update_timestamp?: NumberSearchOptions;
-    @Field(_ => NumberSearchOptions, {nullable: true})
+    @Field(() => NumberSearchOptions, {nullable: true})
     token_id?: NumberSearchOptions;
-    @Field(_ => NumberSearchOptions, {nullable: true})
+    @Field(() => NumberSearchOptions, {nullable: true})
     units?: NumberSearchOptions;
-    @Field(_ => StringSearchOptions, {nullable: true})
+    @Field(() => StringSearchOptions, {nullable: true})
     owner_address?: StringSearchOptions;
 }
 
 @InputType()
 export class FractionFetchInput implements OrderOptions<Fraction> {
-    @Field(_ => FractionSortOptions, {nullable: true})
+    @Field(() => FractionSortOptions, {nullable: true})
     by?: FractionSortOptions
 }
