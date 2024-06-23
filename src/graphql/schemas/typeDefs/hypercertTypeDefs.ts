@@ -7,7 +7,7 @@ import GetFractionsResponse from "../resolvers/fractionResolver.js";
 import { Metadata } from "./metadataTypeDefs.js";
 import { Contract } from "./contractTypeDefs.js";
 import GetOrdersResponse from "../resolvers/orderResolver.js";
-import { Sale } from "./salesTypeDefs.js";
+import GetSalesResponse from "../resolvers/salesResolver.js";
 
 @ObjectType()
 class Hypercert extends BasicTypeDef {
@@ -72,11 +72,11 @@ class Hypercert extends BasicTypeDef {
   })
   orders?: GetOrdersResponse;
 
-  @Field(() => [Sale], {
+  @Field(() => GetSalesResponse, {
     nullable: true,
     description: "Sales related to this hypercert",
   })
-  sales?: Sale[];
+  sales?: GetSalesResponse;
 
   @Field((_) => GraphQLBigInt, { nullable: true })
   creation_block_number?: bigint | number | string;

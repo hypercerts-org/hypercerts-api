@@ -345,13 +345,13 @@ class HypercertResolver {
 
   @FieldResolver()
   async sales(@Root() hypercert: Hypercert) {
-    if (!hypercert.id) {
+    if (!hypercert.hypercert_id) {
       return null;
     }
 
     try {
       console.log(
-        `[HypercertResolver::sales] Fetching orders for ${hypercert.id}`,
+        `[HypercertResolver::sales] Fetching orders for ${hypercert.hypercert_id}`,
       );
 
       const salesRes = await this.supabaseCachingService.getSales({
@@ -376,6 +376,7 @@ class HypercertResolver {
         return { data: [] };
       }
 
+      console.log("salesData", salesData);
       return {
         data: salesData || [],
         count: salesData?.length || 0,

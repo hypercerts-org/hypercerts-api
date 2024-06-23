@@ -262,7 +262,16 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "block_timestamp",
+            "name": "creation_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "creation_block_timestamp",
             "type": {
               "kind": "SCALAR",
               "name": "BigInt",
@@ -303,6 +312,24 @@ export type introspection = {
                 "name": "ID",
                 "ofType": null
               }
+            },
+            "args": []
+          },
+          {
+            "name": "last_update_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "last_update_block_timestamp",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
             },
             "args": []
           },
@@ -1552,6 +1579,15 @@ export type introspection = {
         "name": "Fraction",
         "fields": [
           {
+            "name": "creation_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "SCALAR",
@@ -1582,7 +1618,16 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "last_block_update_timestamp",
+            "name": "last_update_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "last_update_block_timestamp",
             "type": {
               "kind": "SCALAR",
               "name": "BigInt",
@@ -2123,15 +2168,6 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "block_number",
-            "type": {
-              "kind": "SCALAR",
-              "name": "BigInt",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
             "name": "contract",
             "type": {
               "kind": "OBJECT",
@@ -2145,6 +2181,24 @@ export type introspection = {
             "type": {
               "kind": "SCALAR",
               "name": "ID",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "creation_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "creation_block_timestamp",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
               "ofType": null
             },
             "args": []
@@ -2189,7 +2243,16 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "last_block_update_timestamp",
+            "name": "last_update_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "last_update_block_timestamp",
             "type": {
               "kind": "SCALAR",
               "name": "BigInt",
@@ -2218,15 +2281,9 @@ export type introspection = {
           {
             "name": "sales",
             "type": {
-              "kind": "LIST",
-              "ofType": {
-                "kind": "NON_NULL",
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "Sale",
-                  "ofType": null
-                }
-              }
+              "kind": "OBJECT",
+              "name": "GetSalesResponse",
+              "ofType": null
             },
             "args": []
           },
@@ -3704,6 +3761,15 @@ export type introspection = {
                 "name": "String",
                 "ofType": null
               }
+            },
+            "args": []
+          },
+          {
+            "name": "creation_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
             },
             "args": []
           },
