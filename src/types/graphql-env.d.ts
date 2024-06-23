@@ -1606,6 +1606,15 @@ export type introspection = {
             "args": []
           },
           {
+            "name": "hypercert_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "ID",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
             "name": "id",
             "type": {
               "kind": "NON_NULL",
