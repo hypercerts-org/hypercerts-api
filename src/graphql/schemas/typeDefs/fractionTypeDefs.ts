@@ -18,10 +18,7 @@ class Fraction extends BasicTypeDef {
     description: "Units held by the fraction",
   })
   units?: bigint | number;
-  @Field((_) => GraphQLBigInt, { nullable: true })
-  creation_block_timestamp?: bigint | number;
-  @Field((_) => GraphQLBigInt, { nullable: true })
-  last_block_update_timestamp?: bigint | number;
+
   @Field((_) => ID, {
     name: "fraction_id",
     nullable: true,
@@ -47,6 +44,15 @@ class Fraction extends BasicTypeDef {
     description: "Sales related to this fraction",
   })
   sales?: Sale[];
+
+  @Field((_) => GraphQLBigInt, { nullable: true })
+  creation_block_number?: bigint | number | string;
+  @Field((_) => GraphQLBigInt, { nullable: true })
+  creation_block_timestamp?: bigint | number;
+  @Field((_) => GraphQLBigInt, { nullable: true })
+  last_update_block_number?: bigint | number | string;
+  @Field((_) => GraphQLBigInt, { nullable: true })
+  last_update_block_timestamp?: bigint | number | string;
 }
 
 export { Fraction };

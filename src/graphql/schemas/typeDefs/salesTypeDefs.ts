@@ -28,8 +28,11 @@ class Sale extends BasicTypeDef {
   amounts?: bigint[];
   @Field()
   transaction_hash?: string;
-  @Field(() => GraphQLBigInt, { nullable: true })
-  creation_block_timestamp?: bigint;
+
+  @Field((_) => GraphQLBigInt, { nullable: true })
+  creation_block_number?: bigint | number | string;
+  @Field((_) => GraphQLBigInt, { nullable: true })
+  creation_block_timestamp?: bigint | number | string;
 }
 
 export { Sale };

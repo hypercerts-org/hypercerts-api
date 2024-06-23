@@ -17,19 +17,12 @@ class Hypercert extends BasicTypeDef {
     description: "The UUID of the contract as stored in the database",
   })
   contracts_id?: string;
-  @Field((_) => GraphQLBigInt, {
-    nullable: true,
-    description: "The block number at which the hypercert was stored on chain",
-  })
-  block_number?: bigint | number;
   @Field((_) => ID, {
     nullable: true,
     description:
       "Concatenation of [chainID]-[contractAddress]-[tokenID] to discern hypercerts across chains",
   })
   hypercert_id?: string;
-  @Field((_) => GraphQLBigInt, { nullable: true })
-  last_block_update_timestamp?: bigint | number;
   @Field({
     nullable: true,
     description: "The address of the creator of the hypercert",
@@ -84,6 +77,15 @@ class Hypercert extends BasicTypeDef {
     description: "Sales related to this hypercert",
   })
   sales?: Sale[];
+
+  @Field((_) => GraphQLBigInt, { nullable: true })
+  creation_block_number?: bigint | number | string;
+  @Field((_) => GraphQLBigInt, { nullable: true })
+  creation_block_timestamp?: bigint | number | string;
+  @Field((_) => GraphQLBigInt, { nullable: true })
+  last_update_block_number?: bigint | number | string;
+  @Field((_) => GraphQLBigInt, { nullable: true })
+  last_update_block_timestamp?: bigint | number | string;
 }
 
 export { Hypercert };
