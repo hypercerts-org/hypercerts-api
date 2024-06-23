@@ -1,38 +1,42 @@
-import { Field, ObjectType } from "type-graphql";
-import { BasicTypeDef } from "./basicTypeDef.js";
-import { GraphQLBigInt } from "graphql-scalars";
+import {Field, ObjectType} from "type-graphql";
+import {BasicTypeDef} from "./basicTypeDef.js";
+import {GraphQLBigInt} from "graphql-scalars";
+import {EthBigInt} from "../../scalars/ethBigInt.js";
 
 @ObjectType()
 class Sale extends BasicTypeDef {
-  @Field()
-  buyer?: string;
-  @Field()
-  seller?: string;
-  @Field(() => GraphQLBigInt, { nullable: true })
-  strategy_id?: string;
-  @Field()
-  currency?: string;
-  @Field()
-  collection?: string;
-  @Field(() => [String], {
-    nullable: true,
-    description: "Token ids of the sold fractions",
-  })
-  item_ids?: bigint[];
-  @Field()
-  hypercert_id?: string;
-  @Field(() => [String], {
-    nullable: true,
-    description: "Number of units sold for each fraction",
-  })
-  amounts?: bigint[];
-  @Field()
-  transaction_hash?: string;
+    @Field({description: "The address of the buyer"})
+    buyer?: string;
+    @Field({description: "The address of the seller"})
+    seller?: string;
+    @Field(() => EthBigInt, {
+        nullable: true,
+        description: "The ID of the strategy registered with the exchange contracts"
+    })
+    strategy_id?: bigint[] | number[];
+    @Field({description: "The address of the token accepted for this order"})
+    currency?: string;
+    @Field({description: "The address of the contract minting the tradable fractions"})
+    collection?: string;
+    @Field(() => [EthBigInt], {
+        nullable: true,
+        description: "Token ids of the sold fractions",
+    })
+    item_ids?: bigint[] | number[];
+    @Field({description: "The ID of the hypercert token referenced in the order", nullable: true})
+    hypercert_id?: string;
+    @Field(() => [EthBigInt], {
+        nullable: true,
+        description: "Number of units sold for each fraction",
+    })
+    amounts?: bigint[] | number[];
+    @Field({description: "The transactions hash of the sale"})
+    transaction_hash?: string;
 
-  @Field((_) => GraphQLBigInt, { nullable: true })
-  creation_block_number?: bigint | number | string;
-  @Field((_) => GraphQLBigInt, { nullable: true })
-  creation_block_timestamp?: bigint | number | string;
+    @Field((_) => GraphQLBigInt, {nullable: true, description: "The block number of the transaction creating the sale"})
+    creation_block_number?: bigint | number | string;
+    @Field((_) => GraphQLBigInt, {nullable: true, description: "The timestamp of the block creating the sale"})
+    creation_block_timestamp?: bigint | number | string;
 }
 
-export { Sale };
+export {Sale};

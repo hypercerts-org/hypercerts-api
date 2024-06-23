@@ -3733,7 +3733,7 @@ export type introspection = {
                 "kind": "NON_NULL",
                 "ofType": {
                   "kind": "SCALAR",
-                  "name": "String",
+                  "name": "EthBigInt",
                   "ofType": null
                 }
               }
@@ -3797,12 +3797,9 @@ export type introspection = {
           {
             "name": "hypercert_id",
             "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "args": []
           },
@@ -3826,7 +3823,7 @@ export type introspection = {
                 "kind": "NON_NULL",
                 "ofType": {
                   "kind": "SCALAR",
-                  "name": "String",
+                  "name": "EthBigInt",
                   "ofType": null
                 }
               }
@@ -3849,7 +3846,7 @@ export type introspection = {
             "name": "strategy_id",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
