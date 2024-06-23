@@ -13,7 +13,7 @@ class Sale extends BasicTypeDef {
         nullable: true,
         description: "The ID of the strategy registered with the exchange contracts"
     })
-    strategy_id?: bigint[] | number[];
+    strategy_id?: bigint[] | number[] | string[];
     @Field({description: "The address of the token accepted for this order"})
     currency?: string;
     @Field({description: "The address of the contract minting the tradable fractions"})
@@ -22,14 +22,14 @@ class Sale extends BasicTypeDef {
         nullable: true,
         description: "Token ids of the sold fractions",
     })
-    item_ids?: bigint[] | number[];
+    item_ids?: bigint[] | number[] | string[];
     @Field({description: "The ID of the hypercert token referenced in the order", nullable: true})
     hypercert_id?: string;
     @Field(() => [EthBigInt], {
         nullable: true,
         description: "Number of units sold for each fraction",
     })
-    amounts?: bigint[] | number[];
+    amounts?: bigint[] | number[] | string[];
     @Field({description: "The transactions hash of the sale"})
     transaction_hash?: string;
 
