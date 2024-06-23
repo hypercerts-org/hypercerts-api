@@ -4,29 +4,31 @@ import { EthBigInt } from "../../scalars/ethBigInt.js";
 import { BasicTypeDef } from "./basicTypeDef.js";
 import GetOrdersResponse from "../resolvers/orderResolver.js";
 import { Metadata } from "./metadataTypeDefs.js";
-import { Sale } from "./salesTypeDefs.js";
+import GetSalesResponse from "../resolvers/salesResolver.js";
 
 @ObjectType()
 class Fraction extends BasicTypeDef {
+  claims_id?: string;
+
   @Field({
     nullable: true,
     description: "Address of the owner of the fractions",
   })
   owner_address?: string;
-  @Field((_) => EthBigInt, {
+  @Field(() => EthBigInt, {
     nullable: true,
     description: "Units held by the fraction",
   })
   units?: bigint;
 
-  @Field((_) => ID, {
+  @Field(() => ID, {
     nullable: true,
     description:
       "The ID of the fraction concatenated from the chain ID, contract address, and ID of the hypercert claim",
   })
   hypercert_id?: string;
 
-  @Field((_) => ID, {
+  @Field(() => ID, {
     nullable: true,
     description:
         "The ID of the fraction concatenated from the chain ID, contract address, and token ID of the fraction",
@@ -45,19 +47,19 @@ class Fraction extends BasicTypeDef {
   })
   metadata?: Metadata;
 
-  @Field(() => [Sale], {
+  @Field(() => GetSalesResponse, {
     nullable: true,
     description: "Sales related to this fraction",
   })
-  sales?: Sale[];
+  sales?: GetSalesResponse;
 
-  @Field((_) => GraphQLBigInt, { nullable: true })
+  @Field(() => GraphQLBigInt, { nullable: true })
   creation_block_number?: bigint | number | string;
-  @Field((_) => GraphQLBigInt, { nullable: true })
+  @Field(() => GraphQLBigInt, { nullable: true })
   creation_block_timestamp?: bigint | number;
-  @Field((_) => GraphQLBigInt, { nullable: true })
+  @Field(() => GraphQLBigInt, { nullable: true })
   last_update_block_number?: bigint | number | string;
-  @Field((_) => GraphQLBigInt, { nullable: true })
+  @Field(() => GraphQLBigInt, { nullable: true })
   last_update_block_timestamp?: bigint | number | string;
 }
 

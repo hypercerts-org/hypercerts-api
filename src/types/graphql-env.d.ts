@@ -1075,6 +1075,14 @@ export type introspection = {
             }
           },
           {
+            "name": "fraction_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
             "name": "hypercert_id",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -1674,15 +1682,9 @@ export type introspection = {
           {
             "name": "sales",
             "type": {
-              "kind": "LIST",
-              "ofType": {
-                "kind": "NON_NULL",
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "Sale",
-                  "ofType": null
-                }
-              }
+              "kind": "OBJECT",
+              "name": "GetSalesResponse",
+              "ofType": null
             },
             "args": []
           },
@@ -1767,6 +1769,14 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "fraction_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
               "ofType": null
             }
           },

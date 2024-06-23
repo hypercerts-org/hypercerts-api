@@ -8,30 +8,36 @@ import { CONSTANTS } from "@hypercerts-org/sdk";
 import { indexerEnvironment } from "../utils/constants.js";
 
 const defaultQuery = `{
-    hypercerts(
-    sort: {by: {claim_attestation_count: descending}}
-    count: COUNT
-    first: 10
-  ) {
+  hypercerts(count: COUNT, first: 10) {
     count
     data {
-      hypercert_id
       contract {
-          chain_id
+        contract_address
       }
-      metadata {
-          name
-      }
-      attestations {
+      hypercert_id
+      fractions {
         count
         data {
-          data 
+          owner_address
         }
       }
+      metadata {
+        name
+        description
+      }
+      sales {
+        count
+        data {
+          transaction_hash
+        }
+      }
+      orders {
+        count
+        lowestAvailablePrice
+      }
       units
-      uri
     }
-  } 
+  }
 }`;
 
 export const yoga = createYoga({
