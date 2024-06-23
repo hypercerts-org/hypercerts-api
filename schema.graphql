@@ -292,9 +292,14 @@ type Fraction {
   creation_block_timestamp: BigInt
 
   """
-  The ID of the fraction concatenated from the chain ID, contract address, and token ID
+  The ID of the fraction concatenated from the chain ID, contract address, and token ID of the fraction
   """
   fraction_id: ID
+
+  """
+  The ID of the fraction concatenated from the chain ID, contract address, and ID of the hypercert claim
+  """
+  hypercert_id: ID
   id: ID!
   last_update_block_number: BigInt
   last_update_block_timestamp: BigInt

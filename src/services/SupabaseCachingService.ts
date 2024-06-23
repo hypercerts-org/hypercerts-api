@@ -60,7 +60,7 @@ export class SupabaseCachingService {
   getFractions(args: GetFractionArgs) {
     const fromString = `* ${args.where?.hypercerts ? ", claims!inner (*)" : ""}`;
 
-    let query = this.supabaseCaching.from("fractions").select(fromString, {
+    let query = this.supabaseCaching.from("fractions_view").select(fromString, {
       count: args?.count ? "exact" : undefined,
       head: args?.count && args.count === CountKeys.HEAD,
     });

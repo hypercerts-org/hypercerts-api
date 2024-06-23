@@ -20,12 +20,18 @@ class Fraction extends BasicTypeDef {
   units?: bigint;
 
   @Field((_) => ID, {
-    name: "fraction_id",
     nullable: true,
     description:
-      "The ID of the fraction concatenated from the chain ID, contract address, and token ID",
+      "The ID of the fraction concatenated from the chain ID, contract address, and ID of the hypercert claim",
   })
   hypercert_id?: string;
+
+  @Field((_) => ID, {
+    nullable: true,
+    description:
+        "The ID of the fraction concatenated from the chain ID, contract address, and token ID of the fraction",
+  })
+  fraction_id?: string;
 
   // Resolved fields
   @Field(() => GetOrdersResponse, {
