@@ -56,10 +56,13 @@ input AllowlistRecordSortOptions {
 
 type Attestation {
   attester: String
-  block_timestamp: BigInt
+  creation_block_number: BigInt
+  creation_block_timestamp: BigInt
   data: JSON
   hypercerts: [Hypercert!]
   id: ID!
+  last_update_block_number: BigInt
+  last_update_block_timestamp: BigInt
   recipient: String
   resolver: String
   schema: String
@@ -218,6 +221,12 @@ input BasicOrderWhereInput {
   id: IdSearchOptions
 }
 
+input BasicSaleWhereInput {
+  hypercert_id: StringSearchOptions
+  item_ids: StringArraySearchOptions
+  transaction_hash: IdSearchOptions
+}
+
 """
 The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
@@ -279,6 +288,7 @@ enum CountKeys {
 scalar EthBigInt
 
 type Fraction {
+  creation_block_number: BigInt
   creation_block_timestamp: BigInt
 
   """
@@ -286,7 +296,8 @@ type Fraction {
   """
   fraction_id: ID
   id: ID!
-  last_block_update_timestamp: BigInt
+  last_update_block_number: BigInt
+  last_update_block_timestamp: BigInt
 
   """The metadata for the fraction"""
   metadata: Metadata
@@ -296,6 +307,9 @@ type Fraction {
 
   """Address of the owner of the fractions"""
   owner_address: String
+
+  """Sales related to this fraction"""
+  sales: [Sale!]
 
   """Units held by the fraction"""
   units: EthBigInt
@@ -371,18 +385,22 @@ type GetOrdersResponse {
   totalUnitsForSale: BigInt
 }
 
+type GetSalesResponse {
+  count: Int
+  data: [Sale!]
+}
+
 type Hypercert {
   """Attestations for the hypercert or parts of its data"""
   attestations: GetAttestationsResponse
-
-  """The block number at which the hypercert was stored on chain"""
-  block_number: BigInt
 
   """The contract that the hypercert is associated with"""
   contract: Contract
 
   """The UUID of the contract as stored in the database"""
   contracts_id: ID
+  creation_block_number: BigInt
+  creation_block_timestamp: BigInt
 
   """The address of the creator of the hypercert"""
   creator_address: String
@@ -395,13 +413,17 @@ type Hypercert {
   """
   hypercert_id: ID
   id: ID!
-  last_block_update_timestamp: BigInt
+  last_update_block_number: BigInt
+  last_update_block_timestamp: BigInt
 
   """The metadata for the hypercert as referenced by the uri"""
   metadata: Metadata
 
   """Marketplace orders related to this hypercert"""
   orders: GetOrdersResponse
+
+  """Sales related to this hypercert"""
+  sales: GetSalesResponse
 
   """The token ID of the hypercert"""
   token_id: EthBigInt
@@ -544,6 +566,29 @@ type Query {
   hypercerts(count: CountKeys, first: Int, offset: Int, sort: HypercertFetchInput, where: HypercertsWhereInput): GetHypercertsResponse!
   metadata(count: CountKeys, first: Int, offset: Int, sort: MetadataFetchInput, where: MetadataWhereInput): GetMetadataResponse!
   orders(count: CountKeys, first: Int, offset: Int, sort: OrderFetchInput, where: BasicOrderWhereInput): GetOrdersResponse!
+  sales(count: CountKeys, first: Int, offset: Int, sort: SaleFetchInput, where: BasicSaleWhereInput): GetSalesResponse!
+}
+
+type Sale {
+  """Number of units sold for each fraction"""
+  amounts: [String!]
+  buyer: String!
+  collection: String!
+  creation_block_number: BigInt
+  creation_block_timestamp: BigInt
+  currency: String!
+  hypercert_id: String!
+  id: ID!
+
+  """Token ids of the sold fractions"""
+  item_ids: [String!]
+  seller: String!
+  strategy_id: BigInt
+  transaction_hash: String!
+}
+
+input SaleFetchInput {
+  by: ContractSortOptions
 }
 
 """The direction to sort the query results"""

@@ -14,7 +14,7 @@ import { SupabaseCachingService } from "../../../services/SupabaseCachingService
 import { GetHypercertArgs } from "../args/hypercertsArgs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
-import {decodeAbiParameters, parseAbiParameters} from "viem";
+import { decodeAbiParameters, parseAbiParameters } from "viem";
 
 @ObjectType()
 export default class GetHypercertsResponse {
@@ -296,32 +296,39 @@ class HypercertResolver {
       }
 
       // For each fraction, find all orders and find the max units for sale for that fraction
-      const totalUnitsForSale = fractionsData.map((fraction) => {
-        const ordersForFraction = ordersData.filter(
-          (order) =>
-            parseClaimOrFractionId(fraction.hypercert_id).id.toString() ===
-            order.itemIds[0],
-        );
-
-        const unitsPerOrder = ordersForFraction.map((order) => {
-          const decodedParams = decodeAbiParameters(
-            parseAbiParameters("uint256 minUnitAmount, uint256 maxUnitAmount, uint256 minUnitsToKeep, bool sellLeftOverFraction"),
-            order.additionalParameters as `0x{string}`,
+      const totalUnitsForSale = fractionsData
+        .map((fraction) => {
+          const ordersForFraction = ordersData.filter(
+            (order) =>
+              parseClaimOrFractionId(fraction.hypercert_id).id.toString() ===
+              order.itemIds[0],
           );
-          const unitsToKeep = decodedParams[2];
-          const units = BigInt(fraction.units);
-          return units - unitsToKeep;
-        });
 
-        // Find max units per order
-        return unitsPerOrder.reduce((acc, val) => {
+          const unitsPerOrder = ordersForFraction.map((order) => {
+            const decodedParams = decodeAbiParameters(
+              parseAbiParameters(
+                "uint256 minUnitAmount, uint256 maxUnitAmount, uint256 minUnitsToKeep, bool sellLeftOverFraction",
+              ),
+              order.additionalParameters as `0x{string}`,
+            );
+            const unitsToKeep = decodedParams[2];
+            const units = BigInt(fraction.units);
+            return units - unitsToKeep;
+          });
+
+          // Find max units per order
+          return unitsPerOrder.reduce((acc, val) => {
             return val > acc ? val : acc;
           }, BigInt(0));
-      }).reduce((acc, val) => acc + val, BigInt(0));
+        })
+        .reduce((acc, val) => acc + val, BigInt(0));
 
-      const lowestAvailablePrice = ordersData.reduce((acc, val) => {
-        return BigInt(val.price) < acc ? BigInt(val.price) : acc;
-      }, BigInt(ordersData[0]?.price || 0));
+      const lowestAvailablePrice = ordersData.reduce(
+        (acc, val) => {
+          return BigInt(val.price) < acc ? BigInt(val.price) : acc;
+        },
+        BigInt(ordersData[0]?.price || 0),
+      );
 
       return {
         totalUnitsForSale,
@@ -332,6 +339,51 @@ class HypercertResolver {
     } catch (e) {
       throw new Error(
         `[HypercertResolver::orders] Error fetching orders for ${hypercert.hypercert_id}: ${(e as Error).toString()}`,
+      );
+    }
+  }
+
+  @FieldResolver()
+  async sales(@Root() hypercert: Hypercert) {
+    if (!hypercert.hypercert_id) {
+      return null;
+    }
+
+    try {
+      console.log(
+        `[HypercertResolver::sales] Fetching orders for ${hypercert.hypercert_id}`,
+      );
+
+      const salesRes = await this.supabaseCachingService.getSales({
+        where: { hypercert_id: { eq: hypercert.hypercert_id } },
+      });
+
+      if (!salesRes) {
+        console.warn(
+          `[HypercertResolver::sales] Error fetching sales for ${hypercert.hypercert_id}: `,
+          salesRes,
+        );
+        return { data: [] };
+      }
+
+      const { data: salesData, error: salesError } = salesRes;
+
+      if (salesError) {
+        console.error(
+          `[HypercertResolver::sales] Error fetching sales for ${hypercert.hypercert_id}: `,
+          salesError,
+        );
+        return { data: [] };
+      }
+
+      console.log("salesData", salesData);
+      return {
+        data: salesData || [],
+        count: salesData?.length || 0,
+      };
+    } catch (e) {
+      throw new Error(
+        `[HypercertResolver::sales] Error fetching sales for ${hypercert.hypercert_id}: ${(e as Error).toString()}`,
       );
     }
   }

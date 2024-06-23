@@ -3,7 +3,6 @@ import {Body, Controller, Post, Response, Route, SuccessResponse, Tags} from "ts
 import {StorageService} from "../services/StorageService.js";
 import {parseAndValidateMerkleTree} from "../utils/parseAndValidateMerkleTreeDump.js";
 import {StoreResponse, ValidationResponse} from "../types/api.js";
-import {StandardMerkleTree} from "@openzeppelin/merkle-tree";
 
 /**
  *  Request body for creating a new allowlist.

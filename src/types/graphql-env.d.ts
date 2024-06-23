@@ -262,7 +262,16 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "block_timestamp",
+            "name": "creation_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "creation_block_timestamp",
             "type": {
               "kind": "SCALAR",
               "name": "BigInt",
@@ -303,6 +312,24 @@ export type introspection = {
                 "name": "ID",
                 "ofType": null
               }
+            },
+            "args": []
+          },
+          {
+            "name": "last_update_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "last_update_block_timestamp",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
             },
             "args": []
           },
@@ -1292,6 +1319,36 @@ export type introspection = {
         ]
       },
       {
+        "kind": "INPUT_OBJECT",
+        "name": "BasicSaleWhereInput",
+        "inputFields": [
+          {
+            "name": "hypercert_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "item_ids",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringArraySearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "transaction_hash",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "IdSearchOptions",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
         "kind": "SCALAR",
         "name": "BigInt"
       },
@@ -1522,6 +1579,15 @@ export type introspection = {
         "name": "Fraction",
         "fields": [
           {
+            "name": "creation_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "SCALAR",
@@ -1552,7 +1618,16 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "last_block_update_timestamp",
+            "name": "last_update_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "last_update_block_timestamp",
             "type": {
               "kind": "SCALAR",
               "name": "BigInt",
@@ -1584,6 +1659,21 @@ export type introspection = {
               "kind": "SCALAR",
               "name": "String",
               "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "sales",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Sale",
+                  "ofType": null
+                }
+              }
             },
             "args": []
           },
@@ -2035,6 +2125,37 @@ export type introspection = {
       },
       {
         "kind": "OBJECT",
+        "name": "GetSalesResponse",
+        "fields": [
+          {
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "data",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Sale",
+                  "ofType": null
+                }
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
         "name": "Hypercert",
         "fields": [
           {
@@ -2042,15 +2163,6 @@ export type introspection = {
             "type": {
               "kind": "OBJECT",
               "name": "GetAttestationsResponse",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
-            "name": "block_number",
-            "type": {
-              "kind": "SCALAR",
-              "name": "BigInt",
               "ofType": null
             },
             "args": []
@@ -2069,6 +2181,24 @@ export type introspection = {
             "type": {
               "kind": "SCALAR",
               "name": "ID",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "creation_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "creation_block_timestamp",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
               "ofType": null
             },
             "args": []
@@ -2113,7 +2243,16 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "last_block_update_timestamp",
+            "name": "last_update_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "last_update_block_timestamp",
             "type": {
               "kind": "SCALAR",
               "name": "BigInt",
@@ -2135,6 +2274,15 @@ export type introspection = {
             "type": {
               "kind": "OBJECT",
               "name": "GetOrdersResponse",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "sales",
+            "type": {
+              "kind": "OBJECT",
+              "name": "GetSalesResponse",
               "ofType": null
             },
             "args": []
@@ -3516,9 +3664,224 @@ export type introspection = {
                 }
               }
             ]
+          },
+          {
+            "name": "sales",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "GetSalesResponse",
+                "ofType": null
+              }
+            },
+            "args": [
+              {
+                "name": "count",
+                "type": {
+                  "kind": "ENUM",
+                  "name": "CountKeys",
+                  "ofType": null
+                }
+              },
+              {
+                "name": "first",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              {
+                "name": "offset",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              {
+                "name": "sort",
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "SaleFetchInput",
+                  "ofType": null
+                }
+              },
+              {
+                "name": "where",
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "BasicSaleWhereInput",
+                  "ofType": null
+                }
+              }
+            ]
           }
         ],
         "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "Sale",
+        "fields": [
+          {
+            "name": "amounts",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "buyer",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "collection",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "creation_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "creation_block_timestamp",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "currency",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "hypercert_id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "item_ids",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "seller",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "strategy_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "transaction_hash",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "SaleFetchInput",
+        "inputFields": [
+          {
+            "name": "by",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "ContractSortOptions",
+              "ofType": null
+            }
+          }
+        ]
       },
       {
         "kind": "ENUM",
