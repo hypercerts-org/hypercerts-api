@@ -571,19 +571,37 @@ type Query {
 
 type Sale {
   """Number of units sold for each fraction"""
-  amounts: [String!]
+  amounts: [EthBigInt!]
+
+  """The address of the buyer"""
   buyer: String!
+
+  """The address of the contract minting the tradable fractions"""
   collection: String!
+
+  """The block number of the transaction creating the sale"""
   creation_block_number: BigInt
+
+  """The timestamp of the block creating the sale"""
   creation_block_timestamp: BigInt
+
+  """The address of the token accepted for this order"""
   currency: String!
-  hypercert_id: String!
+
+  """The ID of the hypercert token referenced in the order"""
+  hypercert_id: String
   id: ID!
 
   """Token ids of the sold fractions"""
-  item_ids: [String!]
+  item_ids: [EthBigInt!]
+
+  """The address of the seller"""
   seller: String!
-  strategy_id: BigInt
+
+  """The ID of the strategy registered with the exchange contracts"""
+  strategy_id: EthBigInt
+
+  """The transactions hash of the sale"""
   transaction_hash: String!
 }
 

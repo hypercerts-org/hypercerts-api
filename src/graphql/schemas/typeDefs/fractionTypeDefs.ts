@@ -17,7 +17,7 @@ class Fraction extends BasicTypeDef {
     nullable: true,
     description: "Units held by the fraction",
   })
-  units?: bigint | number;
+  units?: bigint;
 
   @Field((_) => ID, {
     name: "fraction_id",
