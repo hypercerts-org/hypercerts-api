@@ -1,6 +1,5 @@
 import {Field, ObjectType} from "type-graphql";
 import {BasicTypeDef} from "./basicTypeDef.js";
-import {GraphQLBigInt} from "graphql-scalars";
 import {EthBigInt} from "../../scalars/ethBigInt.js";
 
 @ObjectType()
@@ -33,9 +32,9 @@ class Sale extends BasicTypeDef {
     @Field({description: "The transactions hash of the sale"})
     transaction_hash?: string;
 
-    @Field((_) => GraphQLBigInt, {nullable: true, description: "The block number of the transaction creating the sale"})
+    @Field((_) => EthBigInt, {nullable: true, description: "The block number of the transaction creating the sale"})
     creation_block_number?: bigint | number | string;
-    @Field((_) => GraphQLBigInt, {nullable: true, description: "The timestamp of the block creating the sale"})
+    @Field((_) => EthBigInt, {nullable: true, description: "The timestamp of the block creating the sale"})
     creation_block_timestamp?: bigint | number | string;
 }
 

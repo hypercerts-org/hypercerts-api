@@ -97,7 +97,7 @@ export type introspection = {
             "name": "token_id",
             "type": {
               "kind": "SCALAR",
-              "name": "String",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -106,7 +106,7 @@ export type introspection = {
             "name": "total_units",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -115,7 +115,7 @@ export type introspection = {
             "name": "units",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -265,7 +265,7 @@ export type introspection = {
             "name": "creation_block_number",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -274,7 +274,7 @@ export type introspection = {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -319,7 +319,7 @@ export type introspection = {
             "name": "last_update_block_number",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -328,7 +328,7 @@ export type introspection = {
             "name": "last_update_block_timestamp",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -403,7 +403,7 @@ export type introspection = {
             "name": "chain_id",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -1515,7 +1515,7 @@ export type introspection = {
             "name": "chain_id",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -1587,7 +1587,7 @@ export type introspection = {
             "name": "chain_id",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -1617,7 +1617,7 @@ export type introspection = {
             "name": "start_block",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -1693,7 +1693,7 @@ export type introspection = {
             "name": "creation_block_number",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -1702,7 +1702,7 @@ export type introspection = {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -1741,7 +1741,7 @@ export type introspection = {
             "name": "last_update_block_number",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -1750,7 +1750,7 @@ export type introspection = {
             "name": "last_update_block_timestamp",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -2343,7 +2343,7 @@ export type introspection = {
             "name": "creation_block_number",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -2352,7 +2352,7 @@ export type introspection = {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -2400,7 +2400,7 @@ export type introspection = {
             "name": "last_update_block_number",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -2409,7 +2409,7 @@ export type introspection = {
             "name": "last_update_block_timestamp",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -2793,7 +2793,7 @@ export type introspection = {
             "name": "impact_timeframe_from",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -2802,7 +2802,7 @@ export type introspection = {
             "name": "impact_timeframe_to",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -2868,7 +2868,7 @@ export type introspection = {
             "name": "work_timeframe_from",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -2877,7 +2877,7 @@ export type introspection = {
             "name": "work_timeframe_to",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -3165,7 +3165,7 @@ export type introspection = {
               "kind": "NON_NULL",
               "ofType": {
                 "kind": "SCALAR",
-                "name": "BigInt",
+                "name": "EthBigInt",
                 "ofType": null
               }
             },
@@ -3970,7 +3970,7 @@ export type introspection = {
             "name": "creation_block_number",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
@@ -3979,7 +3979,7 @@ export type introspection = {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "EthBigInt",
               "ofType": null
             },
             "args": []
