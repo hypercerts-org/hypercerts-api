@@ -16,7 +16,11 @@ export class BasicFractionWhereInput implements WhereOptions<Fraction> {
     @Field(() => NumberSearchOptions, {nullable: true})
     creation_block_timestamp?: NumberSearchOptions;
     @Field(() => NumberSearchOptions, {nullable: true})
-    last_block_update_timestamp?: NumberSearchOptions;
+    creation_block_number?: NumberSearchOptions;
+    @Field(() => NumberSearchOptions, {nullable: true})
+    last_update_block_number?: NumberSearchOptions;
+    @Field(() => NumberSearchOptions, {nullable: true})
+    last_update_block_timestamp?: NumberSearchOptions;
     @Field(() => NumberSearchOptions, {nullable: true})
     token_id?: NumberSearchOptions;
     @Field(() => NumberSearchOptions, {nullable: true})
