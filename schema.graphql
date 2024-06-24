@@ -25,13 +25,13 @@ type AllowlistRecord {
   root: String
 
   """The token ID of the hypercert the claimable fraction belongs to"""
-  token_id: String
+  token_id: EthBigInt
 
   """The total number of units held by the hypercert"""
-  total_units: BigInt
+  total_units: EthBigInt
 
   """The number of units of the claimable fraction"""
-  units: BigInt
+  units: EthBigInt
 
   """The address of the user who can claim the fraction"""
   user_address: String
@@ -56,13 +56,13 @@ input AllowlistRecordSortOptions {
 
 type Attestation {
   attester: String
-  creation_block_number: BigInt
-  creation_block_timestamp: BigInt
+  creation_block_number: EthBigInt
+  creation_block_timestamp: EthBigInt
   data: JSON
   hypercerts: [Hypercert!]
   id: ID!
-  last_update_block_number: BigInt
-  last_update_block_timestamp: BigInt
+  last_update_block_number: EthBigInt
+  last_update_block_timestamp: EthBigInt
   recipient: String
   resolver: String
   schema: String
@@ -75,7 +75,7 @@ input AttestationFetchInput {
 }
 
 type AttestationSchema {
-  chain_id: BigInt
+  chain_id: EthBigInt
   id: ID!
   records: [Attestation!]
   resolver: String
@@ -254,7 +254,7 @@ input BooleanSearchOptions {
 type Collection {
   admin_id: String!
   background_image: String
-  chain_id: BigInt
+  chain_id: EthBigInt
   grayscale_image: Boolean
   id: ID!
   name: String!
@@ -268,14 +268,14 @@ input CollectionFetchInput {
 """Pointer to a contract deployed on a chain"""
 type Contract {
   """The ID of the chain on which the contract is deployed"""
-  chain_id: BigInt
+  chain_id: EthBigInt
 
   """The address of the contract"""
   contract_address: String
   id: ID!
 
   """The block number at which the contract was deployed"""
-  start_block: BigInt
+  start_block: EthBigInt
 }
 
 input ContractFetchInput {
@@ -303,8 +303,8 @@ enum CountKeys {
 scalar EthBigInt
 
 type Fraction {
-  creation_block_number: BigInt
-  creation_block_timestamp: BigInt
+  creation_block_number: EthBigInt
+  creation_block_timestamp: EthBigInt
 
   """
   The ID of the fraction concatenated from the chain ID, contract address, and token ID of the fraction
@@ -316,8 +316,8 @@ type Fraction {
   """
   hypercert_id: ID
   id: ID!
-  last_update_block_number: BigInt
-  last_update_block_timestamp: BigInt
+  last_update_block_number: EthBigInt
+  last_update_block_timestamp: EthBigInt
 
   """The metadata for the fraction"""
   metadata: Metadata
@@ -424,8 +424,8 @@ type Hypercert {
 
   """The UUID of the contract as stored in the database"""
   contracts_id: ID
-  creation_block_number: BigInt
-  creation_block_timestamp: BigInt
+  creation_block_number: EthBigInt
+  creation_block_timestamp: EthBigInt
 
   """The address of the creator of the hypercert"""
   creator_address: String
@@ -438,8 +438,8 @@ type Hypercert {
   """
   hypercert_id: ID
   id: ID!
-  last_update_block_number: BigInt
-  last_update_block_timestamp: BigInt
+  last_update_block_number: EthBigInt
+  last_update_block_timestamp: EthBigInt
 
   """The metadata for the hypercert as referenced by the uri"""
   metadata: Metadata
@@ -511,15 +511,15 @@ type Metadata {
   id: ID!
   image: String
   impact_scope: [String!]
-  impact_timeframe_from: BigInt
-  impact_timeframe_to: BigInt
+  impact_timeframe_from: EthBigInt
+  impact_timeframe_to: EthBigInt
   name: String
   properties: JSON
   rights: [String!]
   uri: String
   work_scope: [String!]
-  work_timeframe_from: BigInt
-  work_timeframe_to: BigInt
+  work_timeframe_from: EthBigInt
+  work_timeframe_to: EthBigInt
 }
 
 input MetadataFetchInput {
@@ -564,7 +564,7 @@ input NumberSearchOptions {
 type Order {
   additionalParameters: String!
   amounts: [Float!]!
-  chainId: BigInt!
+  chainId: EthBigInt!
   collection: String!
   collectionType: Float!
   createdAt: String!
@@ -611,10 +611,10 @@ type Sale {
   collection: String!
 
   """The block number of the transaction creating the sale"""
-  creation_block_number: BigInt
+  creation_block_number: EthBigInt
 
   """The timestamp of the block creating the sale"""
-  creation_block_timestamp: BigInt
+  creation_block_timestamp: EthBigInt
 
   """The address of the token accepted for this order"""
   currency: String!
