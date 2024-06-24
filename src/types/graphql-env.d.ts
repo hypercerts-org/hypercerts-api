@@ -1491,7 +1491,7 @@ export type introspection = {
         "name": "Collection",
         "fields": [
           {
-            "name": "admin_address",
+            "name": "admin_id",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
@@ -1505,12 +1505,9 @@ export type introspection = {
           {
             "name": "background_image",
             "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "args": []
           },
@@ -1526,12 +1523,9 @@ export type introspection = {
           {
             "name": "grayscale_image",
             "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
             },
             "args": []
           },
@@ -1562,12 +1556,9 @@ export type introspection = {
           {
             "name": "tile_border_color",
             "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "args": []
           }

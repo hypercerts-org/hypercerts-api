@@ -252,13 +252,13 @@ input BooleanSearchOptions {
 }
 
 type Collection {
-  admin_address: String!
-  background_image: String!
+  admin_id: String!
+  background_image: String
   chain_id: BigInt
-  grayscale_image: Boolean!
+  grayscale_image: Boolean
   id: ID!
   name: String!
-  tile_border_color: String!
+  tile_border_color: String
 }
 
 input CollectionFetchInput {
