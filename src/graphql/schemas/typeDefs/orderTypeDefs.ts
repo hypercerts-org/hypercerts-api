@@ -1,6 +1,6 @@
 import { Field, ObjectType } from "type-graphql";
-import { GraphQLBigInt } from "graphql-scalars";
 import { BasicTypeDef } from "./basicTypeDef.js";
+import {EthBigInt} from "../../scalars/ethBigInt.js";
 
 @ObjectType()
 class Order extends BasicTypeDef {
@@ -32,7 +32,7 @@ class Order extends BasicTypeDef {
   signature?: string;
   @Field()
   additionalParameters?: string;
-  @Field((_) => GraphQLBigInt)
+  @Field((_) => EthBigInt)
   chainId?: bigint | number | string;
   @Field()
   subsetNonce?: number;

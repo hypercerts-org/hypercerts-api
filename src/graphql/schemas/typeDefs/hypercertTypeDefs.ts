@@ -1,5 +1,4 @@
 import { Field, ID, ObjectType } from "type-graphql";
-import { GraphQLBigInt } from "graphql-scalars";
 import GetAttestationsResponse from "../resolvers/attestationResolver.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
 import { BasicTypeDef } from "./basicTypeDef.js";
@@ -78,13 +77,13 @@ class Hypercert extends BasicTypeDef {
   })
   sales?: GetSalesResponse;
 
-  @Field((_) => GraphQLBigInt, { nullable: true })
+  @Field((_) => EthBigInt, {nullable: true})
   creation_block_number?: bigint | number | string;
-  @Field((_) => GraphQLBigInt, { nullable: true })
+  @Field((_) => EthBigInt, {nullable: true})
   creation_block_timestamp?: bigint | number | string;
-  @Field((_) => GraphQLBigInt, { nullable: true })
+  @Field((_) => EthBigInt, {nullable: true})
   last_update_block_number?: bigint | number | string;
-  @Field((_) => GraphQLBigInt, { nullable: true })
+  @Field((_) => EthBigInt, {nullable: true})
   last_update_block_timestamp?: bigint | number | string;
 }
 

@@ -13,8 +13,14 @@ export class BasicAttestationWhereInput implements WhereOptions<Attestation> {
     uid?: StringSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})
     supported_schemas_id?: StringSearchOptions;
-    @Field(_ => NumberSearchOptions, {nullable: true})
-    block_timestamp?: NumberSearchOptions;
+    @Field(() => NumberSearchOptions, {nullable: true})
+    creation_block_timestamp?: NumberSearchOptions;
+    @Field(() => NumberSearchOptions, {nullable: true})
+    creation_block_number?: NumberSearchOptions;
+    @Field(() => NumberSearchOptions, {nullable: true})
+    last_update_block_number?: NumberSearchOptions;
+    @Field(() => NumberSearchOptions, {nullable: true})
+    last_update_block_timestamp?: NumberSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})
     attester?: StringSearchOptions;
     @Field(_ => StringSearchOptions, {nullable: true})
@@ -32,7 +38,6 @@ export class BasicAttestationWhereInput implements WhereOptions<Attestation> {
     @Field(_ => StringSearchOptions, {nullable: true})
     token_id?: StringSearchOptions;
 }
-
 
 
 @InputType()

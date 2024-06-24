@@ -6,6 +6,7 @@ import type {Metadata} from "../typeDefs/metadataTypeDefs.js";
 import type {Attestation} from "../typeDefs/attestationTypeDefs.js";
 import type {AttestationSchema} from "../typeDefs/attestationSchemaTypeDefs.js";
 import type {Fraction} from "../typeDefs/fractionTypeDefs.js";
+import {NumberSearchOptions} from "./searchOptions.js";
 
 export type SortOptions<T extends object> = {
     [P in keyof T]: SortOrder | null;
@@ -15,8 +16,14 @@ export type SortOptions<T extends object> = {
 export class HypercertSortOptions implements SortOptions<Hypercert> {
     @Field(_ => SortOrder, {nullable: true})
     hypercert_id?: SortOrder;
-    @Field(_ => SortOrder, {nullable: true})
-    block_number?: SortOrder;
+    @Field(() => SortOrder, {nullable: true})
+    creation_block_timestamp?: SortOrder;
+    @Field(() => SortOrder, {nullable: true})
+    creation_block_number?: SortOrder;
+    @Field(() => SortOrder, {nullable: true})
+    last_update_block_number?: SortOrder;
+    @Field(() => SortOrder, {nullable: true})
+    last_update_block_timestamp?: SortOrder;
     @Field(_ => SortOrder, {nullable: true})
     token_id?: SortOrder;
     @Field(_ => SortOrder, {nullable: true})
@@ -61,8 +68,14 @@ export class MetadataSortOptions implements SortOptions<Metadata> {
 export class AttestationSortOptions implements SortOptions<Attestation> {
     @Field(_ => SortOrder, {nullable: true})
     attestation_uid?: SortOrder;
-    @Field(_ => SortOrder, {nullable: true})
-    block_timestamp?: SortOrder;
+    @Field(() => SortOrder, {nullable: true})
+    creation_block_timestamp?: SortOrder;
+    @Field(() => SortOrder, {nullable: true})
+    creation_block_number?: SortOrder;
+    @Field(() => SortOrder, {nullable: true})
+    last_update_block_number?: SortOrder;
+    @Field(() => SortOrder, {nullable: true})
+    last_update_block_timestamp?: SortOrder;
     @Field(_ => SortOrder, {nullable: true})
     attester_address?: SortOrder;
     @Field(_ => SortOrder, {nullable: true})
@@ -85,10 +98,14 @@ export class AttestationSchemaSortOptions implements SortOptions<AttestationSche
 
 @InputType()
 export class FractionSortOptions implements SortOptions<Fraction> {
-    @Field(_ => SortOrder, {nullable: true})
+    @Field(() => SortOrder, {nullable: true})
     creation_block_timestamp?: SortOrder;
-    @Field(_ => SortOrder, {nullable: true})
-    last_block_update_timestamp?: SortOrder;
+    @Field(() => SortOrder, {nullable: true})
+    creation_block_number?: SortOrder;
+    @Field(() => SortOrder, {nullable: true})
+    last_update_block_number?: SortOrder;
+    @Field(() => SortOrder, {nullable: true})
+    last_update_block_timestamp?: SortOrder;
     @Field(_ => SortOrder, {nullable: true})
     token_id?: SortOrder;
     @Field(_ => SortOrder, {nullable: true})

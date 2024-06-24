@@ -1,7 +1,8 @@
-import { Field, ObjectType } from "type-graphql";
-import type { Json } from "../../../types/supabaseData.js";
-import { GraphQLBigInt, GraphQLJSON } from "graphql-scalars";
-import { BasicTypeDef } from "./basicTypeDef.js";
+import {Field, ObjectType} from "type-graphql";
+import type {Json} from "../../../types/supabaseData.js";
+import {GraphQLJSON} from "graphql-scalars";
+import {BasicTypeDef} from "./basicTypeDef.js";
+import {EthBigInt} from "../../scalars/ethBigInt.js";
 
 @ObjectType()
 class Metadata extends BasicTypeDef {
@@ -21,9 +22,9 @@ class Metadata extends BasicTypeDef {
   external_url?: string;
   @Field((_) => [String], { nullable: true })
   impact_scope?: string[];
-  @Field((_) => GraphQLBigInt, { nullable: true })
+  @Field((_) => EthBigInt, { nullable: true })
   impact_timeframe_from?: bigint | number;
-  @Field((_) => GraphQLBigInt, { nullable: true })
+  @Field((_) => EthBigInt, { nullable: true })
   impact_timeframe_to?: bigint | number;
   @Field((_) => GraphQLJSON, { nullable: true })
   properties?: Json;
@@ -31,9 +32,9 @@ class Metadata extends BasicTypeDef {
   rights?: string[];
   @Field((_) => [String], { nullable: true })
   work_scope?: string[];
-  @Field((_) => GraphQLBigInt, { nullable: true })
+  @Field((_) => EthBigInt, { nullable: true })
   work_timeframe_from?: bigint | number;
-  @Field((_) => GraphQLBigInt, { nullable: true })
+  @Field((_) => EthBigInt, { nullable: true })
   work_timeframe_to?: bigint | number;
 }
 
