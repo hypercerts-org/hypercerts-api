@@ -7,7 +7,6 @@ const fractionsByIdQuery = graphql(`
       data {
         creation_block_timestamp
         fraction_id
-        last_block_update_timestamp
         owner_address
         units
       }

@@ -62,6 +62,6 @@ export const yoga = createYoga({
 });
 
 export const urqlClient = new Client({
-  url: CONSTANTS.ENDPOINTS[indexerEnvironment as "production" | "test"],
+  url: `${CONSTANTS.ENDPOINTS[indexerEnvironment as "production" | "test"]}/v1/graphql`,
   exchanges: [cacheExchange, fetchExchange],
 });
