@@ -7,17 +7,23 @@ import {HypercertSortOptions} from "./sortOptions.js";
 
 @InputType()
 export class BasicHypercertWhereInput implements WhereOptions<Hypercert> {
-    @Field(_ => IdSearchOptions, {nullable: true})
+    @Field(() => IdSearchOptions, {nullable: true})
     id?: IdSearchOptions
-    @Field(_ => NumberSearchOptions, {nullable: true})
-    block_number?: NumberSearchOptions;
-    @Field(_ => NumberSearchOptions, {nullable: true})
+    @Field(() => NumberSearchOptions, {nullable: true})
+    creation_block_timestamp?: NumberSearchOptions;
+    @Field(() => NumberSearchOptions, {nullable: true})
+    creation_block_number?: NumberSearchOptions;
+    @Field(() => NumberSearchOptions, {nullable: true})
+    last_update_block_number?: NumberSearchOptions;
+    @Field(() => NumberSearchOptions, {nullable: true})
+    last_update_block_timestamp?: NumberSearchOptions;
+    @Field(() => NumberSearchOptions, {nullable: true})
     token_id?: NumberSearchOptions;
-    @Field(_ => StringSearchOptions, {nullable: true})
+    @Field(() => StringSearchOptions, {nullable: true})
     creator_address?: StringSearchOptions;
-    @Field(_ => StringSearchOptions, {nullable: true})
+    @Field(() => StringSearchOptions, {nullable: true})
     uri?: StringSearchOptions;
-    @Field(_ => StringSearchOptions, {nullable: true})
+    @Field(() => StringSearchOptions, {nullable: true})
     hypercert_id?: StringSearchOptions;
 }
 
