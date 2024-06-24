@@ -108,7 +108,10 @@ input AttestationSchemaWhereInput {
 input AttestationSortOptions {
   attestation_uid: SortOrder
   attester_address: SortOrder
-  block_timestamp: SortOrder
+  creation_block_number: SortOrder
+  creation_block_timestamp: SortOrder
+  last_update_block_number: SortOrder
+  last_update_block_timestamp: SortOrder
   recipient_address: SortOrder
   schema: SortOrder
 }
@@ -117,11 +120,14 @@ input AttestationWhereInput {
   attestation: StringSearchOptions
   attestations: BasicAttestationWhereInput
   attester: StringSearchOptions
-  block_timestamp: NumberSearchOptions
   chain_id: NumberSearchOptions
   contract_address: StringSearchOptions
+  creation_block_number: NumberSearchOptions
+  creation_block_timestamp: NumberSearchOptions
   hypercerts: BasicHypercertWhereInput
   id: IdSearchOptions
+  last_update_block_number: NumberSearchOptions
+  last_update_block_timestamp: NumberSearchOptions
   metadata: BasicMetadataWhereInput
   recipient: StringSearchOptions
   resolver: StringSearchOptions
@@ -156,10 +162,13 @@ input BasicAttestationSchemaWhereInput {
 input BasicAttestationWhereInput {
   attestation: StringSearchOptions
   attester: StringSearchOptions
-  block_timestamp: NumberSearchOptions
   chain_id: NumberSearchOptions
   contract_address: StringSearchOptions
+  creation_block_number: NumberSearchOptions
+  creation_block_timestamp: NumberSearchOptions
   id: IdSearchOptions
+  last_update_block_number: NumberSearchOptions
+  last_update_block_timestamp: NumberSearchOptions
   recipient: StringSearchOptions
   resolver: StringSearchOptions
   schema: StringSearchOptions
@@ -181,21 +190,26 @@ input BasicContractWhereInput {
 }
 
 input BasicFractionWhereInput {
+  creation_block_number: NumberSearchOptions
   creation_block_timestamp: NumberSearchOptions
   fraction_id: StringSearchOptions
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
-  last_block_update_timestamp: NumberSearchOptions
+  last_update_block_number: NumberSearchOptions
+  last_update_block_timestamp: NumberSearchOptions
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions
   units: NumberSearchOptions
 }
 
 input BasicHypercertWhereInput {
-  block_number: NumberSearchOptions
+  creation_block_number: NumberSearchOptions
+  creation_block_timestamp: NumberSearchOptions
   creator_address: StringSearchOptions
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
+  last_update_block_number: NumberSearchOptions
+  last_update_block_timestamp: NumberSearchOptions
   token_id: NumberSearchOptions
   uri: StringSearchOptions
 }
@@ -326,20 +340,24 @@ input FractionFetchInput {
 }
 
 input FractionSortOptions {
+  creation_block_number: SortOrder
   creation_block_timestamp: SortOrder
-  last_block_update_timestamp: SortOrder
+  last_update_block_number: SortOrder
+  last_update_block_timestamp: SortOrder
   owner_address: SortOrder
   token_id: SortOrder
   units: SortOrder
 }
 
 input FractionWhereInput {
+  creation_block_number: NumberSearchOptions
   creation_block_timestamp: NumberSearchOptions
   fraction_id: StringSearchOptions
   hypercert_id: StringSearchOptions
   hypercerts: BasicHypercertWhereInput
   id: IdSearchOptions
-  last_block_update_timestamp: NumberSearchOptions
+  last_update_block_number: NumberSearchOptions
+  last_update_block_timestamp: NumberSearchOptions
   owner_address: StringSearchOptions
   token_id: NumberSearchOptions
   units: NumberSearchOptions
@@ -447,10 +465,13 @@ input HypercertFetchInput {
 }
 
 input HypercertSortOptions {
-  block_number: SortOrder
   claim_attestation_count: SortOrder
+  creation_block_number: SortOrder
+  creation_block_timestamp: SortOrder
   hypercert_id: SortOrder
   last_block_update_timestamp: SortOrder
+  last_update_block_number: SortOrder
+  last_update_block_timestamp: SortOrder
   owner_address: SortOrder
   token_id: SortOrder
   units: SortOrder
@@ -459,12 +480,15 @@ input HypercertSortOptions {
 
 input HypercertsWhereInput {
   attestations: BasicAttestationWhereInput
-  block_number: NumberSearchOptions
   contract: BasicContractWhereInput
+  creation_block_number: NumberSearchOptions
+  creation_block_timestamp: NumberSearchOptions
   creator_address: StringSearchOptions
   fractions: BasicFractionWhereInput
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
+  last_update_block_number: NumberSearchOptions
+  last_update_block_timestamp: NumberSearchOptions
   metadata: BasicMetadataWhereInput
   token_id: NumberSearchOptions
   uri: StringSearchOptions
