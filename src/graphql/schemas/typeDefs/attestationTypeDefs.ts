@@ -29,7 +29,7 @@ class Attestation extends BasicTypeDef {
   resolver?: string;
   @Field({ nullable: true })
   schema?: string;
-  @Field((_) => GraphQLJSON, { nullable: true })
+  @Field(() => GraphQLJSON, { nullable: true })
   data?: Json;
 
   @Field((_) => [Hypercert], { nullable: true })

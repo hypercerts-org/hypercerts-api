@@ -30,7 +30,7 @@ class AttestationResolver {
         private readonly supabaseService: SupabaseCachingService) {
     }
 
-    @Query(_ => GetAttestationsResponse)
+    @Query(() => GetAttestationsResponse)
     async attestations(@Args() args: GetAttestationArgs) {
         try {
             const res = await this.supabaseService.getAttestations(args);
@@ -41,8 +41,6 @@ class AttestationResolver {
                 console.warn(`[AttestationResolver] Errors found while fetching attestations: `, error);
                 return {data, count: null};
             }
-
-            console.log(data);
 
             const newData = data ? data.map(item => {
                 return {
