@@ -43,9 +43,14 @@ class AttestationResolver {
             }
 
             const newData = data ? data.map(item => {
+                const decodedData = item.data;
+                // TODO cleaner handling of bigints in created attestations
+                if (decodedData?.token_id) {
+                    decodedData.token_id = BigInt(decodedData.token_id).toString();
+                }
                 return {
                     ...item,
-                    attestation: item.data
+                    attestation: decodedData
                 };
             }) : data;
 
