@@ -30,7 +30,7 @@ class AttestationResolver {
         private readonly supabaseService: SupabaseCachingService) {
     }
 
-    @Query(_ => GetAttestationsResponse)
+    @Query(() => GetAttestationsResponse)
     async attestations(@Args() args: GetAttestationArgs) {
         try {
             const res = await this.supabaseService.getAttestations(args);
@@ -42,12 +42,15 @@ class AttestationResolver {
                 return {data, count: null};
             }
 
-            console.log(data);
-
             const newData = data ? data.map(item => {
+                const decodedData = item.data;
+                // TODO cleaner handling of bigints in created attestations
+                if (decodedData?.token_id) {
+                    decodedData.token_id = BigInt(decodedData.token_id).toString();
+                }
                 return {
                     ...item,
-                    attestation: item.data
+                    attestation: decodedData
                 };
             }) : data;
 
