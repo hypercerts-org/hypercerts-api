@@ -53,12 +53,7 @@ export const yoga = createYoga({
     methods: ["POST"],
   },
   graphqlEndpoint: "/v1/graphql",
-  plugins: [
-    useResponseCache({
-      // global cache
-      session: () => null,
-    }),
-  ],
+  plugins: [],
 });
 
 export const urqlClient = new Client({
