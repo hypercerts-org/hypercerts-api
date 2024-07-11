@@ -11,7 +11,6 @@ import { ApiResponse } from "../types/api.js";
 import {
   addressesByNetwork,
   HypercertExchangeClient,
-  Maker,
   utils,
 } from "@hypercerts-org/marketplace-sdk";
 import { ethers, verifyTypedData } from "ethers";
@@ -384,31 +383,20 @@ export class MarketplaceController extends Controller {
       };
     }
 
-    // Prepare matching orders for validation
-    const signatures: string[] = [];
-    const orders: Maker[] = [];
-    matchingOrders.forEach((order) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { signature, chainId: _, id: __, ...orderWithoutSignature } = order;
-      signatures.push(signature);
-      orders.push(orderWithoutSignature);
-    });
-
     // Validate orders using logic in the SDK
     const hec = new HypercertExchangeClient(
       chainId,
       // @ts-expect-error Typing issue with provider
       new ethers.JsonRpcProvider(),
     );
-    const validationResults = await hec.checkOrdersValidity(orders, signatures);
+    const validationResults = await hec.checkOrdersValidity(matchingOrders);
 
     // Determine which orders to update in DB, and update them
     const ordersToUpdate = validationResults
-      .map(({ valid, validatorCodes }, index) => {
+      .map(({ valid, validatorCodes, id }) => {
         if (!valid) {
-          const order = matchingOrders[index];
           return {
-            id: order.id,
+            id,
             invalidated: true,
             validator_codes: validatorCodes,
           };
