@@ -11,6 +11,7 @@ import { ApiResponse } from "../types/api.js";
 import {
   addressesByNetwork,
   HypercertExchangeClient,
+  Maker,
   utils,
 } from "@hypercerts-org/marketplace-sdk";
 import { ethers, verifyTypedData } from "ethers";
@@ -43,6 +44,11 @@ export interface CreateOrderRequest {
 
 interface UpdateOrderNonceRequest {
   address: string;
+  chainId: number;
+}
+
+interface ValidateOrderRequest {
+  tokenId: string;
   chainId: number;
 }
 
@@ -324,6 +330,100 @@ export class MarketplaceController extends Controller {
       success: true,
       message: "Success aaa",
       data: updatedNonce,
+    };
+  }
+
+  /**
+   * Validates an order and marks it as invalid if validation fails.
+   */
+  @Post("/orders/validate")
+  @SuccessResponse(200, "Order validated successfully")
+  @Response<ApiResponse>(422, "Unprocessable content", {
+    success: false,
+    message: "Order could not be validated",
+  })
+  async validateOrder(@Body() requestBody: ValidateOrderRequest) {
+    const inputSchema = z.object({
+      tokenId: z.string(),
+      chainId: z.number(),
+    });
+    const parsedQuery = inputSchema.safeParse(requestBody);
+    if (!parsedQuery.success) {
+      this.setStatus(422);
+      return {
+        success: false,
+        message: parsedQuery.error.message,
+        data: null,
+      };
+    }
+
+    const { tokenId, chainId } = parsedQuery.data;
+    const supabase = new SupabaseDataService();
+
+    // Fetch all orders for token ID from database
+    const { data: matchingOrders, error } = await supabase.getOrdersByTokenId({
+      tokenId,
+      chainId,
+    });
+
+    if (error) {
+      this.setStatus(500);
+      return {
+        success: false,
+        message: error.message,
+        data: null,
+      };
+    }
+
+    if (!matchingOrders) {
+      this.setStatus(404);
+      return {
+        success: false,
+        message: "Orders not found",
+        data: null,
+      };
+    }
+
+    // Prepare matching orders for validation
+    const signatures: string[] = [];
+    const orders: Maker[] = [];
+    matchingOrders.forEach((order) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { signature, chainId: _, id: __, ...orderWithoutSignature } = order;
+      signatures.push(signature);
+      orders.push(orderWithoutSignature);
+    });
+
+    // Validate orders using logic in the SDK
+    const hec = new HypercertExchangeClient(
+      chainId,
+      // @ts-expect-error Typing issue with provider
+      new ethers.JsonRpcProvider(),
+    );
+    const validationResults = await hec.checkOrdersValidity(orders, signatures);
+
+    // Determine which orders to update in DB, and update them
+    const ordersToUpdate = validationResults
+      .map(({ valid, validatorCodes }, index) => {
+        if (!valid) {
+          const order = matchingOrders[index];
+          return {
+            id: order.id,
+            invalidated: true,
+            validator_codes: validatorCodes,
+          };
+        }
+        return null;
+      })
+      .filter((x) => x !== null)
+      .filter((x) => x?.invalidated);
+    await supabase.updateOrders(ordersToUpdate);
+
+    this.setStatus(200);
+    return {
+      success: true,
+      message: "Orders have been validated",
+      data: ordersToUpdate,
     };
   }
 }

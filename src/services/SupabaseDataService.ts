@@ -1,10 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database as DataDatabase } from "../types/supabaseData.js";
 import { supabaseData } from "../client/supabase.js";
-import {GetCollectionArgs} from "../graphql/schemas/args/collectionArgs.js";
-import {applyFilters} from "../graphql/schemas/utils/filters.js";
-import {applySorting} from "../graphql/schemas/utils/sorting.js";
-import {applyPagination} from "../graphql/schemas/utils/pagination.js";
+import { GetCollectionArgs } from "../graphql/schemas/args/collectionArgs.js";
+import { applyFilters } from "../graphql/schemas/utils/filters.js";
+import { applySorting } from "../graphql/schemas/utils/sorting.js";
+import { applyPagination } from "../graphql/schemas/utils/pagination.js";
 
 export class SupabaseDataService {
   private supabaseData: SupabaseClient<DataDatabase>;
@@ -65,6 +65,35 @@ export class SupabaseDataService {
       .throwOnError();
   }
 
+  getOrdersByTokenId({
+    tokenId,
+    chainId,
+  }: {
+    tokenId: string;
+    chainId: number;
+  }) {
+    return this.supabaseData
+      .from("marketplace_orders")
+      .select("*")
+      .contains("itemIds", tokenId)
+      .eq("chainId", chainId)
+      .order("createdAt", { ascending: false })
+      .throwOnError();
+  }
+
+  updateOrders(
+    orders: DataDatabase["public"]["Tables"]["marketplace_orders"]["Update"][],
+  ) {
+    return Promise.all(
+      orders.map((order) => {
+        return this.supabaseData
+          .from("marketplace_orders")
+          .update(order)
+          .throwOnError();
+      }),
+    );
+  }
+
   getOrdersForFraction(fractionIds: string | string[]) {
     const ids = Array.isArray(fractionIds) ? fractionIds : [fractionIds];
     return this.supabaseData
@@ -78,11 +107,11 @@ export class SupabaseDataService {
   getCollections(args: GetCollectionArgs) {
     let query = this.supabaseData.from("hyperboards").select("*");
 
-    const {where, sort, offset, first} = args;
+    const { where, sort, offset, first } = args;
 
-    query = applyFilters({query, where});
-    query = applySorting({query, sort});
-    query = applyPagination({query, pagination: {first, offset}});
+    query = applyFilters({ query, where });
+    query = applySorting({ query, sort });
+    query = applyPagination({ query, pagination: { first, offset } });
 
     return query;
   }
