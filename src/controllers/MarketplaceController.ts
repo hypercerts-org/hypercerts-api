@@ -11,6 +11,7 @@ import { ApiResponse } from "../types/api.js";
 import {
   addressesByNetwork,
   HypercertExchangeClient,
+  OrderValidatorCode,
   utils,
 } from "@hypercerts-org/marketplace-sdk";
 import { ethers, verifyTypedData } from "ethers";
@@ -47,7 +48,7 @@ interface UpdateOrderNonceRequest {
 }
 
 interface ValidateOrderRequest {
-  tokenId: string;
+  tokenIds: string[];
   chainId: number;
 }
 
@@ -343,7 +344,7 @@ export class MarketplaceController extends Controller {
   })
   async validateOrder(@Body() requestBody: ValidateOrderRequest) {
     const inputSchema = z.object({
-      tokenId: z.string(),
+      tokenIds: z.array(z.string()),
       chainId: z.number(),
     });
     const parsedQuery = inputSchema.safeParse(requestBody);
@@ -356,55 +357,60 @@ export class MarketplaceController extends Controller {
       };
     }
 
-    const { tokenId, chainId } = parsedQuery.data;
+    const { tokenIds, chainId } = parsedQuery.data;
     const supabase = new SupabaseDataService();
 
-    // Fetch all orders for token ID from database
-    const { data: matchingOrders, error } = await supabase.getOrdersByTokenId({
-      tokenId,
-      chainId,
-    });
+    const ordersToUpdate: {
+      id: string;
+      invalidated: boolean;
+      validator_codes: OrderValidatorCode[];
+    }[] = [];
+    for (const tokenId of tokenIds) {
+      // Fetch all orders for token ID from database
+      const { data: matchingOrders, error } = await supabase.getOrdersByTokenId(
+        {
+          tokenId,
+          chainId,
+        },
+      );
 
-    if (error) {
-      this.setStatus(500);
-      return {
-        success: false,
-        message: error.message,
-        data: null,
-      };
-    }
+      if (error) {
+        this.setStatus(500);
+        return {
+          success: false,
+          message: error.message,
+          data: null,
+        };
+      }
 
-    if (!matchingOrders) {
-      this.setStatus(404);
-      return {
-        success: false,
-        message: "Orders not found",
-        data: null,
-      };
-    }
+      if (!matchingOrders) {
+        this.setStatus(404);
+        return {
+          success: false,
+          message: "Orders not found",
+          data: null,
+        };
+      }
 
-    // Validate orders using logic in the SDK
-    const hec = new HypercertExchangeClient(
-      chainId,
-      // @ts-expect-error Typing issue with provider
-      new ethers.JsonRpcProvider(),
-    );
-    const validationResults = await hec.checkOrdersValidity(matchingOrders);
+      // Validate orders using logic in the SDK
+      const hec = new HypercertExchangeClient(
+        chainId,
+        // @ts-expect-error Typing issue with provider
+        new ethers.JsonRpcProvider(),
+      );
+      const validationResults = await hec.checkOrdersValidity(matchingOrders);
 
-    // Determine which orders to update in DB, and update them
-    const ordersToUpdate = validationResults
-      .map(({ valid, validatorCodes, id }) => {
-        if (!valid) {
-          return {
+      // Determine which orders to update in DB, and update them
+      ordersToUpdate.push(
+        ...validationResults
+          .filter((x) => !x.valid)
+          .map(({ validatorCodes, id }) => ({
             id,
             invalidated: true,
             validator_codes: validatorCodes,
-          };
-        }
-        return null;
-      })
-      .filter((x) => x !== null)
-      .filter((x) => x?.invalidated);
+          })),
+      );
+    }
     await supabase.updateOrders(ordersToUpdate);
 
     this.setStatus(200);
