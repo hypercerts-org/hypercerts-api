@@ -75,7 +75,7 @@ export class SupabaseDataService {
     return this.supabaseData
       .from("marketplace_orders")
       .select("*")
-      .contains("itemIds", tokenId)
+      .contains("itemIds", [tokenId])
       .eq("chainId", chainId)
       .order("createdAt", { ascending: false })
       .throwOnError();
@@ -86,9 +86,13 @@ export class SupabaseDataService {
   ) {
     return Promise.all(
       orders.map((order) => {
+        if (!order?.id) {
+          throw new Error("Order must have an id to update.");
+        }
         return this.supabaseData
           .from("marketplace_orders")
           .update(order)
+          .eq("id", order.id)
           .throwOnError();
       }),
     );

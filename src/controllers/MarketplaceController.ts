@@ -21,6 +21,7 @@ import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { isAddress } from "viem";
 import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
 import { getFractionsById } from "../utils/getFractionsById.js";
+import { getRpcUrl } from "../utils/getRpcUrl.js";
 
 export interface CreateOrderRequest {
   signature: string;
@@ -396,7 +397,7 @@ export class MarketplaceController extends Controller {
       const hec = new HypercertExchangeClient(
         chainId,
         // @ts-expect-error Typing issue with provider
-        new ethers.JsonRpcProvider(),
+        new ethers.JsonRpcProvider(getRpcUrl(chainId)),
       );
       const validationResults = await hec.checkOrdersValidity(matchingOrders);
 
@@ -411,6 +412,7 @@ export class MarketplaceController extends Controller {
           })),
       );
     }
+    console.log("[marketplace-api] Invalidating orders", ordersToUpdate);
     await supabase.updateOrders(ordersToUpdate);
 
     this.setStatus(200);

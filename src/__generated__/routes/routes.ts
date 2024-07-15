@@ -35,7 +35,7 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string","required":true},"data":{"dataType":"void"},"success":{"dataType":"boolean","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "HypercertClaimdata_36_1": {
+    "HypercertClaimdata": {
         "dataType": "refObject",
         "properties": {
             "impact_scope": {"dataType":"nestedObjectLiteral","nestedProperties":{"display_value":{"dataType":"string"},"excludes":{"dataType":"array","array":{"dataType":"string"}},"value":{"dataType":"array","array":{"dataType":"string"}},"name":{"dataType":"string"}},"additionalProperties":{"dataType":"any"},"required":true},
@@ -59,7 +59,7 @@ const models: TsoaRoute.Models = {
             "ref": {"dataType":"string"},
             "allowList": {"dataType":"string"},
             "properties": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"value":{"dataType":"string"},"trait_type":{"dataType":"string"}},"additionalProperties":{"dataType":"any"}}},
-            "hypercert": {"ref":"HypercertClaimdata_36_1"},
+            "hypercert": {"ref":"HypercertClaimdata"},
         },
         "additionalProperties": false,
     },
@@ -102,6 +102,20 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "address": {"dataType":"string","required":true},
+            "chainId": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "OrderValidatorCode": {
+        "dataType": "refEnum",
+        "enums": [0,101,111,112,113,201,211,212,213,301,311,312,321,322,401,402,411,412,413,414,415,421,422,501,502,503,601,611,612,621,622,623,631,632,633,634,701,702,801,802,901,902],
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ValidateOrderRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "tokenIds": {"dataType":"array","array":{"dataType":"string"},"required":true},
             "chainId": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
@@ -235,6 +249,36 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'updateOrderNonce',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/marketplace/orders/validate',
+            ...(fetchMiddlewares<RequestHandler>(MarketplaceController)),
+            ...(fetchMiddlewares<RequestHandler>(MarketplaceController.prototype.validateOrder)),
+
+            async function MarketplaceController_validateOrder(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"ValidateOrderRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new MarketplaceController();
+
+              await templateService.apiHandler({
+                methodName: 'validateOrder',
                 controller,
                 response,
                 next,

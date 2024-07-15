@@ -18,8 +18,8 @@ importers:
         specifier: ^3.5.0
         version: 3.5.0(@envelop/core@5.0.0)(graphql-yoga@5.1.1(graphql@16.8.1))(graphql@16.8.1)
       '@hypercerts-org/marketplace-sdk':
-        specifier: 0.3.18
-        version: 0.3.18(ethers@6.12.2)(graphql@16.8.1)(rollup@4.12.0)(svelte@4.2.18)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)
+        specifier: 0.3.20
+        version: 0.3.20(ethers@6.12.2)(graphql@16.8.1)(rollup@4.12.0)(svelte@4.2.18)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)
       '@hypercerts-org/sdk':
         specifier: 2.0.0-alpha.27
         version: 2.0.0-alpha.27(graphql@16.8.1)(rollup@4.12.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)
@@ -1329,8 +1329,8 @@ packages:
   '@hypercerts-org/contracts@2.0.0-alpha.0':
     resolution: {integrity: sha512-xkvl2goo1Uz39TdALs4ypjxarmxk4Lu0X8JZc5+TdmVw/hsaywjE5WpPgil/AFE5Ccm3qyNGVsY6fz6co5GvVg==}
 
-  '@hypercerts-org/marketplace-sdk@0.3.18':
-    resolution: {integrity: sha512-5KYmYbLi7vD0vqqaBY4IufceVb4i/9GO2NY7LO5oKybB8rgKQOL1iedOa5mbCUeRtKQRujI9oeMqprTKs6+wlQ==}
+  '@hypercerts-org/marketplace-sdk@0.3.20':
+    resolution: {integrity: sha512-xYaOk7RSJRJ87uvM6BmLjHw7LXw6IYY4zy12ixQb/Yjjxo5og/oWR5GN2aIVzGm7em/DqksTEUjIuHRG6IOXag==}
     engines: {node: '>= 16.15.1 <= 20.x'}
     peerDependencies:
       ethers: ^6.6.2
@@ -8190,7 +8190,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@hypercerts-org/marketplace-sdk@0.3.18(ethers@6.12.2)(graphql@16.8.1)(rollup@4.12.0)(svelte@4.2.18)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)':
+  '@hypercerts-org/marketplace-sdk@0.3.20(ethers@6.12.2)(graphql@16.8.1)(rollup@4.12.0)(svelte@4.2.18)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)':
     dependencies:
       '@hypercerts-org/sdk': 2.0.0-alpha.27(graphql@16.8.1)(rollup@4.12.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)
       '@supabase/supabase-js': 2.42.5
