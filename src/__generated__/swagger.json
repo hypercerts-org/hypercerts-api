@@ -74,7 +74,7 @@
 				"type": "object",
 				"description": "Response object for a store request."
 			},
-			"HypercertClaimdata_36_1": {
+			"HypercertClaimdata": {
 				"description": "Properties of an impact claim",
 				"properties": {
 					"impact_scope": {
@@ -269,7 +269,7 @@
 						"type": "array"
 					},
 					"hypercert": {
-						"$ref": "#/components/schemas/HypercertClaimdata_36_1"
+						"$ref": "#/components/schemas/HypercertClaimdata"
 					}
 				},
 				"required": [
@@ -430,6 +430,74 @@
 				},
 				"required": [
 					"address",
+					"chainId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"OrderValidatorCode": {
+				"description": "Error errors returned by the order validator contract",
+				"enum": [
+					0,
+					101,
+					111,
+					112,
+					113,
+					201,
+					211,
+					212,
+					213,
+					301,
+					311,
+					312,
+					321,
+					322,
+					401,
+					402,
+					411,
+					412,
+					413,
+					414,
+					415,
+					421,
+					422,
+					501,
+					502,
+					503,
+					601,
+					611,
+					612,
+					621,
+					622,
+					623,
+					631,
+					632,
+					633,
+					634,
+					701,
+					702,
+					801,
+					802,
+					901,
+					902
+				],
+				"type": "number"
+			},
+			"ValidateOrderRequest": {
+				"properties": {
+					"tokenIds": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"chainId": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"tokenIds",
 					"chainId"
 				],
 				"type": "object",
@@ -767,6 +835,13 @@
 												"error": {},
 												"data": {
 													"properties": {
+														"validator_codes": {
+															"items": {
+																"type": "number",
+																"format": "double"
+															},
+															"type": "array"
+														},
 														"subsetNonce": {
 															"type": "number",
 															"format": "double"
@@ -794,6 +869,9 @@
 														},
 														"orderNonce": {
 															"type": "string"
+														},
+														"invalidated": {
+															"type": "boolean"
 														},
 														"id": {
 															"type": "string"
@@ -846,6 +924,7 @@
 														}
 													},
 													"required": [
+														"validator_codes",
 														"subsetNonce",
 														"strategyId",
 														"startTime",
@@ -854,6 +933,7 @@
 														"quoteType",
 														"price",
 														"orderNonce",
+														"invalidated",
 														"id",
 														"globalNonce",
 														"endTime",
@@ -1009,6 +1089,95 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/UpdateOrderNonceRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/marketplace/orders/validate": {
+			"post": {
+				"operationId": "ValidateOrder",
+				"responses": {
+					"200": {
+						"description": "Order validated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"items": {
+												"properties": {
+													"validator_codes": {
+														"items": {
+															"$ref": "#/components/schemas/OrderValidatorCode"
+														},
+														"type": "array"
+													},
+													"invalidated": {
+														"type": "boolean"
+													},
+													"id": {
+														"type": "string"
+													}
+												},
+												"required": [
+													"validator_codes",
+													"invalidated",
+													"id"
+												],
+												"type": "object"
+											},
+											"type": "array"
+										},
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"data",
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Order could not be validated"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Validates an order and marks it as invalid if validation fails.",
+				"tags": [
+					"Marketplace"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ValidateOrderRequest"
 							}
 						}
 					}

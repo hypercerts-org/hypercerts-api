@@ -300,6 +300,7 @@ export type Database = {
           endTime: number
           globalNonce: string
           id: string
+          invalidated: boolean
           itemIds: string[]
           orderNonce: string
           price: string
@@ -309,6 +310,7 @@ export type Database = {
           startTime: number
           strategyId: number
           subsetNonce: number
+          validator_codes: number[] | null
         }
         Insert: {
           additionalParameters: string
@@ -321,6 +323,7 @@ export type Database = {
           endTime: number
           globalNonce: string
           id?: string
+          invalidated?: boolean
           itemIds: string[]
           orderNonce: string
           price: string
@@ -330,6 +333,7 @@ export type Database = {
           startTime: number
           strategyId: number
           subsetNonce: number
+          validator_codes?: number[] | null
         }
         Update: {
           additionalParameters?: string
@@ -342,6 +346,7 @@ export type Database = {
           endTime?: number
           globalNonce?: string
           id?: string
+          invalidated?: boolean
           itemIds?: string[]
           orderNonce?: string
           price?: string
@@ -351,6 +356,7 @@ export type Database = {
           startTime?: number
           strategyId?: number
           subsetNonce?: number
+          validator_codes?: number[] | null
         }
         Relationships: []
       }

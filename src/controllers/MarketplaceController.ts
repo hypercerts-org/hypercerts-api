@@ -11,6 +11,7 @@ import { ApiResponse } from "../types/api.js";
 import {
   addressesByNetwork,
   HypercertExchangeClient,
+  OrderValidatorCode,
   utils,
 } from "@hypercerts-org/marketplace-sdk";
 import { ethers, verifyTypedData } from "ethers";
@@ -20,6 +21,7 @@ import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { isAddress } from "viem";
 import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
 import { getFractionsById } from "../utils/getFractionsById.js";
+import { getRpcUrl } from "../utils/getRpcUrl.js";
 
 export interface CreateOrderRequest {
   signature: string;
@@ -43,6 +45,11 @@ export interface CreateOrderRequest {
 
 interface UpdateOrderNonceRequest {
   address: string;
+  chainId: number;
+}
+
+interface ValidateOrderRequest {
+  tokenIds: string[];
   chainId: number;
 }
 
@@ -324,6 +331,95 @@ export class MarketplaceController extends Controller {
       success: true,
       message: "Success aaa",
       data: updatedNonce,
+    };
+  }
+
+  /**
+   * Validates an order and marks it as invalid if validation fails.
+   */
+  @Post("/orders/validate")
+  @SuccessResponse(200, "Order validated successfully")
+  @Response<ApiResponse>(422, "Unprocessable content", {
+    success: false,
+    message: "Order could not be validated",
+  })
+  async validateOrder(@Body() requestBody: ValidateOrderRequest) {
+    const inputSchema = z.object({
+      tokenIds: z.array(z.string()),
+      chainId: z.number(),
+    });
+    const parsedQuery = inputSchema.safeParse(requestBody);
+    if (!parsedQuery.success) {
+      this.setStatus(422);
+      return {
+        success: false,
+        message: parsedQuery.error.message,
+        data: null,
+      };
+    }
+
+    const { tokenIds, chainId } = parsedQuery.data;
+    const supabase = new SupabaseDataService();
+
+    const ordersToUpdate: {
+      id: string;
+      invalidated: boolean;
+      validator_codes: OrderValidatorCode[];
+    }[] = [];
+    for (const tokenId of tokenIds) {
+      // Fetch all orders for token ID from database
+      const { data: matchingOrders, error } = await supabase.getOrdersByTokenId(
+        {
+          tokenId,
+          chainId,
+        },
+      );
+
+      if (error) {
+        this.setStatus(500);
+        return {
+          success: false,
+          message: error.message,
+          data: null,
+        };
+      }
+
+      if (!matchingOrders) {
+        this.setStatus(404);
+        return {
+          success: false,
+          message: "Orders not found",
+          data: null,
+        };
+      }
+
+      // Validate orders using logic in the SDK
+      const hec = new HypercertExchangeClient(
+        chainId,
+        // @ts-expect-error Typing issue with provider
+        new ethers.JsonRpcProvider(getRpcUrl(chainId)),
+      );
+      const validationResults = await hec.checkOrdersValidity(matchingOrders);
+
+      // Determine which orders to update in DB, and update them
+      ordersToUpdate.push(
+        ...validationResults
+          .filter((x) => !x.valid)
+          .map(({ validatorCodes, id }) => ({
+            id,
+            invalidated: true,
+            validator_codes: validatorCodes,
+          })),
+      );
+    }
+    console.log("[marketplace-api] Invalidating orders", ordersToUpdate);
+    await supabase.updateOrders(ordersToUpdate);
+
+    this.setStatus(200);
+    return {
+      success: true,
+      message: "Orders have been validated",
+      data: ordersToUpdate,
     };
   }
 }
