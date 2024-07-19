@@ -5,6 +5,7 @@ import { GetCollectionArgs } from "../graphql/schemas/args/collectionArgs.js";
 import { applyFilters } from "../graphql/schemas/utils/filters.js";
 import { applySorting } from "../graphql/schemas/utils/sorting.js";
 import { applyPagination } from "../graphql/schemas/utils/pagination.js";
+import { GetOrdersArgs } from "../graphql/schemas/args/orderArgs.js";
 
 export class SupabaseDataService {
   private supabaseData: SupabaseClient<DataDatabase>;
@@ -57,12 +58,16 @@ export class SupabaseDataService {
       .single();
   }
 
-  getOrders() {
-    return this.supabaseData
-      .from("marketplace_orders")
-      .select("*")
-      .order("createdAt", { ascending: false })
-      .throwOnError();
+  getOrders(args: GetOrdersArgs) {
+    let query = this.supabaseData.from("marketplace_orders").select("*");
+
+    const { where, sort, offset, first } = args;
+
+    query = applyFilters({ query, where });
+    query = applySorting({ query, sort });
+    query = applyPagination({ query, pagination: { first, offset } });
+
+    return query;
   }
 
   getOrdersByTokenId({

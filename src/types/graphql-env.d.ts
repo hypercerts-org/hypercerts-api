@@ -1435,6 +1435,14 @@ export type introspection = {
               "name": "IdSearchOptions",
               "ofType": null
             }
+          },
+          {
+            "name": "signer",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
           }
         ]
       },

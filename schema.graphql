@@ -234,6 +234,7 @@ input BasicMetadataWhereInput {
 input BasicOrderWhereInput {
   chain_id: NumberSearchOptions
   id: IdSearchOptions
+  signer: StringSearchOptions
 }
 
 input BasicSaleWhereInput {

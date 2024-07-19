@@ -4,7 +4,7 @@ import { Order } from "../typeDefs/orderTypeDefs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { GetOrdersArgs } from "../args/orderArgs.js";
 import { SupabaseCachingService } from "../../../services/SupabaseCachingService.js";
-import {GraphQLBigInt} from "graphql-scalars";
+import { GraphQLBigInt } from "graphql-scalars";
 
 @ObjectType()
 export default class GetOrdersResponse {
@@ -19,11 +19,10 @@ export default class GetOrdersResponse {
 
   @Field(() => GraphQLBigInt, { nullable: true })
   lowestAvailablePrice?: bigint;
-
 }
 
 @injectable()
-@Resolver((_) => Order)
+@Resolver(() => Order)
 class OrderResolver {
   constructor(
     @inject(SupabaseDataService)
@@ -32,10 +31,10 @@ class OrderResolver {
     private readonly supabaseCachingService: SupabaseCachingService,
   ) {}
 
-  @Query((_) => GetOrdersResponse)
+  @Query(() => GetOrdersResponse)
   async orders(@Args() args: GetOrdersArgs) {
     try {
-      const res = await this.supabaseService.getOrders();
+      const res = await this.supabaseService.getOrders(args);
 
       const { data, error, count } = res;
 
@@ -54,34 +53,6 @@ class OrderResolver {
       );
     }
   }
-
-  // @Field()
-  // async fraction(@Root() order: Order) {
-  //   if (!order || !order.itemIds || order.itemIds.length === 0) {
-  //     return null;
-  //   }
-  //   const res = await this.supabaseCachingService.getFractions({
-  //     where: {
-  //       token_id: { eq: BigInt(order.itemIds[0]) },
-  //     },
-  //   });
-  //
-  //   if (!res) {
-  //     console.warn(`[OrderResolver::fraction] Error fetching fraction: `, res);
-  //     return null;
-  //   }
-  //
-  //   const { data, error } = res;
-  //
-  //   if (error) {
-  //     console.warn(
-  //       `[OrderResolver::fraction] Error fetching fraction: `,
-  //       error,
-  //     );
-  //   }
-  //
-  //   return data?.[0];
-  // }
 }
 
 export { OrderResolver };
