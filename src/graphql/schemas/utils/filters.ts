@@ -54,6 +54,7 @@ const generateFilters = (
       case "gte":
       case "lt":
       case "lte":
+      case "in":
         filters.push([operator, column, operand]);
         break;
       case "contains":
@@ -64,9 +65,6 @@ const generateFilters = (
         break;
       case "endsWith":
         filters.push(["ilike", column, `%${operand}`]);
-        break;
-      case "in":
-        filters.push(["in", column, operand]);
         break;
     }
   }
