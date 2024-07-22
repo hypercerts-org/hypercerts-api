@@ -16,6 +16,7 @@ import { SupabaseCachingService } from "../../../services/SupabaseCachingService
 import { GraphQLBigInt } from "graphql-scalars";
 import { getHypercertTokenId } from "../../../utils/tokenIds.js";
 import { HypercertBaseType } from "../typeDefs/baseTypes/hypercertBaseType.js";
+import { getAddress } from "viem";
 
 @ObjectType()
 export default class GetOrdersResponse {
@@ -79,7 +80,7 @@ class OrderResolver {
     }
 
     const hypercertId = getHypercertTokenId(BigInt(tokenId));
-    const formattedHypercertId = `${chainId}-${collectionId}-${hypercertId.toString()}`;
+    const formattedHypercertId = `${chainId}-${getAddress(collectionId)}-${hypercertId.toString()}`;
     const hypercert = await this.supabaseCachingService.getHypercerts({
       where: {
         hypercert_id: {
@@ -95,7 +96,7 @@ class OrderResolver {
       return null;
     }
 
-    const { data, error } = hypercert;
+    const { data: hypercertData, error } = hypercert;
     if (error) {
       console.warn(
         `[OrderResolver::hypercert] Error fetching hypercert: `,
@@ -104,10 +105,21 @@ class OrderResolver {
       return null;
     }
 
+    const resultOrder = hypercertData?.[0] as HypercertBaseType;
+
+    if (!resultOrder) {
+      console.warn(
+        `[OrderResolver::hypercert] No hypercert found for tokenId: ${tokenId}`,
+      );
+      return null;
+    }
+
+    const uri = (hypercertData?.[0] as HypercertBaseType)?.uri;
+
     const metadata = await this.supabaseCachingService.getMetadata({
       where: {
         uri: {
-          eq: (data?.[0] as HypercertBaseType)?.uri,
+          eq: uri,
         },
       },
     });
@@ -135,8 +147,6 @@ class OrderResolver {
       );
       return null;
     }
-
-    const resultOrder = data?.[0] as HypercertBaseType;
 
     return {
       ...resultOrder,
