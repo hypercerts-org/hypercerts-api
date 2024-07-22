@@ -1,7 +1,7 @@
 import { Field, ObjectType } from "type-graphql";
-import { BasicTypeDef } from "./basicTypeDef.js";
+import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
-import { HypercertBaseType } from "./hypercertBaseType.js";
+import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
 
 @ObjectType()
 class Order extends BasicTypeDef {

@@ -15,6 +15,7 @@ import { GetHypercertArgs } from "../args/hypercertsArgs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 import { decodeAbiParameters, parseAbiParameters } from "viem";
+import { Metadata } from "../typeDefs/metadataTypeDefs.js";
 
 @ObjectType()
 export default class GetHypercertsResponse {
@@ -26,7 +27,7 @@ export default class GetHypercertsResponse {
 }
 
 @injectable()
-@Resolver((_) => Hypercert)
+@Resolver(() => Hypercert)
 class HypercertResolver {
   constructor(
     @inject(SupabaseCachingService)
@@ -82,7 +83,7 @@ class HypercertResolver {
           `[HypercertResolver::metadata] Error fetching metadata for uri ${hypercert.uri}: `,
           res,
         );
-        return;
+        return null;
       }
 
       const { data, error } = res;
@@ -92,10 +93,10 @@ class HypercertResolver {
           `[HypercertResolver::metadata] Error fetching metadata for uri ${hypercert.uri}: `,
           error,
         );
-        return;
+        return null;
       }
 
-      return data;
+      return data as unknown as Promise<Metadata>;
     } catch (e) {
       const error = e as Error;
       throw new Error(

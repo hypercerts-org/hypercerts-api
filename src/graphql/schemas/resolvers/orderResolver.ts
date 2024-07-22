@@ -15,6 +15,7 @@ import { GetOrdersArgs } from "../args/orderArgs.js";
 import { SupabaseCachingService } from "../../../services/SupabaseCachingService.js";
 import { GraphQLBigInt } from "graphql-scalars";
 import { getHypercertTokenId } from "../../../utils/tokenIds.js";
+import { HypercertBaseType } from "../typeDefs/baseTypes/hypercertBaseType.js";
 
 @ObjectType()
 export default class GetOrdersResponse {
@@ -102,7 +103,45 @@ class OrderResolver {
       );
       return null;
     }
-    return data?.[0] || null;
+
+    const metadata = await this.supabaseCachingService.getMetadata({
+      where: {
+        uri: {
+          eq: (data?.[0] as HypercertBaseType)?.uri,
+        },
+      },
+    });
+
+    if (!metadata) {
+      console.warn(
+        `[OrderResolver::hypercert] No metadata found for tokenId: ${tokenId}`,
+      );
+      return null;
+    }
+
+    const { data: metadataData, error: metadataError } = metadata;
+
+    if (metadataError) {
+      console.warn(
+        `[OrderResolver::hypercert] Error fetching metadata: `,
+        metadataError,
+      );
+      return null;
+    }
+
+    if (!metadataData) {
+      console.warn(
+        `[OrderResolver::hypercert] No metadata found for tokenId: ${tokenId}`,
+      );
+      return null;
+    }
+
+    const resultOrder = data?.[0] as HypercertBaseType;
+
+    return {
+      ...resultOrder,
+      metadata: metadataData?.[0] || null,
+    };
   }
 }
 

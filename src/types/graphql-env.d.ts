@@ -2559,6 +2559,15 @@ export type introspection = {
             "args": []
           },
           {
+            "name": "metadata",
+            "type": {
+              "kind": "OBJECT",
+              "name": "Metadata",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
             "name": "token_id",
             "type": {
               "kind": "SCALAR",

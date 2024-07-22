@@ -478,6 +478,9 @@ type HypercertBaseType {
   last_update_block_number: EthBigInt
   last_update_block_timestamp: EthBigInt
 
+  """The metadata for the hypercert as referenced by the uri"""
+  metadata: Metadata
+
   """The token ID of the hypercert"""
   token_id: EthBigInt
 
