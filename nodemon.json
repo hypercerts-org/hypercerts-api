@@ -7,9 +7,7 @@
     "**/graphql-env.d.ts",
     "**/__generated__/*"
   ],
-  "watch": [
-    "./src"
-  ],
+  "watch": ["./src"],
   "ext": "ts",
   "exec": "pnpm run build && pnpm start"
 }

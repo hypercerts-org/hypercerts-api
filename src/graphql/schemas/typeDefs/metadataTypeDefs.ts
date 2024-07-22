@@ -1,8 +1,8 @@
-import {Field, ObjectType} from "type-graphql";
-import type {Json} from "../../../types/supabaseData.js";
-import {GraphQLJSON} from "graphql-scalars";
-import {BasicTypeDef} from "./basicTypeDef.js";
-import {EthBigInt} from "../../scalars/ethBigInt.js";
+import { Field, ObjectType } from "type-graphql";
+import type { Json } from "../../../types/supabaseData.js";
+import { GraphQLJSON } from "graphql-scalars";
+import { BasicTypeDef } from "./basicTypeDef.js";
+import { EthBigInt } from "../../scalars/ethBigInt.js";
 
 @ObjectType()
 class Metadata extends BasicTypeDef {

@@ -1,26 +1,26 @@
 import { createSeedClient } from "@snaplet/seed";
 
-console.log('🍂 seeding initializing');
+console.log("🍂 seeding initializing");
 
 const seed = await createSeedClient({
   dryRun: false,
 });
 
-console.log('⚠️ clearing database');
+console.log("⚠️ clearing database");
 await seed.$resetDatabase();
 
 const myAddress = "0x59266D85D94666D037C1e32dAa8FaC9E95CdaFEf".toLowerCase();
 const sepoliaChainId = 11155111;
 const optimismChainId = 10;
 
-console.log('🍃 seeding users');
+console.log("🍃 seeding users");
 await seed.public_users([
   {
     address: myAddress.toLowerCase(),
   },
 ]);
 
-console.log('🍃 seeding boards');
+console.log("🍃 seeding boards");
 await seed.hyperboards([
   {
     admin_id: myAddress,
@@ -51,7 +51,7 @@ await seed.hyperboards([
                 "11155111-0xa16dfb32eb140a6f3f2ac68f41dad8c7e83c4941-1020847100762815390390123822295304634368",
               owner_id: myAddress,
               chain_id: sepoliaChainId,
-            }
+            },
           ],
         }),
       },
@@ -82,20 +82,19 @@ await seed.hyperboards([
         }),
       },
     ],
-  }
+  },
 ]);
 
-console.log('🌱 seeding default sponsor metadata');
+console.log("🌱 seeding default sponsor metadata");
 await seed.default_sponsor_metadata([
   {
-
     address: myAddress,
     firstName: "Testy",
     lastName: "McTestface",
     image: "test.png",
-    type: 'company',
-    companyName: 'Testy McTestface Inc',
+    type: "company",
+    companyName: "Testy McTestface Inc",
   },
 ]);
 
-console.log('✅ seeding complete');
+console.log("✅ seeding complete");

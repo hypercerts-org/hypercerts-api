@@ -1,19 +1,22 @@
 {
   "$schema": "https://json.schemastore.org/swcrc",
   "jsc": {
-    "experimental": { "keepImportAssertions": true, "emitAssertForImportAttributes": true },
+    "experimental": {
+      "keepImportAssertions": true,
+      "emitAssertForImportAttributes": true
+    },
     "parser": {
       "syntax": "typescript",
-      "decorators": true,
+      "decorators": true
     },
     "target": "es2021",
     "transform": {
-    			"legacyDecorator": true,
-    			"decoratorMetadata": true
-    		},
+      "legacyDecorator": true,
+      "decoratorMetadata": true
+    }
   },
   "module": {
-  "type": "nodenext",
+    "type": "nodenext"
   },
   "minify": true
 }
