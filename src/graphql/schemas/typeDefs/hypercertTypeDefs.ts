@@ -77,13 +77,13 @@ class Hypercert extends BasicTypeDef {
   })
   sales?: GetSalesResponse;
 
-  @Field((_) => EthBigInt, {nullable: true})
+  @Field((_) => EthBigInt, { nullable: true })
   creation_block_number?: bigint | number | string;
-  @Field((_) => EthBigInt, {nullable: true})
+  @Field((_) => EthBigInt, { nullable: true })
   creation_block_timestamp?: bigint | number | string;
-  @Field((_) => EthBigInt, {nullable: true})
+  @Field((_) => EthBigInt, { nullable: true })
   last_update_block_number?: bigint | number | string;
-  @Field((_) => EthBigInt, {nullable: true})
+  @Field((_) => EthBigInt, { nullable: true })
   last_update_block_timestamp?: bigint | number | string;
 }
 

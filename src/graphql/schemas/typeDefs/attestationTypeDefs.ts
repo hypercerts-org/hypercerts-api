@@ -3,7 +3,7 @@ import { GraphQLJSON } from "graphql-scalars";
 import type { Json } from "../../../types/supabaseCaching.js";
 import { Hypercert } from "./hypercertTypeDefs.js";
 import { BasicTypeDef } from "./basicTypeDef.js";
-import {EthBigInt} from "../../scalars/ethBigInt.js";
+import { EthBigInt } from "../../scalars/ethBigInt.js";
 
 @ObjectType()
 class Attestation extends BasicTypeDef {

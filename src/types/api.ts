@@ -7,10 +7,10 @@
  * }
  */
 export type StoreResponse<T = void> = {
-    success: boolean;
-    data?: T
-    message: string;
-    errors?: Record<string, string | string[]> | Error[];
+  success: boolean;
+  data?: T;
+  message: string;
+  errors?: Record<string, string | string[]> | Error[];
 };
 
 /**
@@ -28,21 +28,20 @@ export type StoreResponse<T = void> = {
  * }
  */
 export type ValidationResponse = {
-    valid: boolean;
-    message: string;
-    errors?: Record<string, string | string[]>;
+  valid: boolean;
+  message: string;
+  errors?: Record<string, string | string[]>;
 };
 
-
 export type ValidationResult<T = void> = {
-    data?: T;
-    valid: boolean;
-    errors: Record<string, string | string[]>;
+  data?: T;
+  valid: boolean;
+  errors: Record<string, string | string[]>;
 };
 
 export type ApiResponse<T = void> = {
-    success: boolean;
-    data?: T;
-    message: string;
-    errors?: Record<string, string | string[]> | Error[];
+  success: boolean;
+  data?: T;
+  message: string;
+  errors?: Record<string, string | string[]> | Error[];
 };

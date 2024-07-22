@@ -1,6 +1,9 @@
 import { ArgsType, Field } from "type-graphql";
 import { PaginationArgs } from "./paginationArgs.js";
-import {AllowlistRecordFetchInput, BasicAllowlistRecordWhereInput} from "../inputs/allowlistRecordsInput.js";
+import {
+  AllowlistRecordFetchInput,
+  BasicAllowlistRecordWhereInput,
+} from "../inputs/allowlistRecordsInput.js";
 
 @ArgsType()
 export class GetAllowlistRecordsArgs extends PaginationArgs {

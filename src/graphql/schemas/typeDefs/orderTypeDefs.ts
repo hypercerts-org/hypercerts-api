@@ -1,6 +1,6 @@
 import { Field, ObjectType } from "type-graphql";
 import { BasicTypeDef } from "./basicTypeDef.js";
-import {EthBigInt} from "../../scalars/ethBigInt.js";
+import { EthBigInt } from "../../scalars/ethBigInt.js";
 
 @ObjectType()
 class Order extends BasicTypeDef {

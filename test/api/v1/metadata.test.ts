@@ -108,7 +108,7 @@ describe("W3Up Client metadata", async () => {
     //TODO better typing and check on returned CID
     // @ts-ignore
     expect(res._getJSONData().message).to.eq(
-      "Not a valid hypercert metadata object"
+      "Not a valid hypercert metadata object",
     );
   });
 
@@ -127,7 +127,7 @@ describe("W3Up Client metadata", async () => {
     //TODO better typing and check on returned CID
     // @ts-ignore
     expect(res._getJSONData().message).to.eq(
-      "Allowlist should be a valid openzeppelin merkle tree"
+      "Allowlist should be a valid openzeppelin merkle tree",
     );
 
     expect(storeBlobMock.callCount).to.eq(0);

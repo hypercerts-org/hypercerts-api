@@ -1,91 +1,91 @@
-import {registerEnumType} from "type-graphql";
+import { registerEnumType } from "type-graphql";
 
 export enum SortOrder {
-    ascending = "ascending",
-    descending = "descending",
+  ascending = "ascending",
+  descending = "descending",
 }
 
 registerEnumType(SortOrder, {
-    name: "SortOrder",
-    description: "The direction to sort the query results",
-    valuesConfig: {
-        ascending: {
-            description: "Ascending order"
-        },
-        descending: {
-            description: "Descending order"
-        },
+  name: "SortOrder",
+  description: "The direction to sort the query results",
+  valuesConfig: {
+    ascending: {
+      description: "Ascending order",
     },
+    descending: {
+      description: "Descending order",
+    },
+  },
 });
 
 //TODO add sort by count
 export enum HypercertSortKeys {
-    hypercert_id = "hypercert_id",
-    block_number = "block_number",
-    token_id = "token_id",
+  hypercert_id = "hypercert_id",
+  block_number = "block_number",
+  token_id = "token_id",
 }
 
 registerEnumType(HypercertSortKeys, {
-    name: "HypercertSortKeys",
-    description: "Keys to sort hypercerts by",
+  name: "HypercertSortKeys",
+  description: "Keys to sort hypercerts by",
 });
 
 export enum ContractSortKeys {
-    id = "id",
-    contract_address = "contract_address",
-    chain_id = "chain_id",
+  id = "id",
+  contract_address = "contract_address",
+  chain_id = "chain_id",
 }
 
 registerEnumType(ContractSortKeys, {
-    name: "ContractSortKeys",
-    description: "Keys to sort contracts by",
+  name: "ContractSortKeys",
+  description: "Keys to sort contracts by",
 });
 
 export enum MetadataSortKeys {
-    id = "metadata",
-    name = "name",
-    description = "description",
-    allowList = "allowList",
-    uri = "uri",
+  id = "metadata",
+  name = "name",
+  description = "description",
+  allowList = "allowList",
+  uri = "uri",
 }
 
 registerEnumType(MetadataSortKeys, {
-    name: "MetadataSortKeys",
-    description: "Keys to sort metadata by",
+  name: "MetadataSortKeys",
+  description: "Keys to sort metadata by",
 });
 
 export enum AttestationSortKeys {
-    id = "id",
-    uid = "uid",
-    supported_schemas_id = "supported_schemas_id",
-    block_timestamp = "block_timestamp",
-    attester = "attester",
-    recipient = "recipient",
-    schema = "schema",
+  id = "id",
+  uid = "uid",
+  supported_schemas_id = "supported_schemas_id",
+  block_timestamp = "block_timestamp",
+  attester = "attester",
+  recipient = "recipient",
+  schema = "schema",
 }
 
 registerEnumType(AttestationSortKeys, {
-    name: "AttestationSortKeys",
-    description: "Keys to sort attestations by",
+  name: "AttestationSortKeys",
+  description: "Keys to sort attestations by",
 });
 
 export enum AttestationSchemaSortKeys {
-    schema_id = "id",
-    resolver = "resolver",
+  schema_id = "id",
+  resolver = "resolver",
 }
 
 registerEnumType(AttestationSchemaSortKeys, {
-    name: "AttestationSchemaSortKeys",
-    description: "Keys to sort attestation schemas by",
+  name: "AttestationSchemaSortKeys",
+  description: "Keys to sort attestation schemas by",
 });
 
 export enum FractionSortKeys {
-    fraction_id = "id",
-    units = "units",
-    owner = "owner_address",
+  fraction_id = "id",
+  units = "units",
+  owner = "owner_address",
 }
 
 registerEnumType(FractionSortKeys, {
-    name: "FractionSortKeys",
-    description: "Keys to sort fractions by",
+  name: "FractionSortKeys",
+  description: "Keys to sort fractions by",
 });
