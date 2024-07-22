@@ -2480,6 +2480,115 @@ export type introspection = {
         "interfaces": []
       },
       {
+        "kind": "OBJECT",
+        "name": "HypercertBaseType",
+        "fields": [
+          {
+            "name": "contracts_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "ID",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "creation_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "EthBigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "creation_block_timestamp",
+            "type": {
+              "kind": "SCALAR",
+              "name": "EthBigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "creator_address",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "hypercert_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "ID",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "last_update_block_number",
+            "type": {
+              "kind": "SCALAR",
+              "name": "EthBigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "last_update_block_timestamp",
+            "type": {
+              "kind": "SCALAR",
+              "name": "EthBigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "token_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "EthBigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "units",
+            "type": {
+              "kind": "SCALAR",
+              "name": "EthBigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "uri",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
         "kind": "INPUT_OBJECT",
         "name": "HypercertFetchInput",
         "inputFields": [
@@ -3248,6 +3357,15 @@ export type introspection = {
                 "name": "String",
                 "ofType": null
               }
+            },
+            "args": []
+          },
+          {
+            "name": "hypercert",
+            "type": {
+              "kind": "OBJECT",
+              "name": "HypercertBaseType",
+              "ofType": null
             },
             "args": []
           },
