@@ -11,7 +11,6 @@ import { ApiResponse } from "../types/api.js";
 import {
   addressesByNetwork,
   HypercertExchangeClient,
-  OrderValidatorCode,
   utils,
 } from "@hypercerts-org/marketplace-sdk";
 import { ethers, verifyTypedData } from "ethers";
@@ -21,7 +20,6 @@ import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { isAddress } from "viem";
 import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
 import { getFractionsById } from "../utils/getFractionsById.js";
-import { getRpcUrl } from "../utils/getRpcUrl.js";
 
 export interface CreateOrderRequest {
   signature: string;
@@ -361,65 +359,27 @@ export class MarketplaceController extends Controller {
     const { tokenIds, chainId } = parsedQuery.data;
     const supabase = new SupabaseDataService();
 
-    const ordersToUpdate: {
-      id: string;
-      invalidated: boolean;
-      validator_codes: OrderValidatorCode[];
-    }[] = [];
-    for (const tokenId of tokenIds) {
-      // Fetch all orders for token ID from database
-      const { data: matchingOrders, error } = await supabase.getOrdersByTokenId(
-        {
-          tokenId,
-          chainId,
-        },
-      );
-
+    try {
+      const ordersToUpdate = await supabase.validateOrdersByTokenIds({
+        tokenIds,
+        chainId,
+      });
+      this.setStatus(200);
+      return {
+        success: true,
+        message: "Orders have been validated",
+        data: ordersToUpdate,
+      };
+    } catch (error) {
+      console.error(error);
       if (error) {
         this.setStatus(500);
         return {
           success: false,
-          message: error.message,
+          message: "Could not validate orders",
           data: null,
         };
       }
-
-      if (!matchingOrders) {
-        this.setStatus(404);
-        return {
-          success: false,
-          message: "Orders not found",
-          data: null,
-        };
-      }
-
-      // Validate orders using logic in the SDK
-      const hec = new HypercertExchangeClient(
-        chainId,
-        // @ts-expect-error Typing issue with provider
-        new ethers.JsonRpcProvider(getRpcUrl(chainId)),
-      );
-      const validationResults = await hec.checkOrdersValidity(matchingOrders);
-
-      // Determine which orders to update in DB, and update them
-      ordersToUpdate.push(
-        ...validationResults
-          .filter((x) => !x.valid)
-          .map(({ validatorCodes, id }) => ({
-            id,
-            invalidated: true,
-            validator_codes: validatorCodes,
-          })),
-      );
     }
-    console.log("[marketplace-api] Invalidating orders", ordersToUpdate);
-    await supabase.updateOrders(ordersToUpdate);
-
-    this.setStatus(200);
-    return {
-      success: true,
-      message: "Orders have been validated",
-      data: ordersToUpdate,
-    };
   }
 }

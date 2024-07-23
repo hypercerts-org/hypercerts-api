@@ -66,7 +66,7 @@ class OrderResolver {
           const chainIdParsed = parseInt(chainId);
           const hypercertExchangeClient = new HypercertExchangeClient(
             chainIdParsed,
-            // @ts-expect-error - wagmi and viem have different typing
+            // @ts-expect-error - TODO: fix these types
             new ethers.JsonRpcProvider(getRpcUrl(chainIdParsed)),
           );
 
@@ -78,15 +78,15 @@ class OrderResolver {
             .filter((result) => !result.valid)
             .map((result) => BigInt(result.order.itemIds[0]));
           if (tokenIdsWithInvalidOrder.length) {
-            console.warn(
+            console.log(
               "[OrderResolver::orders]:: Found invalid orders",
               tokenIdsWithInvalidOrder,
             );
-            // Fire off the event but don't wait for it to finish
-            hypercertExchangeClient.api.updateOrderValidity(
-              tokenIdsWithInvalidOrder,
-              chainIdParsed,
-            );
+            // Fire off the validation but don't wait for it to finish
+            this.supabaseService.validateOrdersByTokenIds({
+              tokenIds: tokenIdsWithInvalidOrder.map((id) => id.toString()),
+              chainId: chainIdParsed,
+            });
           }
           return ordersForChain.map((order) => {
             if (tokenIdsWithInvalidOrder.includes(BigInt(order.itemIds[0]))) {
