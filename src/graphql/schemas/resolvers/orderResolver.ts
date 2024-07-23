@@ -17,6 +17,10 @@ import { GraphQLBigInt } from "graphql-scalars";
 import { getHypercertTokenId } from "../../../utils/tokenIds.js";
 import { HypercertBaseType } from "../typeDefs/baseTypes/hypercertBaseType.js";
 import { getAddress } from "viem";
+import { HypercertExchangeClient } from "@hypercerts-org/marketplace-sdk";
+import { ethers } from "ethers";
+import { getRpcUrl } from "../../../utils/getRpcUrl.js";
+import _ from "lodash";
 
 @ObjectType()
 export default class GetOrdersResponse {
@@ -48,17 +52,55 @@ class OrderResolver {
     try {
       const res = await this.supabaseService.getOrders(args);
 
-      const { data, error, count } = res;
+      const { data: orders, error, count } = res;
 
       if (error) {
-        console.warn(
-          `[ContractResolver::orders] Error fetching orders: `,
-          error,
-        );
-        return { data };
+        console.warn(`[OrderResolver::orders] Error fetching orders: `, error);
+        return { orders };
       }
 
-      return { data, count: count ? count : data?.length };
+      const groupedOrders = _.groupBy(orders, (order) => order.chainId);
+
+      const ordersAfterCheckingValidity = await Promise.all(
+        Object.entries(groupedOrders).map(async ([chainId, ordersForChain]) => {
+          const chainIdParsed = parseInt(chainId);
+          const hypercertExchangeClient = new HypercertExchangeClient(
+            chainIdParsed,
+            // @ts-expect-error - wagmi and viem have different typing
+            new ethers.JsonRpcProvider(getRpcUrl(chainIdParsed)),
+          );
+
+          const validityResults =
+            await hypercertExchangeClient.checkOrdersValidity(
+              ordersForChain.filter((order) => !order.invalidated),
+            );
+          const tokenIdsWithInvalidOrder = validityResults
+            .filter((result) => !result.valid)
+            .map((result) => BigInt(result.order.itemIds[0]));
+          if (tokenIdsWithInvalidOrder.length) {
+            console.warn(
+              "[OrderResolver::orders]:: Found invalid orders",
+              tokenIdsWithInvalidOrder,
+            );
+            // Fire off the event but don't wait for it to finish
+            hypercertExchangeClient.api.updateOrderValidity(
+              tokenIdsWithInvalidOrder,
+              chainIdParsed,
+            );
+          }
+          return ordersForChain.map((order) => {
+            if (tokenIdsWithInvalidOrder.includes(BigInt(order.itemIds[0]))) {
+              return { ...order, invalidated: true };
+            }
+            return order;
+          });
+        }),
+      ).then((res) => res.flat());
+
+      return {
+        data: ordersAfterCheckingValidity,
+        count: count ? count : ordersAfterCheckingValidity?.length,
+      };
     } catch (e) {
       throw new Error(
         `[ContractResolver::orders] Error fetching orders: ${(e as Error).message}`,
