@@ -14,7 +14,7 @@ export class BasicOrderWhereInput implements WhereOptions<Order> {
   @Field(() => IdSearchOptions, { nullable: true })
   id?: IdSearchOptions | null;
   @Field(() => NumberSearchOptions, { nullable: true })
-  chain_id?: NumberSearchOptions | null;
+  chainId?: NumberSearchOptions | null;
   @Field(() => StringSearchOptions, { nullable: true })
   signer?: StringSearchOptions | null;
 }

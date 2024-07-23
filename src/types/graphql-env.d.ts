@@ -1421,7 +1421,7 @@ export type introspection = {
         "name": "BasicOrderWhereInput",
         "inputFields": [
           {
-            "name": "chain_id",
+            "name": "chainId",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "NumberSearchOptions",
@@ -3391,6 +3391,18 @@ export type introspection = {
             "args": []
           },
           {
+            "name": "invalidated",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
             "name": "itemIds",
             "type": {
               "kind": "NON_NULL",
@@ -3500,6 +3512,21 @@ export type introspection = {
                 "kind": "SCALAR",
                 "name": "Float",
                 "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "validator_codes",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
               }
             },
             "args": []

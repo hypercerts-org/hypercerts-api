@@ -41,6 +41,10 @@ class Order extends BasicTypeDef {
   itemIds?: string[];
   @Field(() => [Number])
   amounts?: number[];
+  @Field()
+  invalidated?: boolean;
+  @Field(() => [String], { nullable: true })
+  validator_codes?: string[];
 
   @Field(() => HypercertBaseType, {
     nullable: true,
