@@ -13,7 +13,7 @@ export const alchemyUrl = (chainId: number) => {
     case 11155111:
       return `https://eth-sepolia.g.alchemy.com/v2/${alchemyApiKey}`;
     default:
-      throw new Error(`Unsupported chain ID: ${chainId}`);
+      throw new Error(`Unsupported chain ID for alchemy: ${chainId}`);
   }
 };
 
@@ -30,7 +30,7 @@ const infuraUrl = (chainId: number) => {
     case 11155111:
       return `https://sepolia.infura.io/v3/${infuraApiKey}`;
     default:
-      throw new Error(`Unsupported chain ID: ${chainId}`);
+      throw new Error(`Unsupported chain ID for infura: ${chainId}`);
   }
 };
 
@@ -47,7 +47,7 @@ const drpcUrl = (chainId: number) => {
     case 11155111:
       return;
     default:
-      throw new Error(`Unsupported chain ID: ${chainId}`);
+      throw new Error(`Unsupported chain ID for drpc: ${chainId}`);
   }
 };
 
