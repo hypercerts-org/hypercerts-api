@@ -20,7 +20,6 @@ import { getAddress } from "viem";
 import { HypercertExchangeClient } from "@hypercerts-org/marketplace-sdk";
 import { ethers } from "ethers";
 import { getRpcUrl } from "../../../utils/getRpcUrl.js";
-import _ from "lodash";
 
 @ObjectType()
 export default class GetOrdersResponse {
@@ -59,7 +58,16 @@ class OrderResolver {
         return { orders };
       }
 
-      const groupedOrders = _.groupBy(orders, (order) => order.chainId);
+      const groupedOrders = orders.reduce(
+        (acc, order) => {
+          if (!acc[order.chainId]) {
+            acc[order.chainId] = [];
+          }
+          acc[order.chainId].push(order);
+          return acc;
+        },
+        {} as Record<string, (typeof orders)[number][]>,
+      );
 
       const ordersAfterCheckingValidity = await Promise.all(
         Object.entries(groupedOrders).map(async ([chainId, ordersForChain]) => {
