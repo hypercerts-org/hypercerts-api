@@ -17,6 +17,8 @@ export class BasicOrderWhereInput implements WhereOptions<Order> {
   chainId?: NumberSearchOptions | null;
   @Field(() => StringSearchOptions, { nullable: true })
   signer?: StringSearchOptions | null;
+  @Field(() => StringSearchOptions, { nullable: true })
+  hypercert_id?: StringSearchOptions | null;
 }
 
 @InputType()

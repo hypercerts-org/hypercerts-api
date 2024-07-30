@@ -20,6 +20,7 @@ import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { isAddress } from "viem";
 import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
 import { getFractionsById } from "../utils/getFractionsById.js";
+import { getHypercertTokenId } from "../utils/tokenIds.js";
 
 export interface CreateOrderRequest {
   signature: string;
@@ -198,11 +199,15 @@ export class MarketplaceController extends Controller {
     }
 
     try {
+      const tokenId = tokenIds[0];
+      const hypercertTokenId = getHypercertTokenId(BigInt(tokenId));
+      const formattedHypercertId = `${chainId}-${makerOrder.collection}-${hypercertTokenId.toString()}`;
       // Add to database
       const insertEntity = {
         ...makerOrder,
         chainId,
         signature,
+        hypercert_id: formattedHypercertId,
       };
       console.log("[marketplace-api] Inserting order entity", insertEntity);
 

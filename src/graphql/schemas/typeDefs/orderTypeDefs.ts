@@ -6,6 +6,8 @@ import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
 @ObjectType()
 class Order extends BasicTypeDef {
   @Field()
+  hypercert_id?: string;
+  @Field()
   createdAt?: string;
   @Field()
   quoteType?: number;
