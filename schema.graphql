@@ -233,6 +233,7 @@ input BasicMetadataWhereInput {
 
 input BasicOrderWhereInput {
   chainId: NumberSearchOptions
+  hypercert_id: StringSearchOptions
   id: IdSearchOptions
   signer: StringSearchOptions
 }
@@ -605,6 +606,7 @@ type Order {
 
   """The hypercert associated with this order"""
   hypercert: HypercertBaseType
+  hypercert_id: String!
   id: ID!
   invalidated: Boolean!
   itemIds: [String!]!

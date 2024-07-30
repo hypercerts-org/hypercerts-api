@@ -1429,6 +1429,14 @@ export type introspection = {
             }
           },
           {
+            "name": "hypercert_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
             "name": "id",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -3375,6 +3383,18 @@ export type introspection = {
               "kind": "OBJECT",
               "name": "HypercertBaseType",
               "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "hypercert_id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
             },
             "args": []
           },
