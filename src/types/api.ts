@@ -1,48 +1,70 @@
-/**
- * Response object for a store request.
- *
- * @example {
- *     success: true,
- *     data: { cid: "QmXt3..."}, }
- * }
- */
-export type StoreResponse<T = void> = {
-    success: boolean;
-    data?: T
-    message: string;
-    errors?: Record<string, string | string[]> | Error[];
-};
+import type { HypercertMetadata } from "@hypercerts-org/sdk";
 
 /**
- * Response object for a validation request.
- *
- * @example {
- *     valid: true,
- *     message: "Metadata valid",
- * }
- *
- * @example {
- *     valid: false,
- *     message: "Metadata validation failed",
- *     data: { metadata: "No claim data provided"}, }
- * }
+ * Interface for storing metadata on IPFS.
  */
-export type ValidationResponse = {
-    valid: boolean;
-    message: string;
-    errors?: Record<string, string | string[]>;
-};
+export interface StoreMetadataRequest {
+    metadata: HypercertMetadata;
+}
 
+/**
+ * Interface for storing an allow list dump on IPFS
+ */
+export interface StoreAllowListRequest {
+    allowList: string;
+    totalUnits?: string;
+}
 
-export type ValidationResult<T = void> = {
-    data?: T;
-    valid: boolean;
-    errors: Record<string, string | string[]>;
-};
+/**
+ * Interface for storing metadata and allow list dump on IPFS.
+ */
+export interface StoreMetadataWithAllowlistRequest extends StoreMetadataRequest, StoreAllowListRequest {}
 
+/**
+ * Interface for validating metadata.
+ */
+export interface ValidateMetadataRequest {
+    metadata: HypercertMetadata;
+}
+
+/**
+ * Interface for validating an allow list dump.
+ */
+export interface ValidateAllowListRequest {
+    allowList: string;
+    totalUnits?: string;
+}
+
+/**
+ * Interface for validating metadata and allow list dump.
+ */
+export interface ValidateMetadataWithAllowlistRequest extends ValidateMetadataRequest, ValidateAllowListRequest {}
+
+/**
+ * Interface for a generic API response.
+ */
 export type ApiResponse<T = void> = {
     success: boolean;
     data?: T;
-    message: string;
+    message?: string;
     errors?: Record<string, string | string[]> | Error[];
 };
+
+/**
+ * Interface for a storage response.
+ */
+export type StorageResponse = ApiResponse<{ cid: string }>;
+
+/**
+ * Interface for a validation response.
+ */
+export type ValidationResult<T = void> = {
+    valid: boolean;
+    data?: T;
+    errors?: Record<string, string | string[]>;
+};
+
+/**
+ * Interface for a validation response.
+ */
+export type ValidationResponse = ApiResponse<ValidationResult>;

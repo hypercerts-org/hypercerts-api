@@ -1,56 +1,44 @@
-import {getFromIPFS, HypercertMetadata} from "@hypercerts-org/sdk";
-import {tryParseMerkleTree} from "./isParsableToMerkleTree.js";
+import { getFromIPFS } from "@hypercerts-org/sdk";
+import { tryParseMerkleTree } from "./isParsableToMerkleTree.js";
+import { ValidationResult } from "../types/api.js";
 
-export const validateRemoteAllowList = async (metadata: HypercertMetadata) => {
-
-    if (!metadata.allowList) {
-        return {
-            valid: true,
-            data: metadata,
-        }
-    }
-
-    let allowList;
-    try {
-        allowList = await getFromIPFS(metadata.allowList, 30000);
-    } catch (e) {
-        const error = e as Error;
-
-        return {
-            valid: false,
-            data: allowList,
-            errors: {
-                message: `Error fetching allow list from provided URI: ${metadata.allowList}`,
-                name: error.name,
-            },
-        }
-
-    }
+export const validateRemoteAllowList = async (uri: string): Promise<ValidationResult<unknown>> => {
+  try {
+    const allowList = await getFromIPFS(uri, 30000);
 
     if (!allowList || typeof allowList !== "string") {
-        return {
-            valid: false,
-            data: allowList,
-            errors: {
-                message: "Allowlist data not found or not of expected type",
-            },
+      return {
+        valid: false,
+        errors: {
+          message: "Allow list data not found or not of expected type"
         }
+      };
     }
 
     if (tryParseMerkleTree(allowList)) {
-        return {
-            valid: true,
-            data: allowList,
-        }
+      return {
+        valid: true,
+        data: allowList
+      };
     } else {
-        return {
-            valid: false,
-            data: allowList,
-            errors: {
-                message: "Allowlist should be a valid openzeppelin merkle tree",
-                receivedAllowlistCID: metadata.allowList,
-            },
+      return {
+        valid: false,
+        errors: {
+          message: `Allow list at ${uri} should be a valid openzeppelin merkle tree`
         }
+      };
     }
+  } catch (e) {
+    const error = e as Error;
 
-}
+    return {
+      valid: false,
+      errors: {
+        message: error.message
+      }
+    };
+
+  }
+
+
+};

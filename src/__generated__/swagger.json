@@ -44,7 +44,50 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"StoreResponse": {
+			"ApiResponse__cid-string__": {
+				"properties": {
+					"errors": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+							},
+							{
+								"items": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"type": "array"
+							}
+						]
+					},
+					"message": {
+						"type": "string"
+					},
+					"data": {
+						"properties": {
+							"cid": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"cid"
+						],
+						"type": "object"
+					},
+					"success": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"success"
+				],
+				"type": "object",
+				"description": "Interface for a generic API response."
+			},
+			"StorageResponse": {
+				"$ref": "#/components/schemas/ApiResponse__cid-string__",
+				"description": "Interface for a storage response."
+			},
+			"ApiResponse": {
 				"properties": {
 					"errors": {
 						"anyOf": [
@@ -68,11 +111,10 @@
 					}
 				},
 				"required": [
-					"message",
 					"success"
 				],
 				"type": "object",
-				"description": "Response object for a store request."
+				"description": "Interface for a generic API response."
 			},
 			"HypercertClaimdata": {
 				"description": "Properties of an impact claim",
@@ -280,26 +322,56 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"ValidationResponse": {
+			"StoreMetadataRequest": {
+				"description": "Interface for storing metadata on IPFS.",
+				"properties": {
+					"metadata": {
+						"$ref": "#/components/schemas/HypercertMetadata"
+					}
+				},
+				"required": [
+					"metadata"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"StoreMetadataWithAllowlistRequest": {
+				"description": "Interface for storing metadata and allow list dump on IPFS.",
+				"properties": {
+					"metadata": {
+						"$ref": "#/components/schemas/HypercertMetadata"
+					},
+					"allowList": {
+						"type": "string"
+					},
+					"totalUnits": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"metadata",
+					"allowList"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ValidationResult": {
 				"properties": {
 					"errors": {
 						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
 					},
-					"message": {
-						"type": "string"
-					},
+					"data": {},
 					"valid": {
 						"type": "boolean"
 					}
 				},
 				"required": [
-					"message",
 					"valid"
 				],
 				"type": "object",
-				"description": "Response object for a validation request."
+				"description": "Interface for a validation response."
 			},
-			"ApiResponse": {
+			"ApiResponse_ValidationResult_": {
 				"properties": {
 					"errors": {
 						"anyOf": [
@@ -317,16 +389,35 @@
 					"message": {
 						"type": "string"
 					},
-					"data": {},
+					"data": {
+						"$ref": "#/components/schemas/ValidationResult"
+					},
 					"success": {
 						"type": "boolean"
 					}
 				},
 				"required": [
-					"message",
 					"success"
 				],
-				"type": "object"
+				"type": "object",
+				"description": "Interface for a generic API response."
+			},
+			"ValidationResponse": {
+				"$ref": "#/components/schemas/ApiResponse_ValidationResult_",
+				"description": "Interface for a validation response."
+			},
+			"ValidateMetadataRequest": {
+				"description": "Interface for validating metadata.",
+				"properties": {
+					"metadata": {
+						"$ref": "#/components/schemas/HypercertMetadata"
+					}
+				},
+				"required": [
+					"metadata"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"CreateOrderRequest": {
 				"properties": {
@@ -503,21 +594,34 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"CreateAllowListRequest": {
-				"description": "Request body for creating a new allowlist.",
+			"StoreAllowListRequest": {
+				"description": "Interface for storing an allow list dump on IPFS",
 				"properties": {
 					"allowList": {
-						"type": "string",
-						"description": "The dump of the OpenZeppelin MerkleTree containing [address, uint256] entries. See https://github.com/OpenZeppelin/merkle-tree for more information."
+						"type": "string"
 					},
 					"totalUnits": {
-						"type": "string",
-						"description": "The total amount of units distributed via the allowlist. The total should amount to 1 eth in wei (1e18) units."
+						"type": "string"
 					}
 				},
 				"required": [
-					"allowList",
-					"totalUnits"
+					"allowList"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ValidateAllowListRequest": {
+				"description": "Interface for validating an allow list dump.",
+				"properties": {
+					"allowList": {
+						"type": "string"
+					},
+					"totalUnits": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"allowList"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -543,84 +647,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"anyOf": [
-										{
-											"properties": {
-												"cid": {
-													"type": "string"
-												}
-											},
-											"required": [
-												"cid"
-											],
-											"type": "object"
-										},
-										{
-											"properties": {
-												"errors": {
-													"anyOf": [
-														{
-															"properties": {
-																"receivedAllowlistCID": {},
-																"name": {
-																	"type": "string"
-																},
-																"message": {
-																	"type": "string"
-																}
-															},
-															"required": [
-																"name",
-																"message"
-															],
-															"type": "object"
-														},
-														{
-															"properties": {
-																"receivedAllowlistCID": {},
-																"name": {},
-																"message": {
-																	"type": "string"
-																}
-															},
-															"required": [
-																"message"
-															],
-															"type": "object"
-														},
-														{
-															"properties": {
-																"name": {},
-																"receivedAllowlistCID": {
-																	"type": "string"
-																},
-																"message": {
-																	"type": "string"
-																}
-															},
-															"required": [
-																"receivedAllowlistCID",
-																"message"
-															],
-															"type": "object"
-														}
-													]
-												},
-												"message": {
-													"type": "string"
-												},
-												"valid": {
-													"type": "boolean"
-												}
-											},
-											"required": [
-												"errors",
-												"message",
-												"valid"
-											],
-											"type": "object"
-										}
-									]
+									"$ref": "#/components/schemas/StorageResponse"
 								}
 							}
 						}
@@ -630,7 +657,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/StoreResponse"
+									"$ref": "#/components/schemas/ApiResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -647,18 +674,97 @@
 						}
 					}
 				},
-				"description": "Submits a new hypercert metadata object for validation and storage on IPFS. While we maintain a database of allowlists, the allowlist itself is stored on IPFS.",
+				"description": "Submits a new hypercert metadata object for validation and storage on IPFS.\nWhen an allowlist URI is provided the service will validate the allowlist data before storing the metadata.\nNote that this might lead to a race condition when uploading metadata and the allowlist separately in rapid succession.\nIn that case we recommend using POST /metadata/with-allowlist instead.",
 				"tags": [
 					"Metadata"
 				],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
+					"description": "The metadata object to be stored.",
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/HypercertMetadata"
+								"$ref": "#/components/schemas/StoreMetadataRequest",
+								"description": "The metadata object to be stored."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/metadata/with-allowlist": {
+			"post": {
+				"operationId": "StoreMetadataWithAllowlist",
+				"responses": {
+					"201": {
+						"description": "Data uploaded successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StorageResponse"
+								}
+							}
+						}
+					},
+					"409": {
+						"description": "Conflict",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Allow list detected in metadata",
+											"errors": {
+												"metadata": "Allowlist URI already present in metadata."
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Validation failed",
+											"errors": {
+												"metadata": "Invalid metadata."
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Submits a new hypercert metadata object paired with allowlist data for validation and storage on IPFS.\nThe service will parse and validate the allow list data and the metadata.\nAfter successful validation, the allow list data will be uploaded to IPFS and the URI of the allowlist will be attached to the hypercert metadata.\nIf an allow list URI is already present, the service will return an error.",
+				"tags": [
+					"Metadata"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"description": "The metadata object and allowlist data to be stored.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/StoreMetadataWithAllowlistRequest",
+								"description": "The metadata object and allowlist data to be stored."
 							}
 						}
 					}
@@ -674,89 +780,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"anyOf": [
-										{
-											"properties": {
-												"errors": {
-													"anyOf": [
-														{
-															"properties": {
-																"receivedAllowlistCID": {},
-																"name": {
-																	"type": "string"
-																},
-																"message": {
-																	"type": "string"
-																}
-															},
-															"required": [
-																"name",
-																"message"
-															],
-															"type": "object"
-														},
-														{
-															"properties": {
-																"receivedAllowlistCID": {},
-																"name": {},
-																"message": {
-																	"type": "string"
-																}
-															},
-															"required": [
-																"message"
-															],
-															"type": "object"
-														},
-														{
-															"properties": {
-																"name": {},
-																"receivedAllowlistCID": {
-																	"type": "string"
-																},
-																"message": {
-																	"type": "string"
-																}
-															},
-															"required": [
-																"receivedAllowlistCID",
-																"message"
-															],
-															"type": "object"
-														}
-													]
-												},
-												"message": {
-													"type": "string"
-												},
-												"valid": {
-													"type": "boolean"
-												}
-											},
-											"required": [
-												"errors",
-												"message",
-												"valid"
-											],
-											"type": "object"
-										},
-										{
-											"properties": {
-												"errors": {},
-												"message": {
-													"type": "string"
-												},
-												"valid": {
-													"type": "boolean"
-												}
-											},
-											"required": [
-												"message",
-												"valid"
-											],
-											"type": "object"
-										}
-									]
+									"$ref": "#/components/schemas/ValidationResponse"
 								}
 							}
 						}
@@ -766,12 +790,12 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ValidationResponse"
+									"$ref": "#/components/schemas/ApiResponse"
 								},
 								"examples": {
 									"Example 1": {
 										"value": {
-											"valid": false,
+											"success": false,
 											"message": "Validation failed",
 											"errors": {
 												"metadata": "Invalid metadata."
@@ -783,18 +807,76 @@
 						}
 					}
 				},
-				"description": "Submits a new hypercert metadata object for validation.",
+				"description": "Validates a hypercert metadata object. When an allowlist URI is provided the service will validate the allowlist data as well.",
 				"tags": [
 					"Metadata"
 				],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
+					"description": "- The metadata object to be validated.",
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/HypercertMetadata"
+								"$ref": "#/components/schemas/ValidateMetadataRequest",
+								"description": "- The metadata object to be validated."
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/metadata/with-allowlist/validate": {
+			"post": {
+				"operationId": "ValidateMetadataWithAllowlist",
+				"responses": {
+					"200": {
+						"description": "Valid metadata",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ValidationResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Validation failed",
+											"errors": {
+												"metadata": "Invalid metadata."
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Validates a hypercert metadata object paired with allowlist data.",
+				"tags": [
+					"Metadata"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"description": "- The metadata object and allowlist data to be validated.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/StoreMetadataWithAllowlistRequest",
+								"description": "- The metadata object and allowlist data to be validated."
 							}
 						}
 					}
@@ -833,123 +915,7 @@
 										{
 											"properties": {
 												"error": {},
-												"data": {
-													"properties": {
-														"validator_codes": {
-															"items": {
-																"type": "number",
-																"format": "double"
-															},
-															"type": "array"
-														},
-														"subsetNonce": {
-															"type": "number",
-															"format": "double"
-														},
-														"strategyId": {
-															"type": "number",
-															"format": "double"
-														},
-														"startTime": {
-															"type": "number",
-															"format": "double"
-														},
-														"signer": {
-															"type": "string"
-														},
-														"signature": {
-															"type": "string"
-														},
-														"quoteType": {
-															"type": "number",
-															"format": "double"
-														},
-														"price": {
-															"type": "string"
-														},
-														"orderNonce": {
-															"type": "string"
-														},
-														"invalidated": {
-															"type": "boolean"
-														},
-														"id": {
-															"type": "string"
-														},
-														"globalNonce": {
-															"type": "string"
-														},
-														"endTime": {
-															"type": "number",
-															"format": "double"
-														},
-														"currency": {
-															"type": "string"
-														},
-														"createdAt": {
-															"type": "string"
-														},
-														"collectionType": {
-															"type": "number",
-															"format": "double"
-														},
-														"collection": {
-															"type": "string"
-														},
-														"chainId": {
-															"type": "number",
-															"format": "double"
-														},
-														"additionalParameters": {
-															"type": "string"
-														},
-														"hash": {
-															"type": "string"
-														},
-														"status": {
-															"type": "string"
-														},
-														"amounts": {
-															"items": {
-																"type": "number",
-																"format": "double"
-															},
-															"type": "array"
-														},
-														"itemIds": {
-															"items": {
-																"type": "string"
-															},
-															"type": "array"
-														}
-													},
-													"required": [
-														"validator_codes",
-														"subsetNonce",
-														"strategyId",
-														"startTime",
-														"signer",
-														"signature",
-														"quoteType",
-														"price",
-														"orderNonce",
-														"invalidated",
-														"id",
-														"globalNonce",
-														"endTime",
-														"currency",
-														"createdAt",
-														"collectionType",
-														"collection",
-														"chainId",
-														"additionalParameters",
-														"hash",
-														"status",
-														"amounts",
-														"itemIds"
-													],
-													"type": "object"
-												},
+												"data": {},
 												"success": {
 													"type": "boolean"
 												},
@@ -1016,31 +982,7 @@
 							"application/json": {
 								"schema": {
 									"properties": {
-										"data": {
-											"properties": {
-												"nonce_counter": {
-													"type": "number",
-													"format": "double"
-												},
-												"created_at": {
-													"type": "string"
-												},
-												"chain_id": {
-													"type": "number",
-													"format": "double"
-												},
-												"address": {
-													"type": "string"
-												}
-											},
-											"required": [
-												"nonce_counter",
-												"created_at",
-												"chain_id",
-												"address"
-											],
-											"type": "object"
-										},
+										"data": {},
 										"message": {
 											"type": "string"
 										},
@@ -1193,53 +1135,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"anyOf": [
-										{
-											"properties": {
-												"data": {},
-												"errors": {
-													"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
-												},
-												"message": {
-													"type": "string"
-												},
-												"success": {
-													"type": "boolean"
-												}
-											},
-											"required": [
-												"errors",
-												"message",
-												"success"
-											],
-											"type": "object"
-										},
-										{
-											"properties": {
-												"errors": {},
-												"message": {},
-												"data": {
-													"properties": {
-														"cid": {
-															"type": "string"
-														}
-													},
-													"required": [
-														"cid"
-													],
-													"type": "object"
-												},
-												"success": {
-													"type": "boolean"
-												}
-											},
-											"required": [
-												"data",
-												"success"
-											],
-											"type": "object"
-										}
-									]
+									"$ref": "#/components/schemas/StorageResponse"
 								}
 							}
 						}
@@ -1249,7 +1145,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/StoreResponse"
+									"$ref": "#/components/schemas/ApiResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -1277,7 +1173,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateAllowListRequest"
+								"$ref": "#/components/schemas/StoreAllowListRequest"
 							}
 						}
 					}
@@ -1293,45 +1189,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"anyOf": [
-										{
-											"properties": {
-												"valid": {},
-												"errors": {
-													"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
-												},
-												"message": {
-													"type": "string"
-												},
-												"success": {
-													"type": "boolean"
-												}
-											},
-											"required": [
-												"errors",
-												"message",
-												"success"
-											],
-											"type": "object"
-										},
-										{
-											"properties": {
-												"errors": {},
-												"success": {},
-												"message": {
-													"type": "string"
-												},
-												"valid": {
-													"type": "boolean"
-												}
-											},
-											"required": [
-												"message",
-												"valid"
-											],
-											"type": "object"
-										}
-									]
+									"$ref": "#/components/schemas/ValidationResponse"
 								}
 							}
 						}
@@ -1341,12 +1199,12 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ValidationResponse"
+									"$ref": "#/components/schemas/ApiResponse"
 								},
 								"examples": {
 									"Example 1": {
 										"value": {
-											"valid": false,
+											"success": false,
 											"message": "Metadata validation failed",
 											"errors": {
 												"allowList": "Invalid allowList. Length is  0"
@@ -1369,7 +1227,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateAllowListRequest"
+								"$ref": "#/components/schemas/ValidateAllowListRequest"
 							}
 						}
 					}

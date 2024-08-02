@@ -4,11 +4,11 @@ The hypercerts API is the touchpoint for developers to interact with the hyperce
 
 ## Endpoints
 
-`/health` - Health check endpoint
-`/docs` - Swagger UI for API documentation
-`/graphql` - GraphQL API to access hypercerts data like claims, fractions, attestations, allow lists
-`/v1/metadata` - Metadata endpoint for the API
-`/v1/allowlists` - Allow list endpoints
+Production: `https://api.hypercerts.org/`
+Staging: `https://staging-api.hypercerts.org`
+
+`/spec` - Swagger instance documenting the API and exposing a playground to experiment with the endpoints
+`/v1/graphql` - GraphQL API to access hypercerts data like claims, fractions, attestations, allow lists
 
 ## Scripts
 
