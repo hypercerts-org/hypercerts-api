@@ -2,7 +2,6 @@ import {validateClaimData, validateMetaData, HypercertMetadata} from "@hypercert
 import {isHypercertMetadata} from "./isHypercertsMetadata.js";
 import {ValidationResult} from "../types/api.js";
 
-
 export const validateMetadataAndClaimdata = (data: HypercertMetadata): ValidationResult<HypercertMetadata> => {
     // Check if object is hypercert metadata object
     if (!isHypercertMetadata(data)) {

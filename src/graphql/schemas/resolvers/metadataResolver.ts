@@ -14,7 +14,7 @@ export class GetMetadataResponse {
 }
 
 @injectable()
-@Resolver(_ => Metadata)
+@Resolver(() => Metadata)
 class MetadataResolver {
 
     constructor(
@@ -22,7 +22,7 @@ class MetadataResolver {
         private readonly supabaseService: SupabaseCachingService) {
     }
 
-    @Query(_ => GetMetadataResponse)
+    @Query(() => GetMetadataResponse)
     async metadata(
         @Args() args: GetMetadataArgs
     ) {
@@ -39,8 +39,6 @@ class MetadataResolver {
             if (error) {
                 console.warn(`[MetadataResolver::metadata] Error found while fetching metadata: `, error);
             }
-
-            console.log(data)
 
             return {data, count: count ? count : data?.length};
         } catch (e) {

@@ -69,6 +69,7 @@ class HypercertResolver {
 
   @FieldResolver({ nullable: true })
   async metadata(@Root() hypercert: Partial<Hypercert>) {
+    console.log('[HypercertResolver::metadata] Fetching metadata for ', hypercert);
     if (!hypercert.uri) {
       return null;
     }
