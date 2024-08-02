@@ -30,12 +30,22 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "StoreResponse": {
+    "ApiResponse__cid-string__": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string","required":true},"data":{"dataType":"void"},"success":{"dataType":"boolean","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string"},"data":{"dataType":"nestedObjectLiteral","nestedProperties":{"cid":{"dataType":"string","required":true}}},"success":{"dataType":"boolean","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "HypercertClaimdata_36_1": {
+    "StorageResponse": {
+        "dataType": "refAlias",
+        "type": {"ref":"ApiResponse__cid-string__","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ApiResponse": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string"},"data":{"dataType":"void"},"success":{"dataType":"boolean","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "HypercertClaimdata": {
         "dataType": "refObject",
         "properties": {
             "impact_scope": {"dataType":"nestedObjectLiteral","nestedProperties":{"display_value":{"dataType":"string"},"excludes":{"dataType":"array","array":{"dataType":"string"}},"value":{"dataType":"array","array":{"dataType":"string"}},"name":{"dataType":"string"}},"additionalProperties":{"dataType":"any"},"required":true},
@@ -59,19 +69,50 @@ const models: TsoaRoute.Models = {
             "ref": {"dataType":"string"},
             "allowList": {"dataType":"string"},
             "properties": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"value":{"dataType":"string"},"trait_type":{"dataType":"string"}},"additionalProperties":{"dataType":"any"}}},
-            "hypercert": {"ref":"HypercertClaimdata_36_1"},
+            "hypercert": {"ref":"HypercertClaimdata"},
         },
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ValidationResponse": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"ref":"Record_string.string-or-string-Array_"},"message":{"dataType":"string","required":true},"valid":{"dataType":"boolean","required":true}},"validators":{}},
+    "StoreMetadataRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "metadata": {"ref":"HypercertMetadata","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ApiResponse": {
+    "StoreMetadataWithAllowlistRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "metadata": {"ref":"HypercertMetadata","required":true},
+            "allowList": {"dataType":"string","required":true},
+            "totalUnits": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ValidationResult": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string","required":true},"data":{"dataType":"void"},"success":{"dataType":"boolean","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"ref":"Record_string.string-or-string-Array_"},"data":{"dataType":"void"},"valid":{"dataType":"boolean","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ApiResponse_ValidationResult_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string"},"data":{"ref":"ValidationResult"},"success":{"dataType":"boolean","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ValidationResponse": {
+        "dataType": "refAlias",
+        "type": {"ref":"ApiResponse_ValidationResult_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ValidateMetadataRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "metadata": {"ref":"HypercertMetadata","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateOrderRequest": {
@@ -107,11 +148,34 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CreateAllowListRequest": {
+    "OrderValidatorCode": {
+        "dataType": "refEnum",
+        "enums": [0,101,111,112,113,201,211,212,213,301,311,312,321,322,401,402,411,412,413,414,415,421,422,501,502,503,601,611,612,621,622,623,631,632,633,634,701,702,801,802,901,902],
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ValidateOrderRequest": {
         "dataType": "refObject",
         "properties": {
-            "allowList": {"dataType":"string","required":true,"validators":{"isString":{"errorMsg":"Should be string"}}},
-            "totalUnits": {"dataType":"string","required":true,"validators":{"isString":{"errorMsg":"The total units should be provided as a string to be compatible with BigInt."}}},
+            "tokenIds": {"dataType":"array","array":{"dataType":"string"},"required":true},
+            "chainId": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "StoreAllowListRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "allowList": {"dataType":"string","required":true},
+            "totalUnits": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ValidateAllowListRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "allowList": {"dataType":"string","required":true},
+            "totalUnits": {"dataType":"string"},
         },
         "additionalProperties": false,
     },
@@ -132,7 +196,7 @@ export function RegisterRoutes(app: Router) {
 
             async function MetadataController_storeMetadata(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"HypercertMetadata"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"StoreMetadataRequest"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -156,13 +220,43 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/metadata/with-allowlist',
+            ...(fetchMiddlewares<RequestHandler>(MetadataController)),
+            ...(fetchMiddlewares<RequestHandler>(MetadataController.prototype.storeMetadataWithAllowlist)),
+
+            async function MetadataController_storeMetadataWithAllowlist(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"StoreMetadataWithAllowlistRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new MetadataController();
+
+              await templateService.apiHandler({
+                methodName: 'storeMetadataWithAllowlist',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/v1/metadata/validate',
             ...(fetchMiddlewares<RequestHandler>(MetadataController)),
             ...(fetchMiddlewares<RequestHandler>(MetadataController.prototype.validateMetadata)),
 
             async function MetadataController_validateMetadata(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"HypercertMetadata"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"ValidateMetadataRequest"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -175,6 +269,36 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'validateMetadata',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/metadata/with-allowlist/validate',
+            ...(fetchMiddlewares<RequestHandler>(MetadataController)),
+            ...(fetchMiddlewares<RequestHandler>(MetadataController.prototype.validateMetadataWithAllowlist)),
+
+            async function MetadataController_validateMetadataWithAllowlist(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"StoreMetadataWithAllowlistRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new MetadataController();
+
+              await templateService.apiHandler({
+                methodName: 'validateMetadataWithAllowlist',
                 controller,
                 response,
                 next,
@@ -246,13 +370,43 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/marketplace/orders/validate',
+            ...(fetchMiddlewares<RequestHandler>(MarketplaceController)),
+            ...(fetchMiddlewares<RequestHandler>(MarketplaceController.prototype.validateOrder)),
+
+            async function MarketplaceController_validateOrder(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"ValidateOrderRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new MarketplaceController();
+
+              await templateService.apiHandler({
+                methodName: 'validateOrder',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/v1/allowlists',
             ...(fetchMiddlewares<RequestHandler>(AllowListController)),
             ...(fetchMiddlewares<RequestHandler>(AllowListController.prototype.storeAllowList)),
 
             async function AllowListController_storeAllowList(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateAllowListRequest"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"StoreAllowListRequest"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -282,7 +436,7 @@ export function RegisterRoutes(app: Router) {
 
             async function AllowListController_validateAllowList(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateAllowListRequest"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"ValidateAllowListRequest"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

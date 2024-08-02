@@ -232,8 +232,10 @@ input BasicMetadataWhereInput {
 }
 
 input BasicOrderWhereInput {
-  chain_id: NumberSearchOptions
+  chainId: NumberSearchOptions
+  hypercert_id: StringSearchOptions
   id: IdSearchOptions
+  signer: StringSearchOptions
 }
 
 input BasicSaleWhereInput {
@@ -460,6 +462,36 @@ type Hypercert {
   uri: String
 }
 
+type HypercertBaseType {
+  """The UUID of the contract as stored in the database"""
+  contracts_id: ID
+  creation_block_number: EthBigInt
+  creation_block_timestamp: EthBigInt
+
+  """The address of the creator of the hypercert"""
+  creator_address: String
+
+  """
+  Concatenation of [chainID]-[contractAddress]-[tokenID] to discern hypercerts across chains
+  """
+  hypercert_id: ID
+  id: ID!
+  last_update_block_number: EthBigInt
+  last_update_block_timestamp: EthBigInt
+
+  """The metadata for the hypercert as referenced by the uri"""
+  metadata: Metadata
+
+  """The token ID of the hypercert"""
+  token_id: EthBigInt
+
+  """The total units held by the hypercert"""
+  units: EthBigInt
+
+  """References the metadata for this claim"""
+  uri: String
+}
+
 input HypercertFetchInput {
   by: HypercertSortOptions
 }
@@ -571,7 +603,12 @@ type Order {
   currency: String!
   endTime: Float!
   globalNonce: String!
+
+  """The hypercert associated with this order"""
+  hypercert: HypercertBaseType
+  hypercert_id: String!
   id: ID!
+  invalidated: Boolean!
   itemIds: [String!]!
   orderNonce: String!
   price: String!
@@ -581,6 +618,7 @@ type Order {
   startTime: Float!
   strategyId: Float!
   subsetNonce: Float!
+  validator_codes: [String!]
 }
 
 input OrderFetchInput {

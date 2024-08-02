@@ -20,6 +20,7 @@ import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { isAddress } from "viem";
 import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
 import { getFractionsById } from "../utils/getFractionsById.js";
+import { getHypercertTokenId } from "../utils/tokenIds.js";
 
 export interface CreateOrderRequest {
   signature: string;
@@ -43,6 +44,11 @@ export interface CreateOrderRequest {
 
 interface UpdateOrderNonceRequest {
   address: string;
+  chainId: number;
+}
+
+interface ValidateOrderRequest {
+  tokenIds: string[];
   chainId: number;
 }
 
@@ -193,11 +199,15 @@ export class MarketplaceController extends Controller {
     }
 
     try {
+      const tokenId = tokenIds[0];
+      const hypercertTokenId = getHypercertTokenId(BigInt(tokenId));
+      const formattedHypercertId = `${chainId}-${makerOrder.collection}-${hypercertTokenId.toString()}`;
       // Add to database
       const insertEntity = {
         ...makerOrder,
         chainId,
         signature,
+        hypercert_id: formattedHypercertId,
       };
       console.log("[marketplace-api] Inserting order entity", insertEntity);
 
@@ -325,5 +335,56 @@ export class MarketplaceController extends Controller {
       message: "Success aaa",
       data: updatedNonce,
     };
+  }
+
+  /**
+   * Validates an order and marks it as invalid if validation fails.
+   */
+  @Post("/orders/validate")
+  @SuccessResponse(200, "Order validated successfully")
+  @Response<ApiResponse>(422, "Unprocessable content", {
+    success: false,
+    message: "Order could not be validated",
+  })
+  async validateOrder(@Body() requestBody: ValidateOrderRequest) {
+    const inputSchema = z.object({
+      tokenIds: z.array(z.string()),
+      chainId: z.number(),
+    });
+    const parsedQuery = inputSchema.safeParse(requestBody);
+    if (!parsedQuery.success) {
+      this.setStatus(422);
+      return {
+        success: false,
+        message: parsedQuery.error.message,
+        data: null,
+      };
+    }
+
+    const { tokenIds, chainId } = parsedQuery.data;
+    const supabase = new SupabaseDataService();
+
+    try {
+      const ordersToUpdate = await supabase.validateOrdersByTokenIds({
+        tokenIds,
+        chainId,
+      });
+      this.setStatus(200);
+      return {
+        success: true,
+        message: "Orders have been validated",
+        data: ordersToUpdate,
+      };
+    } catch (error) {
+      console.error(error);
+      if (error) {
+        this.setStatus(500);
+        return {
+          success: false,
+          message: "Could not validate orders",
+          data: null,
+        };
+      }
+    }
   }
 }

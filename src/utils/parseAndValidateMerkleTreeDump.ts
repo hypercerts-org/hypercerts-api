@@ -1,30 +1,51 @@
-import {validateAllowlist} from "@hypercerts-org/sdk";
-import {parseMerkleTree} from "./parseMerkleTree.js";
-import {CreateAllowListRequest} from "../controllers/AllowListController.js";
+import { validateAllowlist } from "@hypercerts-org/sdk";
+import { parseMerkleTree } from "./parseMerkleTree.js";
+import { parseEther } from "viem";
+import { ValidateAllowListRequest } from "../types/api.js";
 
-export const parseAndValidateMerkleTree = (request: CreateAllowListRequest) => {
+export const parseAndValidateMerkleTree = (request: ValidateAllowListRequest) => {
+  const { allowList, totalUnits } = request;
+  const _merkleTree = parseMerkleTree(allowList);
 
-    const {allowList, totalUnits} = request;
+  if (!_merkleTree) {
+    return {
+      data: _merkleTree,
+      valid: false,
+      errors: {
+        allowListData: "Data could not be parsed to OpenZeppelin MerkleTree"
+      }
+    };
+  }
 
-    const _merkleTree = parseMerkleTree(allowList)
+  const allowListEntries = Array.from(_merkleTree.entries()).map(entry => ({
+    address: entry[1][0],
+    units: BigInt(entry[1][1])
+  }));
 
-    if (!_merkleTree) {
-        return {data: _merkleTree, valid: false, errors: {allowListData: "Data could not be parsed to OpenZeppelin MerkleTree"}};
+  const totalUnitsInEntries = allowListEntries.reduce((acc, entry) => acc + entry.units, BigInt(0));
+
+  if (totalUnits) {
+    if (totalUnitsInEntries !== BigInt(totalUnits)) {
+      return {
+        data: _merkleTree,
+        valid: false,
+        errors: {
+          totalUnits:
+            "Total units do not match the sum of units in the allowlist"
+        }
+      };
     }
 
-    const merkleEntries = Array.from(_merkleTree.entries()).map((entry) => entry[1]);
+    if (totalUnitsInEntries !== parseEther("1")) {
+      return {
+        data: _merkleTree,
+        valid: false,
+        errors: {
+          totalUnits: "Total units should amount to 1 eth in wei (1e18) units"
+        }
+      };
+    }
+  }
 
-    const allowListEntries = merkleEntries
-        .map((row) =>
-            ({address: row[0], units: BigInt(row[1])})
-        )
-        .flatMap((entry) => (entry ? [entry] : []));
-
-
-    return validateAllowlist(
-        allowListEntries,
-        BigInt(totalUnits)
-    );
-
-}
-
+  return validateAllowlist(allowListEntries, totalUnitsInEntries);
+};

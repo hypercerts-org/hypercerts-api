@@ -15,6 +15,7 @@ import { GetHypercertArgs } from "../args/hypercertsArgs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 import { decodeAbiParameters, parseAbiParameters } from "viem";
+import { Metadata } from "../typeDefs/metadataTypeDefs.js";
 
 @ObjectType()
 export default class GetHypercertsResponse {
@@ -26,7 +27,7 @@ export default class GetHypercertsResponse {
 }
 
 @injectable()
-@Resolver((_) => Hypercert)
+@Resolver(() => Hypercert)
 class HypercertResolver {
   constructor(
     @inject(SupabaseCachingService)
@@ -68,6 +69,7 @@ class HypercertResolver {
 
   @FieldResolver({ nullable: true })
   async metadata(@Root() hypercert: Partial<Hypercert>) {
+    console.log('[HypercertResolver::metadata] Fetching metadata for ', hypercert);
     if (!hypercert.uri) {
       return null;
     }
@@ -82,7 +84,7 @@ class HypercertResolver {
           `[HypercertResolver::metadata] Error fetching metadata for uri ${hypercert.uri}: `,
           res,
         );
-        return;
+        return null;
       }
 
       const { data, error } = res;
@@ -92,10 +94,10 @@ class HypercertResolver {
           `[HypercertResolver::metadata] Error fetching metadata for uri ${hypercert.uri}: `,
           error,
         );
-        return;
+        return null;
       }
 
-      return data;
+      return data as unknown as Promise<Metadata>;
     } catch (e) {
       const error = e as Error;
       throw new Error(
@@ -176,11 +178,15 @@ class HypercertResolver {
       }
 
       const parsed = data.map((att) => {
+        const decodedData = att.data;
+        // TODO cleaner handling of bigints in created attestations
+        if (decodedData?.token_id) {
+          decodedData.token_id = BigInt(decodedData.token_id).toString();
+        }
+
         return {
           ...att,
-          attestation: att.decoded_attestation
-            ? (JSON.parse(att.decoded_attestation as string) as object)
-            : undefined,
+          attestation: decodedData,
         };
       });
 
@@ -302,18 +308,18 @@ class HypercertResolver {
         return defaultValue;
       }
 
-      console.log(ordersData);
+      const validOrders = ordersData.filter((order) => !order.invalidated);
 
       // For each fraction, find all orders and find the max units for sale for that fraction
       const totalUnitsForSale = fractionsData
         .map((fraction) => {
-          const ordersForFraction = ordersData.filter(
+          const availableOrdersForFraction = validOrders.filter(
             (order) =>
               parseClaimOrFractionId(fraction.fraction_id).id.toString() ===
               order.itemIds[0],
           );
 
-          const unitsPerOrder = ordersForFraction.map((order) => {
+          const unitsPerOrder = availableOrdersForFraction.map((order) => {
             const decodedParams = decodeAbiParameters(
               parseAbiParameters(
                 "uint256 minUnitAmount, uint256 maxUnitAmount, uint256 minUnitsToKeep, bool sellLeftOverFraction",
@@ -332,11 +338,11 @@ class HypercertResolver {
         })
         .reduce((acc, val) => acc + val, BigInt(0));
 
-      const lowestAvailablePrice = ordersData.reduce(
+      const lowestAvailablePrice = validOrders.reduce(
         (acc, val) => {
           return BigInt(val.price) < acc ? BigInt(val.price) : acc;
         },
-        BigInt(ordersData[0]?.price || 0),
+        BigInt(validOrders[0]?.price || 0),
       );
 
       return {

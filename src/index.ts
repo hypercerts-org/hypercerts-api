@@ -1,5 +1,5 @@
 import './instrument.js';
-import express, {type Express, Router} from "express";
+import express, {type Express} from "express";
 import "reflect-metadata";
 import cors from "cors";
 import {assertExists} from "./utils/assertExists.js";

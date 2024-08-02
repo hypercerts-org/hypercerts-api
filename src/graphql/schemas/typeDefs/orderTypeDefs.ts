@@ -1,9 +1,12 @@
 import { Field, ObjectType } from "type-graphql";
-import { BasicTypeDef } from "./basicTypeDef.js";
-import {EthBigInt} from "../../scalars/ethBigInt.js";
+import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
+import { EthBigInt } from "../../scalars/ethBigInt.js";
+import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
 
 @ObjectType()
 class Order extends BasicTypeDef {
+  @Field()
+  hypercert_id?: string;
   @Field()
   createdAt?: string;
   @Field()
@@ -32,7 +35,7 @@ class Order extends BasicTypeDef {
   signature?: string;
   @Field()
   additionalParameters?: string;
-  @Field((_) => EthBigInt)
+  @Field(() => EthBigInt)
   chainId?: bigint | number | string;
   @Field()
   subsetNonce?: number;
@@ -40,6 +43,16 @@ class Order extends BasicTypeDef {
   itemIds?: string[];
   @Field(() => [Number])
   amounts?: number[];
+  @Field()
+  invalidated?: boolean;
+  @Field(() => [String], { nullable: true })
+  validator_codes?: string[];
+
+  @Field(() => HypercertBaseType, {
+    nullable: true,
+    description: "The hypercert associated with this order",
+  })
+  hypercert?: HypercertBaseType;
 }
 
 export { Order };
