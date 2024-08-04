@@ -657,6 +657,9 @@ type Sale {
   """The address of the token accepted for this order"""
   currency: String!
 
+  """The hypercert associated with this order"""
+  hypercert: HypercertBaseType
+
   """The ID of the hypercert token referenced in the order"""
   hypercert_id: String
   id: ID!
