@@ -239,8 +239,16 @@ input BasicOrderWhereInput {
 }
 
 input BasicSaleWhereInput {
+  amounts: NumberArraySearchOptions
+  buyer: StringSearchOptions
+  collection: StringSearchOptions
+  creation_block_number: NumberSearchOptions
+  creation_block_timestamp: NumberSearchOptions
+  currency: StringSearchOptions
   hypercert_id: StringSearchOptions
   item_ids: StringArraySearchOptions
+  seller: StringSearchOptions
+  strategy_id: NumberSearchOptions
   transaction_hash: IdSearchOptions
 }
 
@@ -583,6 +591,10 @@ input MetadataWhereInput {
   work_scope: StringArraySearchOptions
   work_timeframe_from: NumberSearchOptions
   work_timeframe_to: NumberSearchOptions
+}
+
+input NumberArraySearchOptions {
+  contains: [BigInt!]
 }
 
 input NumberSearchOptions {

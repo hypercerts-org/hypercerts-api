@@ -1,9 +1,9 @@
 import { Field, InputType } from "type-graphql";
 import type { WhereOptions } from "./whereOptions.js";
 import {
-  IdSearchOptions,
+  IdSearchOptions, NumberArraySearchOptions, NumberSearchOptions,
   StringArraySearchOptions,
-  StringSearchOptions,
+  StringSearchOptions
 } from "./searchOptions.js";
 import { ContractSortOptions } from "./sortOptions.js";
 import { Sale } from "../typeDefs/salesTypeDefs.js";
@@ -19,6 +19,30 @@ export class BasicSaleWhereInput implements WhereOptions<Sale> {
 
   @Field(() => StringArraySearchOptions, { nullable: true })
   item_ids?: StringArraySearchOptions | null;
+
+  @Field(() => StringSearchOptions, { nullable: true })
+  currency?: StringSearchOptions | null;
+
+  @Field(() => StringSearchOptions, { nullable: true })
+  collection?: StringSearchOptions | null;
+
+  @Field(() => StringSearchOptions, { nullable: true })
+  buyer?: StringSearchOptions | null;
+
+  @Field(() => StringSearchOptions, { nullable: true })
+  seller?: StringSearchOptions | null;
+
+  @Field(() => NumberSearchOptions, { nullable: true })
+  strategy_id?: NumberSearchOptions | null;
+
+  @Field(() => NumberSearchOptions, { nullable: true })
+  creation_block_number?: NumberSearchOptions | null;
+
+  @Field(() => NumberSearchOptions, { nullable: true })
+  creation_block_timestamp?: NumberSearchOptions | null;
+
+  @Field(() => NumberArraySearchOptions, { nullable: true })
+  amounts?: NumberArraySearchOptions | null;
 }
 
 @InputType()
