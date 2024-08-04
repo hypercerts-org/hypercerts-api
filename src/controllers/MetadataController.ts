@@ -125,7 +125,7 @@ export class MetadataController extends Controller {
     const cid = await storage.uploadFile({
       file: jsonToBlob({
         ...metadataValidationResult.data,
-        allowList: allowListCid
+        allowList: `ipfs://${allowListCid}`
       })
     });
 

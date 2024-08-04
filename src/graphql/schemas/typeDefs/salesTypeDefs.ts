@@ -1,6 +1,7 @@
 import { Field, ObjectType } from "type-graphql";
 import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
+import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
 
 @ObjectType()
 class Sale extends BasicTypeDef {
@@ -48,6 +49,12 @@ class Sale extends BasicTypeDef {
     description: "The timestamp of the block creating the sale",
   })
   creation_block_timestamp?: bigint | number | string;
+
+  @Field(() => HypercertBaseType, {
+    nullable: true,
+    description: "The hypercert associated with this order",
+  })
+  hypercert?: HypercertBaseType;
 }
 
 export { Sale };
