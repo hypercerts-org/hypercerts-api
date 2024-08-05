@@ -163,7 +163,7 @@ export class MarketplaceController extends Controller {
     }
 
     const tokenIds = makerOrder.itemIds.map(
-      (id) => `${chainId}-${makerOrder.collection.toLowerCase()}-${id}`,
+      (id) => `${chainId}-${makerOrder.collection}-${id}`,
     );
 
     const fractions = await Promise.all(
@@ -199,7 +199,7 @@ export class MarketplaceController extends Controller {
     }
 
     try {
-      const tokenId = tokenIds[0];
+      const tokenId = makerOrder.itemIds[0];
       const hypercertTokenId = getHypercertTokenId(BigInt(tokenId));
       const formattedHypercertId = `${chainId}-${makerOrder.collection}-${hypercertTokenId.toString()}`;
       // Add to database

@@ -3,7 +3,7 @@ import { urqlClient } from "../client/graphql.js";
 
 const fractionsByIdQuery = graphql(`
   query fractionsById($fraction_id: String!) {
-    fractions(where: { hypercert_id: { eq: $fraction_id } }) {
+    fractions(where: { fraction_id: { eq: $fraction_id } }) {
       data {
         creation_block_timestamp
         fraction_id
