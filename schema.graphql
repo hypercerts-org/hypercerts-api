@@ -414,9 +414,9 @@ type GetMetadataResponse {
 }
 
 type GetOrdersResponse {
+  cheapestOrder: Order
   count: Int
   data: [Order!]
-  lowestAvailablePrice: BigInt
   totalUnitsForSale: BigInt
 }
 

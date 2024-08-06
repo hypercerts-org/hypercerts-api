@@ -26,14 +26,14 @@ export default class GetOrdersResponse {
   @Field(() => [Order], { nullable: true })
   data?: Order[];
 
+  @Field(() => Order, { nullable: true })
+  cheapestOrder?: Order;
+
   @Field(() => Int, { nullable: true })
   count?: number;
 
   @Field(() => GraphQLBigInt, { nullable: true })
   totalUnitsForSale?: bigint;
-
-  @Field(() => GraphQLBigInt, { nullable: true })
-  lowestAvailablePrice?: bigint;
 }
 
 @injectable()

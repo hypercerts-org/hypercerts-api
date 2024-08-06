@@ -2313,6 +2313,15 @@ export type introspection = {
         "name": "GetOrdersResponse",
         "fields": [
           {
+            "name": "cheapestOrder",
+            "type": {
+              "kind": "OBJECT",
+              "name": "Order",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
             "name": "count",
             "type": {
               "kind": "SCALAR",
@@ -2333,15 +2342,6 @@ export type introspection = {
                   "ofType": null
                 }
               }
-            },
-            "args": []
-          },
-          {
-            "name": "lowestAvailablePrice",
-            "type": {
-              "kind": "SCALAR",
-              "name": "BigInt",
-              "ofType": null
             },
             "args": []
           },

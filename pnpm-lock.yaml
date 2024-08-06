@@ -56,6 +56,9 @@ importers:
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.21
+      '@types/lodash':
+        specifier: ^4.17.7
+        version: 4.17.7
       '@types/node':
         specifier: 20.10.6
         version: 20.10.6
@@ -104,6 +107,9 @@ importers:
       graphql-yoga:
         specifier: ^5.1.1
         version: 5.1.1(graphql@16.8.1)
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -2390,6 +2396,9 @@ packages:
 
   '@types/koa__router@12.0.3':
     resolution: {integrity: sha512-5YUJVv6NwM1z7m6FuYpKfNLTZ932Z6EF6xy2BbtpJSyn13DKNQEkXVffFVSnJHxvwwWh2SAeumpjAYUELqgjyw==}
+
+  '@types/lodash@4.17.7':
+    resolution: {integrity: sha512-8wTvZawATi/lsmNu10/j2hk1KEP0IvjubqPE3cu1Xz7xfXXt5oCq3SNUz4fMIP4XGF9Ky+Ue2tBA3hcS7LSBlA==}
 
   '@types/lru-cache@5.1.1':
     resolution: {integrity: sha512-ssE3Vlrys7sdIzs5LOxCzTVMsU7i9oa/IaW92wF32JFb3CVczqOkru2xspuKczHEbG3nvmPY7IFqVmGGHdNbYw==}
@@ -9313,6 +9322,8 @@ snapshots:
   '@types/koa__router@12.0.3':
     dependencies:
       '@types/koa': 2.15.0
+
+  '@types/lodash@4.17.7': {}
 
   '@types/lru-cache@5.1.1': {}
 

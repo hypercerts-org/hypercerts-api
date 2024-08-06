@@ -16,6 +16,7 @@ import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 import { decodeAbiParameters, parseAbiParameters } from "viem";
 import { Metadata } from "../typeDefs/metadataTypeDefs.js";
+import _ from "lodash";
 
 @ObjectType()
 export default class GetHypercertsResponse {
@@ -69,7 +70,10 @@ class HypercertResolver {
 
   @FieldResolver({ nullable: true })
   async metadata(@Root() hypercert: Partial<Hypercert>) {
-    console.log('[HypercertResolver::metadata] Fetching metadata for ', hypercert);
+    console.log(
+      "[HypercertResolver::metadata] Fetching metadata for ",
+      hypercert,
+    );
     if (!hypercert.uri) {
       return null;
     }
@@ -249,42 +253,16 @@ class HypercertResolver {
       data: [],
       count: 0,
       totalUnitsForSale: BigInt(0),
-      lowestAvailablePrice: BigInt(0),
     };
 
     try {
       console.log(
-        `[HypercertResolver::orders] Fetching orders for ${hypercert.id}`,
+        `[HypercertResolver::orders] Fetching orders for ${hypercert.hypercert_id}`,
       );
-      const fractionsRes = await this.supabaseCachingService.getFractions({
-        where: { hypercerts: { id: { eq: hypercert.id } } },
+
+      const ordersRes = await this.supabaseDataService.getOrders({
+        where: { hypercert_id: { eq: hypercert.hypercert_id } },
       });
-
-      if (!fractionsRes) {
-        console.warn(
-          `[HypercertResolver::orders] Error fetching fractions for ${hypercert.hypercert_id}: `,
-          fractionsRes,
-        );
-        return defaultValue;
-      }
-
-      const { data: fractionsData, error: fractionsError } = fractionsRes;
-
-      if (fractionsError) {
-        console.error(
-          `[HypercertResolver::orders] Error fetching fractions for ${hypercert.hypercert_id}: `,
-          fractionsError,
-        );
-        return defaultValue;
-      }
-
-      const tokenIds = fractionsData
-        .filter((fraction) => !!fraction?.fraction_id)
-        .map((fraction) =>
-          parseClaimOrFractionId(fraction?.fraction_id || "").id.toString(),
-        );
-      const ordersRes =
-        await this.supabaseDataService.getOrdersForFraction(tokenIds);
 
       if (!ordersRes) {
         console.warn(
@@ -310,8 +288,12 @@ class HypercertResolver {
 
       const validOrders = ordersData.filter((order) => !order.invalidated);
 
+      const ordersPerFraction = _.keyBy(validOrders, (order) =>
+        parseClaimOrFractionId(order.itemIds[0]).toString(),
+      );
+
       // For each fraction, find all orders and find the max units for sale for that fraction
-      const totalUnitsForSale = fractionsData
+      const totalUnitsForSale = Object.values(ordersPerFraction)
         .map((fraction) => {
           const availableOrdersForFraction = validOrders.filter(
             (order) =>
@@ -338,16 +320,13 @@ class HypercertResolver {
         })
         .reduce((acc, val) => acc + val, BigInt(0));
 
-      const lowestAvailablePrice = validOrders.reduce(
-        (acc, val) => {
-          return BigInt(val.price) < acc ? BigInt(val.price) : acc;
-        },
-        BigInt(validOrders[0]?.price || 0),
-      );
+      const cheapestOrder = _.minBy(validOrders, (order) => {
+        return order.price;
+      });
 
       return {
         totalUnitsForSale,
-        lowestAvailablePrice,
+        cheapestOrder,
         data: ordersData || [],
         count: ordersCount || 0,
       };
