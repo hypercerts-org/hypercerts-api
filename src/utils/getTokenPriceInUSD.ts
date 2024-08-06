@@ -1,6 +1,10 @@
 import { ethers } from "ethers";
 import { getRpcUrl } from "./getRpcUrl.js";
-import { ChainId, currenciesByNetwork } from "@hypercerts-org/marketplace-sdk";
+import {
+  ChainId,
+  currenciesByNetwork,
+  Currency,
+} from "@hypercerts-org/marketplace-sdk";
 
 export const getTokenPriceInUSD = async (
   chainId: ChainId,
@@ -102,6 +106,28 @@ const tokenAddressToFeedAddress = (chainId: ChainId, tokenAddress: string) => {
   }
 
   return feedsForChain?.[symbol];
+};
+
+export const getTokenPricesForChain = async (chainId: ChainId) => {
+  const currencies = currenciesByNetwork[chainId];
+  const prices = await Promise.all(
+    Object.values(currencies).map(async (currency: Currency) => {
+      try {
+        const price = await getTokenPriceInUSD(chainId, currency.address);
+        return { ...currency, price };
+      } catch (error) {
+        console.error(error);
+        return { ...currency, price: 0 };
+      }
+    }),
+  );
+
+  return prices.reduce(
+    (acc, result) => {
+      return { ...acc, [result.address]: result };
+    },
+    {} as Record<string, Currency & { price: number }>,
+  );
 };
 
 type CurrencyFeeds = Record<

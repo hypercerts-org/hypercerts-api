@@ -14,9 +14,10 @@ import { SupabaseCachingService } from "../../../services/SupabaseCachingService
 import { GetHypercertArgs } from "../args/hypercertsArgs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
-import { decodeAbiParameters, parseAbiParameters } from "viem";
+import { decodeAbiParameters, formatUnits, parseAbiParameters } from "viem";
 import { Metadata } from "../typeDefs/metadataTypeDefs.js";
 import _ from "lodash";
+import { getTokenPricesForChain } from "../../../utils/getTokenPriceInUSD.js";
 
 @ObjectType()
 export default class GetHypercertsResponse {
@@ -347,8 +348,12 @@ class HypercertResolver {
         })
         .reduce((acc, val) => acc + val, BigInt(0));
 
+      const tokenPricesForChain = await getTokenPricesForChain(chainId);
+
       const cheapestOrder = _.minBy(validOrders, (order) => {
-        return order.price;
+        const token = tokenPricesForChain[order.currency];
+        const orderPriceInToken = formatUnits(order.price, token.decimals);
+        return Number(orderPriceInToken) * token.price;
       });
 
       return {
