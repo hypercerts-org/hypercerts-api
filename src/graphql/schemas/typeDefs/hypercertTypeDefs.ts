@@ -6,6 +6,17 @@ import GetOrdersResponse from "../resolvers/orderResolver.js";
 import GetSalesResponse from "../resolvers/salesResolver.js";
 import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
 import { Metadata } from "./metadataTypeDefs.js";
+import { Order } from "./orderTypeDefs.js";
+import { GraphQLBigInt } from "graphql-scalars";
+
+@ObjectType()
+class GetOrdersForHypercertResponse extends GetOrdersResponse {
+  @Field(() => Order, { nullable: true })
+  cheapestOrder?: Order;
+
+  @Field(() => GraphQLBigInt, { nullable: true })
+  totalUnitsForSale?: bigint;
+}
 
 @ObjectType()
 class Hypercert extends HypercertBaseType {
@@ -27,11 +38,11 @@ class Hypercert extends HypercertBaseType {
     description: "Attestations for the hypercert or parts of its data",
   })
   attestations?: GetAttestationsResponse;
-  @Field(() => GetOrdersResponse, {
+  @Field(() => GetOrdersForHypercertResponse, {
     nullable: true,
     description: "Marketplace orders related to this hypercert",
   })
-  orders?: GetOrdersResponse;
+  orders?: GetOrdersForHypercertResponse;
 
   @Field(() => GetSalesResponse, {
     nullable: true,
@@ -43,7 +54,7 @@ class Hypercert extends HypercertBaseType {
     nullable: true,
     description: "The metadata for the hypercert as referenced by the uri",
   })
-  metadata?: Metadata;
+  declare metadata?: Metadata;
 }
 
 export { Hypercert };

@@ -245,7 +245,7 @@ class HypercertResolver {
 
   @FieldResolver()
   async orders(@Root() hypercert: Hypercert) {
-    if (!hypercert.id) {
+    if (!hypercert.id || !hypercert.hypercert_id) {
       return null;
     }
 
@@ -257,6 +257,23 @@ class HypercertResolver {
 
     try {
       console.log(
+        "[HypercertResolver::orders] Fetching fractions for ",
+        hypercert.hypercert_id,
+      );
+
+      const fractionsRes = await this.supabaseCachingService.getFractions({
+        where: { hypercerts: { id: { eq: hypercert.id } } },
+      });
+
+      if (!fractionsRes) {
+        console.warn(
+          `[HypercertResolver::orders] Error fetching fractions for ${hypercert.hypercert_id}`,
+          fractionsRes,
+        );
+        return defaultValue;
+      }
+
+      console.log(
         `[HypercertResolver::orders] Fetching orders for ${hypercert.hypercert_id}`,
       );
 
@@ -266,7 +283,7 @@ class HypercertResolver {
 
       if (!ordersRes) {
         console.warn(
-          `[HypercertResolver::orders] Error fetching orders for ${hypercert.hypercert_id}: `,
+          `[HypercertResolver::orders] Error fetching orders for ${hypercert.hypercert_id}`,
           ordersRes,
         );
         return defaultValue;
@@ -288,20 +305,30 @@ class HypercertResolver {
 
       const validOrders = ordersData.filter((order) => !order.invalidated);
 
-      const ordersPerFraction = _.keyBy(validOrders, (order) =>
-        parseClaimOrFractionId(order.itemIds[0]).toString(),
+      const ordersByFraction = _.groupBy(validOrders, (order) =>
+        order.itemIds[0].toString(),
+      );
+
+      const { chainId, contractAddress } = parseClaimOrFractionId(
+        hypercert.hypercert_id,
       );
 
       // For each fraction, find all orders and find the max units for sale for that fraction
-      const totalUnitsForSale = Object.values(ordersPerFraction)
-        .map((fraction) => {
-          const availableOrdersForFraction = validOrders.filter(
-            (order) =>
-              parseClaimOrFractionId(fraction.fraction_id).id.toString() ===
-              order.itemIds[0],
+      const totalUnitsForSale = Object.keys(ordersByFraction)
+        .map((tokenId) => {
+          const fractionId = `${chainId}-${contractAddress}-${tokenId}`;
+          const fraction = fractionsRes.data?.find(
+            (fraction) => fraction.fraction_id === fractionId,
           );
 
-          const unitsPerOrder = availableOrdersForFraction.map((order) => {
+          if (!fraction) {
+            console.error(
+              `[HypercertResolver::orders] Fraction not found for ${fractionId}`,
+            );
+            return BigInt(0);
+          }
+          const ordersPerFraction = ordersByFraction[tokenId];
+          const unitsPerOrder = ordersPerFraction.map((order) => {
             const decodedParams = decodeAbiParameters(
               parseAbiParameters(
                 "uint256 minUnitAmount, uint256 maxUnitAmount, uint256 minUnitsToKeep, bool sellLeftOverFraction",

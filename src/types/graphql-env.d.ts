@@ -2310,7 +2310,7 @@ export type introspection = {
       },
       {
         "kind": "OBJECT",
-        "name": "GetOrdersResponse",
+        "name": "GetOrdersForHypercertResponse",
         "fields": [
           {
             "name": "cheapestOrder",
@@ -2351,6 +2351,37 @@ export type introspection = {
               "kind": "SCALAR",
               "name": "BigInt",
               "ofType": null
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "GetOrdersResponse",
+        "fields": [
+          {
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "data",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Order",
+                  "ofType": null
+                }
+              }
             },
             "args": []
           }
@@ -2507,7 +2538,7 @@ export type introspection = {
             "name": "orders",
             "type": {
               "kind": "OBJECT",
-              "name": "GetOrdersResponse",
+              "name": "GetOrdersForHypercertResponse",
               "ofType": null
             },
             "args": []

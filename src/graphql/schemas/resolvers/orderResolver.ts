@@ -13,7 +13,6 @@ import { Order } from "../typeDefs/orderTypeDefs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { GetOrdersArgs } from "../args/orderArgs.js";
 import { SupabaseCachingService } from "../../../services/SupabaseCachingService.js";
-import { GraphQLBigInt } from "graphql-scalars";
 import { getHypercertTokenId } from "../../../utils/tokenIds.js";
 import { HypercertBaseType } from "../typeDefs/baseTypes/hypercertBaseType.js";
 import { getAddress } from "viem";
@@ -26,14 +25,8 @@ export default class GetOrdersResponse {
   @Field(() => [Order], { nullable: true })
   data?: Order[];
 
-  @Field(() => Order, { nullable: true })
-  cheapestOrder?: Order;
-
   @Field(() => Int, { nullable: true })
   count?: number;
-
-  @Field(() => GraphQLBigInt, { nullable: true })
-  totalUnitsForSale?: bigint;
 }
 
 @injectable()
