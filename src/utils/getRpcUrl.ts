@@ -1,4 +1,23 @@
 import { alchemyApiKey, drpcApiPkey, infuraApiKey } from "./constants.js";
+import { createPublicClient, fallback, http } from "viem";
+import { base, baseSepolia, celo, optimism, sepolia } from "viem/chains";
+
+export const selectedNetwork = (chainId: number) => {
+  switch (chainId) {
+    case 10:
+      return optimism;
+    case 8453:
+      return base;
+    case 42220:
+      return celo;
+    case 84532:
+      return baseSepolia;
+    case 11155111:
+      return sepolia;
+    default:
+      throw new Error(`Unsupported chain ID: ${chainId}`);
+  }
+};
 
 export const alchemyUrl = (chainId: number) => {
   switch (chainId) {
@@ -51,9 +70,34 @@ const drpcUrl = (chainId: number) => {
   }
 };
 
+const rpc_timeout = 20_000;
+
 export const getRpcUrl = (chainId: number) => {
   const alchemy = alchemyUrl(chainId);
   const infura = infuraUrl(chainId);
   const drpc = drpcUrl(chainId);
   return [alchemy, infura, drpc].filter((url) => url)[0];
 };
+
+const fallBackProvider = (chainId: number) => {
+  const alchemy = alchemyUrl(chainId)
+    ? [http(alchemyUrl(chainId), { timeout: rpc_timeout })]
+    : [];
+  const infura = infuraUrl(chainId)
+    ? [http(infuraUrl(chainId), { timeout: rpc_timeout })]
+    : [];
+  const drpc = drpcUrl(chainId)
+    ? [http(drpcUrl(chainId), { timeout: rpc_timeout })]
+    : [];
+  return fallback([...alchemy, ...drpc, ...infura], {
+    retryCount: 5,
+  });
+};
+
+/* Returns a PublicClient instance for the configured network. */
+// @ts-expect-error viem typings
+export const getEvmClient = (chainId: number) =>
+  createPublicClient({
+    chain: selectedNetwork(chainId),
+    transport: fallBackProvider(chainId),
+  });

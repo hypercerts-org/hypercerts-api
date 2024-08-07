@@ -1,97 +1,60 @@
-import { ethers } from "ethers";
-import { getRpcUrl } from "./getRpcUrl.js";
 import {
   ChainId,
   currenciesByNetwork,
   Currency,
 } from "@hypercerts-org/marketplace-sdk";
+import { getAddress } from "viem";
+import { getEvmClient } from "./getRpcUrl.js";
+import { AggregatorV3Abi } from "../abis/AggregatorV3Abi.js";
 
 export const getTokenPriceInUSD = async (
   chainId: ChainId,
   tokenAddress: string,
 ) => {
-  const provider = new ethers.JsonRpcProvider(getRpcUrl(chainId));
-  // This constant describes the ABI interface of the contract, which will provide the price of ETH
-  // It looks like a lot, and it is, but this information is generated when we compile the contract
-  // We need to let ethers know how to interact with this contract.
-  const aggregatorV3InterfaceABI = [
-    {
-      inputs: [],
-      name: "decimals",
-      outputs: [{ internalType: "uint8", name: "", type: "uint8" }],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "description",
-      outputs: [{ internalType: "string", name: "", type: "string" }],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [{ internalType: "uint80", name: "_roundId", type: "uint80" }],
-      name: "getRoundData",
-      outputs: [
-        { internalType: "uint80", name: "roundId", type: "uint80" },
-        { internalType: "int256", name: "answer", type: "int256" },
-        { internalType: "uint256", name: "startedAt", type: "uint256" },
-        { internalType: "uint256", name: "updatedAt", type: "uint256" },
-        { internalType: "uint80", name: "answeredInRound", type: "uint80" },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "latestRoundData",
-      outputs: [
-        { internalType: "uint80", name: "roundId", type: "uint80" },
-        { internalType: "int256", name: "answer", type: "int256" },
-        { internalType: "uint256", name: "startedAt", type: "uint256" },
-        { internalType: "uint256", name: "updatedAt", type: "uint256" },
-        { internalType: "uint80", name: "answeredInRound", type: "uint80" },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "version",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      stateMutability: "view",
-      type: "function",
-    },
-  ];
+  const client = getEvmClient(chainId);
+
   // The address of the contract which will provide the price of ETH
   const feedAddress = tokenAddressToFeedAddress(chainId, tokenAddress);
 
   if (!feedAddress) {
-    throw new Error("Token not supported");
+    throw new Error(`Feed address not found for ${tokenAddress}`);
   }
 
-  // We create an instance of the contract which we can interact with
-  const priceFeed = new ethers.Contract(
-    feedAddress,
-    aggregatorV3InterfaceABI,
-    provider,
-  );
-  // We get the data from the last round of the contract
-  // Determine how many decimals the price feed has (10**decimals)
-  const [roundData, decimals] = await Promise.all([
-    priceFeed.latestRoundData(),
-    priceFeed.decimals(),
-  ]);
+  const priceFeed = {
+    abi: AggregatorV3Abi,
+    address: feedAddress,
+  };
+
+  const [roundDataResult, decimalsResult] = await client.multicall({
+    contracts: [
+      { ...priceFeed, functionName: "latestRoundData" },
+      { ...priceFeed, functionName: "decimals" },
+    ],
+  });
+
+  if (roundDataResult.status === "failure") {
+    throw new Error(
+      `Failed to fetch round data result: ${roundDataResult.error}`,
+    );
+  }
+
+  if (decimalsResult.status === "failure") {
+    throw new Error(`Failed to fetch decimals result: ${decimalsResult.error}`);
+  }
+
+  const roundData = roundDataResult.result[1];
+  const decimals = decimalsResult.result;
+
   // We convert the price to a number and return it
-  return Number(
-    (roundData.answer.toString() / Math.pow(10, Number(decimals))).toFixed(2),
+  return (
+    Number((roundData * BigInt(100)) / BigInt(10) ** BigInt(decimals)) / 100
   );
 };
 
 const tokenAddressToFeedAddress = (chainId: ChainId, tokenAddress: string) => {
   const currencies = currenciesByNetwork[chainId];
   const currency = Object.values(currencies).find(
-    (currency) => currency.address === tokenAddress,
+    (currency) => getAddress(currency.address) === getAddress(tokenAddress),
   );
 
   if (!currency) {
@@ -105,20 +68,15 @@ const tokenAddressToFeedAddress = (chainId: ChainId, tokenAddress: string) => {
     throw new Error("Chain not supported");
   }
 
-  return feedsForChain?.[symbol];
+  return feedsForChain?.[symbol] as `0x${string}` | undefined;
 };
 
 export const getTokenPricesForChain = async (chainId: ChainId) => {
   const currencies = currenciesByNetwork[chainId];
   const prices = await Promise.all(
     Object.values(currencies).map(async (currency: Currency) => {
-      try {
-        const price = await getTokenPriceInUSD(chainId, currency.address);
-        return { ...currency, price };
-      } catch (error) {
-        console.error(error);
-        return { ...currency, price: 0 };
-      }
+      const price = await getTokenPriceInUSD(chainId, currency.address);
+      return { ...currency, price };
     }),
   );
 
@@ -161,7 +119,6 @@ const feedsPerChain: Record<ChainId, Partial<CurrencyFeeds>> = {
     USDC: "0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3",
   },
   [ChainId.CELO]: {
-    // TODO: DAI on CELO not supported
     ETH: "0x1FcD30A73D67639c1cD89ff5746E7585731c083B",
     WETH: "0x1FcD30A73D67639c1cD89ff5746E7585731c083B",
     USDC: "0xc7A353BaE210aed958a1A2928b654938EC59DaB2",
