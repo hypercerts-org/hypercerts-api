@@ -915,7 +915,127 @@
 										{
 											"properties": {
 												"error": {},
-												"data": {},
+												"data": {
+													"properties": {
+														"validator_codes": {
+															"items": {
+																"type": "number",
+																"format": "double"
+															},
+															"type": "array"
+														},
+														"subsetNonce": {
+															"type": "number",
+															"format": "double"
+														},
+														"strategyId": {
+															"type": "number",
+															"format": "double"
+														},
+														"startTime": {
+															"type": "number",
+															"format": "double"
+														},
+														"signer": {
+															"type": "string"
+														},
+														"signature": {
+															"type": "string"
+														},
+														"quoteType": {
+															"type": "number",
+															"format": "double"
+														},
+														"price": {
+															"type": "string"
+														},
+														"orderNonce": {
+															"type": "string"
+														},
+														"invalidated": {
+															"type": "boolean"
+														},
+														"id": {
+															"type": "string"
+														},
+														"hypercert_id": {
+															"type": "string"
+														},
+														"globalNonce": {
+															"type": "string"
+														},
+														"endTime": {
+															"type": "number",
+															"format": "double"
+														},
+														"currency": {
+															"type": "string"
+														},
+														"createdAt": {
+															"type": "string"
+														},
+														"collectionType": {
+															"type": "number",
+															"format": "double"
+														},
+														"collection": {
+															"type": "string"
+														},
+														"chainId": {
+															"type": "number",
+															"format": "double"
+														},
+														"additionalParameters": {
+															"type": "string"
+														},
+														"hash": {
+															"type": "string"
+														},
+														"status": {
+															"type": "string"
+														},
+														"amounts": {
+															"items": {
+																"type": "number",
+																"format": "double"
+															},
+															"type": "array"
+														},
+														"itemIds": {
+															"items": {
+																"type": "string"
+															},
+															"type": "array"
+														}
+													},
+													"required": [
+														"validator_codes",
+														"subsetNonce",
+														"strategyId",
+														"startTime",
+														"signer",
+														"signature",
+														"quoteType",
+														"price",
+														"orderNonce",
+														"invalidated",
+														"id",
+														"hypercert_id",
+														"globalNonce",
+														"endTime",
+														"currency",
+														"createdAt",
+														"collectionType",
+														"collection",
+														"chainId",
+														"additionalParameters",
+														"hash",
+														"status",
+														"amounts",
+														"itemIds"
+													],
+													"type": "object"
+												},
 												"success": {
 													"type": "boolean"
 												},
@@ -982,7 +1102,31 @@
 							"application/json": {
 								"schema": {
 									"properties": {
-										"data": {},
+										"data": {
+											"properties": {
+												"nonce_counter": {
+													"type": "number",
+													"format": "double"
+												},
+												"created_at": {
+													"type": "string"
+												},
+												"chain_id": {
+													"type": "number",
+													"format": "double"
+												},
+												"address": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"nonce_counter",
+												"created_at",
+												"chain_id",
+												"address"
+											],
+											"type": "object"
+										},
 										"message": {
 											"type": "string"
 										},
