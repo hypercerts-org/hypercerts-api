@@ -75,8 +75,11 @@ export const getTokenPricesForChain = async (chainId: ChainId) => {
   const currencies = currenciesByNetwork[chainId];
   const prices = await Promise.all(
     Object.values(currencies).map(async (currency: Currency) => {
-      const price = await getTokenPriceInUSD(chainId, currency.address);
-      return { ...currency, price };
+      const tokenPriceInUSD = await getTokenPriceInUSD(
+        chainId,
+        currency.address,
+      );
+      return { ...currency, tokenPriceInUSD };
     }),
   );
 
@@ -84,7 +87,7 @@ export const getTokenPricesForChain = async (chainId: ChainId) => {
     (acc, result) => {
       return { ...acc, [result.address]: result };
     },
-    {} as Record<string, Currency & { price: number }>,
+    {} as Record<string, Currency & { tokenPriceInUSD: number }>,
   );
 };
 

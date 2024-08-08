@@ -14,10 +14,12 @@ import { SupabaseCachingService } from "../../../services/SupabaseCachingService
 import { GetHypercertArgs } from "../args/hypercertsArgs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
-import { decodeAbiParameters, formatUnits, parseAbiParameters } from "viem";
+import { decodeAbiParameters, parseAbiParameters } from "viem";
 import { Metadata } from "../typeDefs/metadataTypeDefs.js";
 import _ from "lodash";
 import { getTokenPricesForChain } from "../../../utils/getTokenPriceInUSD.js";
+import { Maker } from "@hypercerts-org/marketplace-sdk";
+import { getCheapestOrder } from "../../../utils/getCheapestOrder.js";
 
 @ObjectType()
 export default class GetHypercertsResponse {
@@ -329,32 +331,16 @@ class HypercertResolver {
             return BigInt(0);
           }
           const ordersPerFraction = ordersByFraction[tokenId];
-          const unitsPerOrder = ordersPerFraction.map((order) => {
-            const decodedParams = decodeAbiParameters(
-              parseAbiParameters(
-                "uint256 minUnitAmount, uint256 maxUnitAmount, uint256 minUnitsToKeep, bool sellLeftOverFraction",
-              ),
-              order.additionalParameters as `0x{string}`,
-            );
-            const unitsToKeep = decodedParams[2];
-            const units = BigInt(fraction.units);
-            return units - unitsToKeep;
-          });
 
-          // Find max units per order
-          return unitsPerOrder.reduce((acc, val) => {
-            return val > acc ? val : acc;
-          }, BigInt(0));
+          return getMaxUnitsForSaleInOrders(
+            ordersPerFraction,
+            BigInt(fraction.units),
+          );
         })
         .reduce((acc, val) => acc + val, BigInt(0));
 
       const tokenPricesForChain = await getTokenPricesForChain(chainId);
-
-      const cheapestOrder = _.minBy(validOrders, (order) => {
-        const token = tokenPricesForChain[order.currency];
-        const orderPriceInToken = formatUnits(order.price, token.decimals);
-        return Number(orderPriceInToken) * token.price;
-      });
+      const cheapestOrder = getCheapestOrder(validOrders, tokenPricesForChain);
 
       return {
         totalUnitsForSale,
@@ -414,5 +400,26 @@ class HypercertResolver {
     }
   }
 }
+
+export const getMaxUnitsForSaleInOrders = (
+  orders: Pick<Maker, "price" | "additionalParameters">[],
+  unitsInFraction: bigint,
+) => {
+  const unitsPerOrder = orders.map((order) => {
+    const decodedParams = decodeAbiParameters(
+      parseAbiParameters(
+        "uint256 minUnitAmount, uint256 maxUnitAmount, uint256 minUnitsToKeep, bool sellLeftOverFraction",
+      ),
+      order.additionalParameters as `0x{string}`,
+    );
+    const unitsToKeep = decodedParams[2];
+    return unitsInFraction - unitsToKeep;
+  });
+
+  // Find max units per order
+  return unitsPerOrder.reduce((acc, val) => {
+    return val > acc ? val : acc;
+  }, BigInt(0));
+};
 
 export { HypercertResolver };
