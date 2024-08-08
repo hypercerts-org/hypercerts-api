@@ -2,7 +2,30 @@ import { describe, it } from "vitest";
 import { expect } from "chai";
 
 import { getCheapestOrder } from "../../../src/utils/getCheapestOrder.js";
+import { encodeAbiParameters, parseAbiParameters } from "viem";
+import {
+  getMaxUnitsForSaleInOrders,
+  getUnitsForSaleInOrder,
+} from "../../../src/utils/getMaxUnitsForSaleInOrders.js";
 
+const encodeAdditionalParams = ({
+  minUnitsToKeep,
+  sellLeftOverFraction = false,
+  minUnitAmount = BigInt(0),
+  maxUnitAmount = BigInt(0),
+}: {
+  minUnitsToKeep: bigint;
+  sellLeftOverFraction?: boolean;
+  minUnitAmount?: bigint;
+  maxUnitAmount?: bigint;
+}) => {
+  return encodeAbiParameters(
+    parseAbiParameters(
+      "uint256 minUnitAmount, uint256 maxUnitAmount, uint256 minUnitsToKeep, bool sellLeftOverFraction",
+    ),
+    [minUnitAmount, maxUnitAmount, minUnitsToKeep, sellLeftOverFraction],
+  );
+};
 describe("Get cheapest order", async () => {
   type TokenForChain = Parameters<typeof getCheapestOrder>[1];
   type OrderArg = Parameters<typeof getCheapestOrder>[0][number];
@@ -43,9 +66,9 @@ describe("Get cheapest order", async () => {
       price: 2,
       currency: "b",
     };
-    const results = getCheapestOrder([order1, order2], tokenPricesForChain);
+    const result = getCheapestOrder([order1, order2], tokenPricesForChain);
 
-    expect(results).to.eq(order1);
+    expect(result).to.eq(order1);
   });
 
   it("Returns the cheapest order with different decimals", () => {
@@ -58,9 +81,9 @@ describe("Get cheapest order", async () => {
       price: "2",
       currency: "c",
     };
-    const results = getCheapestOrder([order1, order2], tokenPricesForChain);
+    const result = getCheapestOrder([order1, order2], tokenPricesForChain);
 
-    expect(results).to.eq(order1);
+    expect(result).to.eq(order1);
   });
 
   it("Does not overflow", () => {
@@ -73,10 +96,9 @@ describe("Get cheapest order", async () => {
       price: BigInt(10 ** 18).toString(),
       currency: "a",
     };
-    const results = getCheapestOrder([order1, order2], tokenPricesForChain);
+    const result = getCheapestOrder([order1, order2], tokenPricesForChain);
 
-    console.log(results);
-    expect(results).to.eq(order2);
+    expect(result).to.eq(order2);
   });
 
   it("Returns the cheapest order for usd price with decimals", () => {
@@ -89,8 +111,71 @@ describe("Get cheapest order", async () => {
       price: 1,
       currency: "a",
     };
-    const results = getCheapestOrder([order1, order2], tokenPricesForChain);
+    const result = getCheapestOrder([order1, order2], tokenPricesForChain);
 
-    expect(results).to.eq(order1);
+    expect(result).to.eq(order1);
+  });
+});
+
+describe("Get max units for collection of orders", () => {
+  it("Returns the max units for sale in all orders", () => {
+    const orders = [
+      {
+        additionalParameters: encodeAdditionalParams({
+          minUnitsToKeep: BigInt(3),
+        }),
+      },
+      {
+        additionalParameters: encodeAdditionalParams({
+          minUnitsToKeep: BigInt(1),
+        }),
+      },
+    ];
+
+    const result = getMaxUnitsForSaleInOrders(orders, BigInt(5));
+
+    expect(result).to.eq(BigInt(4));
+  });
+});
+
+describe("Get max units for order", () => {
+  it("Returns the max units for sale in orders", () => {
+    const order = {
+      additionalParameters: encodeAdditionalParams({
+        minUnitsToKeep: BigInt(3),
+      }),
+    };
+
+    const result = getUnitsForSaleInOrder(order, BigInt(5));
+
+    expect(result).to.eq(BigInt(2));
+  });
+
+  it("Returns the max units for sale in orders with sellLeftOverFraction", () => {
+    const orderWithSellLeftOver = encodeAdditionalParams({
+      minUnitsToKeep: BigInt(3),
+      sellLeftOverFraction: true,
+      minUnitAmount: BigInt(2),
+    });
+
+    const result = getUnitsForSaleInOrder(
+      { additionalParameters: orderWithSellLeftOver },
+      BigInt(4),
+    );
+
+    expect(result).to.eq(BigInt(1));
+
+    const orderWithoutSellLeftOver = encodeAdditionalParams({
+      minUnitsToKeep: BigInt(3),
+      sellLeftOverFraction: false,
+      minUnitAmount: BigInt(2),
+    });
+
+    const result2 = getUnitsForSaleInOrder(
+      { additionalParameters: orderWithoutSellLeftOver },
+      BigInt(4),
+    );
+
+    expect(result2).to.eq(BigInt(0));
   });
 });
