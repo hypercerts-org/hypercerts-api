@@ -3,7 +3,7 @@ import {
   currenciesByNetwork,
   Currency,
 } from "@hypercerts-org/marketplace-sdk";
-import { getAddress } from "viem";
+import { formatUnits, getAddress } from "viem";
 import { getEvmClient } from "./getRpcUrl.js";
 import { AggregatorV3Abi } from "../abis/AggregatorV3Abi.js";
 
@@ -46,9 +46,7 @@ export const getTokenPriceInUSD = async (
   const decimals = decimalsResult.result;
 
   // We convert the price to a number and return it
-  return (
-    Number((roundData * BigInt(100)) / BigInt(10) ** BigInt(decimals)) / 100
-  );
+  return Number(formatUnits(roundData * BigInt(100), decimals)) / 100;
 };
 
 const tokenAddressToFeedAddress = (chainId: ChainId, tokenAddress: string) => {

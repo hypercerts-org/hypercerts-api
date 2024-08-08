@@ -1,18 +1,9 @@
-import { describe, it, afterEach, afterAll } from "vitest";
+import { describe, it } from "vitest";
 import { expect } from "chai";
 
-import sinon from "sinon";
 import { getCheapestOrder } from "../../../src/utils/getCheapestOrder.js";
 
-describe("W3Up Client metadata", async () => {
-  afterEach(() => {
-    sinon.resetHistory();
-  });
-
-  afterAll(() => {
-    sinon.resetBehavior();
-  });
-
+describe("Get cheapest order", async () => {
   type TokenForChain = Parameters<typeof getCheapestOrder>[1];
   type OrderArg = Parameters<typeof getCheapestOrder>[0][number];
   const tokenPricesForChain: TokenForChain = {
