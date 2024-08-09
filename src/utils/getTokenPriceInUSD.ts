@@ -6,6 +6,7 @@ import {
 import { formatUnits, getAddress } from "viem";
 import { getEvmClient } from "./getRpcUrl.js";
 import { AggregatorV3Abi } from "../abis/AggregatorV3Abi.js";
+import { LRUCache } from "lru-cache";
 
 export const getTokenPriceInUSD = async (
   chainId: ChainId,
@@ -73,10 +74,15 @@ export const getTokenPricesForChain = async (chainId: ChainId) => {
   const currencies = currenciesByNetwork[chainId];
   const prices = await Promise.all(
     Object.values(currencies).map(async (currency: Currency) => {
-      const tokenPriceInUSD = await getTokenPriceInUSD(
+      const tokenPriceInUSD = await getTokenPriceFromCache(
         chainId,
         currency.address,
       );
+      if (!tokenPriceInUSD) {
+        throw new Error(
+          `Token price not found for ${currency.address} on chain ${chainId}`,
+        );
+      }
       return { ...currency, tokenPriceInUSD };
     }),
   );
@@ -131,4 +137,30 @@ const feedsPerChain: Record<ChainId, Partial<CurrencyFeeds>> = {
     USDC: "0xd30e2101a97dcbAeBCBC04F14C3f624E67A35165",
     DAI: "0xD1092a65338d049DB68D7Be6bD89d17a0929945e",
   },
+};
+
+export const tokenPriceCache = new LRUCache({
+  // Allocate memory for a thousand items
+  max: 1000,
+  // Cache for one minut
+  ttl: 1000 * 60,
+  allowStale: false,
+
+  fetchMethod: (key: string | object) => {
+    if (typeof key !== "string") {
+      throw new Error("Currency key must be a string");
+    }
+    const [chainId, currencyAddress] = key.split("-");
+    console.log(
+      `Updating cached token price for ${currencyAddress} on chain ${chainId}`,
+    );
+    return getTokenPriceInUSD(parseInt(chainId), currencyAddress);
+  },
+});
+
+export const getTokenPriceFromCache = (
+  chainId: number,
+  currencyAddress: string,
+) => {
+  return tokenPriceCache.fetch(`${chainId}-${currencyAddress}`);
 };
