@@ -19,6 +19,7 @@ import _ from "lodash";
 import { getTokenPricesForChain } from "../../../utils/getTokenPriceInUSD.js";
 import { getCheapestOrder } from "../../../utils/getCheapestOrder.js";
 import { getMaxUnitsForSaleInOrders } from "../../../utils/getMaxUnitsForSaleInOrders.js";
+import { addPriceInUsdToOrder } from "../../../utils/addPriceInUSDToOrder.js";
 
 @ObjectType()
 export default class GetHypercertsResponse {
@@ -343,7 +344,9 @@ class HypercertResolver {
 
       return {
         totalUnitsForSale,
-        cheapestOrder,
+        cheapestOrder: cheapestOrder
+          ? await addPriceInUsdToOrder(cheapestOrder)
+          : cheapestOrder,
         data: ordersData || [],
         count: ordersCount || 0,
       };

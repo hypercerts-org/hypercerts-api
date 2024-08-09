@@ -629,6 +629,7 @@ type Order {
   itemIds: [String!]!
   orderNonce: String!
   price: String!
+  priceInUSD: String!
   quoteType: Float!
   signature: String!
   signer: String!

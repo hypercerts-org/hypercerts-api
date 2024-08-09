@@ -164,3 +164,17 @@ export const getTokenPriceFromCache = (
 ) => {
   return tokenPriceCache.fetch(`${chainId}-${currencyAddress}`);
 };
+
+export const getTokenPriceWithCurrencyFromCache = async (
+  chainId: ChainId,
+  currencyAddress: string,
+) => {
+  const tokenPriceInUSD = await getTokenPriceFromCache(
+    chainId,
+    currencyAddress,
+  );
+  const currency = Object.values(currenciesByNetwork[chainId]).find(
+    (currency) => getAddress(currency.address) === getAddress(currencyAddress),
+  );
+  return { ...currency, price: tokenPriceInUSD };
+};

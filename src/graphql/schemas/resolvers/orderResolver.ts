@@ -19,6 +19,7 @@ import { getAddress } from "viem";
 import { HypercertExchangeClient } from "@hypercerts-org/marketplace-sdk";
 import { ethers } from "ethers";
 import { getRpcUrl } from "../../../utils/getRpcUrl.js";
+import { addPriceInUsdToOrder } from "../../../utils/addPriceInUSDToOrder.js";
 
 @ObjectType()
 export default class GetOrdersResponse {
@@ -98,8 +99,14 @@ class OrderResolver {
         }),
       ).then((res) => res.flat());
 
+      const ordersWithPrices = await Promise.all(
+        orders.map(async (order) => {
+          return addPriceInUsdToOrder(order);
+        }),
+      );
+
       return {
-        data: ordersAfterCheckingValidity,
+        data: ordersWithPrices,
         count: count ? count : ordersAfterCheckingValidity?.length,
       };
     } catch (e) {

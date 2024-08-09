@@ -3580,6 +3580,18 @@ export type introspection = {
             "args": []
           },
           {
+            "name": "priceInUSD",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
             "name": "quoteType",
             "type": {
               "kind": "NON_NULL",
