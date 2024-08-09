@@ -26,25 +26,52 @@ export const getTokenPriceInUSD = async (
     address: feedAddress,
   };
 
-  const [roundDataResult, decimalsResult] = await client.multicall({
-    contracts: [
-      { ...priceFeed, functionName: "latestRoundData" },
-      { ...priceFeed, functionName: "decimals" },
-    ],
-  });
+  let roundData: bigint;
+  let decimals: number;
 
-  if (roundDataResult.status === "failure") {
+  if (chainId === ChainId.BASE_SEPOLIA) {
+    // Base sepolia does not support multichain
+    const roundDataResult = await client.readContract({
+      ...priceFeed,
+      functionName: "latestRoundData",
+    });
+
+    const decimalsResult = await client.readContract({
+      ...priceFeed,
+      functionName: "decimals",
+    });
+
+    roundData = roundDataResult[1];
+    decimals = decimalsResult;
+  } else {
+    const [roundDataResult, decimalsResult] = await client.multicall({
+      contracts: [
+        { ...priceFeed, functionName: "latestRoundData" },
+        { ...priceFeed, functionName: "decimals" },
+      ],
+    });
+
+    if (roundDataResult.status === "failure") {
+      throw new Error(
+        `Failed to fetch round data result: ${roundDataResult.error}`,
+      );
+    }
+
+    if (decimalsResult.status === "failure") {
+      throw new Error(
+        `Failed to fetch decimals result: ${decimalsResult.error}`,
+      );
+    }
+
+    roundData = roundDataResult.result[1];
+    decimals = decimalsResult.result;
+  }
+
+  if (!roundData || !decimals) {
     throw new Error(
-      `Failed to fetch round data result: ${roundDataResult.error}`,
+      `Failed to fetch round data or decimals for ${tokenAddress} on ${chainId}`,
     );
   }
-
-  if (decimalsResult.status === "failure") {
-    throw new Error(`Failed to fetch decimals result: ${decimalsResult.error}`);
-  }
-
-  const roundData = roundDataResult.result[1];
-  const decimals = decimalsResult.result;
 
   // We convert the price to a number and return it
   return Number(formatUnits(roundData * BigInt(100), decimals)) / 100;
