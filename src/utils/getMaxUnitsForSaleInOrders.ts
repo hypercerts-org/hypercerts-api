@@ -5,15 +5,17 @@ export const getUnitsForSaleInOrder = (
   order: Pick<Maker, "additionalParameters">,
   unitsInFraction: bigint,
 ) => {
-  const decodedParams = decodeAbiParameters(
-    parseAbiParameters(
-      "uint256 minUnitAmount, uint256 maxUnitAmount, uint256 minUnitsToKeep, bool sellLeftOverFraction",
-    ),
-    order.additionalParameters as `0x{string}`,
-  );
-  const minUnitAmount = decodedParams[0];
-  const unitsToKeep = decodedParams[2];
-  const sellLeftOverFraction = decodedParams[3];
+  const [minUnitAmount, maxUnitAmount, unitsToKeep, sellLeftOverFraction] =
+    decodeAbiParameters(
+      parseAbiParameters(
+        "uint256 minUnitAmount, uint256 maxUnitAmount, uint256 minUnitsToKeep, bool sellLeftOverFraction",
+      ),
+      order.additionalParameters as `0x{string}`,
+    );
+
+  if (maxUnitAmount === BigInt(0)) {
+    return BigInt(0);
+  }
 
   const unitsForSale = unitsInFraction - unitsToKeep;
 

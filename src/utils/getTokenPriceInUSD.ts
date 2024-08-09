@@ -56,14 +56,14 @@ const tokenAddressToFeedAddress = (chainId: ChainId, tokenAddress: string) => {
   );
 
   if (!currency) {
-    throw new Error("Currency not supported");
+    throw new Error(`Currency not found for address ${tokenAddress}`);
   }
 
   const symbol = currency.symbol as keyof (typeof currenciesByNetwork)[ChainId];
   const feedsForChain = feedsPerChain[chainId];
 
   if (!feedsForChain) {
-    throw new Error("Chain not supported");
+    throw new Error(`No feeds found for chain ${chainId}`);
   }
 
   return feedsForChain?.[symbol] as `0x${string}` | undefined;
@@ -123,6 +123,7 @@ const feedsPerChain: Record<ChainId, Partial<CurrencyFeeds>> = {
     ETH: "0x1FcD30A73D67639c1cD89ff5746E7585731c083B",
     WETH: "0x1FcD30A73D67639c1cD89ff5746E7585731c083B",
     USDC: "0xc7A353BaE210aed958a1A2928b654938EC59DaB2",
+    DAI: "0xc7A353BaE210aed958a1A2928b654938EC59DaB2",
   },
   [ChainId.BASE_SEPOLIA]: {
     ETH: "0x0FB99723Aee6f420beAD13e6bBB79b7E6F034298",
