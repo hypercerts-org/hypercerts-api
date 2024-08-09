@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 
 import sinon from "sinon";
 
-import { data } from "../../utils";
+import { data } from "../../test-utils";
 import { Client } from "@web3-storage/w3up-client";
 import axios from "axios";
 import { metadataHandler } from "@/handlers/v1/web3up/metadata";
@@ -108,7 +108,7 @@ describe("W3Up Client metadata", async () => {
     //TODO better typing and check on returned CID
     // @ts-ignore
     expect(res._getJSONData().message).to.eq(
-      "Not a valid hypercert metadata object"
+      "Not a valid hypercert metadata object",
     );
   });
 
@@ -127,7 +127,7 @@ describe("W3Up Client metadata", async () => {
     //TODO better typing and check on returned CID
     // @ts-ignore
     expect(res._getJSONData().message).to.eq(
-      "Allowlist should be a valid openzeppelin merkle tree"
+      "Allowlist should be a valid openzeppelin merkle tree",
     );
 
     expect(storeBlobMock.callCount).to.eq(0);

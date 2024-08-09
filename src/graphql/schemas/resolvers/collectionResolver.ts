@@ -1,9 +1,8 @@
 import { Args, Field, Int, ObjectType, Query, Resolver } from "type-graphql";
 import { inject, injectable } from "tsyringe";
-import { Order } from "../typeDefs/orderTypeDefs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
-import {Collection} from "../typeDefs/collectionTypeDefs.js";
-import {GetCollectionArgs} from "../args/collectionArgs.js";
+import { Collection } from "../typeDefs/collectionTypeDefs.js";
+import { GetCollectionArgs } from "../args/collectionArgs.js";
 
 @ObjectType()
 export default class GetCollectionsResponse {
@@ -15,7 +14,7 @@ export default class GetCollectionsResponse {
 }
 
 @injectable()
-@Resolver((_) => Order)
+@Resolver((_) => Collection)
 class CollectionResolver {
   constructor(
     @inject(SupabaseDataService)
@@ -25,7 +24,7 @@ class CollectionResolver {
   @Query((_) => GetCollectionsResponse)
   async collections(@Args() args: GetCollectionArgs) {
     try {
-      const res = await this.supabaseService.getCollections(args)
+      const res = await this.supabaseService.getCollections(args);
 
       const { data, error, count } = res;
 
@@ -44,7 +43,6 @@ class CollectionResolver {
       );
     }
   }
-
 }
 
 export { CollectionResolver };

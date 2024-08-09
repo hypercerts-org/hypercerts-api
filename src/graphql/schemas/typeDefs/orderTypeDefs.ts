@@ -48,6 +48,9 @@ class Order extends BasicTypeDef {
   @Field(() => [String], { nullable: true })
   validator_codes?: string[];
 
+  @Field()
+  priceInUSD?: string;
+
   @Field(() => HypercertBaseType, {
     nullable: true,
     description: "The hypercert associated with this order",

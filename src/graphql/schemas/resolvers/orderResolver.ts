@@ -13,13 +13,13 @@ import { Order } from "../typeDefs/orderTypeDefs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { GetOrdersArgs } from "../args/orderArgs.js";
 import { SupabaseCachingService } from "../../../services/SupabaseCachingService.js";
-import { GraphQLBigInt } from "graphql-scalars";
 import { getHypercertTokenId } from "../../../utils/tokenIds.js";
 import { HypercertBaseType } from "../typeDefs/baseTypes/hypercertBaseType.js";
 import { getAddress } from "viem";
 import { HypercertExchangeClient } from "@hypercerts-org/marketplace-sdk";
 import { ethers } from "ethers";
 import { getRpcUrl } from "../../../utils/getRpcUrl.js";
+import { addPriceInUsdToOrder } from "../../../utils/addPriceInUSDToOrder.js";
 
 @ObjectType()
 export default class GetOrdersResponse {
@@ -28,12 +28,6 @@ export default class GetOrdersResponse {
 
   @Field(() => Int, { nullable: true })
   count?: number;
-
-  @Field(() => GraphQLBigInt, { nullable: true })
-  totalUnitsForSale?: bigint;
-
-  @Field(() => GraphQLBigInt, { nullable: true })
-  lowestAvailablePrice?: bigint;
 }
 
 @injectable()
@@ -105,8 +99,14 @@ class OrderResolver {
         }),
       ).then((res) => res.flat());
 
+      const ordersWithPrices = await Promise.all(
+        orders.map(async (order) => {
+          return addPriceInUsdToOrder(order);
+        }),
+      );
+
       return {
-        data: ordersAfterCheckingValidity,
+        data: ordersWithPrices,
         count: count ? count : ordersAfterCheckingValidity?.length,
       };
     } catch (e) {
