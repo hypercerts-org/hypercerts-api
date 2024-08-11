@@ -3,46 +3,21 @@ import { expect } from "chai";
 import { getCheapestOrder } from "../../src/utils/getCheapestOrder.js";
 
 describe("Get cheapest order", async () => {
-  type TokenForChain = Parameters<typeof getCheapestOrder>[1];
   type OrderArg = Parameters<typeof getCheapestOrder>[0][number];
-  const tokenPricesForChain: TokenForChain = {
-    a: {
-      tokenPriceInUSD: 1,
-      address: "0x123",
-      symbol: "A",
-      decimals: 18,
-    },
-    b: {
-      tokenPriceInUSD: 2,
-      address: "0x456",
-      symbol: "B",
-      decimals: 18,
-    },
-    c: {
-      tokenPriceInUSD: 3,
-      address: "0x789",
-      symbol: "C",
-      decimals: 6,
-    },
-    d: {
-      tokenPriceInUSD: 1.01,
-      address: "0x101",
-      symbol: "D",
-      decimals: 18,
-    },
-  };
 
   it("Returns the cheapest order", () => {
     const order1: OrderArg = {
-      price: 1,
+      price: "1",
       currency: "a",
+      pricePerPercentInUSD: "1",
     };
 
     const order2: OrderArg = {
-      price: 2,
+      price: "2",
       currency: "b",
+      pricePerPercentInUSD: "2",
     };
-    const result = getCheapestOrder([order1, order2], tokenPricesForChain);
+    const result = getCheapestOrder([order1, order2]);
 
     expect(result).to.eq(order1);
   });
@@ -51,13 +26,15 @@ describe("Get cheapest order", async () => {
     const order1: OrderArg = {
       price: "1",
       currency: "a",
+      pricePerPercentInUSD: "1.01",
     };
 
     const order2: OrderArg = {
       price: "2",
       currency: "c",
+      pricePerPercentInUSD: "12.1",
     };
-    const result = getCheapestOrder([order1, order2], tokenPricesForChain);
+    const result = getCheapestOrder([order1, order2]);
 
     expect(result).to.eq(order1);
   });
@@ -66,13 +43,15 @@ describe("Get cheapest order", async () => {
     const order1: OrderArg = {
       price: (BigInt(10 ** 18) ** BigInt(18)).toString(),
       currency: "a",
+      pricePerPercentInUSD: "1.02",
     };
 
     const order2: OrderArg = {
       price: BigInt(10 ** 18).toString(),
       currency: "a",
+      pricePerPercentInUSD: "1.01",
     };
-    const result = getCheapestOrder([order1, order2], tokenPricesForChain);
+    const result = getCheapestOrder([order1, order2]);
 
     expect(result).to.eq(order2);
   });
@@ -81,13 +60,15 @@ describe("Get cheapest order", async () => {
     const order1: OrderArg = {
       price: 1,
       currency: "d",
+      pricePerPercentInUSD: "1.02",
     };
 
     const order2: OrderArg = {
       price: 1,
       currency: "a",
+      pricePerPercentInUSD: "1.03",
     };
-    const result = getCheapestOrder([order1, order2], tokenPricesForChain);
+    const result = getCheapestOrder([order1, order2]);
 
     expect(result).to.eq(order1);
   });
