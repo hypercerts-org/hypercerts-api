@@ -4,6 +4,7 @@ import { formatUnits } from "viem";
 
 export const addPriceInUsdToOrder = async (
   order: Database["public"]["Tables"]["marketplace_orders"]["Row"],
+  unitsInHypercerts: bigint,
 ) => {
   const { price, currency, chainId } = order;
   const tokenPrice = await getTokenPriceWithCurrencyFromCache(
@@ -14,11 +15,19 @@ export const addPriceInUsdToOrder = async (
     throw new Error(`Token price not found for ${currency}`);
   }
 
-  const priceInToken = formatUnits(BigInt(price), tokenPrice.decimals);
-  const priceInUSD = (Number(priceInToken) * tokenPrice.price).toString();
+  const unitsInPercentage = BigInt(unitsInHypercerts) / BigInt(100);
+  const pricePerPercentInTokenWei = BigInt(price) * unitsInPercentage;
+  const pricePerPercentInToken = formatUnits(
+    pricePerPercentInTokenWei,
+    tokenPrice.decimals,
+  );
+  const pricePerPercentInUSD = (
+    Number(pricePerPercentInToken) * tokenPrice.price
+  ).toFixed(2);
 
   return {
     ...order,
-    priceInUSD,
+    pricePerPercentInToken,
+    pricePerPercentInUSD,
   };
 };

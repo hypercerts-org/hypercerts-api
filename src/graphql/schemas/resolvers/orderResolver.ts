@@ -20,6 +20,7 @@ import { HypercertExchangeClient } from "@hypercerts-org/marketplace-sdk";
 import { ethers } from "ethers";
 import { getRpcUrl } from "../../../utils/getRpcUrl.js";
 import { addPriceInUsdToOrder } from "../../../utils/addPriceInUSDToOrder.js";
+import _ from "lodash";
 
 @ObjectType()
 export default class GetOrdersResponse {
@@ -63,6 +64,35 @@ class OrderResolver {
         {} as Record<string, (typeof orders)[number][]>,
       );
 
+      const allHypercertIds = _.uniq(orders.map((order) => order.hypercert_id));
+      // TODO: Update this once array filters are available
+      const allHypercerts = await Promise.all(
+        allHypercertIds.map(async (hypercertId) => {
+          const hypercertRes = await this.supabaseCachingService.getHypercerts({
+            where: {
+              hypercert_id: {
+                eq: hypercertId,
+              },
+            },
+          });
+
+          if (hypercertRes.error) {
+            console.warn(
+              `[OrderResolver::orders] Error fetching hypercert: `,
+              hypercertRes.error,
+            );
+            return null;
+          }
+
+          return hypercertRes.data?.[0] as HypercertBaseType;
+        }),
+      ).then((res) =>
+        _.keyBy(
+          res.filter((hypercert) => !!hypercert),
+          (hypercert) => hypercert?.hypercert_id?.toLowerCase(),
+        ),
+      );
+
       const ordersAfterCheckingValidity = await Promise.all(
         Object.entries(groupedOrders).map(async ([chainId, ordersForChain]) => {
           const chainIdParsed = parseInt(chainId);
@@ -101,7 +131,14 @@ class OrderResolver {
 
       const ordersWithPrices = await Promise.all(
         orders.map(async (order) => {
-          return addPriceInUsdToOrder(order);
+          const hypercert = allHypercerts[order.hypercert_id.toLowerCase()];
+          if (!hypercert?.units) {
+            console.warn(
+              `[OrderResolver::orders] No hypercert found for hypercert_id: ${order.hypercert_id}`,
+            );
+            return order;
+          }
+          return addPriceInUsdToOrder(order, hypercert.units as bigint);
         }),
       );
 

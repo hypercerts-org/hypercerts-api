@@ -16,10 +16,10 @@ import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 import { Metadata } from "../typeDefs/metadataTypeDefs.js";
 import _ from "lodash";
-import { getTokenPricesForChain } from "../../../utils/getTokenPriceInUSD.js";
 import { getCheapestOrder } from "../../../utils/getCheapestOrder.js";
 import { getMaxUnitsForSaleInOrders } from "../../../utils/getMaxUnitsForSaleInOrders.js";
 import { addPriceInUsdToOrder } from "../../../utils/addPriceInUSDToOrder.js";
+import { Database } from "../../../types/supabaseData.js";
 
 @ObjectType()
 export default class GetHypercertsResponse {
@@ -316,38 +316,47 @@ class HypercertResolver {
         hypercert.hypercert_id,
       );
 
+      const ordersWithPrices: (Database["public"]["Tables"]["marketplace_orders"]["Row"] & {
+        priceInUSD: string;
+        pricePerPercentInUSD: string;
+      })[] = [];
       // For each fraction, find all orders and find the max units for sale for that fraction
-      const totalUnitsForSale = Object.keys(ordersByFraction)
-        .map((tokenId) => {
-          const fractionId = `${chainId}-${contractAddress}-${tokenId}`;
-          const fraction = fractionsRes.data?.find(
-            (fraction) => fraction.fraction_id === fractionId,
-          );
-
-          if (!fraction) {
-            console.error(
-              `[HypercertResolver::orders] Fraction not found for ${fractionId}`,
+      const totalUnitsForSale = (
+        await Promise.all(
+          Object.keys(ordersByFraction).map(async (tokenId) => {
+            const fractionId = `${chainId}-${contractAddress}-${tokenId}`;
+            const fraction = fractionsRes.data?.find(
+              (fraction) => fraction.fraction_id === fractionId,
             );
-            return BigInt(0);
-          }
 
-          const ordersPerFraction = ordersByFraction[tokenId];
-          return getMaxUnitsForSaleInOrders(
-            ordersPerFraction,
-            BigInt(fraction.units),
-          );
-        })
-        .reduce((acc, val) => acc + val, BigInt(0));
+            if (!fraction) {
+              console.error(
+                `[HypercertResolver::orders] Fraction not found for ${fractionId}`,
+              );
+              return BigInt(0);
+            }
 
-      const tokenPricesForChain = await getTokenPricesForChain(chainId);
-      const cheapestOrder = getCheapestOrder(validOrders, tokenPricesForChain);
+            const ordersPerFraction = ordersByFraction[tokenId];
+            const ordersWithPricesForChain = await Promise.all(
+              ordersPerFraction.map(async (order) => {
+                return addPriceInUsdToOrder(order, hypercert.units as bigint);
+              }),
+            );
+            ordersWithPrices.push(...ordersWithPricesForChain);
+            return getMaxUnitsForSaleInOrders(
+              ordersPerFraction,
+              BigInt(fraction.units),
+            );
+          }),
+        )
+      ).reduce((acc, val) => acc + val, BigInt(0));
+
+      const cheapestOrder = getCheapestOrder(ordersWithPrices);
 
       return {
         totalUnitsForSale,
-        cheapestOrder: cheapestOrder
-          ? await addPriceInUsdToOrder(cheapestOrder)
-          : cheapestOrder,
-        data: ordersData || [],
+        cheapestOrder,
+        data: ordersWithPrices || [],
         count: ordersCount || 0,
       };
     } catch (e) {

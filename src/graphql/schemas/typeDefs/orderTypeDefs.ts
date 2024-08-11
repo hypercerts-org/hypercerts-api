@@ -49,7 +49,9 @@ class Order extends BasicTypeDef {
   validator_codes?: string[];
 
   @Field()
-  priceInUSD?: string;
+  pricePerPercentInUSD?: string;
+  @Field()
+  pricePerPercentInToken?: string;
 
   @Field(() => HypercertBaseType, {
     nullable: true,
