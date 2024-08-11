@@ -187,4 +187,12 @@ export class SupabaseDataService {
     await this.updateOrders(ordersToUpdate);
     return ordersToUpdate;
   }
+
+  async deleteOrder(orderId: string) {
+    return this.supabaseData
+      .from("marketplace_orders")
+      .delete()
+      .eq("id", orderId)
+      .single();
+  }
 }

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Post,
   Response,
   Route,
@@ -17,7 +18,7 @@ import { ethers, verifyTypedData } from "ethers";
 import { z } from "zod";
 
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
-import { isAddress } from "viem";
+import { isAddress, verifyMessage } from "viem";
 import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
 import { getFractionsById } from "../utils/getFractionsById.js";
 import { getHypercertTokenId } from "../utils/tokenIds.js";
@@ -382,6 +383,99 @@ export class MarketplaceController extends Controller {
         return {
           success: false,
           message: "Could not validate orders",
+          data: null,
+        };
+      }
+    }
+  }
+
+  /**
+   * Delete order from database
+   */
+  @Delete("/orders")
+  @SuccessResponse(200, "Order deleted successfully")
+  @Response<ApiResponse>(422, "Unprocessable content", {
+    success: false,
+    message: "Order could not be deleted",
+  })
+  async deleteOrder(
+    @Body() requestBody: { orderId: string; signature: string },
+  ) {
+    const inputSchema = z.object({
+      orderId: z.string(),
+      signature: z.string(),
+    });
+    const parsedQuery = inputSchema.safeParse(requestBody);
+    if (!parsedQuery.success) {
+      this.setStatus(422);
+      return {
+        success: false,
+        message: parsedQuery.error.message,
+        data: null,
+      };
+    }
+
+    const { orderId, signature } = parsedQuery.data;
+
+    const supabase = new SupabaseDataService();
+    const orderRes = await supabase.getOrders({
+      where: {
+        id: {
+          eq: orderId,
+        },
+      },
+    });
+
+    if (!orderRes.data?.length) {
+      this.setStatus(404);
+      return {
+        success: false,
+        message: "Order not found",
+        data: null,
+      };
+    }
+
+    if (orderRes.error) {
+      this.setStatus(500);
+      return {
+        success: false,
+        message: "Could not fetch order",
+        data: null,
+      };
+    }
+
+    const signerAddress = orderRes.data[0].signer;
+
+    const signatureCorrect = await verifyMessage({
+      message: `Delete listing ${orderId}`,
+      signature: signature as `0x${string}`,
+      address: signerAddress as `0x${string}`,
+    });
+
+    if (!signatureCorrect) {
+      this.setStatus(401);
+      return {
+        success: false,
+        message: "Invalid signature",
+        data: null,
+      };
+    }
+
+    try {
+      await supabase.deleteOrder(orderId);
+      this.setStatus(200);
+      return {
+        success: true,
+        message: "Order has been deleted",
+        data: null,
+      };
+    } catch (error) {
+      console.error(error);
+      if (error) {
+        this.setStatus(500);
+        return {
+          success: false,
+          message: "Could not delete order",
           data: null,
         };
       }
