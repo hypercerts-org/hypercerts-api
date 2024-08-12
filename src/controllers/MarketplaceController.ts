@@ -22,6 +22,7 @@ import { isAddress, verifyMessage } from "viem";
 import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
 import { getFractionsById } from "../utils/getFractionsById.js";
 import { getHypercertTokenId } from "../utils/tokenIds.js";
+import { getRpcUrl } from "../utils/getRpcUrl.js";
 
 export interface CreateOrderRequest {
   signature: string;
@@ -147,7 +148,7 @@ export class MarketplaceController extends Controller {
     const hec = new HypercertExchangeClient(
       chainId,
       // @ts-expect-error Typing issue with provider
-      new ethers.JsonRpcProvider(),
+      new ethers.JsonRpcProvider(getRpcUrl(chainId)),
     );
     const typedData = hec.getTypedDataDomain();
 
