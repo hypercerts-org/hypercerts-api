@@ -104,6 +104,10 @@ export class MarketplaceController extends Controller {
         ({ price }) => isParsableToBigInt(price),
         `price is not parseable as bigint`,
       )
+      .refine(({ price }) => {
+        const priceBigInt = BigInt(price);
+        return priceBigInt > 0n;
+      }, `Price must be greater than 0`)
       .refine(({ currency }) => isAddress(currency), `Invalid currency address`)
       .refine(({ signer }) => isAddress(signer), `Invalid signer address`)
       .refine(({ itemIds }) => itemIds.length > 0, `itemIds must not be empty`)
@@ -158,6 +162,18 @@ export class MarketplaceController extends Controller {
       this.setStatus(401);
       return {
         message: "Recovered address is not equal to signer of order",
+        success: false,
+        data: null,
+      };
+    }
+
+    const [validationResult] = await hec.checkOrdersValidity([
+      { ...makerOrder, signature, chainId },
+    ]);
+    if (!validationResult.valid) {
+      this.setStatus(401);
+      return {
+        message: "Order is not valid within contract",
         success: false,
         data: null,
       };
