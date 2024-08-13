@@ -21,9 +21,8 @@ export const addPriceInUsdToOrder = async (
     pricePerPercentInTokenWei,
     tokenPrice.decimals,
   );
-  const pricePerPercentInUSD = (
-    Number(pricePerPercentInToken) * tokenPrice.price
-  ).toFixed(2);
+  const pricePerPercentInUSD =
+    Number(pricePerPercentInToken) * tokenPrice.price;
 
   return {
     ...order,
