@@ -2,7 +2,6 @@ import { createYoga } from "graphql-yoga";
 import { resolvers } from "../graphql/schemas/resolvers/composed.js";
 import { buildSchema } from "type-graphql";
 import { container } from "tsyringe";
-import { useResponseCache } from "@graphql-yoga/plugin-response-cache";
 import { Client, cacheExchange, fetchExchange } from "@urql/core";
 import { CONSTANTS } from "@hypercerts-org/sdk";
 import { indexerEnvironment } from "../utils/constants.js";
@@ -33,7 +32,7 @@ const defaultQuery = `{
       }
       orders {
         count
-        lowestAvailablePrice
+        cheapestOrder
       }
       units
     }

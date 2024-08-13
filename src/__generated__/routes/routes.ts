@@ -400,6 +400,36 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.delete('/v1/marketplace/orders',
+            ...(fetchMiddlewares<RequestHandler>(MarketplaceController)),
+            ...(fetchMiddlewares<RequestHandler>(MarketplaceController.prototype.deleteOrder)),
+
+            async function MarketplaceController_deleteOrder(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    requestBody: {"in":"body","name":"requestBody","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"signature":{"dataType":"string","required":true},"orderId":{"dataType":"string","required":true}}},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new MarketplaceController();
+
+              await templateService.apiHandler({
+                methodName: 'deleteOrder',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/v1/allowlists',
             ...(fetchMiddlewares<RequestHandler>(AllowListController)),
             ...(fetchMiddlewares<RequestHandler>(AllowListController.prototype.storeAllowList)),

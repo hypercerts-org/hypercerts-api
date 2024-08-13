@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 
 import sinon from "sinon";
 
-import { data } from "../../utils";
+import { data } from "../../test-utils";
 import { Client } from "@web3-storage/w3up-client";
 import { allowlistHandler } from "@/handlers/v1/web3up/allowlist";
 import { Link } from "@web3-storage/access";
