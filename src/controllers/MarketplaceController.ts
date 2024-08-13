@@ -176,7 +176,7 @@ export class MarketplaceController extends Controller {
       return {
         message: "Order is not valid within contract",
         success: false,
-        data: null,
+        data: validationResult,
       };
     }
 
