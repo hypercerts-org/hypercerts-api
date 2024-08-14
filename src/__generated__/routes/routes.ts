@@ -115,6 +115,21 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "OrderValidatorCode": {
+        "dataType": "refEnum",
+        "enums": [0,101,111,112,113,201,211,212,213,301,311,312,321,322,401,402,411,412,413,414,415,421,422,501,502,503,601,611,612,621,622,623,631,632,633,634,701,702,801,802,901,902],
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Pick__additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.Exclude_keyof_additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.id-or-createdAt-or-invalidated-or-validator_codes__": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Omit__additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.id-or-createdAt-or-invalidated-or-validator_codes_": {
+        "dataType": "refAlias",
+        "type": {"ref":"Pick__additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.Exclude_keyof_additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.id-or-createdAt-or-invalidated-or-validator_codes__","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateOrderRequest": {
         "dataType": "refObject",
         "properties": {
@@ -146,11 +161,6 @@ const models: TsoaRoute.Models = {
             "chainId": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "OrderValidatorCode": {
-        "dataType": "refEnum",
-        "enums": [0,101,111,112,113,201,211,212,213,301,311,312,321,322,401,402,411,412,413,414,415,421,422,501,502,503,601,611,612,621,622,623,631,632,633,634,701,702,801,802,901,902],
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ValidateOrderRequest": {
@@ -389,6 +399,36 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'validateOrder',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.delete('/v1/marketplace/orders',
+            ...(fetchMiddlewares<RequestHandler>(MarketplaceController)),
+            ...(fetchMiddlewares<RequestHandler>(MarketplaceController.prototype.deleteOrder)),
+
+            async function MarketplaceController_deleteOrder(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    requestBody: {"in":"body","name":"requestBody","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"signature":{"dataType":"string","required":true},"orderId":{"dataType":"string","required":true}}},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new MarketplaceController();
+
+              await templateService.apiHandler({
+                methodName: 'deleteOrder',
                 controller,
                 response,
                 next,

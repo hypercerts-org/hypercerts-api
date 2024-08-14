@@ -13,13 +13,14 @@ import { Order } from "../typeDefs/orderTypeDefs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { GetOrdersArgs } from "../args/orderArgs.js";
 import { SupabaseCachingService } from "../../../services/SupabaseCachingService.js";
-import { GraphQLBigInt } from "graphql-scalars";
 import { getHypercertTokenId } from "../../../utils/tokenIds.js";
 import { HypercertBaseType } from "../typeDefs/baseTypes/hypercertBaseType.js";
 import { getAddress } from "viem";
 import { HypercertExchangeClient } from "@hypercerts-org/marketplace-sdk";
 import { ethers } from "ethers";
 import { getRpcUrl } from "../../../utils/getRpcUrl.js";
+import { addPriceInUsdToOrder } from "../../../utils/addPriceInUSDToOrder.js";
+import _ from "lodash";
 
 @ObjectType()
 export default class GetOrdersResponse {
@@ -28,12 +29,6 @@ export default class GetOrdersResponse {
 
   @Field(() => Int, { nullable: true })
   count?: number;
-
-  @Field(() => GraphQLBigInt, { nullable: true })
-  totalUnitsForSale?: bigint;
-
-  @Field(() => GraphQLBigInt, { nullable: true })
-  lowestAvailablePrice?: bigint;
 }
 
 @injectable()
@@ -67,6 +62,35 @@ class OrderResolver {
           return acc;
         },
         {} as Record<string, (typeof orders)[number][]>,
+      );
+
+      const allHypercertIds = _.uniq(orders.map((order) => order.hypercert_id));
+      // TODO: Update this once array filters are available
+      const allHypercerts = await Promise.all(
+        allHypercertIds.map(async (hypercertId) => {
+          const hypercertRes = await this.supabaseCachingService.getHypercerts({
+            where: {
+              hypercert_id: {
+                eq: hypercertId,
+              },
+            },
+          });
+
+          if (hypercertRes.error) {
+            console.warn(
+              `[OrderResolver::orders] Error fetching hypercert: `,
+              hypercertRes.error,
+            );
+            return null;
+          }
+
+          return hypercertRes.data?.[0] as HypercertBaseType;
+        }),
+      ).then((res) =>
+        _.keyBy(
+          res.filter((hypercert) => !!hypercert),
+          (hypercert) => hypercert?.hypercert_id?.toLowerCase(),
+        ),
       );
 
       const ordersAfterCheckingValidity = await Promise.all(
@@ -105,8 +129,21 @@ class OrderResolver {
         }),
       ).then((res) => res.flat());
 
+      const ordersWithPrices = await Promise.all(
+        orders.map(async (order) => {
+          const hypercert = allHypercerts[order.hypercert_id.toLowerCase()];
+          if (!hypercert?.units) {
+            console.warn(
+              `[OrderResolver::orders] No hypercert found for hypercert_id: ${order.hypercert_id}`,
+            );
+            return order;
+          }
+          return addPriceInUsdToOrder(order, hypercert.units as bigint);
+        }),
+      );
+
       return {
-        data: ordersAfterCheckingValidity,
+        data: ordersWithPrices,
         count: count ? count : ordersAfterCheckingValidity?.length,
       };
     } catch (e) {

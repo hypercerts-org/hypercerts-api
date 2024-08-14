@@ -1459,6 +1459,54 @@ export type introspection = {
         "name": "BasicSaleWhereInput",
         "inputFields": [
           {
+            "name": "amounts",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberArraySearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "buyer",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "collection",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "creation_block_number",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "creation_block_timestamp",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "currency",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
             "name": "hypercert_id",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -1471,6 +1519,22 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "StringArraySearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "seller",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "strategy_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
               "ofType": null
             }
           },
@@ -2246,8 +2310,17 @@ export type introspection = {
       },
       {
         "kind": "OBJECT",
-        "name": "GetOrdersResponse",
+        "name": "GetOrdersForHypercertResponse",
         "fields": [
+          {
+            "name": "cheapestOrder",
+            "type": {
+              "kind": "OBJECT",
+              "name": "Order",
+              "ofType": null
+            },
+            "args": []
+          },
           {
             "name": "count",
             "type": {
@@ -2273,20 +2346,42 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "lowestAvailablePrice",
+            "name": "totalUnitsForSale",
             "type": {
               "kind": "SCALAR",
               "name": "BigInt",
               "ofType": null
             },
             "args": []
-          },
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "GetOrdersResponse",
+        "fields": [
           {
-            "name": "totalUnitsForSale",
+            "name": "count",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "Int",
               "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "data",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Order",
+                  "ofType": null
+                }
+              }
             },
             "args": []
           }
@@ -2443,7 +2538,7 @@ export type introspection = {
             "name": "orders",
             "type": {
               "kind": "OBJECT",
-              "name": "GetOrdersResponse",
+              "name": "GetOrdersForHypercertResponse",
               "ofType": null
             },
             "args": []
@@ -3215,6 +3310,26 @@ export type introspection = {
       },
       {
         "kind": "INPUT_OBJECT",
+        "name": "NumberArraySearchOptions",
+        "inputFields": [
+          {
+            "name": "contains",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "BigInt",
+                  "ofType": null
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "kind": "INPUT_OBJECT",
         "name": "NumberSearchOptions",
         "inputFields": [
           {
@@ -3454,6 +3569,30 @@ export type introspection = {
           },
           {
             "name": "price",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "pricePerPercentInToken",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "pricePerPercentInUSD",
             "type": {
               "kind": "NON_NULL",
               "ofType": {
@@ -4175,6 +4314,15 @@ export type introspection = {
                 "name": "String",
                 "ofType": null
               }
+            },
+            "args": []
+          },
+          {
+            "name": "hypercert",
+            "type": {
+              "kind": "OBJECT",
+              "name": "HypercertBaseType",
+              "ofType": null
             },
             "args": []
           },

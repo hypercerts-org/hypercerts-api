@@ -239,8 +239,16 @@ input BasicOrderWhereInput {
 }
 
 input BasicSaleWhereInput {
+  amounts: NumberArraySearchOptions
+  buyer: StringSearchOptions
+  collection: StringSearchOptions
+  creation_block_number: NumberSearchOptions
+  creation_block_timestamp: NumberSearchOptions
+  currency: StringSearchOptions
   hypercert_id: StringSearchOptions
   item_ids: StringArraySearchOptions
+  seller: StringSearchOptions
+  strategy_id: NumberSearchOptions
   transaction_hash: IdSearchOptions
 }
 
@@ -405,11 +413,16 @@ type GetMetadataResponse {
   data: [Metadata!]
 }
 
+type GetOrdersForHypercertResponse {
+  cheapestOrder: Order
+  count: Int
+  data: [Order!]
+  totalUnitsForSale: BigInt
+}
+
 type GetOrdersResponse {
   count: Int
   data: [Order!]
-  lowestAvailablePrice: BigInt
-  totalUnitsForSale: BigInt
 }
 
 type GetSalesResponse {
@@ -447,7 +460,7 @@ type Hypercert {
   metadata: Metadata
 
   """Marketplace orders related to this hypercert"""
-  orders: GetOrdersResponse
+  orders: GetOrdersForHypercertResponse
 
   """Sales related to this hypercert"""
   sales: GetSalesResponse
@@ -585,6 +598,10 @@ input MetadataWhereInput {
   work_timeframe_to: NumberSearchOptions
 }
 
+input NumberArraySearchOptions {
+  contains: [BigInt!]
+}
+
 input NumberSearchOptions {
   eq: BigInt
   gt: BigInt
@@ -612,6 +629,8 @@ type Order {
   itemIds: [String!]!
   orderNonce: String!
   price: String!
+  pricePerPercentInToken: String!
+  pricePerPercentInUSD: String!
   quoteType: Float!
   signature: String!
   signer: String!
@@ -656,6 +675,9 @@ type Sale {
 
   """The address of the token accepted for this order"""
   currency: String!
+
+  """The hypercert associated with this order"""
+  hypercert: HypercertBaseType
 
   """The ID of the hypercert token referenced in the order"""
   hypercert_id: String

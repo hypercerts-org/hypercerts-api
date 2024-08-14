@@ -14,8 +14,12 @@ import { SupabaseCachingService } from "../../../services/SupabaseCachingService
 import { GetHypercertArgs } from "../args/hypercertsArgs.js";
 import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
-import { decodeAbiParameters, parseAbiParameters } from "viem";
 import { Metadata } from "../typeDefs/metadataTypeDefs.js";
+import _ from "lodash";
+import { getCheapestOrder } from "../../../utils/getCheapestOrder.js";
+import { getMaxUnitsForSaleInOrders } from "../../../utils/getMaxUnitsForSaleInOrders.js";
+import { addPriceInUsdToOrder } from "../../../utils/addPriceInUSDToOrder.js";
+import { Database } from "../../../types/supabaseData.js";
 
 @ObjectType()
 export default class GetHypercertsResponse {
@@ -69,7 +73,10 @@ class HypercertResolver {
 
   @FieldResolver({ nullable: true })
   async metadata(@Root() hypercert: Partial<Hypercert>) {
-    console.log('[HypercertResolver::metadata] Fetching metadata for ', hypercert);
+    console.log(
+      "[HypercertResolver::metadata] Fetching metadata for ",
+      hypercert,
+    );
     if (!hypercert.uri) {
       return null;
     }
@@ -241,7 +248,7 @@ class HypercertResolver {
 
   @FieldResolver()
   async orders(@Root() hypercert: Hypercert) {
-    if (!hypercert.id) {
+    if (!hypercert.id || !hypercert.hypercert_id) {
       return null;
     }
 
@@ -249,46 +256,37 @@ class HypercertResolver {
       data: [],
       count: 0,
       totalUnitsForSale: BigInt(0),
-      lowestAvailablePrice: BigInt(0),
     };
 
     try {
       console.log(
-        `[HypercertResolver::orders] Fetching orders for ${hypercert.id}`,
+        "[HypercertResolver::orders] Fetching fractions for ",
+        hypercert.hypercert_id,
       );
+
       const fractionsRes = await this.supabaseCachingService.getFractions({
         where: { hypercerts: { id: { eq: hypercert.id } } },
       });
 
       if (!fractionsRes) {
         console.warn(
-          `[HypercertResolver::orders] Error fetching fractions for ${hypercert.hypercert_id}: `,
+          `[HypercertResolver::orders] Error fetching fractions for ${hypercert.hypercert_id}`,
           fractionsRes,
         );
         return defaultValue;
       }
 
-      const { data: fractionsData, error: fractionsError } = fractionsRes;
+      console.log(
+        `[HypercertResolver::orders] Fetching orders for ${hypercert.hypercert_id}`,
+      );
 
-      if (fractionsError) {
-        console.error(
-          `[HypercertResolver::orders] Error fetching fractions for ${hypercert.hypercert_id}: `,
-          fractionsError,
-        );
-        return defaultValue;
-      }
-
-      const tokenIds = fractionsData
-        .filter((fraction) => !!fraction?.fraction_id)
-        .map((fraction) =>
-          parseClaimOrFractionId(fraction?.fraction_id || "").id.toString(),
-        );
-      const ordersRes =
-        await this.supabaseDataService.getOrdersForFraction(tokenIds);
+      const ordersRes = await this.supabaseDataService.getOrders({
+        where: { hypercert_id: { eq: hypercert.hypercert_id } },
+      });
 
       if (!ordersRes) {
         console.warn(
-          `[HypercertResolver::orders] Error fetching orders for ${hypercert.hypercert_id}: `,
+          `[HypercertResolver::orders] Error fetching orders for ${hypercert.hypercert_id}`,
           ordersRes,
         );
         return defaultValue;
@@ -310,45 +308,55 @@ class HypercertResolver {
 
       const validOrders = ordersData.filter((order) => !order.invalidated);
 
-      // For each fraction, find all orders and find the max units for sale for that fraction
-      const totalUnitsForSale = fractionsData
-        .map((fraction) => {
-          const availableOrdersForFraction = validOrders.filter(
-            (order) =>
-              parseClaimOrFractionId(fraction.fraction_id).id.toString() ===
-              order.itemIds[0],
-          );
-
-          const unitsPerOrder = availableOrdersForFraction.map((order) => {
-            const decodedParams = decodeAbiParameters(
-              parseAbiParameters(
-                "uint256 minUnitAmount, uint256 maxUnitAmount, uint256 minUnitsToKeep, bool sellLeftOverFraction",
-              ),
-              order.additionalParameters as `0x{string}`,
-            );
-            const unitsToKeep = decodedParams[2];
-            const units = BigInt(fraction.units);
-            return units - unitsToKeep;
-          });
-
-          // Find max units per order
-          return unitsPerOrder.reduce((acc, val) => {
-            return val > acc ? val : acc;
-          }, BigInt(0));
-        })
-        .reduce((acc, val) => acc + val, BigInt(0));
-
-      const lowestAvailablePrice = validOrders.reduce(
-        (acc, val) => {
-          return BigInt(val.price) < acc ? BigInt(val.price) : acc;
-        },
-        BigInt(validOrders[0]?.price || 0),
+      const ordersByFraction = _.groupBy(validOrders, (order) =>
+        order.itemIds[0].toString(),
       );
+
+      const { chainId, contractAddress } = parseClaimOrFractionId(
+        hypercert.hypercert_id,
+      );
+
+      const ordersWithPrices: (Database["public"]["Tables"]["marketplace_orders"]["Row"] & {
+        priceInUSD: string;
+        pricePerPercentInUSD: string;
+      })[] = [];
+      // For each fraction, find all orders and find the max units for sale for that fraction
+      const totalUnitsForSale = (
+        await Promise.all(
+          Object.keys(ordersByFraction).map(async (tokenId) => {
+            const fractionId = `${chainId}-${contractAddress}-${tokenId}`;
+            const fraction = fractionsRes.data?.find(
+              (fraction) => fraction.fraction_id === fractionId,
+            );
+
+            if (!fraction) {
+              console.error(
+                `[HypercertResolver::orders] Fraction not found for ${fractionId}`,
+              );
+              return BigInt(0);
+            }
+
+            const ordersPerFraction = ordersByFraction[tokenId];
+            const ordersWithPricesForChain = await Promise.all(
+              ordersPerFraction.map(async (order) => {
+                return addPriceInUsdToOrder(order, hypercert.units as bigint);
+              }),
+            );
+            ordersWithPrices.push(...ordersWithPricesForChain);
+            return getMaxUnitsForSaleInOrders(
+              ordersPerFraction,
+              BigInt(fraction.units),
+            );
+          }),
+        )
+      ).reduce((acc, val) => acc + val, BigInt(0));
+
+      const cheapestOrder = getCheapestOrder(ordersWithPrices);
 
       return {
         totalUnitsForSale,
-        lowestAvailablePrice,
-        data: ordersData || [],
+        cheapestOrder,
+        data: ordersWithPrices || [],
         count: ordersCount || 0,
       };
     } catch (e) {
