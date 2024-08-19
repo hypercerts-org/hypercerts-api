@@ -116,7 +116,7 @@
 				"type": "object",
 				"description": "Interface for a generic API response."
 			},
-			"HypercertClaimdata": {
+			"HypercertClaimdata_36_1": {
 				"description": "Properties of an impact claim",
 				"properties": {
 					"impact_scope": {
@@ -311,7 +311,7 @@
 						"type": "array"
 					},
 					"hypercert": {
-						"$ref": "#/components/schemas/HypercertClaimdata"
+						"$ref": "#/components/schemas/HypercertClaimdata_36_1"
 					}
 				},
 				"required": [
