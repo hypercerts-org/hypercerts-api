@@ -36,12 +36,12 @@ export const parseAndValidateMerkleTree = (request: ValidateAllowListRequest) =>
       };
     }
 
-    if (totalUnitsInEntries !== parseEther("1")) {
+    if (totalUnitsInEntries !== 100_000_000n) {
       return {
         data: _merkleTree,
         valid: false,
         errors: {
-          totalUnits: "Total units should amount to 1 eth in wei (1e18) units"
+          totalUnits: "Total units should amount to 100M (100_000_000) units"
         }
       };
     }
