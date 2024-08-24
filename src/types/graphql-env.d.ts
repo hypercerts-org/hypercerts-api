@@ -4473,6 +4473,20 @@ export type introspection = {
             }
           },
           {
+            "name": "in",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            }
+          },
+          {
             "name": "startsWith",
             "type": {
               "kind": "SCALAR",
