@@ -1,9 +1,9 @@
 import { ArgsType, Field } from "type-graphql";
-import { PaginationArgs } from "./paginationArgs.js";
 import { BasicOrderWhereInput, OrderFetchInput } from "../inputs/orderInput.js";
+import { withPagination } from "./baseArgs.js";
 
 @ArgsType()
-export class GetOrdersArgs extends PaginationArgs {
+class OrderArgs {
   @Field({ nullable: true })
   where?: BasicOrderWhereInput;
   @Field({ nullable: true })
@@ -11,7 +11,5 @@ export class GetOrdersArgs extends PaginationArgs {
 }
 
 @ArgsType()
-export class GetOrderByIdArgs {
-  @Field({ nullable: true })
-  id?: string;
+export class GetOrdersArgs extends withPagination(OrderArgs) {
 }

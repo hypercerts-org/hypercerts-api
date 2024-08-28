@@ -298,17 +298,6 @@ input ContractSortOptions {
   contract_id: SortOrder
 }
 
-"""Count keys for the count query"""
-enum CountKeys {
-  """
-  Count the number of items in the query and return it along with the data
-  """
-  COUNT
-
-  """Only get the count, not the data"""
-  HEAD
-}
-
 """Handles uint256 bigint values stored in DB"""
 scalar EthBigInt
 
@@ -385,7 +374,7 @@ type GetAttestationsResponse {
 
 type GetAttestationsSchemaResponse {
   count: Int
-  data: [AttestationSchema!]!
+  data: [AttestationSchema!]
 }
 
 type GetCollectionsResponse {
@@ -645,16 +634,16 @@ input OrderFetchInput {
 }
 
 type Query {
-  allowlistRecords(count: CountKeys, first: Int, offset: Int, sort: AllowlistRecordFetchInput, where: BasicAllowlistRecordWhereInput): GetAllowlistRecordResponse!
-  attestationSchemas(count: CountKeys, first: Int, offset: Int, sort: AttestationSchemaFetchInput, where: AttestationSchemaWhereInput): GetAttestationsSchemaResponse!
-  attestations(count: CountKeys, first: Int, offset: Int, sort: AttestationFetchInput, where: AttestationWhereInput): GetAttestationsResponse!
-  collections(count: CountKeys, first: Int, offset: Int, sort: CollectionFetchInput, where: BasicCollectionWhereInput): GetCollectionsResponse!
-  contracts(count: CountKeys, first: Int, offset: Int, sort: ContractFetchInput, where: BasicContractWhereInput): GetContractsResponse!
-  fractions(count: CountKeys, first: Int, offset: Int, sort: FractionFetchInput, where: FractionWhereInput): GetFractionsResponse!
-  hypercerts(count: CountKeys, first: Int, offset: Int, sort: HypercertFetchInput, where: HypercertsWhereInput): GetHypercertsResponse!
-  metadata(count: CountKeys, first: Int, offset: Int, sort: MetadataFetchInput, where: MetadataWhereInput): GetMetadataResponse!
-  orders(count: CountKeys, first: Int, offset: Int, sort: OrderFetchInput, where: BasicOrderWhereInput): GetOrdersResponse!
-  sales(count: CountKeys, first: Int, offset: Int, sort: SaleFetchInput, where: BasicSaleWhereInput): GetSalesResponse!
+  allowlistRecords(first: Float, offset: Float, sort: AllowlistRecordFetchInput, where: BasicAllowlistRecordWhereInput): GetAllowlistRecordResponse!
+  attestationSchemas(first: Float, offset: Float, sort: AttestationSchemaFetchInput, where: AttestationSchemaWhereInput): GetAttestationsSchemaResponse!
+  attestations(first: Float, offset: Float, sort: AttestationFetchInput, where: AttestationWhereInput): GetAttestationsResponse!
+  collections(first: Float, offset: Float, sort: CollectionFetchInput, where: BasicCollectionWhereInput): GetCollectionsResponse!
+  contracts(first: Float, offset: Float, sort: ContractFetchInput, where: BasicContractWhereInput): GetContractsResponse!
+  fractions(first: Float, offset: Float, sort: FractionFetchInput, where: FractionWhereInput): GetFractionsResponse!
+  hypercerts(first: Float, offset: Float, sort: HypercertFetchInput, where: HypercertsWhereInput): GetHypercertsResponse!
+  metadata(first: Float, offset: Float, sort: MetadataFetchInput, where: MetadataWhereInput): GetMetadataResponse!
+  orders(first: Float, offset: Float, sort: OrderFetchInput, where: BasicOrderWhereInput): GetOrdersResponse!
+  sales(first: Float, offset: Float, sort: SaleFetchInput, where: BasicSaleWhereInput): GetSalesResponse!
 }
 
 type Sale {

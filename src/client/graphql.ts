@@ -5,9 +5,10 @@ import { container } from "tsyringe";
 import { Client, cacheExchange, fetchExchange } from "@urql/core";
 import { CONSTANTS } from "@hypercerts-org/sdk";
 import { indexerEnvironment } from "../utils/constants.js";
+import { useResponseCache, createInMemoryCache } from "@graphql-yoga/plugin-response-cache";
 
 const defaultQuery = `{
-  hypercerts(count: COUNT, first: 10) {
+  hypercerts(first: 10) {
     count
     data {
       contract {
@@ -30,14 +31,12 @@ const defaultQuery = `{
           transaction_hash
         }
       }
-      orders {
-        count
-        cheapestOrder
-      }
       units
     }
   }
 }`;
+
+export const cache = createInMemoryCache();
 
 export const yoga = createYoga({
   schema: await buildSchema({
@@ -45,17 +44,24 @@ export const yoga = createYoga({
     // Registry 3rd party IOC container
     container: { get: (cls) => container.resolve(cls) },
     // Create 'schema.graphql' file with schema definition in current directory
-    emitSchemaFile: true,
+    emitSchemaFile: true
   }),
   graphiql: { defaultQuery },
   cors: {
-    methods: ["POST"],
+    methods: ["POST"]
   },
   graphqlEndpoint: "/v1/graphql",
-  plugins: [],
+  plugins: [
+    useResponseCache({
+      // global cache
+      session: () => null,
+      ttl: 300_000,
+      cache
+    })
+  ]
 });
 
 export const urqlClient = new Client({
   url: `${CONSTANTS.ENDPOINTS[indexerEnvironment as "production" | "test"]}/v1/graphql`,
-  exchanges: [cacheExchange, fetchExchange],
+  exchanges: [cacheExchange, fetchExchange]
 });

@@ -12,7 +12,9 @@ import {
 } from "@hypercerts-org/marketplace-sdk";
 import { ethers } from "ethers";
 import { getRpcUrl } from "../utils/getRpcUrl.js";
+import { singleton } from "tsyringe";
 
+@singleton()
 export class SupabaseDataService {
   private supabaseData: SupabaseClient<DataDatabase>;
 

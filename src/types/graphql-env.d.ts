@@ -1750,18 +1750,6 @@ export type introspection = {
         ]
       },
       {
-        "kind": "ENUM",
-        "name": "CountKeys",
-        "enumValues": [
-          {
-            "name": "COUNT"
-          },
-          {
-            "name": "HEAD"
-          }
-        ]
-      },
-      {
         "kind": "SCALAR",
         "name": "EthBigInt"
       },
@@ -2135,16 +2123,13 @@ export type introspection = {
           {
             "name": "data",
             "type": {
-              "kind": "NON_NULL",
+              "kind": "LIST",
               "ofType": {
-                "kind": "LIST",
+                "kind": "NON_NULL",
                 "ofType": {
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "AttestationSchema",
-                    "ofType": null
-                  }
+                  "kind": "OBJECT",
+                  "name": "AttestationSchema",
+                  "ofType": null
                 }
               }
             },
@@ -3723,18 +3708,10 @@ export type introspection = {
             },
             "args": [
               {
-                "name": "count",
-                "type": {
-                  "kind": "ENUM",
-                  "name": "CountKeys",
-                  "ofType": null
-                }
-              },
-              {
                 "name": "first",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -3742,7 +3719,7 @@ export type introspection = {
                 "name": "offset",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -3776,18 +3753,10 @@ export type introspection = {
             },
             "args": [
               {
-                "name": "count",
-                "type": {
-                  "kind": "ENUM",
-                  "name": "CountKeys",
-                  "ofType": null
-                }
-              },
-              {
                 "name": "first",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -3795,7 +3764,7 @@ export type introspection = {
                 "name": "offset",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -3829,18 +3798,10 @@ export type introspection = {
             },
             "args": [
               {
-                "name": "count",
-                "type": {
-                  "kind": "ENUM",
-                  "name": "CountKeys",
-                  "ofType": null
-                }
-              },
-              {
                 "name": "first",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -3848,7 +3809,7 @@ export type introspection = {
                 "name": "offset",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -3882,18 +3843,10 @@ export type introspection = {
             },
             "args": [
               {
-                "name": "count",
-                "type": {
-                  "kind": "ENUM",
-                  "name": "CountKeys",
-                  "ofType": null
-                }
-              },
-              {
                 "name": "first",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -3901,7 +3854,7 @@ export type introspection = {
                 "name": "offset",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -3935,18 +3888,10 @@ export type introspection = {
             },
             "args": [
               {
-                "name": "count",
-                "type": {
-                  "kind": "ENUM",
-                  "name": "CountKeys",
-                  "ofType": null
-                }
-              },
-              {
                 "name": "first",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -3954,7 +3899,7 @@ export type introspection = {
                 "name": "offset",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -3988,18 +3933,10 @@ export type introspection = {
             },
             "args": [
               {
-                "name": "count",
-                "type": {
-                  "kind": "ENUM",
-                  "name": "CountKeys",
-                  "ofType": null
-                }
-              },
-              {
                 "name": "first",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -4007,7 +3944,7 @@ export type introspection = {
                 "name": "offset",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -4041,18 +3978,10 @@ export type introspection = {
             },
             "args": [
               {
-                "name": "count",
-                "type": {
-                  "kind": "ENUM",
-                  "name": "CountKeys",
-                  "ofType": null
-                }
-              },
-              {
                 "name": "first",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -4060,7 +3989,7 @@ export type introspection = {
                 "name": "offset",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -4094,18 +4023,10 @@ export type introspection = {
             },
             "args": [
               {
-                "name": "count",
-                "type": {
-                  "kind": "ENUM",
-                  "name": "CountKeys",
-                  "ofType": null
-                }
-              },
-              {
                 "name": "first",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -4113,7 +4034,7 @@ export type introspection = {
                 "name": "offset",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -4147,18 +4068,10 @@ export type introspection = {
             },
             "args": [
               {
-                "name": "count",
-                "type": {
-                  "kind": "ENUM",
-                  "name": "CountKeys",
-                  "ofType": null
-                }
-              },
-              {
                 "name": "first",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -4166,7 +4079,7 @@ export type introspection = {
                 "name": "offset",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -4200,18 +4113,10 @@ export type introspection = {
             },
             "args": [
               {
-                "name": "count",
-                "type": {
-                  "kind": "ENUM",
-                  "name": "CountKeys",
-                  "ofType": null
-                }
-              },
-              {
                 "name": "first",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },
@@ -4219,7 +4124,7 @@ export type introspection = {
                 "name": "offset",
                 "type": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "Float",
                   "ofType": null
                 }
               },

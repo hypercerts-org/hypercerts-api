@@ -1,104 +1,50 @@
-import {Args, Field, FieldResolver, Int, ObjectType, Query, Resolver, Root} from "type-graphql";
-import {inject, injectable} from "tsyringe";
-import {SupabaseCachingService} from "../../../services/SupabaseCachingService.js";
-import {GetAttestationArgs} from "../args/attestationArgs.js";
-import {Attestation} from "../typeDefs/attestationTypeDefs.js";
-import {z} from "zod";
-import {isAddress} from "viem"
+import { Args, FieldResolver, ObjectType, Query, Resolver, Root } from "type-graphql";
+import { GetAttestationsArgs } from "../args/attestationArgs.js";
+import { Attestation } from "../typeDefs/attestationTypeDefs.js";
+import { z } from "zod";
+import { getAddress, isAddress } from "viem";
+import { createBaseResolver, DataResponse } from "./baseTypes.js";
 
 const HypercertPointer = z.object({
-    chain_id: z.coerce.bigint(),
-    contract_address: z.string().refine(isAddress, {message: 'Invalid contract address'}),
-    token_id: z.coerce.bigint()
+  chain_id: z.coerce.bigint(),
+  contract_address: z.string().refine(isAddress, { message: "Invalid contract address" }),
+  token_id: z.coerce.bigint()
 });
 
 @ObjectType()
-export default class GetAttestationsResponse {
-    @Field(() => [Attestation], {nullable: true})
-    data?: Attestation[];
-
-    @Field(() => Int, {nullable: true})
-    count?: number;
+export default class GetAttestationsResponse extends DataResponse(Attestation) {
 }
 
-@injectable()
-@Resolver(_ => Attestation)
-class AttestationResolver {
+const AttestationBaseResolver = createBaseResolver("attestations", Attestation, "caching");
 
-    constructor(
-        @inject(SupabaseCachingService)
-        private readonly supabaseService: SupabaseCachingService) {
-    }
+@Resolver(() => Attestation)
+class AttestationResolver extends AttestationBaseResolver {
 
-    @Query(() => GetAttestationsResponse)
-    async attestations(@Args() args: GetAttestationArgs) {
-        try {
-            const res = await this.supabaseService.getAttestations(args);
+  @Query(() => GetAttestationsResponse)
+  async attestations(@Args() args: GetAttestationsArgs) {
+    const res = await this.getAttestations(args);
+    return { data: res, count: res?.length };
+  }
 
-            const {data, error, count} = res;
+  @FieldResolver({ nullable: true })
+  async hypercerts(@Root() attestation: Attestation) {
+    if (!attestation.data) return null;
 
-            if (error) {
-                console.warn(`[AttestationResolver] Errors found while fetching attestations: `, error);
-                return {data, count: null};
-            }
+    const _att = attestation.data;
 
-            const newData = data ? data.map(item => {
-                const decodedData = item.data;
-                // TODO cleaner handling of bigints in created attestations
-                if (decodedData?.token_id) {
-                    decodedData.token_id = BigInt(decodedData.token_id).toString();
-                }
-                return {
-                    ...item,
-                    attestation: decodedData
-                };
-            }) : data;
+    if (!HypercertPointer.safeParse(_att).success) return null;
 
-            return {data: newData, count: count ? count : newData?.length};
-        } catch (e) {
-            const error = e as Error;
-            throw new Error(`[AttestationResolver] Error fetching attestations: ${error.message}`)
-        }
-    }
+    const pointer = HypercertPointer.parse(_att);
 
-    @FieldResolver({nullable: true})
-    async hypercerts(@Root() attestation: Attestation) {
-        if (!attestation.data) return null;
-
-        const _att = attestation.data;
-
-        if (!HypercertPointer.safeParse(_att).success) return null;
-
-        const pointer = HypercertPointer.parse(_att);
-
-        try {
-            const res = await this.supabaseService.getHypercerts({
-                where: {
-                    contract: {chain_id: {eq: pointer.chain_id}, contract_address: {eq: pointer.contract_address}},
-                    token_id: {eq: pointer.token_id}
-                }
-            })
-
-            if (!res) {
-                console.warn(`[AttestationResolver] Error fetching hypercerts: `, res);
-                return null;
-            }
-
-            const {data, error} = res;
-
-            if (error) {
-                console.warn(`[AttestationResolver] Error fetching hypercerts: `, error);
-                return null;
-            }
-
-            return data;
-        } catch (e) {
-            const error = e as Error;
-            throw new Error(`[AttestationResolver] Error fetching hypercerts: ${error.message}`)
-        }
-    }
+    const hypercertId = `${pointer.chain_id}-${getAddress(pointer.contract_address)}-${pointer.token_id.toString()}`;
+    return await this.getHypercerts({
+      where: {
+        hypercert_id: { eq: hypercertId }
+      }
+    }, true);
+  }
 }
 
 export {
-    AttestationResolver
+  AttestationResolver
 };

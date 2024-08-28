@@ -1,47 +1,23 @@
-import {Args, Field, Int, ObjectType, Query, Resolver} from "type-graphql";
-import {inject, injectable} from "tsyringe";
-import {SupabaseCachingService} from "../../../services/SupabaseCachingService.js";
-import {Contract} from "../typeDefs/contractTypeDefs.js";
-import {GetContractsArgs} from "../args/contractArgs.js";
+import { Args, ObjectType, Query, Resolver } from "type-graphql";
+import { Contract } from "../typeDefs/contractTypeDefs.js";
+import { GetContractsArgs } from "../args/contractArgs.js";
+import { createBaseResolver, DataResponse } from "./baseTypes.js";
 
 @ObjectType()
-export default class GetContractsResponse {
-    @Field(() => [Contract], {nullable: true})
-    data?: Contract[];
-
-    @Field(() => Int, {nullable: true})
-    count?: number;
+export default class GetContractsResponse extends DataResponse(Contract) {
 }
 
+const ContractBaseResolver = createBaseResolver("contract", Contract, "caching");
 
-@injectable()
-@Resolver(_ => Contract)
-class ContractResolver {
+@Resolver(() => Contract)
+class ContractResolver extends ContractBaseResolver {
 
-    constructor(
-        @inject(SupabaseCachingService)
-        private readonly supabaseService: SupabaseCachingService) {
-    }
+  @Query(() => GetContractsResponse)
+  async contracts(@Args() args: GetContractsArgs) {
+    const res = await this.getContracts(args, false);
 
-    @Query(_ => GetContractsResponse)
-    async contracts(@Args() args: GetContractsArgs) {
-        try {
-            const res = await this.supabaseService.getContracts(args);
-
-            const {data, error, count} = res;
-
-            if (error) {
-                console.warn(`[ContractResolver::contracts] Error fetching contracts: `, error);
-                return {data};
-            }
-
-            return {data, count: count ? count : data?.length};
-        } catch (e) {
-            throw new Error(`[ContractResolver::contracts] Error fetching contracts: ${(e as Error).message}`)
-        }
-
-    }
-
+    return { data: res, count: res?.length };
+  }
 }
 
-export {ContractResolver};
+export { ContractResolver };

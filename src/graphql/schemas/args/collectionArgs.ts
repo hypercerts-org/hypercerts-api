@@ -1,9 +1,9 @@
 import { ArgsType, Field } from "type-graphql";
-import { PaginationArgs } from "./paginationArgs.js";
-import {BasicCollectionWhereInput, CollectionFetchInput} from "../inputs/collectionInput.js";
+import { BasicCollectionWhereInput, CollectionFetchInput } from "../inputs/collectionInput.js";
+import { withPagination } from "./baseArgs.js";
 
 @ArgsType()
-export class GetCollectionArgs extends PaginationArgs {
+export class CollectionArgs {
   @Field({ nullable: true })
   where?: BasicCollectionWhereInput;
   @Field({ nullable: true })
@@ -11,7 +11,4 @@ export class GetCollectionArgs extends PaginationArgs {
 }
 
 @ArgsType()
-export class GetCollectionByIdArgs {
-  @Field({ nullable: true })
-  id?: string;
-}
+export class GetCollectionsArgs extends withPagination(CollectionArgs) {}
