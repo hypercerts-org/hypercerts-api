@@ -28,6 +28,7 @@ class OrderResolver extends OrderBaseResolver {
   @Query(() => GetOrdersResponse)
   async orders(@Args() args: GetOrdersArgs) {
     try {
+      console.log("args: ", args);
       const res = await this.supabaseDataService.getOrders(args);
 
       const { data: orders, error, count } = res;
@@ -48,19 +49,21 @@ class OrderResolver extends OrderBaseResolver {
         {} as Record<string, (typeof orders)[number][]>,
       );
 
+      console.log("orders: ", orders);
+
       const allHypercertIds = _.uniq(orders.map((order) => order.hypercert_id));
       // TODO: Update this once array filters are available
       const allHypercerts = await Promise.all(
         allHypercertIds.map(async (hypercertId) => {
-          const hypercertRes = await this.supabaseCachingService
-            .getHypercerts({
-              where: {
-                hypercert_id: {
-                  eq: hypercertId,
-                },
+          const hypercertRes = await this.getHypercerts({
+            where: {
+              hypercert_id: {
+                eq: hypercertId,
               },
-            })
-            .execute();
+            },
+          });
+
+          console.log("Found hypercert for order: ", hypercertRes);
 
           return hypercertRes?.[0] as HypercertBaseType;
         }),
@@ -146,46 +149,52 @@ class OrderResolver extends OrderBaseResolver {
 
     const hypercertId = getHypercertTokenId(BigInt(tokenId));
     const formattedHypercertId = `${chainId}-${getAddress(collectionId)}-${hypercertId.toString()}`;
-    const hypercert = await this.supabaseCachingService
-      .getHypercerts({
+    const hypercert = await this.getHypercerts(
+      {
         where: {
           hypercert_id: {
             eq: formattedHypercertId,
           },
         },
-      })
-      .executeTakeFirst();
+      },
+      true,
+    );
 
-    if (!hypercert) {
-      console.warn(
-        `[OrderResolver::hypercert] No hypercert found for tokenId: ${tokenId}`,
-      );
-      return null;
-    }
+    console.log("Found hypercert for order: ", hypercert);
+    //
+    // if (!hypercert) {
+    //   console.warn(
+    //     `[OrderResolver::hypercert] No hypercert found for tokenId: ${tokenId}`
+    //   );
+    //   return null;
+    // }
+    //
+    // const resultOrder = hypercert as HypercertBaseType;
+    //
+    // if (!resultOrder) {
+    //   console.warn(
+    //     `[OrderResolver::hypercert] No hypercert found for tokenId: ${tokenId}`
+    //   );
+    //   return null;
+    // }
+    //
+    // const uri = hypercert?.uri;
 
-    const resultOrder = hypercert as HypercertBaseType;
-
-    if (!resultOrder) {
-      console.warn(
-        `[OrderResolver::hypercert] No hypercert found for tokenId: ${tokenId}`,
-      );
-      return null;
-    }
-
-    const uri = (hypercertData?.[0] as HypercertBaseType)?.uri;
-
-    const metadata = await this.supabaseCachingService
-      .getMetadata({
+    const metadata = await this.getMetadata(
+      {
         where: {
-          uri: {
-            eq: uri,
+          hypercerts: {
+            hypercert_id: {
+              eq: formattedHypercertId,
+            },
           },
         },
-      })
-      .executeTakeFirst();
+      },
+      true,
+    );
 
     return {
-      ...resultOrder,
+      ...hypercert,
       metadata: metadata || null,
     };
   }
