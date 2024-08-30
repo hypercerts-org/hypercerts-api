@@ -7,22 +7,22 @@ import {AttestationSchemaSortOptions} from "./sortOptions.js";
 
 @InputType()
 export class BasicAttestationSchemaWhereInput implements WhereOptions<AttestationSchema> {
-    @Field(_ => IdSearchOptions, {nullable: true})
+    @Field(() => IdSearchOptions, {nullable: true})
     id?: IdSearchOptions | null;
-    @Field(_ => StringSearchOptions, {nullable: true})
+    @Field(() => StringSearchOptions, {nullable: true})
     uid?: StringSearchOptions | null;
-    @Field(_ => NumberSearchOptions, {nullable: true})
+    @Field(() => NumberSearchOptions, {nullable: true})
     chain_id?: NumberSearchOptions | null;
-    @Field(_ => StringSearchOptions, {nullable: true})
+    @Field(() => StringSearchOptions, {nullable: true})
     resolver?: NumberSearchOptions | null;
-    @Field(_ => StringSearchOptions, {nullable: true})
+    @Field(() => StringSearchOptions, {nullable: true})
     schema?: StringSearchOptions | null;
-    @Field(_ => BooleanSearchOptions, {nullable: true})
+    @Field(() => BooleanSearchOptions, {nullable: true})
     revocable?: BooleanSearchOptions | null;
 }
 
 @InputType()
 export class AttestationSchemaFetchInput implements OrderOptions<AttestationSchema> {
-    @Field(_ => AttestationSchemaSortOptions, {nullable: true})
+    @Field(() => AttestationSchemaSortOptions, {nullable: true})
     by?: AttestationSchemaSortOptions
 }

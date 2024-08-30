@@ -1,17 +1,15 @@
-import {ArgsType, Field} from "type-graphql";
-import {ContractFetchInput, BasicContractWhereInput} from "../inputs/contractInput.js";
-import {PaginationArgs} from "./paginationArgs.js";
+import { ArgsType, Field } from "type-graphql";
+import { BasicContractWhereInput, ContractFetchInput } from "../inputs/contractInput.js";
+import { withPagination } from "./baseArgs.js";
 
 @ArgsType()
-export class GetContractsArgs extends PaginationArgs {
-    @Field({nullable: true})
-    where?: BasicContractWhereInput;
-    @Field({nullable: true})
-    sort?: ContractFetchInput;
+export class ContractArgs {
+  @Field({ nullable: true })
+  where?: BasicContractWhereInput;
+  @Field({ nullable: true })
+  sort?: ContractFetchInput;
 }
 
 @ArgsType()
-export class GetContractByIdArgs {
-    @Field({nullable: true})
-    id?: string;
+export class GetContractsArgs extends withPagination(ContractArgs) {
 }

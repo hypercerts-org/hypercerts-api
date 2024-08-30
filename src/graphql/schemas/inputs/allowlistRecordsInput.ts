@@ -1,15 +1,14 @@
-import {Field, InputType} from "type-graphql";
-import type {WhereOptions} from "./whereOptions.js";
+import { Field, InputType } from "type-graphql";
+import type { WhereOptions } from "./whereOptions.js";
 import {
     BooleanSearchOptions,
-    IdSearchOptions,
     NumberSearchOptions,
     StringArraySearchOptions,
     StringSearchOptions
 } from "./searchOptions.js";
-import type {OrderOptions} from "./orderOptions.js";
-import {AllowlistRecordSortOptions} from "./sortOptions.js";
-import {AllowlistRecord} from "../typeDefs/allowlistRecordTypeDefs.js";
+import type { OrderOptions } from "./orderOptions.js";
+import { AllowlistRecordSortOptions } from "./sortOptions.js";
+import { AllowlistRecord } from "../typeDefs/allowlistRecordTypeDefs.js";
 
 @InputType()
 export class BasicAllowlistRecordWhereInput implements WhereOptions<AllowlistRecord> {
@@ -37,6 +36,6 @@ export class BasicAllowlistRecordWhereInput implements WhereOptions<AllowlistRec
 
 @InputType()
 export class AllowlistRecordFetchInput implements OrderOptions<AllowlistRecord> {
-    @Field((_) => AllowlistRecordSortOptions, {nullable: true})
+    @Field(() => AllowlistRecordSortOptions, {nullable: true})
     by?: AllowlistRecordSortOptions;
 }

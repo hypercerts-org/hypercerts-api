@@ -1,24 +1,23 @@
-import {ArgsType, Field, ID, InputType} from "type-graphql";
-import {BasicFractionWhereInput, FractionFetchInput,} from "../inputs/fractionInput.js";
-import {PaginationArgs} from "./paginationArgs.js";
-import {BasicHypercertWhereInput} from "../inputs/hypercertsInput.js";
+import { ArgsType, Field, InputType } from "type-graphql";
+import { BasicFractionWhereInput, FractionFetchInput } from "../inputs/fractionInput.js";
+import { BasicHypercertWhereInput } from "../inputs/hypercertsInput.js";
+import { withPagination } from "./baseArgs.js";
 
 @InputType()
 export class FractionWhereInput extends BasicFractionWhereInput {
-    @Field(_ => BasicHypercertWhereInput, {nullable: true})
-    hypercerts?: BasicHypercertWhereInput;
+  @Field(() => BasicHypercertWhereInput, { nullable: true })
+  hypercerts?: BasicHypercertWhereInput;
 }
 
 @ArgsType()
-export class GetFractionArgs extends PaginationArgs {
-    @Field({nullable: true})
-    where?: FractionWhereInput;
-    @Field({nullable: true})
-    sort?: FractionFetchInput;
+export class FractionArgs {
+  @Field({ nullable: true })
+  where?: FractionWhereInput;
+  @Field({ nullable: true })
+  sort?: FractionFetchInput;
 }
 
 @ArgsType()
-export class GetFractionsByClaimId {
-    @Field(_ => ID)
-    claim_id: string = "";
+export class GetFractionsArgs extends withPagination(FractionArgs) {
 }
+

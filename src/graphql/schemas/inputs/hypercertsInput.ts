@@ -29,6 +29,6 @@ export class BasicHypercertWhereInput implements WhereOptions<Hypercert> {
 
 @InputType()
 export class HypercertFetchInput implements OrderOptions<Hypercert> {
-    @Field(_ => HypercertSortOptions, {nullable: true})
+    @Field(() => HypercertSortOptions, {nullable: true})
     by?: HypercertSortOptions
 }

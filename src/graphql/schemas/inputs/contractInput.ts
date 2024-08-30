@@ -8,17 +8,17 @@ import {ContractSortOptions} from "./sortOptions.js";
 
 @InputType()
 export class BasicContractWhereInput implements WhereOptions<Contract> {
-    @Field(_ => IdSearchOptions, {nullable: true})
+    @Field(() => IdSearchOptions, {nullable: true})
     id?: IdSearchOptions;
-    @Field(_ => StringSearchOptions, {nullable: true})
+    @Field(() => StringSearchOptions, {nullable: true})
     contract_address?: StringSearchOptions;
-    @Field(_ => NumberSearchOptions, {nullable: true})
+    @Field(() => NumberSearchOptions, {nullable: true})
     chain_id?: NumberSearchOptions;
 }
 
 
 @InputType()
 export class ContractFetchInput implements OrderOptions<Contract> {
-    @Field(_ => ContractSortOptions, {nullable: true})
+    @Field(() => ContractSortOptions, {nullable: true})
     by?: ContractSortOptions
 }

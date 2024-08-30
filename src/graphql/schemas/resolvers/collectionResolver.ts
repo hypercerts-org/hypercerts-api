@@ -1,30 +1,20 @@
-import { Args, Field, Int, ObjectType, Query, Resolver } from "type-graphql";
-import { inject, injectable } from "tsyringe";
-import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
+import { Args, ObjectType, Query, Resolver } from "type-graphql";
 import { Collection } from "../typeDefs/collectionTypeDefs.js";
-import { GetCollectionArgs } from "../args/collectionArgs.js";
+import { GetCollectionsArgs } from "../args/collectionArgs.js";
+import { createBaseResolver, DataResponse } from "./baseTypes.js";
 
 @ObjectType()
-export default class GetCollectionsResponse {
-  @Field(() => [Collection], { nullable: true })
-  data?: Collection[];
+class GetCollectionsResponse extends DataResponse(Collection) {}
 
-  @Field(() => Int, { nullable: true })
-  count?: number;
-}
+const CollectionBaseResolver = createBaseResolver("collection", Collection);
 
-@injectable()
-@Resolver((_) => Collection)
-class CollectionResolver {
-  constructor(
-    @inject(SupabaseDataService)
-    private readonly supabaseService: SupabaseDataService,
-  ) {}
+@Resolver(() => Collection)
+class CollectionResolver extends CollectionBaseResolver{
 
-  @Query((_) => GetCollectionsResponse)
-  async collections(@Args() args: GetCollectionArgs) {
+  @Query(() => GetCollectionsResponse)
+  async collections(@Args() args: GetCollectionsArgs) {
     try {
-      const res = await this.supabaseService.getCollections(args);
+      const res = await this.supabaseDataService.getCollections(args);
 
       const { data, error, count } = res;
 

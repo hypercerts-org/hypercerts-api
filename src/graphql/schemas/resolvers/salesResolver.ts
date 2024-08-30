@@ -1,46 +1,23 @@
-import { Args, Field, FieldResolver, Int, ObjectType, Query, Resolver, Root } from "type-graphql";
-import { inject, injectable } from "tsyringe";
+import { Args, FieldResolver, ObjectType, Query, Resolver, Root } from "type-graphql";
 import { Sale } from "../typeDefs/salesTypeDefs.js";
-import { SupabaseCachingService } from "../../../services/SupabaseCachingService.js";
 import { GetSalesArgs } from "../args/salesArgs.js";
 import { HypercertBaseType } from "../typeDefs/baseTypes/hypercertBaseType.js";
+import { createBaseResolver, DataResponse } from "./baseTypes.js";
 
 @ObjectType()
-export default class GetSalesResponse {
-  @Field(() => [Sale], { nullable: true })
-  data?: Sale[];
-
-  @Field(() => Int, { nullable: true })
-  count?: number;
+export default class GetSalesResponse extends DataResponse(Sale) {
 }
 
-@injectable()
+const SalesBaseResolver = createBaseResolver("sales", Sale, "caching");
+
 @Resolver(() => Sale)
-class SalesResolver {
-  constructor(
-    @inject(SupabaseCachingService)
-    private readonly supabaseCachingService: SupabaseCachingService
-  ) {
-  }
+class SalesResolver extends SalesBaseResolver {
 
   @Query(() => GetSalesResponse)
   async sales(@Args() args: GetSalesArgs) {
-    try {
-      const res = await this.supabaseCachingService.getSales(args);
+    const res = await this.getSales(args);
 
-      const { data, error, count } = res;
-
-      if (error) {
-        console.warn(`[SalesResolver::sales] Error fetching sales: `, error);
-        return { data };
-      }
-
-      return { data, count: count ? count : data?.length };
-    } catch (e) {
-      throw new Error(
-        `[SalesResolver::sales] Error fetching sales: ${(e as Error).message}`
-      );
-    }
+    return { data: res, count: res?.length };
   }
 
   @FieldResolver({ nullable: true })
@@ -53,40 +30,22 @@ class SalesResolver {
     }
 
     const hypercertId = sale.hypercert_id;
-    const hypercert = await this.supabaseCachingService.getHypercerts({
+    const hypercert = await this.getHypercerts({
       where: {
         hypercert_id: {
           eq: hypercertId
         }
       }
-    });
+    }, true);
 
     if (!hypercert) {
-      console.warn(
-        `[SalesResolver::hypercert] No hypercert found for hypercertId: ${hypercertId}`
-      );
+      console.warn(`[SalesResolver::hypercert] No hypercert found for hypercertId: ${hypercertId}`);
       return null;
     }
 
-    const { data: hypercertData, error } = hypercert;
-    if (error) {
-      console.warn(
-        `[SalesResolver::hypercert] Error fetching hypercert: `,
-        error
-      );
-      return null;
-    }
+    const resultSale = hypercert as HypercertBaseType;
 
-    const resultSale = hypercertData?.[0] as HypercertBaseType;
-
-    if (!resultSale) {
-      console.warn(
-        `[SalesResolver::hypercert] No hypercert found for hypercertId: ${hypercertId}`
-      );
-      return null;
-    }
-
-    const uri = (hypercertData?.[0] as HypercertBaseType)?.uri;
+    const uri = resultSale?.uri;
 
     const metadata = await this.supabaseCachingService.getMetadata({
       where: {
@@ -94,7 +53,7 @@ class SalesResolver {
           eq: uri
         }
       }
-    });
+    }).executeTakeFirst();
 
     if (!metadata) {
       console.warn(
@@ -103,26 +62,9 @@ class SalesResolver {
       return null;
     }
 
-    const { data: metadataData, error: metadataError } = metadata;
-
-    if (metadataError) {
-      console.warn(
-        `[SalesResolver::hypercert] Error fetching metadata: `,
-        metadataError
-      );
-      return null;
-    }
-
-    if (!metadataData) {
-      console.warn(
-        `[SalesResolver::hypercert] No metadata found for uri: ${uri}`
-      );
-      return null;
-    }
-
     return {
       ...resultSale,
-      metadata: metadataData?.[0] || null
+      metadata: metadata || null
     };
   }
 }

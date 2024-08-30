@@ -1,9 +1,9 @@
 import { ArgsType, Field } from "type-graphql";
-import { PaginationArgs } from "./paginationArgs.js";
 import { BasicSaleWhereInput, SaleFetchInput } from "../inputs/salesInput.js";
+import { withPagination } from "./baseArgs.js";
 
 @ArgsType()
-export class GetSalesArgs extends PaginationArgs {
+class SalesArgs {
   @Field({ nullable: true })
   where?: BasicSaleWhereInput;
   @Field({ nullable: true })
@@ -11,7 +11,5 @@ export class GetSalesArgs extends PaginationArgs {
 }
 
 @ArgsType()
-export class GetSaleByIdArgs {
-  @Field({ nullable: true })
-  transaction_hash?: string;
+export class GetSalesArgs extends withPagination(SalesArgs) {
 }
