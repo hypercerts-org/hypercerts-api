@@ -114,7 +114,7 @@ export class SupabaseCachingService {
           .selectFrom(tableName)
           .selectAll("metadata")
           .$if(args.where?.hypercerts, (qb) =>
-            qb.innerJoin("claims", "claims.id", "fractions.claims_id"),
+            qb.innerJoin("claims", "claims.uri", "metadata.uri"),
           );
       case "sales":
         return kysely.selectFrom(tableName).selectAll();
