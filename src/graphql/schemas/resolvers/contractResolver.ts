@@ -4,19 +4,19 @@ import { GetContractsArgs } from "../args/contractArgs.js";
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
 
 @ObjectType()
-export default class GetContractsResponse extends DataResponse(Contract) {
-}
+export default class GetContractsResponse extends DataResponse(Contract) {}
 
-const ContractBaseResolver = createBaseResolver("contract", Contract, "caching");
+const ContractBaseResolver = createBaseResolver("contract");
 
 @Resolver(() => Contract)
 class ContractResolver extends ContractBaseResolver {
-
   @Query(() => GetContractsResponse)
   async contracts(@Args() args: GetContractsArgs) {
     const res = await this.getContracts(args, false);
 
-    return { data: res, count: res?.length };
+    const data = Array.isArray(res) ? res : [];
+
+    return { data, count: data.length };
   }
 }
 

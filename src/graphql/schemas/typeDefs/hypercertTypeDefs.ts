@@ -18,7 +18,10 @@ class GetOrdersForHypercertResponse extends GetOrdersResponse {
   totalUnitsForSale?: bigint;
 }
 
-@ObjectType()
+@ObjectType({
+  description:
+    "Hypercert with metadata, contract, orders, sales and fraction information",
+})
 class Hypercert extends HypercertBaseType {
   // Resolved fields
   @Field(() => Contract, {

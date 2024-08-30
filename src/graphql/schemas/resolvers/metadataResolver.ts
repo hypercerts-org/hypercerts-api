@@ -4,23 +4,20 @@ import { GetMetadataArgs } from "../args/metadataArgs.js";
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
 
 @ObjectType()
-export class GetMetadataResponse extends DataResponse(Metadata) {
-}
+export class GetMetadataResponse extends DataResponse(Metadata) {}
 
-const MetadataBaseResolver = createBaseResolver("metadata", Metadata, "caching");
+const MetadataBaseResolver = createBaseResolver("metadata");
 
 @Resolver(() => Metadata)
 class MetadataResolver extends MetadataBaseResolver {
-
   @Query(() => GetMetadataResponse)
-  async metadata(
-    @Args() args: GetMetadataArgs
-  ) {
+  async metadata(@Args() args: GetMetadataArgs) {
     const res = await this.getMetadata(args);
 
-    return { data: res, count: res?.length };
-  }
+    const data = Array.isArray(res) ? res : [];
 
+    return { data, count: data.length };
+  }
 }
 
 export { MetadataResolver };

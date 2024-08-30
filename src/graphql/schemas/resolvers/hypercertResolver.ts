@@ -20,11 +20,7 @@ import "reflect-metadata";
 @ObjectType()
 export default class GetHypercertsResponse extends DataResponse(Hypercert) {}
 
-const HypercertBaseResolver = createBaseResolver(
-  "hypercert",
-  Hypercert,
-  "caching",
-);
+const HypercertBaseResolver = createBaseResolver("hypercert");
 
 @Resolver(() => Hypercert)
 class HypercertResolver extends HypercertBaseResolver {
@@ -32,7 +28,9 @@ class HypercertResolver extends HypercertBaseResolver {
   async hypercerts(@Args() args: GetHypercertsArgs) {
     const res = await this.getHypercerts(args);
 
-    return { data: res, count: res?.length };
+    const data = Array.isArray(res) ? res : [];
+
+    return { data, count: data.length };
   }
 
   @FieldResolver({ nullable: true })

@@ -6,11 +6,10 @@ import { createBaseResolver, DataResponse } from "./baseTypes.js";
 @ObjectType()
 class GetCollectionsResponse extends DataResponse(Collection) {}
 
-const CollectionBaseResolver = createBaseResolver("collection", Collection);
+const CollectionBaseResolver = createBaseResolver("collection");
 
 @Resolver(() => Collection)
-class CollectionResolver extends CollectionBaseResolver{
-
+class CollectionResolver extends CollectionBaseResolver {
   @Query(() => GetCollectionsResponse)
   async collections(@Args() args: GetCollectionsArgs) {
     try {
