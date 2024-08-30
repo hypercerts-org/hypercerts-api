@@ -28,7 +28,6 @@ class OrderResolver extends OrderBaseResolver {
   @Query(() => GetOrdersResponse)
   async orders(@Args() args: GetOrdersArgs) {
     try {
-      console.log("args: ", args);
       const res = await this.supabaseDataService.getOrders(args);
 
       const { data: orders, error, count } = res;
@@ -48,8 +47,6 @@ class OrderResolver extends OrderBaseResolver {
         },
         {} as Record<string, (typeof orders)[number][]>,
       );
-
-      console.log("orders: ", orders);
 
       const allHypercertIds = _.uniq(orders.map((order) => order.hypercert_id));
       // TODO: Update this once array filters are available
@@ -159,26 +156,6 @@ class OrderResolver extends OrderBaseResolver {
       },
       true,
     );
-
-    console.log("Found hypercert for order: ", hypercert);
-    //
-    // if (!hypercert) {
-    //   console.warn(
-    //     `[OrderResolver::hypercert] No hypercert found for tokenId: ${tokenId}`
-    //   );
-    //   return null;
-    // }
-    //
-    // const resultOrder = hypercert as HypercertBaseType;
-    //
-    // if (!resultOrder) {
-    //   console.warn(
-    //     `[OrderResolver::hypercert] No hypercert found for tokenId: ${tokenId}`
-    //   );
-    //   return null;
-    // }
-    //
-    // const uri = hypercert?.uri;
 
     const metadata = await this.getMetadata(
       {
