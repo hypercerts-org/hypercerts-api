@@ -1,4 +1,11 @@
-import { Args, FieldResolver, ObjectType, Query, Resolver, Root } from "type-graphql";
+import {
+  Args,
+  FieldResolver,
+  ObjectType,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
 import { Hypercert } from "../typeDefs/hypercertTypeDefs.js";
 import { GetHypercertsArgs } from "../args/hypercertsArgs.js";
 import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
@@ -11,19 +18,19 @@ import { createBaseResolver, DataResponse } from "./baseTypes.js";
 import "reflect-metadata";
 
 @ObjectType()
-export default class GetHypercertsResponse extends DataResponse(Hypercert) {
-}
+export default class GetHypercertsResponse extends DataResponse(Hypercert) {}
 
-const HypercertBaseResolver = createBaseResolver("hypercert", Hypercert, "caching");
+const HypercertBaseResolver = createBaseResolver(
+  "hypercert",
+  Hypercert,
+  "caching",
+);
 
 @Resolver(() => Hypercert)
 class HypercertResolver extends HypercertBaseResolver {
-
   @Query(() => GetHypercertsResponse)
   async hypercerts(@Args() args: GetHypercertsArgs) {
     const res = await this.getHypercerts(args);
-
-    console.log(res)
 
     return { data: res, count: res?.length };
   }
@@ -34,7 +41,10 @@ class HypercertResolver extends HypercertBaseResolver {
       return;
     }
 
-    return await this.getMetadata({ where: { uri: { eq: hypercert.uri } } }, true);
+    return await this.getMetadata(
+      { where: { uri: { eq: hypercert.uri } } },
+      true,
+    );
   }
 
   @FieldResolver()
@@ -43,7 +53,10 @@ class HypercertResolver extends HypercertBaseResolver {
       return;
     }
 
-    return await this.getContracts({ where: { id: { eq: hypercert.contracts_id } } }, true);
+    return await this.getContracts(
+      { where: { id: { eq: hypercert.contracts_id } } },
+      true,
+    );
   }
 
   @FieldResolver()
@@ -53,7 +66,7 @@ class HypercertResolver extends HypercertBaseResolver {
     }
 
     const res = await this.getAttestations({
-      where: { hypercerts: { id: { eq: hypercert.id } } }
+      where: { hypercerts: { id: { eq: hypercert.id } } },
     });
 
     return { data: res, count: res?.length };
@@ -65,7 +78,10 @@ class HypercertResolver extends HypercertBaseResolver {
       return;
     }
 
-    const res = await this.getFractions({ where: { hypercerts: { id: { eq: hypercert.id } } } }, false);
+    const res = await this.getFractions(
+      { where: { hypercerts: { id: { eq: hypercert.id } } } },
+      false,
+    );
 
     return { data: res, count: res?.length };
   }
@@ -79,34 +95,34 @@ class HypercertResolver extends HypercertBaseResolver {
     const defaultValue = {
       data: [],
       count: 0,
-      totalUnitsForSale: BigInt(0)
+      totalUnitsForSale: BigInt(0),
     };
 
     try {
       const fractionsRes = await this.getFractions({
-        where: { hypercerts: { id: { eq: hypercert.id } } }
+        where: { hypercerts: { id: { eq: hypercert.id } } },
       });
 
       if (!fractionsRes) {
         console.warn(
           `[HypercertResolver::orders] Error fetching fractions for ${hypercert.hypercert_id}`,
-          fractionsRes
+          fractionsRes,
         );
         return defaultValue;
       }
 
       console.log(
-        `[HypercertResolver::orders] Fetching orders for ${hypercert.hypercert_id}`
+        `[HypercertResolver::orders] Fetching orders for ${hypercert.hypercert_id}`,
       );
 
       const ordersRes = await this.supabaseDataService.getOrders({
-        where: { hypercert_id: { eq: hypercert.hypercert_id } }
+        where: { hypercert_id: { eq: hypercert.hypercert_id } },
       });
 
       if (!ordersRes) {
         console.warn(
           `[HypercertResolver::orders] Error fetching orders for ${hypercert.hypercert_id}`,
-          ordersRes
+          ordersRes,
         );
         return defaultValue;
       }
@@ -114,13 +130,13 @@ class HypercertResolver extends HypercertBaseResolver {
       const {
         data: ordersData,
         error: ordersError,
-        count: ordersCount
+        count: ordersCount,
       } = ordersRes;
 
       if (ordersError) {
         console.error(
           `[HypercertResolver::orders] Error fetching orders for ${hypercert.hypercert_id}: `,
-          ordersError
+          ordersError,
         );
         return defaultValue;
       }
@@ -128,11 +144,11 @@ class HypercertResolver extends HypercertBaseResolver {
       const validOrders = ordersData.filter((order) => !order.invalidated);
 
       const ordersByFraction = _.groupBy(validOrders, (order) =>
-        order.itemIds[0].toString()
+        order.itemIds[0].toString(),
       );
 
       const { chainId, contractAddress } = parseClaimOrFractionId(
-        hypercert.hypercert_id
+        hypercert.hypercert_id,
       );
 
       const ordersWithPrices: (Database["public"]["Tables"]["marketplace_orders"]["Row"] & {
@@ -145,12 +161,12 @@ class HypercertResolver extends HypercertBaseResolver {
           Object.keys(ordersByFraction).map(async (tokenId) => {
             const fractionId = `${chainId}-${contractAddress}-${tokenId}`;
             const fraction = fractionsRes.find(
-              (fraction) => fraction.fraction_id === fractionId
+              (fraction) => fraction.fraction_id === fractionId,
             );
 
             if (!fraction) {
               console.error(
-                `[HypercertResolver::orders] Fraction not found for ${fractionId}`
+                `[HypercertResolver::orders] Fraction not found for ${fractionId}`,
               );
               return BigInt(0);
             }
@@ -159,14 +175,14 @@ class HypercertResolver extends HypercertBaseResolver {
             const ordersWithPricesForChain = await Promise.all(
               ordersPerFraction.map(async (order) => {
                 return addPriceInUsdToOrder(order, hypercert.units as bigint);
-              })
+              }),
             );
             ordersWithPrices.push(...ordersWithPricesForChain);
             return getMaxUnitsForSaleInOrders(
               ordersPerFraction,
-              BigInt(fraction.units)
+              BigInt(fraction.units),
             );
-          })
+          }),
         )
       ).reduce((acc, val) => acc + val, BigInt(0));
 
@@ -176,11 +192,11 @@ class HypercertResolver extends HypercertBaseResolver {
         totalUnitsForSale,
         cheapestOrder,
         data: ordersWithPrices || [],
-        count: ordersCount || 0
+        count: ordersCount || 0,
       };
     } catch (e) {
       throw new Error(
-        `[HypercertResolver::orders] Error fetching orders for ${hypercert.hypercert_id}: ${(e as Error).toString()}`
+        `[HypercertResolver::orders] Error fetching orders for ${hypercert.hypercert_id}: ${(e as Error).toString()}`,
       );
     }
   }
@@ -193,28 +209,30 @@ class HypercertResolver extends HypercertBaseResolver {
 
     try {
       console.log(
-        `[HypercertResolver::sales] Fetching orders for ${hypercert.hypercert_id}`
+        `[HypercertResolver::sales] Fetching orders for ${hypercert.hypercert_id}`,
       );
 
-      const salesRes = await this.supabaseCachingService.getSales({
-        where: { hypercert_id: { eq: hypercert.hypercert_id } }
-      }).execute();
+      const salesRes = await this.supabaseCachingService
+        .getSales({
+          where: { hypercert_id: { eq: hypercert.hypercert_id } },
+        })
+        .execute();
 
       if (!salesRes) {
         console.warn(
           `[HypercertResolver::sales] Error fetching sales for ${hypercert.hypercert_id}: `,
-          salesRes
+          salesRes,
         );
         return { data: [] };
       }
 
       return {
         data: salesRes || [],
-        count: salesRes?.length || 0
+        count: salesRes?.length || 0,
       };
     } catch (e) {
       throw new Error(
-        `[HypercertResolver::sales] Error fetching sales for ${hypercert.hypercert_id}: ${(e as Error).toString()}`
+        `[HypercertResolver::sales] Error fetching sales for ${hypercert.hypercert_id}: ${(e as Error).toString()}`,
       );
     }
   }

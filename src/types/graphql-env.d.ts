@@ -2704,7 +2704,7 @@ export type introspection = {
         "name": "HypercertSortOptions",
         "inputFields": [
           {
-            "name": "claim_attestation_count",
+            "name": "attestations_count",
             "type": {
               "kind": "ENUM",
               "name": "SortOrder",
@@ -2761,6 +2761,14 @@ export type introspection = {
           },
           {
             "name": "owner_address",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          },
+          {
+            "name": "sales_count",
             "type": {
               "kind": "ENUM",
               "name": "SortOrder",
@@ -4396,10 +4404,10 @@ export type introspection = {
   }
 };
 
-import * as gqlTada from 'gql.tada';
+import * as gqlTada from "gql.tada";
 
-declare module 'gql.tada' {
+declare module "gql.tada" {
   interface setupSchema {
-    introspection: introspection
+    introspection: introspection;
   }
 }

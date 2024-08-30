@@ -499,7 +499,7 @@ input HypercertFetchInput {
 }
 
 input HypercertSortOptions {
-  claim_attestation_count: SortOrder
+  attestations_count: SortOrder
   creation_block_number: SortOrder
   creation_block_timestamp: SortOrder
   hypercert_id: SortOrder
@@ -507,6 +507,7 @@ input HypercertSortOptions {
   last_update_block_number: SortOrder
   last_update_block_timestamp: SortOrder
   owner_address: SortOrder
+  sales_count: SortOrder
   token_id: SortOrder
   units: SortOrder
   uri: SortOrder

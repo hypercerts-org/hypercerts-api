@@ -34,7 +34,9 @@ export class HypercertSortOptions implements SortOptions<Hypercert> {
   @Field(() => SortOrder, { nullable: true })
   uri?: SortOrder;
   @Field(() => SortOrder, { nullable: true })
-  claim_attestation_count?: SortOrder;
+  attestations_count?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  sales_count?: SortOrder;
 }
 
 @InputType()
@@ -84,7 +86,9 @@ export class AttestationSortOptions implements SortOptions<Attestation> {
 }
 
 @InputType()
-export class AttestationSchemaSortOptions implements SortOptions<AttestationSchema> {
+export class AttestationSchemaSortOptions
+  implements SortOptions<AttestationSchema>
+{
   @Field(() => SortOrder, { nullable: true })
   eas_schema_id?: SortOrder;
   @Field(() => SortOrder, { nullable: true })
