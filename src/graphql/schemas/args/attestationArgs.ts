@@ -1,27 +1,33 @@
 import { ArgsType, Field, InputType } from "type-graphql";
-import { AttestationFetchInput, BasicAttestationWhereInput } from "../inputs/attestationInput.js";
-import { BasicHypercertWhereInput } from "../inputs/hypercertsInput.js";
+import { BasicAttestationWhereInput } from "../inputs/attestationInput.js";
 import { BasicMetadataWhereInput } from "../inputs/metadataInput.js";
 import { withPagination } from "./baseArgs.js";
+import { BasicHypercertWhereArgs } from "../inputs/hypercertsInput.js";
+import type { OrderOptions } from "../inputs/orderOptions.js";
+import type { Attestation } from "../typeDefs/attestationTypeDefs.js";
+import { AttestationSortOptions } from "../inputs/sortOptions.js";
 
 @InputType()
-export class AttestationWhereInput extends BasicAttestationWhereInput {
-  @Field(() => BasicAttestationWhereInput, { nullable: true })
-  attestations?: BasicAttestationWhereInput;
-  @Field(() => BasicHypercertWhereInput, { nullable: true })
-  hypercerts?: BasicHypercertWhereInput;
+class AttestationWhereInput extends BasicAttestationWhereInput {
+  @Field(() => BasicHypercertWhereArgs, { nullable: true })
+  hypercerts?: BasicHypercertWhereArgs;
   @Field(() => BasicMetadataWhereInput, { nullable: true })
   metadata?: BasicMetadataWhereInput;
 }
 
+@InputType()
+class AttestationFetchInput implements OrderOptions<Attestation> {
+  @Field(() => AttestationSortOptions, { nullable: true })
+  by?: AttestationSortOptions;
+}
+
 @ArgsType()
 class AttestationArgs {
-  @Field({ nullable: true })
+  @Field(() => AttestationWhereInput, { nullable: true })
   where?: AttestationWhereInput;
-  @Field({ nullable: true })
+  @Field(() => AttestationFetchInput, { nullable: true })
   sort?: AttestationFetchInput;
 }
 
 @ArgsType()
-export class GetAttestationsArgs extends withPagination(AttestationArgs) {
-}
+export class GetAttestationsArgs extends withPagination(AttestationArgs) {}

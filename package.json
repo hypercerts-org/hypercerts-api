@@ -118,10 +118,11 @@
     "vitest": "^1.1.3"
   },
   "lint-staged": {
-    "*.{js, jsx,ts,tsx}": [
-      "eslint --quiet --fix"
+    "*.{mjx,cjs,js,jsx,ts,tsx}": [
+      "eslint --quiet --fix",
+      "prettier --write --ignore-unknown"
     ],
-    "*.{json,js,ts,jsx,tsx,html}": [
+    "*.{json,html}": [
       "prettier --write --ignore-unknown"
     ]
   },

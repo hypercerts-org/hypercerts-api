@@ -6,6 +6,9 @@ import type { Metadata } from "../typeDefs/metadataTypeDefs.js";
 import type { Attestation } from "../typeDefs/attestationTypeDefs.js";
 import type { AttestationSchema } from "../typeDefs/attestationSchemaTypeDefs.js";
 import type { Fraction } from "../typeDefs/fractionTypeDefs.js";
+import { Order } from "../typeDefs/orderTypeDefs.js";
+import { Sale } from "../typeDefs/salesTypeDefs.js";
+import { Collection } from "../typeDefs/collectionTypeDefs.js";
 
 export type SortOptions<T extends object> = {
   [P in keyof T]: SortOrder | null;
@@ -139,4 +142,74 @@ export class AllowlistRecordSortOptions implements SortOptions<Hypercert> {
   total_units?: SortOrder;
   @Field(() => SortOrder, { nullable: true })
   root?: SortOrder;
+}
+
+@InputType()
+export class OrderSortOptions implements SortOptions<Order> {
+  @Field(() => SortOrder, { nullable: true })
+  amounts?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  chainId?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  collection?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  collectionType?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  createdAt?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  currency?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  endTime?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  globalNonce?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  hypercert_id?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  invalidated?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  orderNonce?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  price?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  quoteType?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  signer?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  startTime?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  strategyId?: SortOrder;
+}
+
+@InputType()
+export class SaleSortOptions implements SortOptions<Sale> {
+  @Field(() => SortOrder, { nullable: true })
+  amounts?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  buyer?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  collection?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  creationBlockNumber?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  creationBlockTimestamp?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  currency?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  hypercertId?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  seller?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  strategyId?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  transactionHash?: SortOrder;
+}
+
+@InputType()
+export class CollectionSortOptions implements SortOptions<Collection> {
+  @Field(() => SortOrder, { nullable: true })
+  name?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  admin_id?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  chainId?: SortOrder;
 }

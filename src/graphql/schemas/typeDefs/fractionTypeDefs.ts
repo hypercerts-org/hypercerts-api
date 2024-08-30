@@ -5,7 +5,7 @@ import GetOrdersResponse from "../resolvers/orderResolver.js";
 import { Metadata } from "./metadataTypeDefs.js";
 import GetSalesResponse from "../resolvers/salesResolver.js";
 
-@ObjectType()
+@ObjectType({ description: "Fraction of an hypercert" })
 class Fraction extends BasicTypeDef {
   claims_id?: string;
 
@@ -52,13 +52,25 @@ class Fraction extends BasicTypeDef {
   })
   sales?: GetSalesResponse;
 
-  @Field(() => EthBigInt, { nullable: true })
+  @Field(() => EthBigInt, {
+    nullable: true,
+    description: "Block number of the creation of the fraction",
+  })
   creation_block_number?: bigint | number | string;
-  @Field(() => EthBigInt, { nullable: true })
+  @Field(() => EthBigInt, {
+    nullable: true,
+    description: "Timestamp of the block of the creation of the fraction",
+  })
   creation_block_timestamp?: bigint | number | string;
-  @Field(() => EthBigInt, { nullable: true })
+  @Field(() => EthBigInt, {
+    nullable: true,
+    description: "Block number of the last update of the fraction",
+  })
   last_update_block_number?: bigint | number | string;
-  @Field(() => EthBigInt, { nullable: true })
+  @Field(() => EthBigInt, {
+    nullable: true,
+    description: "Timestamp of the block of the last update of the fraction",
+  })
   last_update_block_timestamp?: bigint | number | string;
 }
 
