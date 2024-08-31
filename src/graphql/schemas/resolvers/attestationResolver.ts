@@ -31,24 +31,20 @@ const AttestationBaseResolver = createBaseResolver("attestations");
 class AttestationResolver extends AttestationBaseResolver {
   @Query(() => GetAttestationsResponse)
   async attestations(@Args() args: GetAttestationsArgs) {
-    const res = await this.getAttestations(args);
-
-    const data = Array.isArray(res) ? res : [];
-
-    return { data, count: data.length };
+    return await this.getAttestations(args);
   }
 
   @FieldResolver({ nullable: true })
   async hypercerts(@Root() attestation: Attestation) {
     if (!attestation.data) return null;
 
-    const _att = attestation.data;
+    const { success, data } = HypercertPointer.safeParse(attestation.data);
 
-    if (!HypercertPointer.safeParse(_att).success) return null;
+    if (!success) return null;
 
-    const pointer = HypercertPointer.parse(_att);
+    const { chain_id, contract_address, token_id } = data;
+    const hypercertId = `${chain_id}-${getAddress(contract_address)}-${token_id.toString()}`;
 
-    const hypercertId = `${pointer.chain_id}-${getAddress(pointer.contract_address)}-${pointer.token_id.toString()}`;
     return await this.getHypercerts(
       {
         where: {

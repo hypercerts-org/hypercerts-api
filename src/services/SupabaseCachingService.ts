@@ -17,63 +17,85 @@ import { SortOrder } from "../graphql/schemas/enums/sortEnums.js";
 
 @singleton()
 export class SupabaseCachingService {
-  private readonly supabaseCaching: Kysely<CachingDatabase>;
+  public readonly db: Kysely<CachingDatabase>;
 
   constructor() {
-    this.supabaseCaching = kysely;
+    this.db = kysely;
   }
 
   // Getters
 
   getAllowlistRecords(args: GetAllowlistRecordsArgs) {
-    return this.handleGetData(
-      this.supabaseCaching,
-      "claimable_fractions_with_proofs",
-      args,
-    );
+    return {
+      data: this.handleGetData("claimable_fractions_with_proofs", args),
+      count: this.handleGetCount("claimable_fractions_with_proofs", args),
+    };
   }
 
   getAttestations = (args: GetAttestationsArgs) => {
-    return this.handleGetData(this.supabaseCaching, "attestations", args);
+    return {
+      data: this.handleGetData("attestations", args),
+      count: this.handleGetCount("attestations", args),
+    };
   };
 
   getAttestationSchemas(args: GetAttestationSchemasArgs) {
-    return this.handleGetData(this.supabaseCaching, "supported_schemas", args);
+    return {
+      data: this.handleGetData("supported_schemas", args),
+      count: this.handleGetCount("supported_schemas", args),
+    };
   }
 
   getContracts(args: GetContractsArgs) {
-    return this.handleGetData(this.supabaseCaching, "contracts", args);
+    return {
+      data: this.handleGetData("contracts", args),
+      count: this.handleGetCount("contracts", args),
+    };
   }
 
   getFractions(args: GetFractionsArgs) {
-    return this.handleGetData(this.supabaseCaching, "fractions", args);
+    return {
+      data: this.handleGetData("fractions", args),
+      count: this.handleGetCount("fractions", args),
+    };
   }
 
   getMetadata(args: GetMetadataArgs) {
-    return this.handleGetData(this.supabaseCaching, "metadata", args);
+    return {
+      data: this.handleGetData("metadata", args),
+      count: this.handleGetCount("metadata", args),
+    };
   }
 
   getHypercerts = (args: GetHypercertsArgs) => {
-    return this.handleGetData(this.supabaseCaching, "claims", args);
+    return {
+      data: this.handleGetData("claims", args),
+      count: this.handleGetCount("claims", args),
+    };
   };
 
   getSales(args: GetSalesArgs) {
-    return this.handleGetData(this.supabaseCaching, "sales", args);
+    return {
+      data: this.handleGetData("sales", args),
+      count: this.handleGetCount("sales", args),
+    };
   }
 
   // Build initial query per table
 
-  getJoinedTable<
+  getDataQuery<
     DB extends CachingDatabase,
     T extends keyof DB & string,
     A extends object,
-  >(kysely: Kysely<DB>, tableName: T, args: BaseArgs<A>) {
+  >(tableName: T, args: BaseArgs<A>) {
     switch (tableName) {
       case "allowlist_records":
-        return kysely.selectFrom("claimable_fractions_with_proofs").selectAll();
+        return this.db
+          .selectFrom("claimable_fractions_with_proofs")
+          .selectAll();
       case "attestations":
-        return kysely
-          .selectFrom(tableName)
+        return this.db
+          .selectFrom("attestations")
           .selectAll("attestations")
           .$if(args.where?.hypercerts, (qb) =>
             qb.innerJoin("claims", "claims.id", "attestations.claims_id"),
@@ -82,12 +104,12 @@ export class SupabaseCachingService {
             qb.innerJoin("metadata", "metadata.uri", "claims.uri"),
           );
       case "attestation_schema":
-        return kysely.selectFrom(tableName).selectAll();
+        return this.db.selectFrom("supported_schemas").selectAll();
       case "hypercerts":
       case "claims":
-        return kysely
-          .selectFrom(tableName)
-          .selectAll()
+        return this.db
+          .selectFrom("claims")
+          .selectAll("claims")
           .$if(args.where?.metadata, (qb) =>
             qb.innerJoin("metadata", "metadata.uri", "claims.uri"),
           )
@@ -101,23 +123,103 @@ export class SupabaseCachingService {
             qb.innerJoin("contracts", "contracts.id", "claims.contracts_id"),
           );
       case "contracts":
-        return kysely.selectFrom(tableName).selectAll();
+        return this.db.selectFrom("contracts").selectAll();
       case "fractions":
-        return kysely
-          .selectFrom(tableName)
+        return this.db
+          .selectFrom("fractions")
           .selectAll("fractions")
           .$if(args.where?.hypercerts, (qb) =>
             qb.innerJoin("claims", "claims.id", "fractions.claims_id"),
           );
       case "metadata":
-        return kysely
-          .selectFrom(tableName)
+        return this.db
+          .selectFrom("metadata")
           .selectAll("metadata")
           .$if(args.where?.hypercerts, (qb) =>
             qb.innerJoin("claims", "claims.uri", "metadata.uri"),
           );
       case "sales":
-        return kysely.selectFrom(tableName).selectAll();
+        return this.db.selectFrom("sales").selectAll();
+      default:
+        throw new Error(`Table ${tableName.toString()} not found`);
+    }
+  }
+
+  getCountQuery<
+    DB extends CachingDatabase,
+    T extends keyof DB & string,
+    A extends object,
+  >(tableName: T, args: BaseArgs<A>) {
+    switch (tableName) {
+      case "allowlist_records":
+        return this.db
+          .selectFrom("claimable_fractions_with_proofs")
+          .select((expressionBuilder) => {
+            return expressionBuilder.fn.countAll().as("count");
+          });
+      case "attestations":
+        return this.db
+          .selectFrom("attestations")
+          .$if(args.where?.hypercerts, (qb) =>
+            qb.innerJoin("claims", "claims.id", "attestations.claims_id"),
+          )
+          .$if(args.where?.metadata, (qb) =>
+            qb.innerJoin("metadata", "metadata.uri", "claims.uri"),
+          )
+          .select((expressionBuilder) => {
+            return expressionBuilder.fn.countAll().as("count");
+          });
+      case "attestation_schema":
+        return this.db
+          .selectFrom("supported_schemas")
+          .select((expressionBuilder) => {
+            return expressionBuilder.fn.countAll().as("count");
+          });
+      case "hypercerts":
+      case "claims":
+        return this.db
+          .selectFrom("claims")
+          .$if(args.where?.metadata, (qb) =>
+            qb.innerJoin("metadata", "metadata.uri", "claims.uri"),
+          )
+          .$if(args.where?.attestations, (qb) =>
+            qb.innerJoin("attestations", "attestations.claims_id", "claims.id"),
+          )
+          .$if(args.where?.fractions, (qb) =>
+            qb.innerJoin("fractions", "fractions.claims_id", "claims.id"),
+          )
+          .$if(args.where?.contract, (qb) =>
+            qb.innerJoin("contracts", "contracts.id", "claims.contracts_id"),
+          )
+          .select((expressionBuilder) => {
+            return expressionBuilder.fn.countAll().as("count");
+          });
+      case "contracts":
+        return this.db.selectFrom("contracts").select((expressionBuilder) => {
+          return expressionBuilder.fn.countAll().as("count");
+        });
+      case "fractions":
+        return this.db
+          .selectFrom("fractions")
+          .$if(args.where?.hypercerts, (qb) =>
+            qb.innerJoin("claims", "claims.id", "fractions.claims_id"),
+          )
+          .select((expressionBuilder) => {
+            return expressionBuilder.fn.countAll().as("count");
+          });
+      case "metadata":
+        return this.db
+          .selectFrom("metadata")
+          .$if(args.where?.hypercerts, (qb) =>
+            qb.innerJoin("claims", "claims.uri", "metadata.uri"),
+          )
+          .select((expressionBuilder) => {
+            return expressionBuilder.fn.countAll().as("count");
+          });
+      case "sales":
+        return this.db.selectFrom("sales").select((expressionBuilder) => {
+          return expressionBuilder.fn.countAll().as("count");
+        });
       default:
         throw new Error(`Table ${tableName.toString()} not found`);
     }
@@ -130,14 +232,15 @@ export class SupabaseCachingService {
     T extends keyof DB & string,
     A extends object,
   >(
-    kysely: Kysely<DB>,
     tableName: T,
     args: BaseArgs<A> & {
       first?: number;
       offset?: number;
     },
   ) {
-    let query = this.getJoinedTable(kysely, tableName, args);
+    let query = this.getDataQuery(tableName, args);
+
+    console.log("Building data query");
 
     const { where, first, offset, sort } = args;
     const eb = expressionBuilder(query);
@@ -196,8 +299,6 @@ export class SupabaseCachingService {
         for (const [column, direction] of Object.entries(by)) {
           if (!column || !direction) continue;
 
-          console.log("ORDER BY", column, direction);
-
           const dir: "asc" | "desc" =
             direction === SortOrder.ascending ? "asc" : "desc";
 
@@ -209,7 +310,80 @@ export class SupabaseCachingService {
     if (first) query = query.limit(first);
     if (offset) query = query.offset(offset);
 
-    return query.selectAll(tableName);
+    console.log("Built query", query);
+
+    return query;
+  }
+
+  handleGetCount<
+    DB extends CachingDatabase,
+    T extends keyof DB & string,
+    A extends object,
+  >(
+    tableName: T,
+    args: BaseArgs<A> & {
+      first?: number;
+      offset?: number;
+    },
+  ) {
+    let query = this.getCountQuery(tableName, args);
+
+    console.log("Building count query");
+
+    const { where } = args;
+    const eb = expressionBuilder(query);
+
+    if (where) {
+      query = query.where(
+        eb.and(
+          Object.entries(where).flatMap(([column, value]) => {
+            if (!column || !value) return [];
+
+            if (typeof value === "object" && !Array.isArray(value)) {
+              return Object.entries(value).flatMap(([_column, _value]) => {
+                if (!_column || !_value) return [];
+
+                const res = generateFilterValues(column, _column, _value);
+                if (res.length > 0) {
+                  return eb(
+                    `${tableName.toString()}.${res[0]}`,
+                    res[1],
+                    res[2],
+                  );
+                }
+
+                const filters = [];
+                for (const [operator, operand] of Object.entries(_value)) {
+                  if (!operand) continue;
+
+                  let _table = column;
+                  if (column === "hypercerts") {
+                    _table = "claims";
+                  }
+                  if (column === "contract") {
+                    _table = "contracts";
+                  }
+
+                  const [_col, _symbol, _input] = generateFilterValues(
+                    `${_table}.${_column}`,
+                    operator,
+                    operand,
+                  );
+                  filters.push(eb(_col, _symbol, _input));
+                }
+
+                return filters.flat();
+              });
+            }
+            return column && value ? eb(column, "=", value) : [];
+          }),
+        ),
+      );
+    }
+
+    console.log("Built query", query);
+
+    return query;
   }
 
   getSalesForTokenIds(tokenIds: bigint[]) {

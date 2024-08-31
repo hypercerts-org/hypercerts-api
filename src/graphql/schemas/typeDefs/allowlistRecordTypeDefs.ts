@@ -4,6 +4,7 @@ import { EthBigInt } from "../../scalars/ethBigInt.js";
 
 @ObjectType({
   description: "Records of allow list entries for claimable fractions",
+  simpleResolvers: true,
 })
 class AllowlistRecord extends BasicTypeDef {
   @Field({

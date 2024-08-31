@@ -8,7 +8,6 @@ import {
 } from "type-graphql";
 import { Sale } from "../typeDefs/salesTypeDefs.js";
 import { GetSalesArgs } from "../args/salesArgs.js";
-import { HypercertBaseType } from "../typeDefs/baseTypes/hypercertBaseType.js";
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
 
 @ObjectType()
@@ -53,29 +52,28 @@ class SalesResolver extends SalesBaseResolver {
       return null;
     }
 
-    const resultSale = hypercert as HypercertBaseType;
-
-    const uri = resultSale?.uri;
-
-    const metadata = await this.supabaseCachingService
-      .getMetadata({
+    const metadata = await this.getMetadata(
+      {
         where: {
-          uri: {
-            eq: uri,
+          hypercerts: {
+            hypercert_id: {
+              eq: hypercertId,
+            },
           },
         },
-      })
-      .executeTakeFirst();
+      },
+      true,
+    );
 
     if (!metadata) {
       console.warn(
-        `[SalesResolver::hypercert] No metadata found for uri: ${uri}`,
+        `[SalesResolver::hypercert] No metadata found for hypercert: ${hypercertId}`,
       );
       return null;
     }
 
     return {
-      ...resultSale,
+      ...hypercert,
       metadata: metadata || null,
     };
   }

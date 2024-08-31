@@ -5,7 +5,10 @@ import GetOrdersResponse from "../resolvers/orderResolver.js";
 import { Metadata } from "./metadataTypeDefs.js";
 import GetSalesResponse from "../resolvers/salesResolver.js";
 
-@ObjectType({ description: "Fraction of an hypercert" })
+@ObjectType({
+  description: "Fraction of an hypercert",
+  simpleResolvers: true,
+})
 class Fraction extends BasicTypeDef {
   claims_id?: string;
 

@@ -7,6 +7,7 @@ import { EthBigInt } from "../../scalars/ethBigInt.js";
 @ObjectType({
   description:
     "Metadata related to the hypercert describing work, impact, timeframes and other relevant information",
+  simpleResolvers: true,
 })
 class Metadata extends BasicTypeDef {
   @Field({ nullable: true, description: "Name of the hypercert" })

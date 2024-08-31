@@ -9,7 +9,6 @@ import {
 import { Order } from "../typeDefs/orderTypeDefs.js";
 import { GetOrdersArgs } from "../args/orderArgs.js";
 import { getHypercertTokenId } from "../../../utils/tokenIds.js";
-import { HypercertBaseType } from "../typeDefs/baseTypes/hypercertBaseType.js";
 import { getAddress } from "viem";
 import { HypercertExchangeClient } from "@hypercerts-org/marketplace-sdk";
 import { ethers } from "ethers";
@@ -52,17 +51,16 @@ class OrderResolver extends OrderBaseResolver {
       // TODO: Update this once array filters are available
       const allHypercerts = await Promise.all(
         allHypercertIds.map(async (hypercertId) => {
-          const hypercertRes = await this.getHypercerts({
-            where: {
-              hypercert_id: {
-                eq: hypercertId,
+          return await this.getHypercerts(
+            {
+              where: {
+                hypercert_id: {
+                  eq: hypercertId,
+                },
               },
             },
-          });
-
-          console.log("Found hypercert for order: ", hypercertRes);
-
-          return hypercertRes?.[0] as HypercertBaseType;
+            true,
+          );
         }),
       ).then((res) =>
         _.keyBy(
