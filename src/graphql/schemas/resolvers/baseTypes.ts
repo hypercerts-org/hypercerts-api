@@ -40,13 +40,21 @@ export function createBaseResolver<T extends ClassType>(
       );
 
       try {
+        const queries = this.supabaseCachingService.getMetadata(args);
         if (single) {
-          return this.supabaseCachingService
-            .getMetadata(args)
-            .executeTakeFirst();
+          return queries.data.executeTakeFirst();
         }
 
-        return this.supabaseCachingService.getMetadata(args).execute();
+        return this.supabaseCachingService.db
+          .transaction()
+          .execute(async (transaction) => {
+            const dataRes = await transaction.executeQuery(queries.data);
+            const countRes = await transaction.executeQuery(queries.count);
+            return {
+              data: dataRes.rows,
+              count: countRes.rows[0].count,
+            };
+          });
       } catch (e) {
         const error = e as Error;
         throw new Error(
@@ -61,13 +69,21 @@ export function createBaseResolver<T extends ClassType>(
       );
 
       try {
+        const queries = this.supabaseCachingService.getContracts(args);
         if (single) {
-          return this.supabaseCachingService
-            .getContracts(args)
-            .executeTakeFirst();
+          return queries.data.executeTakeFirst();
         }
 
-        return this.supabaseCachingService.getContracts(args).execute();
+        return this.supabaseCachingService.db
+          .transaction()
+          .execute(async (transaction) => {
+            const dataRes = await transaction.executeQuery(queries.data);
+            const countRes = await transaction.executeQuery(queries.count);
+            return {
+              data: dataRes.rows,
+              count: countRes.rows[0].count,
+            };
+          });
       } catch (e) {
         const error = e as Error;
         throw new Error(
@@ -82,13 +98,21 @@ export function createBaseResolver<T extends ClassType>(
       );
 
       try {
+        const queries = this.supabaseCachingService.getHypercerts(args);
         if (single) {
-          return this.supabaseCachingService
-            .getHypercerts(args)
-            .executeTakeFirst();
+          return queries.data.executeTakeFirst();
         }
 
-        return this.supabaseCachingService.getHypercerts(args).execute();
+        return this.supabaseCachingService.db
+          .transaction()
+          .execute(async (transaction) => {
+            const dataRes = await transaction.executeQuery(queries.data);
+            const countRes = await transaction.executeQuery(queries.count);
+            return {
+              data: dataRes.rows,
+              count: countRes.rows[0].count,
+            };
+          });
       } catch (e) {
         const error = e as Error;
         throw new Error(
@@ -103,13 +127,21 @@ export function createBaseResolver<T extends ClassType>(
       );
 
       try {
+        const queries = this.supabaseCachingService.getFractions(args);
         if (single) {
-          return this.supabaseCachingService
-            .getFractions(args)
-            .executeTakeFirst();
+          return queries.data.executeTakeFirst();
         }
 
-        return this.supabaseCachingService.getFractions(args).execute();
+        return this.supabaseCachingService.db
+          .transaction()
+          .execute(async (transaction) => {
+            const dataRes = await transaction.executeQuery(queries.data);
+            const countRes = await transaction.executeQuery(queries.count);
+            return {
+              data: dataRes.rows,
+              count: countRes.rows[0].count,
+            };
+          });
       } catch (e) {
         const error = e as Error;
         throw new Error(
@@ -127,13 +159,21 @@ export function createBaseResolver<T extends ClassType>(
       );
 
       try {
+        const queries = this.supabaseCachingService.getAllowlistRecords(args);
         if (single) {
-          return this.supabaseCachingService
-            .getAllowlistRecords(args)
-            .executeTakeFirst();
+          return queries.data.executeTakeFirst();
         }
 
-        return this.supabaseCachingService.getAllowlistRecords(args).execute();
+        return this.supabaseCachingService.db
+          .transaction()
+          .execute(async (transaction) => {
+            const dataRes = await transaction.executeQuery(queries.data);
+            const countRes = await transaction.executeQuery(queries.count);
+            return {
+              data: dataRes.rows,
+              count: countRes.rows[0].count,
+            };
+          });
       } catch (e) {
         const error = e as Error;
         throw new Error(
@@ -151,15 +191,21 @@ export function createBaseResolver<T extends ClassType>(
       );
 
       try {
+        const queries = this.supabaseCachingService.getAttestationSchemas(args);
         if (single) {
-          return this.supabaseCachingService
-            .getAttestationSchemas(args)
-            .executeTakeFirst();
+          return queries.data.executeTakeFirst();
         }
 
-        return this.supabaseCachingService
-          .getAttestationSchemas(args)
-          .execute();
+        return this.supabaseCachingService.db
+          .transaction()
+          .execute(async (transaction) => {
+            const dataRes = await transaction.executeQuery(queries.data);
+            const countRes = await transaction.executeQuery(queries.count);
+            return {
+              data: dataRes.rows,
+              count: countRes.rows[0].count,
+            };
+          });
       } catch (e) {
         const error = e as Error;
         throw new Error(
@@ -174,17 +220,22 @@ export function createBaseResolver<T extends ClassType>(
       );
 
       try {
+        const queries = this.supabaseCachingService.getAttestations(args);
         if (single) {
-          const res = await this.supabaseCachingService
-            .getAttestations(args)
-            .executeTakeFirst();
+          const res = await queries.data.executeTakeFirst();
           return res ? this.parseAttestation(res) : null;
         }
 
-        const res = await this.supabaseCachingService
-          .getAttestations(args)
-          .execute();
-        return res ? res?.map(this.parseAttestation) : [];
+        return this.supabaseCachingService.db
+          .transaction()
+          .execute(async (transaction) => {
+            const dataRes = await transaction.executeQuery(queries.data);
+            const countRes = await transaction.executeQuery(queries.count);
+            return {
+              data: dataRes ? dataRes.rows?.map(this.parseAttestation) : [],
+              count: countRes.rows[0].count,
+            };
+          });
       } catch (e) {
         const error = e as Error;
         throw new Error(
@@ -197,11 +248,21 @@ export function createBaseResolver<T extends ClassType>(
       console.debug(`[${entityFieldName}Resolver::getSales] Fetching sales`);
 
       try {
+        const queries = this.supabaseCachingService.getSales(args);
         if (single) {
-          return this.supabaseCachingService.getSales(args).executeTakeFirst();
+          return queries.data.executeTakeFirst();
         }
 
-        return this.supabaseCachingService.getSales(args).execute();
+        return this.supabaseCachingService.db
+          .transaction()
+          .execute(async (transaction) => {
+            const dataRes = await transaction.executeQuery(queries.data);
+            const countRes = await transaction.executeQuery(queries.count);
+            return {
+              data: dataRes.rows,
+              count: countRes.rows[0].count,
+            };
+          });
       } catch (e) {
         const error = e as Error;
         throw new Error(

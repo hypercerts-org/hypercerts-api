@@ -21,6 +21,7 @@ class GetOrdersForHypercertResponse extends GetOrdersResponse {
 @ObjectType({
   description:
     "Hypercert with metadata, contract, orders, sales and fraction information",
+  simpleResolvers: true,
 })
 class Hypercert extends HypercertBaseType {
   // Resolved fields
