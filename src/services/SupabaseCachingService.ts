@@ -90,6 +90,7 @@ export class SupabaseCachingService {
   >(tableName: T, args: BaseArgs<A>) {
     switch (tableName) {
       case "allowlist_records":
+      case "claimable_fractions_with_proofs":
         return this.db
           .selectFrom("claimable_fractions_with_proofs")
           .selectAll();
@@ -152,6 +153,7 @@ export class SupabaseCachingService {
   >(tableName: T, args: BaseArgs<A>) {
     switch (tableName) {
       case "allowlist_records":
+      case "claimable_fractions_with_proofs":
         return this.db
           .selectFrom("claimable_fractions_with_proofs")
           .select((expressionBuilder) => {

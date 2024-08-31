@@ -14,9 +14,6 @@ export function withPagination<TItem extends ClassType>(TItemClass: TItem) {
     first?: number;
 
     @Field(() => Int, { nullable: true })
-    first?: number;
-
-    @Field(() => Int, { nullable: true })
     offset?: number;
   }
 
