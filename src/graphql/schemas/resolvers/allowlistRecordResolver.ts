@@ -12,11 +12,7 @@ const AllowlistRecordBaseResolver = createBaseResolver("allowlistRecord");
 class AllowlistRecordResolver extends AllowlistRecordBaseResolver {
   @Query(() => GetAllowlistRecordResponse)
   async allowlistRecords(@Args() args: GetAllowlistRecordsArgs) {
-    const res = await this.getAllowlistRecords(args);
-
-    const data = Array.isArray(res) ? res : [];
-
-    return { data, count: data.length };
+    return await this.getAllowlistRecords(args);
   }
 }
 
