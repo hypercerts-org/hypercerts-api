@@ -1,10 +1,21 @@
 import { jsonToBlob } from "../utils/jsonToBlob.js";
-import { Body, Controller, Post, Response, Route, SuccessResponse, Tags } from "tsoa";
+import {
+  Body,
+  Controller,
+  Post,
+  Response,
+  Route,
+  SuccessResponse,
+  Tags,
+} from "tsoa";
 import { StorageService } from "../services/StorageService.js";
 import type {
-  ApiResponse, StorageResponse,
+  ApiResponse,
+  StorageResponse,
   StoreMetadataRequest,
-  StoreMetadataWithAllowlistRequest, ValidateMetadataRequest, ValidationResponse
+  StoreMetadataWithAllowlistRequest,
+  ValidateMetadataRequest,
+  ValidationResponse,
 } from "../types/api.js";
 import { validateMetadataAndClaimdata } from "../utils/validateMetadataAndClaimdata.js";
 import { validateRemoteAllowList } from "../utils/validateRemoteAllowList.js";
@@ -13,7 +24,6 @@ import { parseAndValidateMerkleTree } from "../utils/parseAndValidateMerkleTreeD
 @Route("v1/metadata")
 @Tags("Metadata")
 export class MetadataController extends Controller {
-
   /**
    * Submits a new hypercert metadata object for validation and storage on IPFS.
    * When an allowlist URI is provided the service will validate the allowlist data before storing the metadata.
@@ -28,39 +38,47 @@ export class MetadataController extends Controller {
   @Response<ApiResponse>(422, "Unprocessable content", {
     success: false,
     message: "Validation failed",
-    errors: { metadata: "Invalid metadata." }
+    errors: { metadata: "Invalid metadata." },
   })
-  public async storeMetadata(@Body() requestBody: StoreMetadataRequest): Promise<StorageResponse> {
+  public async storeMetadata(
+    @Body() requestBody: StoreMetadataRequest,
+  ): Promise<StorageResponse> {
     const storage = await StorageService.init();
-    const metadataValidationResult = validateMetadataAndClaimdata(requestBody.metadata);
+    const metadataValidationResult = validateMetadataAndClaimdata(
+      requestBody.metadata,
+    );
 
     if (!metadataValidationResult.valid) {
       this.setStatus(422);
       return {
         success: false,
         message: "Validation failed",
-        errors: metadataValidationResult.errors
+        errors: metadataValidationResult.errors,
       };
     }
 
     if (requestBody.metadata.allowList) {
-      const allowListValidationResult = await validateRemoteAllowList(requestBody.metadata.allowList);
+      const allowListValidationResult = await validateRemoteAllowList(
+        requestBody.metadata.allowList,
+      );
 
       if (!allowListValidationResult.valid) {
         this.setStatus(422);
         return {
           success: false,
           message: "Errors while validating allow list",
-          errors: allowListValidationResult.errors
+          errors: allowListValidationResult.errors,
         };
       }
     }
 
-    const cid = await storage.uploadFile({ file: jsonToBlob(metadataValidationResult.data) });
+    const cid = await storage.uploadFile({
+      file: jsonToBlob(metadataValidationResult.data),
+    });
     this.setStatus(201);
     return {
       success: true,
-      data: cid
+      data: cid,
     };
   }
 
@@ -78,23 +96,27 @@ export class MetadataController extends Controller {
   @Response<ApiResponse>(409, "Conflict", {
     success: false,
     message: "Allow list detected in metadata",
-    errors: { metadata: "Allowlist URI already present in metadata." }
+    errors: { metadata: "Allowlist URI already present in metadata." },
   })
   @Response<ApiResponse>(422, "Unprocessable content", {
     success: false,
     message: "Validation failed",
-    errors: { metadata: "Invalid metadata." }
+    errors: { metadata: "Invalid metadata." },
   })
-  public async storeMetadataWithAllowlist(@Body() requestBody: StoreMetadataWithAllowlistRequest): Promise<StorageResponse> {
+  public async storeMetadataWithAllowlist(
+    @Body() requestBody: StoreMetadataWithAllowlistRequest,
+  ): Promise<StorageResponse> {
     const storage = await StorageService.init();
-    const metadataValidationResult = validateMetadataAndClaimdata(requestBody.metadata);
+    const metadataValidationResult = validateMetadataAndClaimdata(
+      requestBody.metadata,
+    );
 
     if (!metadataValidationResult.valid) {
       this.setStatus(422);
       return {
         success: false,
         message: "Validation failed",
-        errors: metadataValidationResult.errors
+        errors: metadataValidationResult.errors,
       };
     }
 
@@ -103,13 +125,13 @@ export class MetadataController extends Controller {
       return {
         success: false,
         message: "Allow list detected in metadata",
-        errors: { metadata: "Allowlist URI already present in metadata." }
+        errors: { metadata: "Allowlist URI already present in metadata." },
       };
     }
 
     const allowlistValidationResult = parseAndValidateMerkleTree({
       allowList: requestBody.allowList,
-      totalUnits: requestBody?.totalUnits
+      totalUnits: requestBody?.totalUnits,
     });
 
     if (!allowlistValidationResult.valid) {
@@ -117,25 +139,26 @@ export class MetadataController extends Controller {
       return {
         success: false,
         message: "Validation failed",
-        errors: allowlistValidationResult.errors
+        errors: allowlistValidationResult.errors,
       };
     }
 
-    const allowListCid = await storage.uploadFile({ file: jsonToBlob(requestBody.allowList) });
+    const uploadResult = await storage.uploadFile({
+      file: jsonToBlob(requestBody.allowList),
+    });
     const cid = await storage.uploadFile({
       file: jsonToBlob({
         ...metadataValidationResult.data,
-        allowList: `ipfs://${allowListCid}`
-      })
+        allowList: `ipfs://${uploadResult.cid}`,
+      }),
     });
 
     this.setStatus(201);
     return {
       success: true,
-      data: cid
+      data: cid,
     };
   }
-
 
   /**
    * Validates a hypercert metadata object. When an allowlist URI is provided the service will validate the allowlist data as well.
@@ -148,29 +171,35 @@ export class MetadataController extends Controller {
   @Response<ApiResponse>(422, "Unprocessable content", {
     success: false,
     message: "Validation failed",
-    errors: { metadata: "Invalid metadata." }
+    errors: { metadata: "Invalid metadata." },
   })
-  public async validateMetadata(@Body() requestBody: ValidateMetadataRequest): Promise<ValidationResponse> {
-    const metadataValidationResult = validateMetadataAndClaimdata(requestBody.metadata);
+  public async validateMetadata(
+    @Body() requestBody: ValidateMetadataRequest,
+  ): Promise<ValidationResponse> {
+    const metadataValidationResult = validateMetadataAndClaimdata(
+      requestBody.metadata,
+    );
 
     if (!metadataValidationResult.valid) {
       this.setStatus(422);
       return {
         success: false,
         message: "Errors while validating metadata or allow list",
-        errors: metadataValidationResult.errors
+        errors: metadataValidationResult.errors,
       };
     }
 
     if (requestBody.metadata.allowList) {
-      const allowListValidationResult = await validateRemoteAllowList(requestBody.metadata.allowList);
+      const allowListValidationResult = await validateRemoteAllowList(
+        requestBody.metadata.allowList,
+      );
 
       if (!allowListValidationResult.valid) {
         this.setStatus(422);
         return {
           success: false,
           message: "Errors while validating allow list reference in metadata",
-          errors: allowListValidationResult.errors
+          errors: allowListValidationResult.errors,
         };
       }
     }
@@ -178,7 +207,7 @@ export class MetadataController extends Controller {
     this.setStatus(200);
     return {
       success: true,
-      message: "Validation successful"
+      message: "Validation successful",
     };
   }
 
@@ -193,23 +222,27 @@ export class MetadataController extends Controller {
   @Response<ApiResponse>(422, "Unprocessable content", {
     success: false,
     message: "Validation failed",
-    errors: { metadata: "Invalid metadata." }
+    errors: { metadata: "Invalid metadata." },
   })
-  public async validateMetadataWithAllowlist(@Body() requestBody: StoreMetadataWithAllowlistRequest): Promise<ValidationResponse> {
-    const metadataValidationResult = validateMetadataAndClaimdata(requestBody.metadata);
+  public async validateMetadataWithAllowlist(
+    @Body() requestBody: StoreMetadataWithAllowlistRequest,
+  ): Promise<ValidationResponse> {
+    const metadataValidationResult = validateMetadataAndClaimdata(
+      requestBody.metadata,
+    );
 
     if (!metadataValidationResult.valid) {
       this.setStatus(422);
       return {
         success: false,
         message: "Validation failed",
-        errors: metadataValidationResult.errors
+        errors: metadataValidationResult.errors,
       };
     }
 
     const allowlistValidationResult = parseAndValidateMerkleTree({
       allowList: requestBody.allowList,
-      totalUnits: requestBody?.totalUnits
+      totalUnits: requestBody?.totalUnits,
     });
 
     if (!allowlistValidationResult.valid) {
@@ -217,14 +250,14 @@ export class MetadataController extends Controller {
       return {
         success: false,
         message: "Validation failed",
-        errors: allowlistValidationResult.errors
+        errors: allowlistValidationResult.errors,
       };
     }
 
     this.setStatus(200);
     return {
       success: true,
-      message: "Validation successful"
+      message: "Validation successful",
     };
   }
 }
