@@ -137,6 +137,7 @@ export function createBaseResolver<T extends ClassType>(
           .execute(async (transaction) => {
             const dataRes = await transaction.executeQuery(queries.data);
             const countRes = await transaction.executeQuery(queries.count);
+
             return {
               data: dataRes.rows,
               count: countRes.rows[0].count,

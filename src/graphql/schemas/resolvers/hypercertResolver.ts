@@ -69,12 +69,12 @@ class HypercertResolver extends HypercertBaseResolver {
 
   @FieldResolver()
   async fractions(@Root() hypercert: Hypercert) {
-    if (!hypercert.id) {
+    if (!hypercert.hypercert_id) {
       return;
     }
 
     return await this.getFractions(
-      { where: { hypercerts: { id: { eq: hypercert.id } } } },
+      { where: { hypercert_id: { eq: hypercert.hypercert_id } } },
       false,
     );
   }
