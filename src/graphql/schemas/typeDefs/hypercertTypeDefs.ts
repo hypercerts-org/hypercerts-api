@@ -37,11 +37,13 @@ class Hypercert extends HypercertBaseType {
       "Transferable fractions representing partial ownership of the hypercert",
   })
   fractions?: GetFractionsResponse;
+
   @Field(() => GetAttestationsResponse, {
     nullable: true,
     description: "Attestations for the hypercert or parts of its data",
   })
   attestations?: GetAttestationsResponse;
+
   @Field(() => GetOrdersForHypercertResponse, {
     nullable: true,
     description: "Marketplace orders related to this hypercert",

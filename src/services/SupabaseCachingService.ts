@@ -110,7 +110,6 @@ export class SupabaseCachingService {
       case "claims":
         return this.db
           .selectFrom("claims")
-          .selectAll("claims") // Select all columns from the claims table
           .$if(args.where?.metadata, (qb) =>
             qb.innerJoin("metadata", "metadata.uri", "claims.uri"),
           )
@@ -118,25 +117,21 @@ export class SupabaseCachingService {
             qb.innerJoin("attestations", "attestations.claims_id", "claims.id"),
           )
           .$if(args.where?.fractions, (qb) =>
-            qb.innerJoin("fractions_view", (join) =>
-              join.on("fractions_view.claims_id", "=", "claims.id"),
+            qb.innerJoin(
+              "fractions_view",
+              "fractions_view.claims_id",
+              "claims.id",
             ),
           )
           .$if(args.where?.contract, (qb) =>
             qb.innerJoin("contracts", "contracts.id", "claims.contracts_id"),
-          );
+          )
+          .selectAll(); // Select all columns from the claims table
       case "contracts":
         return this.db.selectFrom("contracts").selectAll();
       case "fractions":
       case "fractions_view":
         return this.db.selectFrom("fractions_view").selectAll();
-      // .$if(args.where?.hypercerts, (qb) =>
-      //   qb.leftJoin(
-      //     "claims",
-      //     "claims.hypercert_id",
-      //     "fractions_view.hypercert_id",
-      //   ),
-      // );
       case "metadata":
         return this.db
           .selectFrom("metadata")
@@ -193,7 +188,11 @@ export class SupabaseCachingService {
             qb.innerJoin("attestations", "attestations.claims_id", "claims.id"),
           )
           .$if(args.where?.fractions, (qb) =>
-            qb.innerJoin("fractions", "fractions.claims_id", "claims.id"),
+            qb.innerJoin(
+              "fractions_view",
+              "fractions_view.claims_id",
+              "claims.id",
+            ),
           )
           .$if(args.where?.contract, (qb) =>
             qb.innerJoin("contracts", "contracts.id", "claims.contracts_id"),
@@ -245,8 +244,6 @@ export class SupabaseCachingService {
   ) {
     let query = this.getDataQuery(tableName, args);
 
-    console.log("Building data query");
-
     const { where, first, offset, sort } = args;
     const eb = expressionBuilder(query);
 
@@ -281,17 +278,23 @@ export class SupabaseCachingService {
                     _table = "contracts";
                   }
 
+                  if (column === "fractions") {
+                    _table = "fractions_view";
+                  }
+
                   const [_col, _symbol, _input] = generateFilterValues(
                     `${_table}.${_column}`,
                     operator,
                     operand,
                   );
+
                   filters.push(eb(_col, _symbol, _input));
                 }
 
                 return filters.flat();
               });
             }
+
             return column && value ? eb(column, "=", value) : [];
           }),
         ),
@@ -315,8 +318,6 @@ export class SupabaseCachingService {
     if (first) query = query.limit(first);
     if (offset) query = query.offset(offset);
 
-    console.log("Built query", query);
-
     return query;
   }
 
@@ -332,8 +333,6 @@ export class SupabaseCachingService {
     },
   ) {
     let query = this.getCountQuery(tableName, args);
-
-    console.log("Building count query");
 
     const { where } = args;
     const eb = expressionBuilder(query);
@@ -369,6 +368,10 @@ export class SupabaseCachingService {
                     _table = "contracts";
                   }
 
+                  if (column === "fractions") {
+                    _table = "fractions_view";
+                  }
+
                   const [_col, _symbol, _input] = generateFilterValues(
                     `${_table}.${_column}`,
                     operator,
@@ -385,8 +388,6 @@ export class SupabaseCachingService {
         ),
       );
     }
-
-    console.log("Built query", query);
 
     return query;
   }

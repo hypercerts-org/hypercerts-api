@@ -73,10 +73,9 @@ class HypercertResolver extends HypercertBaseResolver {
       return;
     }
 
-    return await this.getFractions(
-      { where: { hypercert_id: { eq: hypercert.hypercert_id } } },
-      false,
-    );
+    return await this.getFractions({
+      where: { hypercert_id: { eq: hypercert.hypercert_id } },
+    });
   }
 
   @FieldResolver()
