@@ -132,13 +132,6 @@ export class SupabaseCachingService {
       case "fractions":
       case "fractions_view":
         return this.db.selectFrom("fractions_view").selectAll();
-      // .$if(args.where?.hypercerts, (qb) =>
-      //   qb.leftJoin(
-      //     "claims",
-      //     "claims.hypercert_id",
-      //     "fractions_view.hypercert_id",
-      //   ),
-      // );
       case "metadata":
         return this.db
           .selectFrom("metadata")
@@ -251,8 +244,6 @@ export class SupabaseCachingService {
   ) {
     let query = this.getDataQuery(tableName, args);
 
-    console.log("Building data query");
-
     const { where, first, offset, sort } = args;
     const eb = expressionBuilder(query);
 
@@ -268,7 +259,6 @@ export class SupabaseCachingService {
 
                 const res = generateFilterValues(column, _column, _value);
                 if (res.length > 0) {
-                  console.log("got filter values: ", res);
                   return eb(
                     `${tableName.toString()}.${res[0]}`,
                     res[1],
@@ -292,25 +282,10 @@ export class SupabaseCachingService {
                     _table = "fractions_view";
                   }
 
-                  console.log(
-                    "generating nested filter values for: ",
-                    _table,
-                    _column,
-                    operator,
-                    operand,
-                  );
-
                   const [_col, _symbol, _input] = generateFilterValues(
                     `${_table}.${_column}`,
                     operator,
                     operand,
-                  );
-
-                  console.log(
-                    "got nested filter values: ",
-                    _col,
-                    _symbol,
-                    _input,
                   );
 
                   filters.push(eb(_col, _symbol, _input));
@@ -320,7 +295,6 @@ export class SupabaseCachingService {
               });
             }
 
-            console.log("returning column and value: ", column, value);
             return column && value ? eb(column, "=", value) : [];
           }),
         ),
@@ -344,8 +318,6 @@ export class SupabaseCachingService {
     if (first) query = query.limit(first);
     if (offset) query = query.offset(offset);
 
-    console.log("Built query", query);
-
     return query;
   }
 
@@ -361,8 +333,6 @@ export class SupabaseCachingService {
     },
   ) {
     let query = this.getCountQuery(tableName, args);
-
-    console.log("Building count query");
 
     const { where } = args;
     const eb = expressionBuilder(query);
@@ -418,8 +388,6 @@ export class SupabaseCachingService {
         ),
       );
     }
-
-    console.log("Built query", query);
 
     return query;
   }

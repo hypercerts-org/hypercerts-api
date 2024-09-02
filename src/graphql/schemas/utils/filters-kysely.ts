@@ -24,8 +24,6 @@ export const generateFilterValues = (
   operator: OperatorType,
   operand: OperandType,
 ) => {
-  console.log("generateFilterValues", column, operator, operand);
-
   switch (operator) {
     case "eq":
       return [column, OperatorSymbols.eq, operand];
