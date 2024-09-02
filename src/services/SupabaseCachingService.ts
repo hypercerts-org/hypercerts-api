@@ -131,7 +131,11 @@ export class SupabaseCachingService {
           .selectFrom("fractions_view")
           .selectAll()
           .$if(args.where?.hypercerts, (qb) =>
-            qb.innerJoin("claims", "claims.id", "fractions_view.claims_id"),
+            qb.leftJoin(
+              "claims",
+              "claims.hypercert_id",
+              "fractions_view.hypercert_id",
+            ),
           );
       case "metadata":
         return this.db
