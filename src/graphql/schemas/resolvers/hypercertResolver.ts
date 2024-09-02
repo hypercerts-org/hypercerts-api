@@ -17,7 +17,10 @@ import { Database } from "../../../types/supabaseData.js";
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
 import "reflect-metadata";
 
-@ObjectType()
+@ObjectType({
+  description:
+    "Hypercert with metadata, contract, orders, sales and fraction information",
+})
 export default class GetHypercertsResponse extends DataResponse(Hypercert) {}
 
 const HypercertBaseResolver = createBaseResolver("hypercert");
@@ -66,12 +69,12 @@ class HypercertResolver extends HypercertBaseResolver {
 
   @FieldResolver()
   async fractions(@Root() hypercert: Hypercert) {
-    if (!hypercert.id) {
+    if (!hypercert.hypercert_id) {
       return;
     }
 
     return await this.getFractions(
-      { where: { hypercerts: { id: { eq: hypercert.id } } } },
+      { where: { hypercert_id: { eq: hypercert.hypercert_id } } },
       false,
     );
   }

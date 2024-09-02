@@ -110,7 +110,7 @@ export class SupabaseCachingService {
       case "claims":
         return this.db
           .selectFrom("claims")
-          .selectAll("claims")
+          .selectAll("claims") // Select all columns from the claims table
           .$if(args.where?.metadata, (qb) =>
             qb.innerJoin("metadata", "metadata.uri", "claims.uri"),
           )
@@ -118,7 +118,9 @@ export class SupabaseCachingService {
             qb.innerJoin("attestations", "attestations.claims_id", "claims.id"),
           )
           .$if(args.where?.fractions, (qb) =>
-            qb.innerJoin("fractions", "fractions.claims_id", "claims.id"),
+            qb.innerJoin("fractions_view", (join) =>
+              join.on("fractions_view.claims_id", "=", "claims.id"),
+            ),
           )
           .$if(args.where?.contract, (qb) =>
             qb.innerJoin("contracts", "contracts.id", "claims.contracts_id"),
@@ -127,12 +129,14 @@ export class SupabaseCachingService {
         return this.db.selectFrom("contracts").selectAll();
       case "fractions":
       case "fractions_view":
-        return this.db
-          .selectFrom("fractions_view")
-          .selectAll()
-          .$if(args.where?.hypercerts, (qb) =>
-            qb.innerJoin("claims", "claims.id", "fractions_view.claims_id"),
-          );
+        return this.db.selectFrom("fractions_view").selectAll();
+      // .$if(args.where?.hypercerts, (qb) =>
+      //   qb.leftJoin(
+      //     "claims",
+      //     "claims.hypercert_id",
+      //     "fractions_view.hypercert_id",
+      //   ),
+      // );
       case "metadata":
         return this.db
           .selectFrom("metadata")
@@ -178,8 +182,8 @@ export class SupabaseCachingService {
           .select((expressionBuilder) => {
             return expressionBuilder.fn.countAll().as("count");
           });
-      case "hypercerts":
       case "claims":
+      case "hypercerts":
         return this.db
           .selectFrom("claims")
           .$if(args.where?.metadata, (qb) =>
@@ -205,9 +209,6 @@ export class SupabaseCachingService {
       case "fractions_view":
         return this.db
           .selectFrom("fractions_view")
-          .$if(args.where?.hypercerts, (qb) =>
-            qb.innerJoin("claims", "claims.id", "fractions_view.claims_id"),
-          )
           .select((expressionBuilder) => {
             return expressionBuilder.fn.countAll().as("count");
           });

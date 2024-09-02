@@ -3,7 +3,7 @@ import { Contract } from "../typeDefs/contractTypeDefs.js";
 import { GetContractsArgs } from "../args/contractArgs.js";
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
 
-@ObjectType()
+@ObjectType({ description: "Pointer to a contract deployed on a chain" })
 export default class GetContractsResponse extends DataResponse(Contract) {}
 
 const ContractBaseResolver = createBaseResolver("contract");
