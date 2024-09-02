@@ -55,8 +55,8 @@ export class SupabaseCachingService {
 
   getFractions(args: GetFractionsArgs) {
     return {
-      data: this.handleGetData("fractions", args),
-      count: this.handleGetCount("fractions", args),
+      data: this.handleGetData("fractions_view", args),
+      count: this.handleGetCount("fractions_view", args),
     };
   }
 
@@ -126,11 +126,12 @@ export class SupabaseCachingService {
       case "contracts":
         return this.db.selectFrom("contracts").selectAll();
       case "fractions":
+      case "fractions_view":
         return this.db
-          .selectFrom("fractions")
-          .selectAll("fractions")
+          .selectFrom("fractions_view")
+          .selectAll()
           .$if(args.where?.hypercerts, (qb) =>
-            qb.innerJoin("claims", "claims.id", "fractions.claims_id"),
+            qb.innerJoin("claims", "claims.id", "fractions_view.claims_id"),
           );
       case "metadata":
         return this.db
@@ -201,10 +202,11 @@ export class SupabaseCachingService {
           return expressionBuilder.fn.countAll().as("count");
         });
       case "fractions":
+      case "fractions_view":
         return this.db
-          .selectFrom("fractions")
+          .selectFrom("fractions_view")
           .$if(args.where?.hypercerts, (qb) =>
-            qb.innerJoin("claims", "claims.id", "fractions.claims_id"),
+            qb.innerJoin("claims", "claims.id", "fractions_view.claims_id"),
           )
           .select((expressionBuilder) => {
             return expressionBuilder.fn.countAll().as("count");
