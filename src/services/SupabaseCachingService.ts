@@ -110,7 +110,6 @@ export class SupabaseCachingService {
       case "claims":
         return this.db
           .selectFrom("claims")
-          .selectAll("claims") // Select all columns from the claims table
           .$if(args.where?.metadata, (qb) =>
             qb.innerJoin("metadata", "metadata.uri", "claims.uri"),
           )
@@ -118,13 +117,16 @@ export class SupabaseCachingService {
             qb.innerJoin("attestations", "attestations.claims_id", "claims.id"),
           )
           .$if(args.where?.fractions, (qb) =>
-            qb.innerJoin("fractions_view", (join) =>
-              join.on("fractions_view.claims_id", "=", "claims.id"),
+            qb.innerJoin(
+              "fractions_view",
+              "fractions_view.claims_id",
+              "claims.id",
             ),
           )
           .$if(args.where?.contract, (qb) =>
             qb.innerJoin("contracts", "contracts.id", "claims.contracts_id"),
-          );
+          )
+          .selectAll(); // Select all columns from the claims table
       case "contracts":
         return this.db.selectFrom("contracts").selectAll();
       case "fractions":
@@ -193,7 +195,11 @@ export class SupabaseCachingService {
             qb.innerJoin("attestations", "attestations.claims_id", "claims.id"),
           )
           .$if(args.where?.fractions, (qb) =>
-            qb.innerJoin("fractions", "fractions.claims_id", "claims.id"),
+            qb.innerJoin(
+              "fractions_view",
+              "fractions_view.claims_id",
+              "claims.id",
+            ),
           )
           .$if(args.where?.contract, (qb) =>
             qb.innerJoin("contracts", "contracts.id", "claims.contracts_id"),
@@ -262,6 +268,7 @@ export class SupabaseCachingService {
 
                 const res = generateFilterValues(column, _column, _value);
                 if (res.length > 0) {
+                  console.log("got filter values: ", res);
                   return eb(
                     `${tableName.toString()}.${res[0]}`,
                     res[1],
@@ -281,17 +288,39 @@ export class SupabaseCachingService {
                     _table = "contracts";
                   }
 
+                  if (column === "fractions") {
+                    _table = "fractions_view";
+                  }
+
+                  console.log(
+                    "generating nested filter values for: ",
+                    _table,
+                    _column,
+                    operator,
+                    operand,
+                  );
+
                   const [_col, _symbol, _input] = generateFilterValues(
                     `${_table}.${_column}`,
                     operator,
                     operand,
                   );
+
+                  console.log(
+                    "got nested filter values: ",
+                    _col,
+                    _symbol,
+                    _input,
+                  );
+
                   filters.push(eb(_col, _symbol, _input));
                 }
 
                 return filters.flat();
               });
             }
+
+            console.log("returning column and value: ", column, value);
             return column && value ? eb(column, "=", value) : [];
           }),
         ),
@@ -367,6 +396,10 @@ export class SupabaseCachingService {
                   }
                   if (column === "contract") {
                     _table = "contracts";
+                  }
+
+                  if (column === "fractions") {
+                    _table = "fractions_view";
                   }
 
                   const [_col, _symbol, _input] = generateFilterValues(

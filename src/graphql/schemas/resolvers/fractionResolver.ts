@@ -24,7 +24,21 @@ class FractionResolver extends FractionBaseResolver {
   }
 
   @FieldResolver()
-  async orders(@Root() fraction: Partial<Fraction>) {
+  async metadata(@Root() fraction: Fraction) {
+    if (!fraction.claims_id) {
+      return;
+    }
+
+    return await this.getMetadata(
+      {
+        where: { hypercerts: { id: { eq: fraction.claims_id } } },
+      },
+      true,
+    );
+  }
+
+  @FieldResolver()
+  async orders(@Root() fraction: Fraction) {
     if (!fraction.fraction_id) {
       return null;
     }
@@ -71,21 +85,7 @@ class FractionResolver extends FractionBaseResolver {
   }
 
   @FieldResolver()
-  async metadata(@Root() fraction: Partial<Fraction>) {
-    if (!fraction.claims_id) {
-      return;
-    }
-
-    return await this.getMetadata(
-      {
-        where: { hypercerts: { id: { eq: fraction.claims_id } } },
-      },
-      true,
-    );
-  }
-
-  @FieldResolver()
-  async sales(@Root() fraction: Partial<Fraction>) {
+  async sales(@Root() fraction: Fraction) {
     if (!fraction.fraction_id) {
       return null;
     }

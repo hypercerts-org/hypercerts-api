@@ -17,6 +17,7 @@ class Fraction extends BasicTypeDef {
     description: "Address of the owner of the fractions",
   })
   owner_address?: string;
+
   @Field(() => EthBigInt, {
     nullable: true,
     description: "Units held by the fraction",
@@ -43,6 +44,7 @@ class Fraction extends BasicTypeDef {
     description: "Marketplace orders related to this fraction",
   })
   orders?: GetOrdersResponse;
+
   @Field(() => Metadata, {
     nullable: true,
     description: "The metadata for the fraction",
