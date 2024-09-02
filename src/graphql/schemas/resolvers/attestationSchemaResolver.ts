@@ -19,11 +19,7 @@ const AttestationSchemaBaseResolver = createBaseResolver("attestationSchema");
 class AttestationSchemaResolver extends AttestationSchemaBaseResolver {
   @Query(() => GetAttestationsSchemaResponse)
   async attestationSchemas(@Args() args: GetAttestationSchemasArgs) {
-    const res = await this.getAttestationSchemas(args);
-
-    const data = Array.isArray(res) ? res : [];
-
-    return { data, count: data.length };
+    return await this.getAttestationSchemas(args);
   }
 
   @FieldResolver({ nullable: true })

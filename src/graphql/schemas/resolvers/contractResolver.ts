@@ -12,11 +12,7 @@ const ContractBaseResolver = createBaseResolver("contract");
 class ContractResolver extends ContractBaseResolver {
   @Query(() => GetContractsResponse)
   async contracts(@Args() args: GetContractsArgs) {
-    const res = await this.getContracts(args, false);
-
-    const data = Array.isArray(res) ? res : [];
-
-    return { data, count: data.length };
+    return await this.getContracts(args, false);
   }
 }
 

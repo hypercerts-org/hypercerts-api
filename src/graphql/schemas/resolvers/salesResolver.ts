@@ -19,11 +19,7 @@ const SalesBaseResolver = createBaseResolver("sales");
 class SalesResolver extends SalesBaseResolver {
   @Query(() => GetSalesResponse)
   async sales(@Args() args: GetSalesArgs) {
-    const res = await this.getSales(args);
-
-    const data = Array.isArray(res) ? res : [];
-
-    return { data, count: data.length };
+    return await this.getSales(args);
   }
 
   @FieldResolver({ nullable: true })
