@@ -375,17 +375,11 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "hypercerts",
+            "name": "hypercert",
             "type": {
-              "kind": "LIST",
-              "ofType": {
-                "kind": "NON_NULL",
-                "ofType": {
-                  "kind": "OBJECT",
-                  "name": "Hypercert",
-                  "ofType": null
-                }
-              }
+              "kind": "OBJECT",
+              "name": "HypercertBaseType",
+              "ofType": null
             },
             "args": []
           },

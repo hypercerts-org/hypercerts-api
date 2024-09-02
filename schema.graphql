@@ -81,8 +81,8 @@ type Attestation {
   """Encoded data of the attestation"""
   data: JSON
 
-  """List of hypercerts related to the attestation"""
-  hypercerts: [Hypercert!]
+  """Hypercert related to the attestation"""
+  hypercert: HypercertBaseType
   id: ID!
 
   """Block number at which the attestation was last updated"""
@@ -398,16 +398,21 @@ type GetCollectionsResponse {
   data: [Collection!]
 }
 
+"""Pointer to a contract deployed on a chain"""
 type GetContractsResponse {
   count: Int
   data: [Contract!]
 }
 
+"""Fraction of an hypercert"""
 type GetFractionsResponse {
   count: Int
   data: [Fraction!]
 }
 
+"""
+Hypercert with metadata, contract, orders, sales and fraction information
+"""
 type GetHypercertsResponse {
   count: Int
   data: [Hypercert!]

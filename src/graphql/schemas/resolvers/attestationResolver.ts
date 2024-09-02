@@ -34,8 +34,8 @@ class AttestationResolver extends AttestationBaseResolver {
     return await this.getAttestations(args);
   }
 
-  @FieldResolver({ nullable: true })
-  async hypercerts(@Root() attestation: Attestation) {
+  @FieldResolver()
+  async hypercert(@Root() attestation: Attestation) {
     if (!attestation.data) return null;
 
     const { success, data } = HypercertPointer.safeParse(attestation.data);

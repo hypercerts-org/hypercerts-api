@@ -17,7 +17,10 @@ import { Database } from "../../../types/supabaseData.js";
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
 import "reflect-metadata";
 
-@ObjectType()
+@ObjectType({
+  description:
+    "Hypercert with metadata, contract, orders, sales and fraction information",
+})
 export default class GetHypercertsResponse extends DataResponse(Hypercert) {}
 
 const HypercertBaseResolver = createBaseResolver("hypercert");

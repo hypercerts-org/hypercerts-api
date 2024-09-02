@@ -11,7 +11,7 @@ import { GetFractionsArgs } from "../args/fractionArgs.js";
 import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
 
-@ObjectType()
+@ObjectType({ description: "Fraction of an hypercert" })
 export default class GetFractionsResponse extends DataResponse(Fraction) {}
 
 const FractionBaseResolver = createBaseResolver("fraction");
