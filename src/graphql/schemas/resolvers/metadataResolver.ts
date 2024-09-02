@@ -12,11 +12,7 @@ const MetadataBaseResolver = createBaseResolver("metadata");
 class MetadataResolver extends MetadataBaseResolver {
   @Query(() => GetMetadataResponse)
   async metadata(@Args() args: GetMetadataArgs) {
-    const res = await this.getMetadata(args);
-
-    const data = Array.isArray(res) ? res : [];
-
-    return { data, count: data.length };
+    return await this.getMetadata(args);
   }
 }
 

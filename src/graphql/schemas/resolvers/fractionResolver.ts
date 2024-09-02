@@ -20,11 +20,7 @@ const FractionBaseResolver = createBaseResolver("fraction");
 class FractionResolver extends FractionBaseResolver {
   @Query(() => GetFractionsResponse)
   async fractions(@Args() args: GetFractionsArgs) {
-    const res = await this.getFractions(args);
-
-    const data = Array.isArray(res) ? res : [];
-
-    return { data, count: data.length };
+    return await this.getFractions(args);
   }
 
   @FieldResolver()
