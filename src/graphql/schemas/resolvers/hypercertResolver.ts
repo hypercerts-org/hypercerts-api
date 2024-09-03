@@ -80,6 +80,7 @@ class HypercertResolver extends HypercertBaseResolver {
 
   @FieldResolver()
   async orders(@Root() hypercert: Hypercert) {
+    console.log(hypercert.hypercert_id);
     if (!hypercert.id || !hypercert.hypercert_id) {
       return;
     }
@@ -91,8 +92,9 @@ class HypercertResolver extends HypercertBaseResolver {
     };
 
     try {
+      console.log("Getting fractions for hypercert", hypercert.hypercert_id);
       const { data: fractionsRes } = await this.getFractions({
-        where: { hypercerts: { id: { eq: hypercert.id } } },
+        where: { hypercert_id: { eq: hypercert.hypercert_id } },
       });
 
       if (!fractionsRes) {
