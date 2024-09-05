@@ -1013,6 +1013,14 @@ export type introspection = {
         "name": "BasicHypercertWhereArgs",
         "inputFields": [
           {
+            "name": "attestations_count",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
             "name": "creation_block_number",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -1062,6 +1070,14 @@ export type introspection = {
           },
           {
             "name": "last_update_block_timestamp",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "sales_count",
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "NumberSearchOptions",
@@ -2164,6 +2180,15 @@ export type introspection = {
             "args": []
           },
           {
+            "name": "attestations_count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
             "name": "contract",
             "type": {
               "kind": "OBJECT",
@@ -2284,6 +2309,15 @@ export type introspection = {
             "args": []
           },
           {
+            "name": "sales_count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
             "name": "token_id",
             "type": {
               "kind": "SCALAR",
@@ -2317,6 +2351,15 @@ export type introspection = {
         "kind": "OBJECT",
         "name": "HypercertBaseType",
         "fields": [
+          {
+            "name": "attestations_count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "args": []
+          },
           {
             "name": "contracts_id",
             "type": {
@@ -2397,6 +2440,15 @@ export type introspection = {
             "type": {
               "kind": "OBJECT",
               "name": "Metadata",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "sales_count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
               "ofType": null
             },
             "args": []
@@ -2560,6 +2612,14 @@ export type introspection = {
             }
           },
           {
+            "name": "attestations_count",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
             "name": "contract",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -2636,6 +2696,14 @@ export type introspection = {
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "BasicMetadataWhereInput",
+              "ofType": null
+            }
+          },
+          {
+            "name": "sales_count",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
               "ofType": null
             }
           },

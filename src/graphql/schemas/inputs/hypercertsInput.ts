@@ -27,4 +27,8 @@ export class BasicHypercertWhereArgs implements WhereOptions<Hypercert> {
   uri?: StringSearchOptions;
   @Field(() => StringSearchOptions, { nullable: true })
   hypercert_id?: StringSearchOptions;
+  @Field(() => NumberSearchOptions, { nullable: true })
+  attestations_count?: NumberSearchOptions;
+  @Field(() => NumberSearchOptions, { nullable: true })
+  sales_count?: NumberSearchOptions;
 }

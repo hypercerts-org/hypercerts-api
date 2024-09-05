@@ -51,6 +51,18 @@ class HypercertBaseType extends BasicTypeDef {
   last_update_block_number?: bigint | number | string;
   @Field(() => EthBigInt, { nullable: true })
   last_update_block_timestamp?: bigint | number | string;
+
+  @Field({
+    nullable: true,
+    description: "Count of attestations referencing this hypercert",
+  })
+  attestations_count?: number;
+
+  @Field({
+    nullable: true,
+    description: "Count of sales of fractions that belong to this hypercert",
+  })
+  sales_count?: number;
 }
 
 export { HypercertBaseType };
