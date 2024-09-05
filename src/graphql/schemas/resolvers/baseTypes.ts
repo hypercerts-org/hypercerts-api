@@ -103,19 +103,13 @@ export function createBaseResolver<T extends ClassType>(
           return queries.data.executeTakeFirst();
         }
 
-        console.log("got hypercerts queries: ", queries);
-
         return this.supabaseCachingService.db
           .transaction()
           .execute(async (transaction) => {
-            console.log("got transaction: ", transaction);
-            console.log("got transaction execute query: ", queries.data);
             const dataRes = await transaction.executeQuery(queries.data);
 
-            console.log("got hypercerts data: ", dataRes);
             const countRes = await transaction.executeQuery(queries.count);
 
-            console.log("got hypercerts data and count: ", dataRes, countRes);
             return {
               data: dataRes.rows,
               count: countRes.rows[0].count,

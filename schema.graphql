@@ -202,6 +202,7 @@ input BasicFractionWhereInput {
 }
 
 input BasicHypercertWhereArgs {
+  attestations_count: NumberSearchOptions
   creation_block_number: NumberSearchOptions
   creation_block_timestamp: NumberSearchOptions
   creator_address: StringSearchOptions
@@ -209,6 +210,7 @@ input BasicHypercertWhereArgs {
   id: IdSearchOptions
   last_update_block_number: NumberSearchOptions
   last_update_block_timestamp: NumberSearchOptions
+  sales_count: NumberSearchOptions
   token_id: NumberSearchOptions
   uri: StringSearchOptions
 }
@@ -447,6 +449,9 @@ type Hypercert {
   """Attestations for the hypercert or parts of its data"""
   attestations: GetAttestationsResponse
 
+  """Count of attestations referencing this hypercert"""
+  attestations_count: Float
+
   """The contract that the hypercert is associated with"""
   contract: Contract
 
@@ -478,6 +483,9 @@ type Hypercert {
   """Sales related to this hypercert"""
   sales: GetSalesResponse
 
+  """Count of sales of fractions that belong to this hypercert"""
+  sales_count: Float
+
   """The token ID of the hypercert"""
   token_id: EthBigInt
 
@@ -489,6 +497,9 @@ type Hypercert {
 }
 
 type HypercertBaseType {
+  """Count of attestations referencing this hypercert"""
+  attestations_count: Float
+
   """The UUID of the contract as stored in the database"""
   contracts_id: ID
   creation_block_number: EthBigInt
@@ -507,6 +518,9 @@ type HypercertBaseType {
 
   """The metadata for the hypercert as referenced by the uri"""
   metadata: Metadata
+
+  """Count of sales of fractions that belong to this hypercert"""
+  sales_count: Float
 
   """The token ID of the hypercert"""
   token_id: EthBigInt
@@ -540,6 +554,7 @@ input HypercertSortOptions {
 """Arguments for filtering hypercerts"""
 input HypercertsWhereArgs {
   attestations: BasicAttestationWhereInput
+  attestations_count: NumberSearchOptions
   contract: BasicContractWhereInput
   creation_block_number: NumberSearchOptions
   creation_block_timestamp: NumberSearchOptions
@@ -550,6 +565,7 @@ input HypercertsWhereArgs {
   last_update_block_number: NumberSearchOptions
   last_update_block_timestamp: NumberSearchOptions
   metadata: BasicMetadataWhereInput
+  sales_count: NumberSearchOptions
   token_id: NumberSearchOptions
   uri: StringSearchOptions
 }
