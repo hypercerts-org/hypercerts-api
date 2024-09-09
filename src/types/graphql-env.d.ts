@@ -2183,7 +2183,7 @@ export type introspection = {
             "name": "attestations_count",
             "type": {
               "kind": "SCALAR",
-              "name": "Float",
+              "name": "Int",
               "ofType": null
             },
             "args": []
@@ -2312,7 +2312,7 @@ export type introspection = {
             "name": "sales_count",
             "type": {
               "kind": "SCALAR",
-              "name": "Float",
+              "name": "Int",
               "ofType": null
             },
             "args": []
@@ -2355,7 +2355,7 @@ export type introspection = {
             "name": "attestations_count",
             "type": {
               "kind": "SCALAR",
-              "name": "Float",
+              "name": "Int",
               "ofType": null
             },
             "args": []
@@ -2448,7 +2448,7 @@ export type introspection = {
             "name": "sales_count",
             "type": {
               "kind": "SCALAR",
-              "name": "Float",
+              "name": "Int",
               "ofType": null
             },
             "args": []
