@@ -3,7 +3,7 @@ import type { WhereOptions } from "./whereOptions.js";
 import {
   BooleanSearchOptions,
   IdSearchOptions,
-  NumberSearchOptions,
+  BigIntSearchOptions,
   StringSearchOptions,
 } from "./searchOptions.js";
 import type { AttestationSchema } from "../typeDefs/attestationSchemaTypeDefs.js";
@@ -16,10 +16,10 @@ export class BasicAttestationSchemaWhereInput
   id?: IdSearchOptions | null;
   @Field(() => StringSearchOptions, { nullable: true })
   uid?: StringSearchOptions | null;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  chain_id?: NumberSearchOptions | null;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  chain_id?: BigIntSearchOptions | null;
   @Field(() => StringSearchOptions, { nullable: true })
-  resolver?: NumberSearchOptions | null;
+  resolver?: BigIntSearchOptions | null;
   @Field(() => StringSearchOptions, { nullable: true })
   schema?: StringSearchOptions | null;
   @Field(() => BooleanSearchOptions, { nullable: true })

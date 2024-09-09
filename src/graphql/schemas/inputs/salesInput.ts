@@ -3,7 +3,7 @@ import type { WhereOptions } from "./whereOptions.js";
 import {
   IdSearchOptions,
   NumberArraySearchOptions,
-  NumberSearchOptions,
+  BigIntSearchOptions,
   StringArraySearchOptions,
   StringSearchOptions,
 } from "./searchOptions.js";
@@ -32,14 +32,14 @@ export class BasicSaleWhereInput implements WhereOptions<Sale> {
   @Field(() => StringSearchOptions, { nullable: true })
   seller?: StringSearchOptions | null;
 
-  @Field(() => NumberSearchOptions, { nullable: true })
-  strategy_id?: NumberSearchOptions | null;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  strategy_id?: BigIntSearchOptions | null;
 
-  @Field(() => NumberSearchOptions, { nullable: true })
-  creation_block_number?: NumberSearchOptions | null;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  creation_block_number?: BigIntSearchOptions | null;
 
-  @Field(() => NumberSearchOptions, { nullable: true })
-  creation_block_timestamp?: NumberSearchOptions | null;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  creation_block_timestamp?: BigIntSearchOptions | null;
 
   @Field(() => NumberArraySearchOptions, { nullable: true })
   amounts?: NumberArraySearchOptions | null;

@@ -2,7 +2,7 @@ import { Field, InputType } from "type-graphql";
 import type { WhereOptions } from "./whereOptions.js";
 import {
   IdSearchOptions,
-  NumberSearchOptions,
+  BigIntSearchOptions,
   StringArraySearchOptions,
   StringSearchOptions,
 } from "./searchOptions.js";
@@ -26,16 +26,16 @@ export class BasicMetadataWhereInput implements WhereOptions<Metadata> {
   impact_scope?: StringArraySearchOptions | null;
   @Field(() => StringArraySearchOptions, { nullable: true })
   rights?: StringArraySearchOptions | null;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  creation_block_timestamp?: NumberSearchOptions | null;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  last_block_update_timestamp?: NumberSearchOptions | null;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  work_timeframe_from?: NumberSearchOptions | null;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  work_timeframe_to?: NumberSearchOptions | null;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  impact_timeframe_from?: NumberSearchOptions | null;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  impact_timeframe_to?: NumberSearchOptions | null;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  creation_block_timestamp?: BigIntSearchOptions | null;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  last_block_update_timestamp?: BigIntSearchOptions | null;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  work_timeframe_from?: BigIntSearchOptions | null;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  work_timeframe_to?: BigIntSearchOptions | null;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  impact_timeframe_from?: BigIntSearchOptions | null;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  impact_timeframe_to?: BigIntSearchOptions | null;
 }

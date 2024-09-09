@@ -2,7 +2,7 @@ import { Field, InputType } from "type-graphql";
 import type { WhereOptions } from "./whereOptions.js";
 import {
   BooleanSearchOptions,
-  NumberSearchOptions,
+  BigIntSearchOptions,
   StringArraySearchOptions,
   StringSearchOptions,
 } from "./searchOptions.js";
@@ -14,22 +14,22 @@ export class BasicAllowlistRecordWhereInput
 {
   @Field(() => StringSearchOptions, { nullable: true })
   hypercert_id?: StringSearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  token_id?: NumberSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  token_id?: BigIntSearchOptions;
   @Field(() => StringSearchOptions, { nullable: true })
   leaf?: StringSearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  entry?: NumberSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  entry?: BigIntSearchOptions;
   @Field(() => StringSearchOptions, { nullable: true })
   user_address?: StringSearchOptions;
   @Field(() => BooleanSearchOptions, { nullable: true })
   claimed?: BooleanSearchOptions;
   @Field(() => StringArraySearchOptions, { nullable: true })
   proof?: StringArraySearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  units?: NumberSearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  total_units?: NumberSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  units?: BigIntSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  total_units?: BigIntSearchOptions;
   @Field(() => StringSearchOptions, { nullable: true })
   root?: StringSearchOptions;
 }

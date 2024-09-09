@@ -2,7 +2,7 @@ import { Field, InputType } from "type-graphql";
 import type { WhereOptions } from "./whereOptions.js";
 import {
   IdSearchOptions,
-  NumberSearchOptions,
+  BigIntSearchOptions,
   StringSearchOptions,
 } from "./searchOptions.js";
 import type { Attestation } from "../typeDefs/attestationTypeDefs.js";
@@ -15,14 +15,14 @@ export class BasicAttestationWhereInput implements WhereOptions<Attestation> {
   uid?: StringSearchOptions;
   @Field(() => StringSearchOptions, { nullable: true })
   supported_schemas_id?: StringSearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  creation_block_timestamp?: NumberSearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  creation_block_number?: NumberSearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  last_update_block_number?: NumberSearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  last_update_block_timestamp?: NumberSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  creation_block_timestamp?: BigIntSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  creation_block_number?: BigIntSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  last_update_block_number?: BigIntSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  last_update_block_timestamp?: BigIntSearchOptions;
   @Field(() => StringSearchOptions, { nullable: true })
   attester?: StringSearchOptions;
   @Field(() => StringSearchOptions, { nullable: true })
@@ -33,8 +33,8 @@ export class BasicAttestationWhereInput implements WhereOptions<Attestation> {
   schema?: StringSearchOptions;
   @Field(() => StringSearchOptions, { nullable: true })
   attestation?: StringSearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  chain_id?: NumberSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  chain_id?: BigIntSearchOptions;
   @Field(() => StringSearchOptions, { nullable: true })
   contract_address?: StringSearchOptions;
   @Field(() => StringSearchOptions, { nullable: true })

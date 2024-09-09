@@ -2,7 +2,7 @@ import { Field, InputType } from "type-graphql";
 import type { WhereOptions } from "./whereOptions.js";
 import {
   IdSearchOptions,
-  NumberSearchOptions,
+  BigIntSearchOptions,
   StringSearchOptions,
 } from "./searchOptions.js";
 import { Fraction } from "../typeDefs/fractionTypeDefs.js";
@@ -15,18 +15,18 @@ export class BasicFractionWhereInput implements WhereOptions<Fraction> {
   hypercert_id?: StringSearchOptions;
   @Field(() => StringSearchOptions, { nullable: true })
   fraction_id?: StringSearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  creation_block_timestamp?: NumberSearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  creation_block_number?: NumberSearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  last_update_block_number?: NumberSearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  last_update_block_timestamp?: NumberSearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  token_id?: NumberSearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  units?: NumberSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  creation_block_timestamp?: BigIntSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  creation_block_number?: BigIntSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  last_update_block_number?: BigIntSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  last_update_block_timestamp?: BigIntSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  token_id?: BigIntSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  units?: BigIntSearchOptions;
   @Field(() => StringSearchOptions, { nullable: true })
   owner_address?: StringSearchOptions;
 }

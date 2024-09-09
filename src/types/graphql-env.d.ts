@@ -264,7 +264,7 @@ export type introspection = {
             "name": "entry",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -304,7 +304,7 @@ export type introspection = {
             "name": "token_id",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -312,7 +312,7 @@ export type introspection = {
             "name": "total_units",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -320,7 +320,7 @@ export type introspection = {
             "name": "units",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -648,7 +648,7 @@ export type introspection = {
             "name": "chain_id",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -664,7 +664,7 @@ export type introspection = {
             "name": "creation_block_number",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -672,7 +672,7 @@ export type introspection = {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -696,7 +696,7 @@ export type introspection = {
             "name": "last_update_block_number",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -704,7 +704,7 @@ export type introspection = {
             "name": "last_update_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -790,7 +790,7 @@ export type introspection = {
             "name": "chain_id",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -806,7 +806,7 @@ export type introspection = {
             "name": "creation_block_number",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -814,7 +814,7 @@ export type introspection = {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -830,7 +830,7 @@ export type introspection = {
             "name": "last_update_block_number",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -838,7 +838,7 @@ export type introspection = {
             "name": "last_update_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -900,7 +900,7 @@ export type introspection = {
             "name": "chain_id",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -930,7 +930,7 @@ export type introspection = {
             "name": "creation_block_number",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -938,7 +938,7 @@ export type introspection = {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -970,7 +970,7 @@ export type introspection = {
             "name": "last_update_block_number",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -978,7 +978,7 @@ export type introspection = {
             "name": "last_update_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -994,7 +994,7 @@ export type introspection = {
             "name": "token_id",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1002,7 +1002,7 @@ export type introspection = {
             "name": "units",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           }
@@ -1024,7 +1024,7 @@ export type introspection = {
             "name": "creation_block_number",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1032,7 +1032,7 @@ export type introspection = {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1064,7 +1064,7 @@ export type introspection = {
             "name": "last_update_block_number",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1072,7 +1072,7 @@ export type introspection = {
             "name": "last_update_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1088,7 +1088,7 @@ export type introspection = {
             "name": "token_id",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1118,7 +1118,7 @@ export type introspection = {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1150,7 +1150,7 @@ export type introspection = {
             "name": "impact_timeframe_from",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1158,7 +1158,7 @@ export type introspection = {
             "name": "impact_timeframe_to",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1166,7 +1166,7 @@ export type introspection = {
             "name": "last_block_update_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1206,7 +1206,7 @@ export type introspection = {
             "name": "work_timeframe_from",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1214,7 +1214,7 @@ export type introspection = {
             "name": "work_timeframe_to",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           }
@@ -1223,6 +1223,52 @@ export type introspection = {
       {
         "kind": "SCALAR",
         "name": "BigInt"
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "BigIntSearchOptions",
+        "inputFields": [
+          {
+            "name": "eq",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            }
+          },
+          {
+            "name": "gt",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            }
+          },
+          {
+            "name": "gte",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            }
+          },
+          {
+            "name": "lt",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            }
+          },
+          {
+            "name": "lte",
+            "type": {
+              "kind": "SCALAR",
+              "name": "BigInt",
+              "ofType": null
+            }
+          }
+        ]
       },
       {
         "kind": "INPUT_OBJECT",
@@ -1377,7 +1423,7 @@ export type introspection = {
             "name": "chain_id",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1489,7 +1535,7 @@ export type introspection = {
             "name": "chain_id",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1717,7 +1763,7 @@ export type introspection = {
             "name": "creation_block_number",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1725,7 +1771,7 @@ export type introspection = {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1765,7 +1811,7 @@ export type introspection = {
             "name": "last_update_block_number",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1773,7 +1819,7 @@ export type introspection = {
             "name": "last_update_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1789,7 +1835,7 @@ export type introspection = {
             "name": "token_id",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -1797,7 +1843,7 @@ export type introspection = {
             "name": "units",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           }
@@ -2631,7 +2677,7 @@ export type introspection = {
             "name": "creation_block_number",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -2639,7 +2685,7 @@ export type introspection = {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -2679,7 +2725,7 @@ export type introspection = {
             "name": "last_update_block_number",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -2687,7 +2733,7 @@ export type introspection = {
             "name": "last_update_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -2711,7 +2757,7 @@ export type introspection = {
             "name": "token_id",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -3005,7 +3051,7 @@ export type introspection = {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -3045,7 +3091,7 @@ export type introspection = {
             "name": "impact_timeframe_from",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -3053,7 +3099,7 @@ export type introspection = {
             "name": "impact_timeframe_to",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -3061,7 +3107,7 @@ export type introspection = {
             "name": "last_block_update_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -3101,7 +3147,7 @@ export type introspection = {
             "name": "work_timeframe_from",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -3109,7 +3155,7 @@ export type introspection = {
             "name": "work_timeframe_to",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           }
@@ -3143,7 +3189,7 @@ export type introspection = {
             "name": "eq",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "Int",
               "ofType": null
             }
           },
@@ -3151,7 +3197,7 @@ export type introspection = {
             "name": "gt",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "Int",
               "ofType": null
             }
           },
@@ -3159,7 +3205,7 @@ export type introspection = {
             "name": "gte",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "Int",
               "ofType": null
             }
           },
@@ -3167,7 +3213,7 @@ export type introspection = {
             "name": "lt",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "Int",
               "ofType": null
             }
           },
@@ -3175,7 +3221,7 @@ export type introspection = {
             "name": "lte",
             "type": {
               "kind": "SCALAR",
-              "name": "BigInt",
+              "name": "Int",
               "ofType": null
             }
           }
@@ -3656,7 +3702,7 @@ export type introspection = {
             "name": "chainId",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -4413,7 +4459,7 @@ export type introspection = {
             "name": "creation_block_number",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -4421,7 +4467,7 @@ export type introspection = {
             "name": "creation_block_timestamp",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },
@@ -4461,7 +4507,7 @@ export type introspection = {
             "name": "strategy_id",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "NumberSearchOptions",
+              "name": "BigIntSearchOptions",
               "ofType": null
             }
           },

@@ -56,14 +56,14 @@ input AllowlistRecordSortOptions {
 
 input AllowlistRecordWhereInput {
   claimed: BooleanSearchOptions
-  entry: NumberSearchOptions
+  entry: BigIntSearchOptions
   hypercert_id: StringSearchOptions
   leaf: StringSearchOptions
   proof: StringArraySearchOptions
   root: StringSearchOptions
-  token_id: NumberSearchOptions
-  total_units: NumberSearchOptions
-  units: NumberSearchOptions
+  token_id: BigIntSearchOptions
+  total_units: BigIntSearchOptions
+  units: BigIntSearchOptions
   user_address: StringSearchOptions
 }
 
@@ -147,14 +147,14 @@ input AttestationSortOptions {
 input AttestationWhereInput {
   attestation: StringSearchOptions
   attester: StringSearchOptions
-  chain_id: NumberSearchOptions
+  chain_id: BigIntSearchOptions
   contract_address: StringSearchOptions
-  creation_block_number: NumberSearchOptions
-  creation_block_timestamp: NumberSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
   hypercerts: BasicHypercertWhereArgs
   id: IdSearchOptions
-  last_update_block_number: NumberSearchOptions
-  last_update_block_timestamp: NumberSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
   metadata: BasicMetadataWhereInput
   recipient: StringSearchOptions
   resolver: StringSearchOptions
@@ -167,13 +167,13 @@ input AttestationWhereInput {
 input BasicAttestationWhereInput {
   attestation: StringSearchOptions
   attester: StringSearchOptions
-  chain_id: NumberSearchOptions
+  chain_id: BigIntSearchOptions
   contract_address: StringSearchOptions
-  creation_block_number: NumberSearchOptions
-  creation_block_timestamp: NumberSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
   id: IdSearchOptions
-  last_update_block_number: NumberSearchOptions
-  last_update_block_timestamp: NumberSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
   recipient: StringSearchOptions
   resolver: StringSearchOptions
   schema: StringSearchOptions
@@ -183,59 +183,68 @@ input BasicAttestationWhereInput {
 }
 
 input BasicContractWhereInput {
-  chain_id: NumberSearchOptions
+  chain_id: BigIntSearchOptions
   contract_address: StringSearchOptions
   id: IdSearchOptions
 }
 
 input BasicFractionWhereInput {
-  creation_block_number: NumberSearchOptions
-  creation_block_timestamp: NumberSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
   fraction_id: StringSearchOptions
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
-  last_update_block_number: NumberSearchOptions
-  last_update_block_timestamp: NumberSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
   owner_address: StringSearchOptions
-  token_id: NumberSearchOptions
-  units: NumberSearchOptions
+  token_id: BigIntSearchOptions
+  units: BigIntSearchOptions
 }
 
 input BasicHypercertWhereArgs {
+  """Count of attestations referencing this hypercert"""
   attestations_count: NumberSearchOptions
-  creation_block_number: NumberSearchOptions
-  creation_block_timestamp: NumberSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
   creator_address: StringSearchOptions
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
-  last_update_block_number: NumberSearchOptions
-  last_update_block_timestamp: NumberSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
   sales_count: NumberSearchOptions
-  token_id: NumberSearchOptions
+  token_id: BigIntSearchOptions
   uri: StringSearchOptions
 }
 
 input BasicMetadataWhereInput {
   contributors: StringArraySearchOptions
-  creation_block_timestamp: NumberSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
   description: StringSearchOptions
   id: IdSearchOptions
   impact_scope: StringArraySearchOptions
-  impact_timeframe_from: NumberSearchOptions
-  impact_timeframe_to: NumberSearchOptions
-  last_block_update_timestamp: NumberSearchOptions
+  impact_timeframe_from: BigIntSearchOptions
+  impact_timeframe_to: BigIntSearchOptions
+  last_block_update_timestamp: BigIntSearchOptions
   name: StringSearchOptions
   rights: StringArraySearchOptions
   uri: StringSearchOptions
   work_scope: StringArraySearchOptions
-  work_timeframe_from: NumberSearchOptions
-  work_timeframe_to: NumberSearchOptions
+  work_timeframe_from: BigIntSearchOptions
+  work_timeframe_to: BigIntSearchOptions
 }
 
 """
 The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
+
+input BigIntSearchOptions {
+  eq: BigInt
+  gt: BigInt
+  gte: BigInt
+  lt: BigInt
+  lte: BigInt
+}
 
 input BooleanSearchOptions {
   eq: Boolean
@@ -275,7 +284,7 @@ input CollectionSortOptions {
 
 input CollectionWhereInput {
   admin_id: StringSearchOptions
-  chain_id: NumberSearchOptions
+  chain_id: BigIntSearchOptions
   id: IdSearchOptions
 }
 
@@ -303,7 +312,7 @@ input ContractSortOptions {
 }
 
 input ContractWhereInput {
-  chain_id: NumberSearchOptions
+  chain_id: BigIntSearchOptions
   contract_address: StringSearchOptions
   id: IdSearchOptions
 }
@@ -367,17 +376,17 @@ input FractionSortOptions {
 }
 
 input FractionWhereInput {
-  creation_block_number: NumberSearchOptions
-  creation_block_timestamp: NumberSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
   fraction_id: StringSearchOptions
   hypercert_id: StringSearchOptions
   hypercerts: BasicHypercertWhereArgs
   id: IdSearchOptions
-  last_update_block_number: NumberSearchOptions
-  last_update_block_timestamp: NumberSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
   owner_address: StringSearchOptions
-  token_id: NumberSearchOptions
-  units: NumberSearchOptions
+  token_id: BigIntSearchOptions
+  units: BigIntSearchOptions
 }
 
 type GetAllowlistRecordResponse {
@@ -554,19 +563,21 @@ input HypercertSortOptions {
 """Arguments for filtering hypercerts"""
 input HypercertsWhereArgs {
   attestations: BasicAttestationWhereInput
+
+  """Count of attestations referencing this hypercert"""
   attestations_count: NumberSearchOptions
   contract: BasicContractWhereInput
-  creation_block_number: NumberSearchOptions
-  creation_block_timestamp: NumberSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
   creator_address: StringSearchOptions
   fractions: BasicFractionWhereInput
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
-  last_update_block_number: NumberSearchOptions
-  last_update_block_timestamp: NumberSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
   metadata: BasicMetadataWhereInput
   sales_count: NumberSearchOptions
-  token_id: NumberSearchOptions
+  token_id: BigIntSearchOptions
   uri: StringSearchOptions
 }
 
@@ -645,20 +656,20 @@ input MetadataSortOptions {
 
 input MetadataWhereInput {
   contributors: StringArraySearchOptions
-  creation_block_timestamp: NumberSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
   description: StringSearchOptions
   hypercerts: BasicHypercertWhereArgs
   id: IdSearchOptions
   impact_scope: StringArraySearchOptions
-  impact_timeframe_from: NumberSearchOptions
-  impact_timeframe_to: NumberSearchOptions
-  last_block_update_timestamp: NumberSearchOptions
+  impact_timeframe_from: BigIntSearchOptions
+  impact_timeframe_to: BigIntSearchOptions
+  last_block_update_timestamp: BigIntSearchOptions
   name: StringSearchOptions
   rights: StringArraySearchOptions
   uri: StringSearchOptions
   work_scope: StringArraySearchOptions
-  work_timeframe_from: NumberSearchOptions
-  work_timeframe_to: NumberSearchOptions
+  work_timeframe_from: BigIntSearchOptions
+  work_timeframe_to: BigIntSearchOptions
 }
 
 input NumberArraySearchOptions {
@@ -666,11 +677,11 @@ input NumberArraySearchOptions {
 }
 
 input NumberSearchOptions {
-  eq: BigInt
-  gt: BigInt
-  gte: BigInt
-  lt: BigInt
-  lte: BigInt
+  eq: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
 }
 
 type Order {
@@ -727,7 +738,7 @@ input OrderSortOptions {
 }
 
 input OrderWhereInput {
-  chainId: NumberSearchOptions
+  chainId: BigIntSearchOptions
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
   signer: StringSearchOptions
@@ -806,13 +817,13 @@ input SaleWhereInput {
   amounts: NumberArraySearchOptions
   buyer: StringSearchOptions
   collection: StringSearchOptions
-  creation_block_number: NumberSearchOptions
-  creation_block_timestamp: NumberSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
   currency: StringSearchOptions
   hypercert_id: StringSearchOptions
   item_ids: StringArraySearchOptions
   seller: StringSearchOptions
-  strategy_id: NumberSearchOptions
+  strategy_id: BigIntSearchOptions
   transaction_hash: IdSearchOptions
 }
 
