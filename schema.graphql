@@ -450,7 +450,7 @@ type Hypercert {
   attestations: GetAttestationsResponse
 
   """Count of attestations referencing this hypercert"""
-  attestations_count: Float
+  attestations_count: Int
 
   """The contract that the hypercert is associated with"""
   contract: Contract
@@ -484,7 +484,7 @@ type Hypercert {
   sales: GetSalesResponse
 
   """Count of sales of fractions that belong to this hypercert"""
-  sales_count: Float
+  sales_count: Int
 
   """The token ID of the hypercert"""
   token_id: EthBigInt
@@ -498,7 +498,7 @@ type Hypercert {
 
 type HypercertBaseType {
   """Count of attestations referencing this hypercert"""
-  attestations_count: Float
+  attestations_count: Int
 
   """The UUID of the contract as stored in the database"""
   contracts_id: ID
@@ -520,7 +520,7 @@ type HypercertBaseType {
   metadata: Metadata
 
   """Count of sales of fractions that belong to this hypercert"""
-  sales_count: Float
+  sales_count: Int
 
   """The token ID of the hypercert"""
   token_id: EthBigInt
