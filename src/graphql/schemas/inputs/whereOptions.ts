@@ -2,7 +2,7 @@ import {
   BooleanSearchOptions,
   IdSearchOptions,
   NumberArraySearchOptions,
-  NumberSearchOptions,
+  BigIntSearchOptions,
   StringArraySearchOptions,
   StringSearchOptions,
 } from "./searchOptions.js";
@@ -16,7 +16,7 @@ export type WhereOptions<T extends object> = {
     | IdSearchOptions
     | BooleanSearchOptions
     | StringSearchOptions
-    | NumberSearchOptions
+    | BigIntSearchOptions
     | StringArraySearchOptions
     | NumberArraySearchOptions
     | BasicMetadataWhereInput

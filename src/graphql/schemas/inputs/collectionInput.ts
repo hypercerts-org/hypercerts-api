@@ -2,7 +2,7 @@ import { Field, InputType } from "type-graphql";
 import type { WhereOptions } from "./whereOptions.js";
 import {
   IdSearchOptions,
-  NumberSearchOptions,
+  BigIntSearchOptions,
   StringSearchOptions,
 } from "./searchOptions.js";
 import { Collection } from "../typeDefs/collectionTypeDefs.js";
@@ -11,8 +11,8 @@ import { Collection } from "../typeDefs/collectionTypeDefs.js";
 export class BasicCollectionWhereInput implements WhereOptions<Collection> {
   @Field(() => IdSearchOptions, { nullable: true })
   id?: IdSearchOptions | null;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  chain_id?: NumberSearchOptions | null;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  chain_id?: BigIntSearchOptions | null;
   @Field(() => StringSearchOptions, { nullable: true })
   admin_id?: StringSearchOptions | null;
 }

@@ -3,7 +3,7 @@ import type { WhereOptions } from "./whereOptions.js";
 import { Contract } from "../typeDefs/contractTypeDefs.js";
 import {
   IdSearchOptions,
-  NumberSearchOptions,
+  BigIntSearchOptions,
   StringSearchOptions,
 } from "./searchOptions.js";
 
@@ -13,6 +13,6 @@ export class BasicContractWhereInput implements WhereOptions<Contract> {
   id?: IdSearchOptions;
   @Field(() => StringSearchOptions, { nullable: true })
   contract_address?: StringSearchOptions;
-  @Field(() => NumberSearchOptions, { nullable: true })
-  chain_id?: NumberSearchOptions;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  chain_id?: BigIntSearchOptions;
 }

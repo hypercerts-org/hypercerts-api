@@ -1,4 +1,4 @@
-import { Field, InputType } from "type-graphql";
+import { Field, InputType, Int } from "type-graphql";
 import { GraphQLBigInt, GraphQLUUID } from "graphql-scalars";
 
 @InputType()
@@ -29,7 +29,7 @@ export class StringSearchOptions {
 }
 
 @InputType()
-export class NumberSearchOptions {
+export class BigIntSearchOptions {
   @Field(() => GraphQLBigInt, { nullable: true })
   eq?: bigint | number;
 
@@ -44,6 +44,24 @@ export class NumberSearchOptions {
 
   @Field(() => GraphQLBigInt, { nullable: true })
   lte?: bigint | number;
+}
+
+@InputType()
+export class NumberSearchOptions {
+  @Field(() => Int, { nullable: true })
+  eq?: number;
+
+  @Field(() => Int, { nullable: true })
+  gt?: number;
+
+  @Field(() => Int, { nullable: true })
+  gte?: number;
+
+  @Field(() => Int, { nullable: true })
+  lt?: number;
+
+  @Field(() => Int, { nullable: true })
+  lte?: number;
 }
 
 @InputType()
