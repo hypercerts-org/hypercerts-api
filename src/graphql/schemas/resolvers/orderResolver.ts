@@ -1,50 +1,33 @@
 import {
   Args,
-  Field,
   FieldResolver,
-  Int,
   ObjectType,
   Query,
   Resolver,
   Root,
 } from "type-graphql";
-import { inject, injectable } from "tsyringe";
 import { Order } from "../typeDefs/orderTypeDefs.js";
-import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { GetOrdersArgs } from "../args/orderArgs.js";
-import { SupabaseCachingService } from "../../../services/SupabaseCachingService.js";
 import { getHypercertTokenId } from "../../../utils/tokenIds.js";
-import { HypercertBaseType } from "../typeDefs/baseTypes/hypercertBaseType.js";
 import { getAddress } from "viem";
 import { HypercertExchangeClient } from "@hypercerts-org/marketplace-sdk";
 import { ethers } from "ethers";
 import { getRpcUrl } from "../../../utils/getRpcUrl.js";
 import { addPriceInUsdToOrder } from "../../../utils/addPriceInUSDToOrder.js";
 import _ from "lodash";
+import { createBaseResolver, DataResponse } from "./baseTypes.js";
 
 @ObjectType()
-export default class GetOrdersResponse {
-  @Field(() => [Order], { nullable: true })
-  data?: Order[];
+export default class GetOrdersResponse extends DataResponse(Order) {}
 
-  @Field(() => Int, { nullable: true })
-  count?: number;
-}
+const OrderBaseResolver = createBaseResolver("order");
 
-@injectable()
 @Resolver(() => Order)
-class OrderResolver {
-  constructor(
-    @inject(SupabaseDataService)
-    private readonly supabaseService: SupabaseDataService,
-    @inject(SupabaseCachingService)
-    private readonly supabaseCachingService: SupabaseCachingService,
-  ) {}
-
+class OrderResolver extends OrderBaseResolver {
   @Query(() => GetOrdersResponse)
   async orders(@Args() args: GetOrdersArgs) {
     try {
-      const res = await this.supabaseService.getOrders(args);
+      const res = await this.supabaseDataService.getOrders(args);
 
       const { data: orders, error, count } = res;
 
@@ -68,23 +51,16 @@ class OrderResolver {
       // TODO: Update this once array filters are available
       const allHypercerts = await Promise.all(
         allHypercertIds.map(async (hypercertId) => {
-          const hypercertRes = await this.supabaseCachingService.getHypercerts({
-            where: {
-              hypercert_id: {
-                eq: hypercertId,
+          return await this.getHypercerts(
+            {
+              where: {
+                hypercert_id: {
+                  eq: hypercertId,
+                },
               },
             },
-          });
-
-          if (hypercertRes.error) {
-            console.warn(
-              `[OrderResolver::orders] Error fetching hypercert: `,
-              hypercertRes.error,
-            );
-            return null;
-          }
-
-          return hypercertRes.data?.[0] as HypercertBaseType;
+            true,
+          );
         }),
       ).then((res) =>
         _.keyBy(
@@ -115,7 +91,7 @@ class OrderResolver {
               tokenIdsWithInvalidOrder,
             );
             // Fire off the validation but don't wait for it to finish
-            this.supabaseService.validateOrdersByTokenIds({
+            this.supabaseDataService.validateOrdersByTokenIds({
               tokenIds: tokenIdsWithInvalidOrder.map((id) => id.toString()),
               chainId: chainIdParsed,
             });
@@ -168,76 +144,33 @@ class OrderResolver {
 
     const hypercertId = getHypercertTokenId(BigInt(tokenId));
     const formattedHypercertId = `${chainId}-${getAddress(collectionId)}-${hypercertId.toString()}`;
-    const hypercert = await this.supabaseCachingService.getHypercerts({
-      where: {
-        hypercert_id: {
-          eq: formattedHypercertId,
+    const hypercert = await this.getHypercerts(
+      {
+        where: {
+          hypercert_id: {
+            eq: formattedHypercertId,
+          },
         },
       },
-    });
+      true,
+    );
 
-    if (!hypercert) {
-      console.warn(
-        `[OrderResolver::hypercert] No hypercert found for tokenId: ${tokenId}`,
-      );
-      return null;
-    }
-
-    const { data: hypercertData, error } = hypercert;
-    if (error) {
-      console.warn(
-        `[OrderResolver::hypercert] Error fetching hypercert: `,
-        error,
-      );
-      return null;
-    }
-
-    const resultOrder = hypercertData?.[0] as HypercertBaseType;
-
-    if (!resultOrder) {
-      console.warn(
-        `[OrderResolver::hypercert] No hypercert found for tokenId: ${tokenId}`,
-      );
-      return null;
-    }
-
-    const uri = (hypercertData?.[0] as HypercertBaseType)?.uri;
-
-    const metadata = await this.supabaseCachingService.getMetadata({
-      where: {
-        uri: {
-          eq: uri,
+    const metadata = await this.getMetadata(
+      {
+        where: {
+          hypercerts: {
+            hypercert_id: {
+              eq: formattedHypercertId,
+            },
+          },
         },
       },
-    });
-
-    if (!metadata) {
-      console.warn(
-        `[OrderResolver::hypercert] No metadata found for tokenId: ${tokenId}`,
-      );
-      return null;
-    }
-
-    const { data: metadataData, error: metadataError } = metadata;
-
-    if (metadataError) {
-      console.warn(
-        `[OrderResolver::hypercert] Error fetching metadata: `,
-        metadataError,
-      );
-      return null;
-    }
-
-    if (!metadataData) {
-      console.warn(
-        `[OrderResolver::hypercert] No metadata found for tokenId: ${tokenId}`,
-      );
-      return null;
-    }
+      true,
+    );
 
     return {
-      ...resultOrder,
-      metadata: metadataData?.[0] || null,
+      ...hypercert,
+      metadata: metadata || null,
     };
   }
 }

@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ID, ObjectType, Int } from "type-graphql";
 import { BasicTypeDef } from "./basicTypeDef.js";
 import { EthBigInt } from "../../../scalars/ethBigInt.js";
 import { Metadata } from "../metadataTypeDefs.js";
@@ -51,6 +51,18 @@ class HypercertBaseType extends BasicTypeDef {
   last_update_block_number?: bigint | number | string;
   @Field(() => EthBigInt, { nullable: true })
   last_update_block_timestamp?: bigint | number | string;
+
+  @Field(() => Int, {
+    nullable: true,
+    description: "Count of attestations referencing this hypercert",
+  })
+  attestations_count?: number;
+
+  @Field(() => Int, {
+    nullable: true,
+    description: "Count of sales of fractions that belong to this hypercert",
+  })
+  sales_count?: number;
 }
 
 export { HypercertBaseType };

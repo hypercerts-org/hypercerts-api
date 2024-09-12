@@ -1,25 +1,30 @@
-import {ArgsType, Field, InputType} from "type-graphql";
-import {BasicMetadataWhereInput, MetadataFetchInput} from "../inputs/metadataInput.js";
-import {PaginationArgs} from "./paginationArgs.js";
-import {BasicHypercertWhereInput} from "../inputs/hypercertsInput.js";
+import { ArgsType, Field, InputType } from "type-graphql";
+import { BasicMetadataWhereInput } from "../inputs/metadataInput.js";
+import { withPagination } from "./baseArgs.js";
+import { BasicHypercertWhereArgs } from "../inputs/hypercertsInput.js";
+import type { OrderOptions } from "../inputs/orderOptions.js";
+import { Metadata } from "../typeDefs/metadataTypeDefs.js";
+import { MetadataSortOptions } from "../inputs/sortOptions.js";
 
 @InputType()
 export class MetadataWhereInput extends BasicMetadataWhereInput {
-    @Field(_ => BasicHypercertWhereInput, {nullable: true})
-    hypercerts?: BasicHypercertWhereInput;
+  @Field(() => BasicHypercertWhereArgs, { nullable: true })
+  hypercerts?: BasicHypercertWhereArgs;
+}
+
+@InputType()
+export class MetadataFetchInput implements OrderOptions<Metadata> {
+  @Field(() => MetadataSortOptions, { nullable: true })
+  by?: MetadataSortOptions;
 }
 
 @ArgsType()
-export class GetMetadataArgs extends PaginationArgs {
-    @Field({nullable: true})
-    where?: MetadataWhereInput;
-    @Field({nullable: true})
-    sort?: MetadataFetchInput
+export class MetadataArgs {
+  @Field(() => MetadataWhereInput, { nullable: true })
+  where?: MetadataWhereInput;
+  @Field(() => MetadataFetchInput, { nullable: true })
+  sort?: MetadataFetchInput;
 }
-
 
 @ArgsType()
-export class GetMetadataByUriArgs {
-    @Field()
-    uri?: string;
-}
+export class GetMetadataArgs extends withPagination(MetadataArgs) {}

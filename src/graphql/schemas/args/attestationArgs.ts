@@ -1,41 +1,33 @@
-import {ArgsType, Field, InputType} from "type-graphql";
-import {AttestationFetchInput, BasicAttestationWhereInput} from "../inputs/attestationInput.js";
-import {PaginationArgs} from "./paginationArgs.js";
-import {BasicHypercertWhereInput} from "../inputs/hypercertsInput.js";
-import {BasicMetadataWhereInput} from "../inputs/metadataInput.js";
+import { ArgsType, Field, InputType } from "type-graphql";
+import { BasicAttestationWhereInput } from "../inputs/attestationInput.js";
+import { BasicMetadataWhereInput } from "../inputs/metadataInput.js";
+import { withPagination } from "./baseArgs.js";
+import { BasicHypercertWhereArgs } from "../inputs/hypercertsInput.js";
+import type { OrderOptions } from "../inputs/orderOptions.js";
+import type { Attestation } from "../typeDefs/attestationTypeDefs.js";
+import { AttestationSortOptions } from "../inputs/sortOptions.js";
 
 @InputType()
-export class AttestationWhereInput extends BasicAttestationWhereInput {
-    @Field(_ => BasicAttestationWhereInput, {nullable: true})
-    attestations?: BasicAttestationWhereInput;
-    @Field(_ => BasicHypercertWhereInput, {nullable: true})
-    hypercerts?: BasicHypercertWhereInput;
-    @Field(_ => BasicMetadataWhereInput, {nullable: true})
-    metadata?: BasicMetadataWhereInput;
+class AttestationWhereInput extends BasicAttestationWhereInput {
+  @Field(() => BasicHypercertWhereArgs, { nullable: true })
+  hypercerts?: BasicHypercertWhereArgs;
+  @Field(() => BasicMetadataWhereInput, { nullable: true })
+  metadata?: BasicMetadataWhereInput;
+}
+
+@InputType()
+class AttestationFetchInput implements OrderOptions<Attestation> {
+  @Field(() => AttestationSortOptions, { nullable: true })
+  by?: AttestationSortOptions;
 }
 
 @ArgsType()
-export class GetAttestationArgs extends PaginationArgs {
-    @Field({nullable: true})
-    where?: AttestationWhereInput;
-    @Field({nullable: true})
-    sort?: AttestationFetchInput;
-}
-
-
-@ArgsType()
-export class GetAttestationByUidArgs {
-    @Field()
-    uid?: string;
+class AttestationArgs {
+  @Field(() => AttestationWhereInput, { nullable: true })
+  where?: AttestationWhereInput;
+  @Field(() => AttestationFetchInput, { nullable: true })
+  sort?: AttestationFetchInput;
 }
 
 @ArgsType()
-export class GetAttestationBySchemaIdArgs {
-    @Field()
-    supported_schema_id?: string;
-}
-
-export class GetAttestationByClaimIdArgs extends GetAttestationArgs {
-    @Field()
-    claim_id?: string;
-}
+export class GetAttestationsArgs extends withPagination(AttestationArgs) {}

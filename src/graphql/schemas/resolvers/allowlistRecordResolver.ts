@@ -1,47 +1,18 @@
-import { Args, Field, Int, ObjectType, Query, Resolver } from "type-graphql";
-import { inject, injectable } from "tsyringe";
-import { SupabaseCachingService } from "../../../services/SupabaseCachingService.js";
+import { Args, ObjectType, Query, Resolver } from "type-graphql";
 import { AllowlistRecord } from "../typeDefs/allowlistRecordTypeDefs.js";
 import { GetAllowlistRecordsArgs } from "../args/allowlistRecordArgs.js";
+import { createBaseResolver, DataResponse } from "./baseTypes.js";
 
 @ObjectType()
-export default class GetAllowlistRecordResponse {
-  @Field(() => [AllowlistRecord], { nullable: true })
-  data?: AllowlistRecord[];
+class GetAllowlistRecordResponse extends DataResponse(AllowlistRecord) {}
 
-  @Field(() => Int, { nullable: true })
-  count?: number;
-}
+const AllowlistRecordBaseResolver = createBaseResolver("allowlistRecord");
 
-@injectable()
 @Resolver(() => AllowlistRecord)
-class AllowlistRecordResolver {
-  constructor(
-    @inject(SupabaseCachingService)
-    private readonly supabaseCachingService: SupabaseCachingService,
-  ) {}
-
+class AllowlistRecordResolver extends AllowlistRecordBaseResolver {
   @Query(() => GetAllowlistRecordResponse)
   async allowlistRecords(@Args() args: GetAllowlistRecordsArgs) {
-    try {
-      const res = await this.supabaseCachingService.getAllowlistRecords(args);
-
-      const { data, error, count } = res;
-
-      if (error) {
-        console.warn(
-          `[AllowlistRecordResolver::allowlistRecords] Error fetching allowlistRecords: `,
-          error,
-        );
-        return { data };
-      }
-
-      return { data, count: count ? count : data?.length };
-    } catch (e) {
-      throw new Error(
-        `[AllowlistRecordResolver::allowlistRecords] Error fetching allowlistRecords: ${(e as Error).message}`,
-      );
-    }
+    return await this.getAllowlistRecords(args);
   }
 }
 

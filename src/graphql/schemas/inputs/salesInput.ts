@@ -1,13 +1,13 @@
 import { Field, InputType } from "type-graphql";
 import type { WhereOptions } from "./whereOptions.js";
 import {
-  IdSearchOptions, NumberArraySearchOptions, NumberSearchOptions,
+  IdSearchOptions,
+  NumberArraySearchOptions,
+  BigIntSearchOptions,
   StringArraySearchOptions,
-  StringSearchOptions
+  StringSearchOptions,
 } from "./searchOptions.js";
-import { ContractSortOptions } from "./sortOptions.js";
 import { Sale } from "../typeDefs/salesTypeDefs.js";
-import { SaleOptions } from "./saleOptions.js";
 
 @InputType()
 export class BasicSaleWhereInput implements WhereOptions<Sale> {
@@ -32,21 +32,15 @@ export class BasicSaleWhereInput implements WhereOptions<Sale> {
   @Field(() => StringSearchOptions, { nullable: true })
   seller?: StringSearchOptions | null;
 
-  @Field(() => NumberSearchOptions, { nullable: true })
-  strategy_id?: NumberSearchOptions | null;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  strategy_id?: BigIntSearchOptions | null;
 
-  @Field(() => NumberSearchOptions, { nullable: true })
-  creation_block_number?: NumberSearchOptions | null;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  creation_block_number?: BigIntSearchOptions | null;
 
-  @Field(() => NumberSearchOptions, { nullable: true })
-  creation_block_timestamp?: NumberSearchOptions | null;
+  @Field(() => BigIntSearchOptions, { nullable: true })
+  creation_block_timestamp?: BigIntSearchOptions | null;
 
   @Field(() => NumberArraySearchOptions, { nullable: true })
   amounts?: NumberArraySearchOptions | null;
-}
-
-@InputType()
-export class SaleFetchInput implements SaleOptions<Sale> {
-  @Field(() => ContractSortOptions, { nullable: true })
-  by?: ContractSortOptions;
 }
