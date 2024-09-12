@@ -1,8 +1,16 @@
 import { alchemyApiKey, drpcApiPkey, infuraApiKey } from "./constants.js";
 import { createPublicClient, fallback, http } from "viem";
-import { base, baseSepolia, celo, optimism, sepolia } from "viem/chains";
+import {
+  arbitrum,
+  arbitrumSepolia,
+  base,
+  baseSepolia,
+  celo,
+  optimism,
+  sepolia,
+} from "viem/chains";
 
-export const selectedNetwork = (chainId: number) => {
+const selectedNetwork = (chainId: number) => {
   switch (chainId) {
     case 10:
       return optimism;
@@ -10,6 +18,10 @@ export const selectedNetwork = (chainId: number) => {
       return base;
     case 42220:
       return celo;
+    case 42161:
+      return arbitrum;
+    case 421614:
+      return arbitrumSepolia;
     case 84532:
       return baseSepolia;
     case 11155111:
@@ -27,12 +39,16 @@ export const alchemyUrl = (chainId: number) => {
       return `https://base-mainnet.g.alchemy.com/v2/${alchemyApiKey}`;
     case 42220:
       return;
+    case 42161:
+      return `https://arb-mainnet.g.alchemy.com/v2/${alchemyApiKey}`;
+    case 421614:
+      return `https://arb-sepolia.g.alchemy.com/v2/${alchemyApiKey}`;
     case 84532:
       return `https://base-sepolia.g.alchemy.com/v2/${alchemyApiKey}`;
     case 11155111:
       return `https://eth-sepolia.g.alchemy.com/v2/${alchemyApiKey}`;
     default:
-      throw new Error(`Unsupported chain ID for alchemy: ${chainId}`);
+      throw new Error(`Unsupported chain ID: ${chainId}`);
   }
 };
 
@@ -44,12 +60,16 @@ const infuraUrl = (chainId: number) => {
       return;
     case 42220:
       return `https://celo-mainnet.infura.io/v3/${infuraApiKey}`;
+    case 42161:
+      return `https://arbitrum-mainnet.infura.io/v3/${infuraApiKey}`;
+    case 421614:
+      return `https://arbitrum-sepolia.infura.io/v3/${infuraApiKey}`;
     case 84532:
       return;
     case 11155111:
       return `https://sepolia.infura.io/v3/${infuraApiKey}`;
     default:
-      throw new Error(`Unsupported chain ID for infura: ${chainId}`);
+      throw new Error(`Unsupported chain ID: ${chainId}`);
   }
 };
 
@@ -61,12 +81,16 @@ const drpcUrl = (chainId: number) => {
       return `https://lb.drpc.org/ogrpc?network=base&dkey=${drpcApiPkey}`;
     case 42220:
       return `https://lb.drpc.org/ogrpc?network=celo&dkey=${drpcApiPkey}`;
+    case 42161:
+      return `https://lb.drpc.org/ogrpc?network=arbitrum&dkey=${drpcApiPkey}`;
+    case 421614:
+      return `https://lb.drpc.org/ogrpc?network=arbitrum-sepolia&dkey=${drpcApiPkey}`;
     case 84532:
       return;
     case 11155111:
       return;
     default:
-      throw new Error(`Unsupported chain ID for drpc: ${chainId}`);
+      throw new Error(`Unsupported chain ID: ${chainId}`);
   }
 };
 
@@ -95,6 +119,7 @@ const fallBackProvider = (chainId: number) => {
 };
 
 /* Returns a PublicClient instance for the configured network. */
+// @ts-expect-error viem typings
 export const getEvmClient = (chainId: number) =>
   createPublicClient({
     chain: selectedNetwork(chainId),
