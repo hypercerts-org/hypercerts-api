@@ -197,4 +197,73 @@ export class SupabaseDataService {
       .eq("id", orderId)
       .single();
   }
+
+  async createCollection(
+    collection: DataDatabase["public"]["Tables"]["collections"]["Insert"],
+    claims: Omit<
+      DataDatabase["public"]["Tables"]["hypercerts"]["Insert"],
+      "collection_id"
+    >[],
+  ) {
+    const createdCollection = await this.supabaseData
+      .from("collections")
+      .insert([collection])
+      .select("*")
+      .single()
+      .throwOnError();
+
+    if (!claims.length) {
+      return createdCollection;
+    }
+
+    if (!createdCollection.data?.id) {
+      throw new Error("Collection must have an id to add claims.");
+    }
+
+    await this.addHypercertsToCollection(createdCollection.data.id, claims);
+    return createdCollection;
+  }
+
+  async addHypercertsToCollection(
+    collectionId: string,
+    hypercerts: Omit<
+      DataDatabase["public"]["Tables"]["hypercerts"]["Insert"],
+      "collection_id"
+    >[],
+  ) {
+    return this.supabaseData
+      .from("hypercerts")
+      .insert(
+        hypercerts.map((hypercert) => ({
+          ...hypercert,
+          collection_id: collectionId,
+        })),
+      )
+      .select("*")
+      .throwOnError();
+  }
+
+  async createHyperboard(
+    hyperboard: DataDatabase["public"]["Tables"]["hyperboards"]["Insert"],
+  ) {
+    return this.supabaseData
+      .from("hyperboards")
+      .insert([hyperboard])
+      .select("*")
+      .single()
+      .throwOnError();
+  }
+
+  async addCollectionToHyperboard(hyperboardId: string, collectionId: string) {
+    return this.supabaseData
+      .from("hyperboard_collections")
+      .insert([
+        {
+          hyperboard_id: hyperboardId,
+          collection_id: collectionId,
+        },
+      ])
+      .select("*")
+      .throwOnError();
+  }
 }

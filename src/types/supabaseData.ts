@@ -41,8 +41,8 @@ export type Database = {
           display_size: number;
           form_values: Json;
           id: number;
+          minted: boolean;
           minter_address: string;
-          registry_id: string;
         };
         Insert: {
           admin_id: string;
@@ -50,8 +50,8 @@ export type Database = {
           display_size?: number;
           form_values: Json;
           id?: number;
+          minted?: boolean;
           minter_address: string;
-          registry_id: string;
         };
         Update: {
           admin_id?: string;
@@ -59,66 +59,73 @@ export type Database = {
           display_size?: number;
           form_values?: Json;
           id?: number;
+          minted?: boolean;
           minter_address?: string;
-          registry_id?: string;
+        };
+        Relationships: [];
+      };
+      collection_blueprints: {
+        Row: {
+          blueprint_id: number;
+          collection_id: string;
+          created_at: string;
+        };
+        Insert: {
+          blueprint_id: number;
+          collection_id: string;
+          created_at?: string;
+        };
+        Update: {
+          blueprint_id?: number;
+          collection_id?: string;
+          created_at?: string;
         };
         Relationships: [
           {
-            foreignKeyName: "blueprints_admin_id_fkey";
-            columns: ["admin_id"];
+            foreignKeyName: "collection_blueprints_blueprint_id_fkey";
+            columns: ["blueprint_id"];
             isOneToOne: false;
-            referencedRelation: "users";
-            referencedColumns: ["address"];
+            referencedRelation: "blueprints";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "blueprints_registry_id_fkey";
-            columns: ["registry_id"];
+            foreignKeyName: "collection_blueprints_collection_id_fkey";
+            columns: ["collection_id"];
             isOneToOne: false;
-            referencedRelation: "registries";
+            referencedRelation: "collections";
             referencedColumns: ["id"];
           },
         ];
       };
-      claims: {
+      collections: {
         Row: {
           admin_id: string;
           chain_id: number;
           created_at: string;
-          display_size: number;
-          hypercert_id: string;
+          description: string;
+          hidden: boolean;
           id: string;
-          owner_id: string;
-          registry_id: string;
+          name: string;
         };
         Insert: {
           admin_id: string;
           chain_id: number;
           created_at?: string;
-          display_size?: number;
-          hypercert_id: string;
+          description: string;
+          hidden?: boolean;
           id?: string;
-          owner_id: string;
-          registry_id: string;
+          name: string;
         };
         Update: {
           admin_id?: string;
           chain_id?: number;
           created_at?: string;
-          display_size?: number;
-          hypercert_id?: string;
+          description?: string;
+          hidden?: boolean;
           id?: string;
-          owner_id?: string;
-          registry_id?: string;
+          name?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: "claims_registry_id_fkey";
-            columns: ["registry_id"];
-            isOneToOne: false;
-            referencedRelation: "registries";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [];
       };
       default_sponsor_metadata: {
         Row: {
@@ -195,26 +202,26 @@ export type Database = {
         };
         Relationships: [];
       };
-      hyperboard_registries: {
+      hyperboard_collections: {
         Row: {
+          collection_id: string;
           created_at: string | null;
           hyperboard_id: string;
           label: string | null;
-          registry_id: string;
           render_method: string;
         };
         Insert: {
+          collection_id: string;
           created_at?: string | null;
           hyperboard_id: string;
           label?: string | null;
-          registry_id: string;
           render_method?: string;
         };
         Update: {
+          collection_id?: string;
           created_at?: string | null;
           hyperboard_id?: string;
           label?: string | null;
-          registry_id?: string;
           render_method?: string;
         };
         Relationships: [
@@ -227,9 +234,9 @@ export type Database = {
           },
           {
             foreignKeyName: "hyperboard_registries_registries_id_fk";
-            columns: ["registry_id"];
+            columns: ["collection_id"];
             isOneToOne: false;
-            referencedRelation: "registries";
+            referencedRelation: "collections";
             referencedColumns: ["id"];
           },
         ];
@@ -266,6 +273,44 @@ export type Database = {
           tile_border_color?: string | null;
         };
         Relationships: [];
+      };
+      hypercerts: {
+        Row: {
+          admin_id: string;
+          chain_id: number;
+          collection_id: string;
+          created_at: string;
+          display_size: number;
+          hypercert_id: string;
+          id: string;
+        };
+        Insert: {
+          admin_id: string;
+          chain_id: number;
+          collection_id: string;
+          created_at?: string;
+          display_size?: number;
+          hypercert_id: string;
+          id?: string;
+        };
+        Update: {
+          admin_id?: string;
+          chain_id?: number;
+          collection_id?: string;
+          created_at?: string;
+          display_size?: number;
+          hypercert_id?: string;
+          id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "claims_registry_id_fkey";
+            columns: ["collection_id"];
+            isOneToOne: false;
+            referencedRelation: "collections";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       marketplace_order_nonces: {
         Row: {
@@ -360,36 +405,6 @@ export type Database = {
           strategyId?: number;
           subsetNonce?: number;
           validator_codes?: number[] | null;
-        };
-        Relationships: [];
-      };
-      registries: {
-        Row: {
-          admin_id: string;
-          chain_id: number;
-          created_at: string;
-          description: string;
-          hidden: boolean;
-          id: string;
-          name: string;
-        };
-        Insert: {
-          admin_id: string;
-          chain_id: number;
-          created_at?: string;
-          description: string;
-          hidden?: boolean;
-          id?: string;
-          name: string;
-        };
-        Update: {
-          admin_id?: string;
-          chain_id?: number;
-          created_at?: string;
-          description?: string;
-          hidden?: boolean;
-          id?: string;
-          name?: string;
         };
         Relationships: [];
       };
@@ -573,7 +588,6 @@ export type Database = {
           owner_id: string | null;
           path_tokens: string[] | null;
           updated_at: string | null;
-          user_metadata: Json | null;
           version: string | null;
         };
         Insert: {
@@ -587,7 +601,6 @@ export type Database = {
           owner_id?: string | null;
           path_tokens?: string[] | null;
           updated_at?: string | null;
-          user_metadata?: Json | null;
           version?: string | null;
         };
         Update: {
@@ -601,7 +614,6 @@ export type Database = {
           owner_id?: string | null;
           path_tokens?: string[] | null;
           updated_at?: string | null;
-          user_metadata?: Json | null;
           version?: string | null;
         };
         Relationships: [
@@ -623,7 +635,6 @@ export type Database = {
           key: string;
           owner_id: string | null;
           upload_signature: string;
-          user_metadata: Json | null;
           version: string;
         };
         Insert: {
@@ -634,7 +645,6 @@ export type Database = {
           key: string;
           owner_id?: string | null;
           upload_signature: string;
-          user_metadata?: Json | null;
           version: string;
         };
         Update: {
@@ -645,7 +655,6 @@ export type Database = {
           key?: string;
           owner_id?: string | null;
           upload_signature?: string;
-          user_metadata?: Json | null;
           version?: string;
         };
         Relationships: [
