@@ -1,16 +1,19 @@
 import {
   Body,
   Controller,
+  Delete,
+  Path,
   Post,
   Response,
   Route,
+  Query,
   SuccessResponse,
   Tags,
 } from "tsoa";
 import type {
   ApiResponse,
-  HyperboardCreateResponse,
   HyperboardCreateRequest,
+  HyperboardCreateResponse,
 } from "../types/api.js";
 import { z } from "zod";
 import { isValidHypercertId } from "../utils/hypercertIds.js";
@@ -195,6 +198,7 @@ export class HyperboardController extends Controller {
 
     for (const collection of parsedBody.data.collections) {
       try {
+        console.log("Creating collection", collection);
         const collectionCreateResponse = await dataService.createCollection(
           {
             admin_id: adminAddress,
@@ -212,6 +216,10 @@ export class HyperboardController extends Controller {
         if (!collectionCreateResponse.data?.id) {
           throw new Error("Collection must have an id to add claims.");
         }
+        console.log(
+          "Adding collection to hyperboard",
+          collectionCreateResponse.error,
+        );
         await dataService.addCollectionToHyperboard(
           hyperboardId,
           collectionCreateResponse.data.id,
@@ -227,11 +235,93 @@ export class HyperboardController extends Controller {
       }
     }
 
+    this.setStatus(201);
     return {
       success: true,
       data: {
         id: hyperboardId,
       },
     };
+  }
+
+  @Delete("{hyperboardId}")
+  @SuccessResponse(204, "Hyperboard deleted successfully")
+  @Response<ApiResponse>(422, "Unprocessable content", {
+    success: false,
+    message: "Errors while deleting hyperboard",
+  })
+  public async deleteHyperboard(
+    @Path() hyperboardId: string,
+    // @Body() requestBody: HyperboardDeleteRequest,
+    @Query() adminAddress: string,
+    @Query() signature: string,
+  ): Promise<ApiResponse> {
+    const inputSchema = z.object({
+      adminAddress: z.string(),
+      signature: z.string(),
+    });
+
+    const parsedBody = inputSchema.safeParse({
+      adminAddress,
+      signature,
+    });
+
+    if (!parsedBody.success) {
+      this.setStatus(422);
+      return {
+        success: false,
+        errors: JSON.parse(parsedBody.error.toString()),
+      };
+    }
+
+    const dataService = new SupabaseDataService();
+    const hyperboard = await dataService.getHyperboardById(hyperboardId);
+
+    if (!hyperboard.data) {
+      this.setStatus(404);
+      return {
+        success: false,
+        message: "Hyperboard not found",
+      };
+    }
+
+    const { admin_id, chain_id } = hyperboard.data;
+    if (!(admin_id === adminAddress)) {
+      this.setStatus(401);
+      return {
+        success: false,
+        message: "Not authorized to delete hyperboard",
+      };
+    }
+
+    const client = getEvmClient(chain_id);
+    const success = await client.verifyMessage({
+      signature: signature as `0x${string}`,
+      address: adminAddress as `0x${string}`,
+      message: "Delete hyperboard",
+    });
+
+    if (!success) {
+      this.setStatus(401);
+      return {
+        success: false,
+        message: "Invalid signature",
+      };
+    }
+
+    try {
+      await dataService.deleteHyperboard(hyperboardId);
+      this.setStatus(204);
+      return {
+        success: true,
+      };
+    } catch (err) {
+      console.error(err);
+      this.setStatus(400);
+      return {
+        success: false,
+        message: "Error deleting hyperboard",
+      };
+    }
   }
 }

@@ -603,6 +603,122 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"ApiResponse__id-string_-or-null_": {
+				"properties": {
+					"errors": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+							},
+							{
+								"items": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"type": "array"
+							}
+						]
+					},
+					"message": {
+						"type": "string"
+					},
+					"data": {
+						"properties": {
+							"id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"id"
+						],
+						"type": "object",
+						"nullable": true
+					},
+					"success": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"success"
+				],
+				"type": "object",
+				"description": "Interface for a generic API response."
+			},
+			"HyperboardCreateResponse": {
+				"$ref": "#/components/schemas/ApiResponse__id-string_-or-null_",
+				"description": "Response for a created hyperboard"
+			},
+			"HyperboardCreateRequest": {
+				"description": "Interface for creating a hyperboard",
+				"properties": {
+					"chainId": {
+						"type": "number",
+						"format": "double"
+					},
+					"title": {
+						"type": "string"
+					},
+					"collections": {
+						"items": {
+							"properties": {
+								"hypercerts": {
+									"items": {
+										"properties": {
+											"factor": {
+												"type": "number",
+												"format": "double"
+											},
+											"hypercertId": {
+												"type": "string"
+											}
+										},
+										"required": [
+											"factor",
+											"hypercertId"
+										],
+										"type": "object"
+									},
+									"type": "array"
+								},
+								"description": {
+									"type": "string"
+								},
+								"title": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"hypercerts",
+								"description",
+								"title"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					},
+					"backgroundImg": {
+						"type": "string"
+					},
+					"borderColor": {
+						"type": "string"
+					},
+					"adminAddress": {
+						"type": "string"
+					},
+					"signature": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"chainId",
+					"title",
+					"collections",
+					"borderColor",
+					"adminAddress",
+					"signature"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"StoreAllowListRequest": {
 				"description": "Interface for storing an allow list dump on IPFS",
 				"properties": {
@@ -1395,6 +1511,122 @@
 						}
 					}
 				}
+			}
+		},
+		"/v1/hyperboards": {
+			"post": {
+				"operationId": "CreateHyperboard",
+				"responses": {
+					"201": {
+						"description": "Data uploaded successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HyperboardCreateResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Errors while validating hyperboard"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Create a new hyperboard. Creates the collections passed to it automatically.",
+				"tags": [
+					"Hyperboards"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/HyperboardCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/hyperboards/{hyperboardId}": {
+			"delete": {
+				"operationId": "DeleteHyperboard",
+				"responses": {
+					"204": {
+						"description": "Hyperboard deleted successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Errors while deleting hyperboard"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Hyperboards"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "hyperboardId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "adminAddress",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "signature",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/v1/allowlists": {

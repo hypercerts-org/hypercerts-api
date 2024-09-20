@@ -266,4 +266,22 @@ export class SupabaseDataService {
       .select("*")
       .throwOnError();
   }
+
+  async getHyperboardById(hyperboardId: string) {
+    return this.supabaseData
+      .from("hyperboards")
+      .select("*")
+      .eq("id", hyperboardId)
+      .maybeSingle()
+      .throwOnError();
+  }
+
+  async deleteHyperboard(hyperboardId: string) {
+    return this.supabaseData
+      .from("hyperboards")
+      .delete()
+      .eq("id", hyperboardId)
+      .single()
+      .throwOnError();
+  }
 }

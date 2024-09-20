@@ -74,23 +74,28 @@ export type ValidationResult<T = void> = {
 export type ValidationResponse = ApiResponse<ValidationResult>;
 
 /**
- * Interface for creating a collection
- */
-export interface HyperboardCreateRequest {
-  name: string;
-  description: string;
-  collections: {
-    hypercertId: string;
-    chainId: string;
-  }[];
-  backgroundColor: string;
-  backgroundImage?: string;
-  borderColor: string;
-}
-
-/**
- * Response for a created collection
+ * Response for a created hyperboard
  */
 export type HyperboardCreateResponse = ApiResponse<{
   id: string;
 } | null>;
+
+/**
+ * Interface for creating a hyperboard
+ */
+export interface HyperboardCreateRequest {
+  chainId: number;
+  title: string;
+  collections: {
+    title: string;
+    description: string;
+    hypercerts: {
+      hypercertId: string;
+      factor: number;
+    }[];
+  }[];
+  backgroundImg?: string;
+  borderColor: string;
+  adminAddress: string;
+  signature: string;
+}
