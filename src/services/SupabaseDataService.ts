@@ -200,32 +200,6 @@ export class SupabaseDataService {
       .single();
   }
 
-  async createCollection(
-    collection: DataDatabase["public"]["Tables"]["collections"]["Insert"],
-    claims: Omit<
-      DataDatabase["public"]["Tables"]["hypercerts"]["Insert"],
-      "collection_id"
-    >[],
-  ) {
-    const createdCollection = await this.supabaseData
-      .from("collections")
-      .insert([collection])
-      .select("*")
-      .single()
-      .throwOnError();
-
-    if (!claims.length) {
-      return createdCollection;
-    }
-
-    if (!createdCollection.data?.id) {
-      throw new Error("Collection must have an id to add claims.");
-    }
-
-    await this.addHypercertsToCollection(createdCollection.data.id, claims);
-    return createdCollection;
-  }
-
   async addHypercertsToCollection(
     collectionId: string,
     hypercerts: Omit<
