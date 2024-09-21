@@ -99,3 +99,23 @@ export interface HyperboardCreateRequest {
   adminAddress: string;
   signature: string;
 }
+
+export interface HyperboardUpdateRequest {
+  id: string;
+  chainId: number;
+  title: string;
+  collections: {
+    id?: string;
+    title: string;
+    description: string;
+    hypercerts: {
+      id?: string;
+      hypercertId: string;
+      factor: number;
+    }[];
+  }[];
+  backgroundImg?: string;
+  borderColor: string;
+  adminAddress: string;
+  signature: string;
+}

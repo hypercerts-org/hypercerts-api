@@ -286,4 +286,40 @@ export class SupabaseDataService {
       .single()
       .throwOnError();
   }
+
+  async upsertHyperboards(
+    hyperboards: DataDatabase["public"]["Tables"]["hyperboards"]["Insert"][],
+  ) {
+    return this.supabaseData
+      .from("hyperboards")
+      .upsert(
+        hyperboards.map((hb) => ({ ...hb, id: hb.id || crypto.randomUUID() })),
+      )
+      .select("*")
+      .throwOnError();
+  }
+
+  async upsertCollections(
+    collections: DataDatabase["public"]["Tables"]["collections"]["Insert"][],
+  ) {
+    return this.supabaseData
+      .from("collections")
+      .upsert(
+        collections.map((c) => ({ ...c, id: c.id || crypto.randomUUID() })),
+      )
+      .select("*")
+      .throwOnError();
+  }
+
+  async upsertHypercerts(
+    hypercerts: DataDatabase["public"]["Tables"]["hypercerts"]["Insert"][],
+  ) {
+    return this.supabaseData
+      .from("hypercerts")
+      .upsert(
+        hypercerts.map((hc) => ({ ...hc, id: hc.id || crypto.randomUUID() })),
+      )
+      .select("*")
+      .throwOnError();
+  }
 }

@@ -719,6 +719,87 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"HyperboardUpdateRequest": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"chainId": {
+						"type": "number",
+						"format": "double"
+					},
+					"title": {
+						"type": "string"
+					},
+					"collections": {
+						"items": {
+							"properties": {
+								"hypercerts": {
+									"items": {
+										"properties": {
+											"factor": {
+												"type": "number",
+												"format": "double"
+											},
+											"hypercertId": {
+												"type": "string"
+											},
+											"id": {
+												"type": "string"
+											}
+										},
+										"required": [
+											"factor",
+											"hypercertId"
+										],
+										"type": "object"
+									},
+									"type": "array"
+								},
+								"description": {
+									"type": "string"
+								},
+								"title": {
+									"type": "string"
+								},
+								"id": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"hypercerts",
+								"description",
+								"title"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					},
+					"backgroundImg": {
+						"type": "string"
+					},
+					"borderColor": {
+						"type": "string"
+					},
+					"adminAddress": {
+						"type": "string"
+					},
+					"signature": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"chainId",
+					"title",
+					"collections",
+					"borderColor",
+					"adminAddress",
+					"signature"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"StoreAllowListRequest": {
 				"description": "Interface for storing an allow list dump on IPFS",
 				"properties": {
@@ -1565,6 +1646,63 @@
 			}
 		},
 		"/v1/hyperboards/{hyperboardId}": {
+			"patch": {
+				"operationId": "UpdateHyperboard",
+				"responses": {
+					"204": {
+						"description": "Hyperboard updated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse__id-string_-or-null_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Errors while updating hyperboard"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Hyperboards"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "hyperboardId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/HyperboardUpdateRequest"
+							}
+						}
+					}
+				}
+			},
 			"delete": {
 				"operationId": "DeleteHyperboard",
 				"responses": {

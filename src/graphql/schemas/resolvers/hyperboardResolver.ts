@@ -14,7 +14,6 @@ class HyperboardResolver extends HyperboardBaseResolver {
   async hyperboards(@Args() args: GetHyperboardsArgs) {
     try {
       const res = await this.supabaseDataService.getHyperboards(args);
-      console.log("res", res.data?.[0]?.collections);
 
       const { data, error, count } = res;
 
