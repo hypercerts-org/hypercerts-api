@@ -8,7 +8,7 @@ import type { AttestationSchema } from "../typeDefs/attestationSchemaTypeDefs.js
 import type { Fraction } from "../typeDefs/fractionTypeDefs.js";
 import { Order } from "../typeDefs/orderTypeDefs.js";
 import { Sale } from "../typeDefs/salesTypeDefs.js";
-import { Collection } from "../typeDefs/collectionTypeDefs.js";
+import { Hyperboard } from "../typeDefs/hyperboardTypeDefs.js";
 
 export type SortOptions<T extends object> = {
   [P in keyof T]: SortOrder | null;
@@ -205,7 +205,7 @@ export class SaleSortOptions implements SortOptions<Sale> {
 }
 
 @InputType()
-export class CollectionSortOptions implements SortOptions<Collection> {
+export class HyperboardSortOptions implements SortOptions<Hyperboard> {
   @Field(() => SortOrder, { nullable: true })
   name?: SortOrder;
   @Field(() => SortOrder, { nullable: true })
