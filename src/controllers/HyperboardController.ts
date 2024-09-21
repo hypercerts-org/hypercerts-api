@@ -176,18 +176,20 @@ export class HyperboardController extends Controller {
     const dataService = new SupabaseDataService();
     let hyperboardId: string;
     try {
-      const hyperboard = await dataService.createHyperboard({
-        admin_id: adminAddress,
-        background_image: parsedBody.data.backgroundImg,
-        tile_border_color: parsedBody.data.borderColor,
-        chain_id: chainId,
-        name: parsedBody.data.title,
-        grayscale_images: false,
-      });
-      if (!hyperboard.data?.id) {
+      const hyperboard = await dataService.upsertHyperboards([
+        {
+          admin_id: adminAddress,
+          background_image: parsedBody.data.backgroundImg,
+          tile_border_color: parsedBody.data.borderColor,
+          chain_id: chainId,
+          name: parsedBody.data.title,
+          grayscale_images: false,
+        },
+      ]);
+      if (!hyperboard.data?.[0]?.id) {
         throw new Error("Hyperboard must have an id to add collections.");
       }
-      hyperboardId = hyperboard.data.id;
+      hyperboardId = hyperboard.data?.[0]?.id;
     } catch (err) {
       console.error(err);
       this.setStatus(400);
@@ -200,32 +202,30 @@ export class HyperboardController extends Controller {
 
     for (const collection of parsedBody.data.collections) {
       try {
-        console.log("Creating collection", collection);
-        const collectionCreateResponse = await dataService.createCollection(
+        const collectionCreateResponse = await dataService.upsertCollections([
           {
             admin_id: adminAddress,
             name: collection.title,
             description: collection.description,
             chain_id: chainId,
           },
-          collection.hypercerts.map((hc) => ({
-            hypercert_id: hc.hypercertId,
-            display_size: hc.factor,
-            admin_id: adminAddress,
-            chain_id: chainId,
-          })),
-        );
-        if (!collectionCreateResponse.data?.id) {
+        ]);
+
+        const collectionId = collectionCreateResponse.data?.[0]?.id;
+        if (!collectionId) {
           throw new Error("Collection must have an id to add claims.");
         }
-        console.log(
-          "Adding collection to hyperboard",
-          collectionCreateResponse.error,
-        );
-        await dataService.addCollectionToHyperboard(
-          hyperboardId,
-          collectionCreateResponse.data.id,
-        );
+
+        const hypercerts = collection.hypercerts.map((hc) => ({
+          hypercert_id: hc.hypercertId,
+          display_size: hc.factor,
+          admin_id: adminAddress,
+          chain_id: chainId,
+          collection_id: collectionId,
+        }));
+        await dataService.upsertHypercerts(hypercerts);
+
+        await dataService.addCollectionToHyperboard(hyperboardId, collectionId);
       } catch (e) {
         console.error(e);
         this.setStatus(400);
@@ -418,7 +418,6 @@ export class HyperboardController extends Controller {
     );
     for (const collection of collectionsToUpdate) {
       try {
-        console.log("Updating collection", collection);
         const collectionsResult = await dataService.upsertCollections([
           {
             id: collection.id,
@@ -458,35 +457,28 @@ export class HyperboardController extends Controller {
     );
     for (const collection of collectionsToCreate) {
       try {
-        console.log("Creating collection", collection);
-        const collectionCreateResponse = await dataService.createCollection(
+        const collectionCreateResponse = await dataService.upsertCollections([
           {
             admin_id: adminAddress,
             name: collection.title,
             description: collection.description,
             chain_id: chainId,
           },
-          collection.hypercerts.map((hc) => ({
-            hypercert_id: hc.hypercertId,
-            display_size: hc.factor,
-            admin_id: adminAddress,
-            chain_id: chainId,
-          })),
-        );
-        const collectionId = collectionCreateResponse.data?.id;
+        ]);
+
+        const collectionId = collectionCreateResponse.data?.[0]?.id;
         if (!collectionId) {
           throw new Error("Collection must have an id to add claims.");
         }
-        await dataService.upsertHypercerts(
-          collection.hypercerts.map((hc) => ({
-            id: hc.id,
-            hypercert_id: hc.hypercertId,
-            display_size: hc.factor,
-            admin_id: adminAddress,
-            chain_id: chainId,
-            collection_id: collectionId,
-          })),
-        );
+
+        const hypercerts = collection.hypercerts.map((hc) => ({
+          hypercert_id: hc.hypercertId,
+          display_size: hc.factor,
+          admin_id: adminAddress,
+          chain_id: chainId,
+          collection_id: collectionId,
+        }));
+        await dataService.upsertHypercerts(hypercerts);
 
         await dataService.addCollectionToHyperboard(hyperboardId, collectionId);
       } catch (e) {
@@ -500,7 +492,7 @@ export class HyperboardController extends Controller {
       }
     }
 
-    this.setStatus(204);
+    this.setStatus(202);
     return {
       success: true,
       data: {

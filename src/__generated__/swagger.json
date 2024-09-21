@@ -720,6 +720,7 @@
 				"additionalProperties": false
 			},
 			"HyperboardUpdateRequest": {
+				"description": "Interface for updating a hyperboard",
 				"properties": {
 					"id": {
 						"type": "string"

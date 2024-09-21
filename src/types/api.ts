@@ -100,6 +100,9 @@ export interface HyperboardCreateRequest {
   signature: string;
 }
 
+/**
+ * Interface for updating a hyperboard
+ */
 export interface HyperboardUpdateRequest {
   id: string;
   chainId: number;
