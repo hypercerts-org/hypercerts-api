@@ -124,7 +124,7 @@ export class SupabaseDataService {
   getHyperboards(args: GetHyperboardsArgs) {
     let query = this.supabaseData
       .from("hyperboards")
-      .select("*, collections(*, hypercerts(*))");
+      .select("*, collections(*, hypercerts(*))", { count: "exact" });
 
     const { where, sort, offset, first } = args;
 
