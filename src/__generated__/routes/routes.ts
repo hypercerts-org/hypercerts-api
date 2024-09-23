@@ -50,10 +50,10 @@ const models: TsoaRoute.Models = {
     "AddOrUpdateUserRequest": {
         "dataType": "refObject",
         "properties": {
-            "address": {"dataType":"string","required":true},
             "display_name": {"dataType":"string","required":true},
             "avatar": {"dataType":"string","required":true},
             "signature": {"dataType":"string","required":true},
+            "message": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },
@@ -223,12 +223,13 @@ export function RegisterRoutes(app: Router) {
     //  NOTE: If you do not see routes for all of your controllers in this file, then you might not have informed tsoa of where to look
     //      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
     // ###########################################################################################################
-        app.post('/v1/users/:userId',
+        app.post('/v1/users/:address',
             ...(fetchMiddlewares<RequestHandler>(UserController)),
             ...(fetchMiddlewares<RequestHandler>(UserController.prototype.addOrUpdateUser)),
 
             async function UserController_addOrUpdateUser(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    address: {"in":"path","name":"address","required":true,"dataType":"string"},
                     requestBody: {"in":"body","name":"requestBody","required":true,"ref":"AddOrUpdateUserRequest"},
             };
 

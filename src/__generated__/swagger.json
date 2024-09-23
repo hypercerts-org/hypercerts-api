@@ -118,9 +118,6 @@
 			},
 			"AddOrUpdateUserRequest": {
 				"properties": {
-					"address": {
-						"type": "string"
-					},
 					"display_name": {
 						"type": "string"
 					},
@@ -129,13 +126,16 @@
 					},
 					"signature": {
 						"type": "string"
+					},
+					"message": {
+						"type": "string"
 					}
 				},
 				"required": [
-					"address",
 					"display_name",
 					"avatar",
-					"signature"
+					"signature",
+					"message"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -714,7 +714,7 @@
 		}
 	},
 	"paths": {
-		"/v1/users/{userId}": {
+		"/v1/users/{address}": {
 			"post": {
 				"operationId": "AddOrUpdateUser",
 				"responses": {
@@ -752,7 +752,16 @@
 					"Users"
 				],
 				"security": [],
-				"parameters": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "address",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
 				"requestBody": {
 					"required": true,
 					"content": {

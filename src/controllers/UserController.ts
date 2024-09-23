@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Path,
   Post,
   Response,
   Route,
@@ -22,17 +23,17 @@ export class UserController extends Controller {
   /**
    * Add or update a user
    */
-  @Post(`{userId}`)
+  @Post(`{address}`)
   @SuccessResponse(201, "User updated successfully", "application/json")
   @Response<ApiResponse>(422, "Unprocessable content", {
     success: false,
     message: "Errors while validating user",
   })
   public async addOrUpdateUser(
+    @Path() address: string,
     @Body() requestBody: AddOrUpdateUserRequest,
   ): Promise<AddOrUpdateUserResponse> {
     const inputSchema = z.object({
-      address: z.string(),
       display_name: z.string().optional(),
       avatar: z.string().optional(),
       signature: z.string(),
@@ -49,8 +50,8 @@ export class UserController extends Controller {
       };
     }
 
-    const { address, signature, message } = parsedBody.data;
-    const client = getEvmClient(1);
+    const { signature, message } = parsedBody.data;
+    const client = getEvmClient(10);
     const correctSignature = await client.verifyMessage({
       message,
       signature: signature as `0x${string}`,

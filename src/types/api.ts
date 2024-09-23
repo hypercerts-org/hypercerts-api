@@ -74,10 +74,10 @@ export type ValidationResult<T = void> = {
 export type ValidationResponse = ApiResponse<ValidationResult>;
 
 export interface AddOrUpdateUserRequest {
-  address: string;
   display_name: string;
   avatar: string;
   signature: string;
+  message: string;
 }
 
 export type AddOrUpdateUserResponse = ApiResponse<{ address: string } | null>;
