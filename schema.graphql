@@ -451,6 +451,11 @@ type GetSalesResponse {
   data: [Sale!]
 }
 
+type GetUsersResponse {
+  count: Int
+  data: [User!]
+}
+
 """
 Hypercert with metadata, contract, orders, sales and fraction information
 """
@@ -755,6 +760,7 @@ type Query {
   metadata(first: Int, offset: Int, sort: MetadataFetchInput, where: MetadataWhereInput): GetMetadataResponse!
   orders(first: Int, offset: Int, sort: OrderFetchInput, where: OrderWhereInput): GetOrdersResponse!
   sales(first: Int, offset: Int, sort: SaleFetchInput, where: SaleWhereInput): GetSalesResponse!
+  users(first: Int, offset: Int, where: UserWhereInput): GetUsersResponse!
 }
 
 type Sale {
@@ -851,3 +857,18 @@ input StringSearchOptions {
 A field whose value is a generic Universally Unique Identifier: https://en.wikipedia.org/wiki/Universally_unique_identifier.
 """
 scalar UUID
+
+type User {
+  """The address of the user"""
+  address: String!
+
+  """The avatar of the user"""
+  avatar: String!
+
+  """The display name of the user"""
+  display_name: String!
+}
+
+input UserWhereInput {
+  address: StringSearchOptions
+}

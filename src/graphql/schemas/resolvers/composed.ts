@@ -8,6 +8,7 @@ import { OrderResolver } from "./orderResolver.js";
 import { CollectionResolver } from "./collectionResolver.js";
 import { AllowlistRecordResolver } from "./allowlistRecordResolver.js";
 import { SalesResolver } from "./salesResolver.js";
+import { UserResolver } from "./userResolver.js";
 
 export const resolvers = [
   ContractResolver,
@@ -20,4 +21,5 @@ export const resolvers = [
   CollectionResolver,
   AllowlistRecordResolver,
   SalesResolver,
+  UserResolver,
 ] as const;

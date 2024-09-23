@@ -13,6 +13,7 @@ import {
 import { ethers } from "ethers";
 import { getRpcUrl } from "../utils/getRpcUrl.js";
 import { singleton } from "tsyringe";
+import { GetUserArgs } from "../graphql/schemas/args/userArgs.js";
 
 @singleton()
 export class SupabaseDataService {
@@ -196,5 +197,27 @@ export class SupabaseDataService {
       .delete()
       .eq("id", orderId)
       .single();
+  }
+
+  async upsertUsers(
+    users: DataDatabase["public"]["Tables"]["users"]["Insert"][],
+  ) {
+    return this.supabaseData
+      .from("users")
+      .upsert(users)
+      .select("*")
+      .throwOnError();
+  }
+
+  async getUsers(args: GetUserArgs) {
+    let query = this.supabaseData.from("users").select("*");
+
+    const { where, offset, first } = args;
+
+    query = applyFilters({ query, where });
+    query = applySorting({ query });
+    query = applyPagination({ query, pagination: { first, offset } });
+
+    return query;
   }
 }
