@@ -70,7 +70,7 @@ export class UserController extends Controller {
     // Add or update user
     const dataService = new SupabaseDataService();
     try {
-      const user = await dataService.upsertUsers([
+      const users = await dataService.upsertUsers([
         {
           address,
           display_name: parsedBody.data.display_name,
@@ -78,16 +78,7 @@ export class UserController extends Controller {
         },
       ]);
 
-      if (user.error) {
-        this.setStatus(422);
-        return {
-          success: false,
-          message: "Errors while validating user",
-          data: null,
-        };
-      }
-
-      if (!user.data) {
+      if (!users.length) {
         this.setStatus(500);
         return {
           success: false,
@@ -100,7 +91,7 @@ export class UserController extends Controller {
       return {
         success: true,
         message: "User added or updated successfully",
-        data: { address: user.data[0].address },
+        data: { address: users[0].address },
       };
     } catch (error) {
       console.error(error);

@@ -12,7 +12,7 @@ const UserBaseResolver = createBaseResolver("user");
 class UserResolver extends UserBaseResolver {
   @Query(() => GetUsersResponse)
   async users(@Args() args: GetUserArgs) {
-    return this.supabaseDataService.getUsers(args);
+    return this.getUsers(args);
   }
 }
 

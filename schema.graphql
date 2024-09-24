@@ -863,10 +863,10 @@ type User {
   address: String!
 
   """The avatar of the user"""
-  avatar: String!
+  avatar: String
 
   """The display name of the user"""
-  display_name: String!
+  display_name: String
 }
 
 input UserWhereInput {
