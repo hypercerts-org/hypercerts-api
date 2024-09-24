@@ -158,10 +158,24 @@ export class HyperboardController extends Controller {
 
     const { signature, adminAddress, chainId } = parsedBody.data;
     const client = getEvmClient(chainId);
-    const success = await client.verifyMessage({
-      signature: signature as `0x${string}`,
+    const success = await client.verifyTypedData({
       address: adminAddress as `0x${string}`,
-      message: "Create hyperboard",
+      signature: signature as `0x${string}`,
+      domain: {
+        name: "Hypercerts",
+        version: "1",
+        chainId: chainId,
+      },
+      types: {
+        Hyperboard: [{ name: "title", type: "string" }],
+        CreateRequest: [{ name: "hyperboard", type: "Hyperboard" }],
+      },
+      primaryType: "CreateRequest",
+      message: {
+        hyperboard: {
+          title: parsedBody.data.title,
+        },
+      },
     });
 
     if (!success) {
@@ -374,10 +388,24 @@ export class HyperboardController extends Controller {
 
     const { signature, adminAddress, chainId } = parsedBody.data;
     const client = getEvmClient(chainId);
-    const success = await client.verifyMessage({
-      signature: signature as `0x${string}`,
+    const success = await client.verifyTypedData({
       address: adminAddress as `0x${string}`,
-      message: "Update hyperboard",
+      signature: signature as `0x${string}`,
+      domain: {
+        name: "Hypercerts",
+        version: "1",
+        chainId: chainId,
+      },
+      types: {
+        Hyperboard: [{ name: "id", type: "string" }],
+        UpdateRequest: [{ name: "hyperboard", type: "Hyperboard" }],
+      },
+      primaryType: "UpdateRequest",
+      message: {
+        hyperboard: {
+          id: parsedBody.data.id,
+        },
+      },
     });
 
     if (!success) {
@@ -551,10 +579,24 @@ export class HyperboardController extends Controller {
     }
 
     const client = getEvmClient(chain_id);
-    const success = await client.verifyMessage({
-      signature: signature as `0x${string}`,
+    const success = await client.verifyTypedData({
       address: adminAddress as `0x${string}`,
-      message: "Delete hyperboard",
+      signature: signature as `0x${string}`,
+      domain: {
+        name: "Hypercerts",
+        version: "1",
+        chainId: chain_id,
+      },
+      types: {
+        Hyperboard: [{ name: "id", type: "string" }],
+        DeleteRequest: [{ name: "hyperboard", type: "Hyperboard" }],
+      },
+      primaryType: "DeleteRequest",
+      message: {
+        hyperboard: {
+          id: hyperboardId,
+        },
+      },
     });
 
     if (!success) {
@@ -567,7 +609,7 @@ export class HyperboardController extends Controller {
 
     try {
       await dataService.deleteHyperboard(hyperboardId);
-      this.setStatus(204);
+      this.setStatus(202);
       return {
         success: true,
       };
