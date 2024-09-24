@@ -37,7 +37,7 @@ export class UserController extends Controller {
       display_name: z.string().optional(),
       avatar: z.string().optional(),
       signature: z.string(),
-      message: z.string(),
+      chain_id: z.number(),
     });
     const parsedBody = inputSchema.safeParse(requestBody);
     if (!parsedBody.success) {
@@ -50,12 +50,32 @@ export class UserController extends Controller {
       };
     }
 
-    const { signature, message } = parsedBody.data;
-    const client = getEvmClient(10);
-    const correctSignature = await client.verifyMessage({
-      message,
-      signature: signature as `0x${string}`,
+    const { signature, chain_id } = parsedBody.data;
+    const client = getEvmClient(chain_id);
+
+    const correctSignature = await client.verifyTypedData({
       address: address as `0x${string}`,
+      types: {
+        User: [
+          { name: "display_name", type: "string" },
+          { name: "avatar", type: "string" },
+        ],
+        UpdateRequest: [
+          { name: "user", type: "User" },
+          { name: "chainId", type: "uint256" },
+          { name: "address", type: "address" },
+        ],
+      },
+      primaryType: "UpdateRequest",
+      signature: signature as `0x${string}`,
+      message: {
+        user: {
+          display_name: parsedBody.data.display_name || "",
+          avatar: parsedBody.data.avatar || "",
+        },
+        chainId: BigInt(chain_id),
+        address: address as `0x${string}`,
+      },
     });
 
     if (!correctSignature) {

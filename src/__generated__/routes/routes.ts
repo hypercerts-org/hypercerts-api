@@ -53,7 +53,7 @@ const models: TsoaRoute.Models = {
             "display_name": {"dataType":"string","required":true},
             "avatar": {"dataType":"string","required":true},
             "signature": {"dataType":"string","required":true},
-            "message": {"dataType":"string","required":true},
+            "chain_id": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
     },

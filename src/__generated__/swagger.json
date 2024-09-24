@@ -127,15 +127,16 @@
 					"signature": {
 						"type": "string"
 					},
-					"message": {
-						"type": "string"
+					"chain_id": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
 					"display_name",
 					"avatar",
 					"signature",
-					"message"
+					"chain_id"
 				],
 				"type": "object",
 				"additionalProperties": false

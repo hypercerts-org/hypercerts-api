@@ -77,7 +77,7 @@ export interface AddOrUpdateUserRequest {
   display_name: string;
   avatar: string;
   signature: string;
-  message: string;
+  chain_id: number;
 }
 
 export type AddOrUpdateUserResponse = ApiResponse<{ address: string } | null>;
