@@ -55,26 +55,25 @@ export class UserController extends Controller {
 
     const correctSignature = await client.verifyTypedData({
       address: address as `0x${string}`,
+      domain: {
+        name: "Hypercerts",
+        version: "1",
+        chainId: chain_id,
+      },
       types: {
         User: [
-          { name: "display_name", type: "string" },
+          { name: "displayName", type: "string" },
           { name: "avatar", type: "string" },
         ],
-        UpdateRequest: [
-          { name: "user", type: "User" },
-          { name: "chainId", type: "uint256" },
-          { name: "address", type: "address" },
-        ],
+        UpdateRequest: [{ name: "user", type: "User" }],
       },
       primaryType: "UpdateRequest",
       signature: signature as `0x${string}`,
       message: {
         user: {
-          display_name: parsedBody.data.display_name || "",
+          displayName: parsedBody.data.display_name || "",
           avatar: parsedBody.data.avatar || "",
         },
-        chainId: BigInt(chain_id),
-        address: address as `0x${string}`,
       },
     });
 
