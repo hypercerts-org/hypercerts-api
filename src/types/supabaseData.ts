@@ -82,15 +82,8 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: "collection_blueprints_blueprint_id_fkey";
-            columns: ["blueprint_id"];
-            isOneToOne: false;
-            referencedRelation: "blueprints";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "collection_blueprints_collection_id_fkey";
-            columns: ["collection_id"];
+            foreignKeyName: "blueprints_registry_id_fkey";
+            columns: ["registry_id"];
             isOneToOne: false;
             referencedRelation: "collections";
             referencedColumns: ["id"];
@@ -411,24 +404,27 @@ export type Database = {
       users: {
         Row: {
           address: string;
-          auth: Json;
+          avatar: string | null;
+          chain_id: number;
           created_at: string;
-          email: string | null;
-          id: string | null;
+          display_name: string | null;
+          id: string;
         };
         Insert: {
           address: string;
-          auth?: Json;
+          avatar?: string | null;
+          chain_id: number;
           created_at?: string;
-          email?: string | null;
-          id?: string | null;
+          display_name?: string | null;
+          id?: string;
         };
         Update: {
           address?: string;
-          auth?: Json;
+          avatar?: string | null;
+          chain_id?: number;
           created_at?: string;
-          email?: string | null;
-          id?: string | null;
+          display_name?: string | null;
+          id?: string;
         };
         Relationships: [];
       };

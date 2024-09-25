@@ -74,6 +74,18 @@ export type ValidationResult<T = void> = {
 export type ValidationResponse = ApiResponse<ValidationResult>;
 
 /**
+ * Interface for a user add or update request.
+ */
+export interface AddOrUpdateUserRequest {
+  display_name: string;
+  avatar: string;
+  signature: string;
+  chain_id: number;
+}
+
+export type AddOrUpdateUserResponse = ApiResponse<{ address: string } | null>;
+
+/**
  * Response for a created hyperboard
  */
 export type HyperboardCreateResponse = ApiResponse<{
