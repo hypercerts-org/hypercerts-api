@@ -1,4 +1,4 @@
-import { CachingDatabase } from "../types/kyselySupabase.js";
+import { CachingDatabase } from "../types/kyselySupabaseCaching.js";
 import type { GetContractsArgs } from "../graphql/schemas/args/contractArgs.js";
 import type { GetMetadataArgs } from "../graphql/schemas/args/metadataArgs.js";
 import { GetHypercertsArgs } from "../graphql/schemas/args/hypercertsArgs.js";
@@ -6,7 +6,7 @@ import { GetAttestationSchemasArgs } from "../graphql/schemas/args/attestationSc
 import { type GetAttestationsArgs } from "../graphql/schemas/args/attestationArgs.js";
 import { GetFractionsArgs } from "../graphql/schemas/args/fractionArgs.js";
 import { GetSalesArgs } from "../graphql/schemas/args/salesArgs.js";
-import { kysely } from "../client/kysely.js";
+import { kyselyCaching } from "../client/kysely.js";
 import { supabaseCaching as supabaseClient } from "../client/supabase.js";
 import { generateFilterValues } from "../graphql/schemas/utils/filters-kysely.js";
 import { expressionBuilder, Kysely } from "kysely";
@@ -20,7 +20,7 @@ export class SupabaseCachingService {
   public readonly db: Kysely<CachingDatabase>;
 
   constructor() {
-    this.db = kysely;
+    this.db = kyselyCaching;
   }
 
   // Getters

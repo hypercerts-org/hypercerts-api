@@ -44,6 +44,103 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"ApiResponse__address-string_-or-null_": {
+				"properties": {
+					"errors": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+							},
+							{
+								"items": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"type": "array"
+							}
+						]
+					},
+					"message": {
+						"type": "string"
+					},
+					"data": {
+						"properties": {
+							"address": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"address"
+						],
+						"type": "object",
+						"nullable": true
+					},
+					"success": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"success"
+				],
+				"type": "object",
+				"description": "Interface for a generic API response."
+			},
+			"AddOrUpdateUserResponse": {
+				"$ref": "#/components/schemas/ApiResponse__address-string_-or-null_"
+			},
+			"ApiResponse": {
+				"properties": {
+					"errors": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+							},
+							{
+								"items": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"type": "array"
+							}
+						]
+					},
+					"message": {
+						"type": "string"
+					},
+					"data": {},
+					"success": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"success"
+				],
+				"type": "object",
+				"description": "Interface for a generic API response."
+			},
+			"AddOrUpdateUserRequest": {
+				"properties": {
+					"display_name": {
+						"type": "string"
+					},
+					"avatar": {
+						"type": "string"
+					},
+					"signature": {
+						"type": "string"
+					},
+					"chain_id": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"display_name",
+					"avatar",
+					"signature",
+					"chain_id"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"ApiResponse__cid-string__": {
 				"properties": {
 					"errors": {
@@ -86,35 +183,6 @@
 			"StorageResponse": {
 				"$ref": "#/components/schemas/ApiResponse__cid-string__",
 				"description": "Interface for a storage response."
-			},
-			"ApiResponse": {
-				"properties": {
-					"errors": {
-						"anyOf": [
-							{
-								"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
-							},
-							{
-								"items": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"type": "array"
-							}
-						]
-					},
-					"message": {
-						"type": "string"
-					},
-					"data": {},
-					"success": {
-						"type": "boolean"
-					}
-				},
-				"required": [
-					"success"
-				],
-				"type": "object",
-				"description": "Interface for a generic API response."
 			},
 			"HypercertClaimdata_36_1": {
 				"description": "Properties of an impact claim",
@@ -647,6 +715,66 @@
 		}
 	},
 	"paths": {
+		"/v1/users/{address}": {
+			"post": {
+				"operationId": "AddOrUpdateUser",
+				"responses": {
+					"201": {
+						"description": "User updated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AddOrUpdateUserResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Errors while validating user"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Add or update a user",
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "address",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AddOrUpdateUserRequest"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/v1/metadata": {
 			"post": {
 				"operationId": "StoreMetadata",

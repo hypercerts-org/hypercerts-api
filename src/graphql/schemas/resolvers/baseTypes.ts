@@ -10,6 +10,7 @@ import { GetAttestationSchemasArgs } from "../args/attestationSchemaArgs.js";
 import { GetAttestationsArgs } from "../args/attestationArgs.js";
 import { GetHypercertsArgs } from "../args/hypercertsArgs.js";
 import { GetSalesArgs } from "../args/salesArgs.js";
+import { GetUserArgs } from "../args/userArgs.js";
 
 export function DataResponse<TItem extends object>(
   TItemClass: ClassType<TItem>,
@@ -270,6 +271,33 @@ export function createBaseResolver<T extends ClassType>(
         const error = e as Error;
         throw new Error(
           `[${entityFieldName}Resolver::getSales] Error fetching sales: ${error.message}`,
+        );
+      }
+    }
+
+    getUsers(args: GetUserArgs, single: boolean = false) {
+      console.debug(`[${entityFieldName}Resolver::getUsers] Fetching users`);
+
+      try {
+        const queries = this.supabaseDataService.getUsers(args);
+        if (single) {
+          return queries.data.executeTakeFirst();
+        }
+
+        return this.supabaseDataService.db
+          .transaction()
+          .execute(async (transaction) => {
+            const dataRes = await transaction.executeQuery(queries.data);
+            const countRes = await transaction.executeQuery(queries.count);
+            return {
+              data: dataRes.rows,
+              count: countRes.rows[0].count,
+            };
+          });
+      } catch (e) {
+        const error = e as Error;
+        throw new Error(
+          `[${entityFieldName}Resolver::getUsers] Error fetching users: ${error.message}`,
         );
       }
     }

@@ -64,13 +64,6 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: "blueprints_admin_id_fkey";
-            columns: ["admin_id"];
-            isOneToOne: false;
-            referencedRelation: "users";
-            referencedColumns: ["address"];
-          },
-          {
             foreignKeyName: "blueprints_registry_id_fkey";
             columns: ["registry_id"];
             isOneToOne: false;
@@ -396,24 +389,27 @@ export type Database = {
       users: {
         Row: {
           address: string;
-          auth: Json;
+          avatar: string | null;
+          chain_id: number;
           created_at: string;
-          email: string | null;
-          id: string | null;
+          display_name: string | null;
+          id: string;
         };
         Insert: {
           address: string;
-          auth?: Json;
+          avatar?: string | null;
+          chain_id: number;
           created_at?: string;
-          email?: string | null;
-          id?: string | null;
+          display_name?: string | null;
+          id?: string;
         };
         Update: {
           address?: string;
-          auth?: Json;
+          avatar?: string | null;
+          chain_id?: number;
           created_at?: string;
-          email?: string | null;
-          id?: string | null;
+          display_name?: string | null;
+          id?: string;
         };
         Relationships: [];
       };
@@ -573,7 +569,6 @@ export type Database = {
           owner_id: string | null;
           path_tokens: string[] | null;
           updated_at: string | null;
-          user_metadata: Json | null;
           version: string | null;
         };
         Insert: {
@@ -587,7 +582,6 @@ export type Database = {
           owner_id?: string | null;
           path_tokens?: string[] | null;
           updated_at?: string | null;
-          user_metadata?: Json | null;
           version?: string | null;
         };
         Update: {
@@ -601,7 +595,6 @@ export type Database = {
           owner_id?: string | null;
           path_tokens?: string[] | null;
           updated_at?: string | null;
-          user_metadata?: Json | null;
           version?: string | null;
         };
         Relationships: [
@@ -623,7 +616,6 @@ export type Database = {
           key: string;
           owner_id: string | null;
           upload_signature: string;
-          user_metadata: Json | null;
           version: string;
         };
         Insert: {
@@ -634,7 +626,6 @@ export type Database = {
           key: string;
           owner_id?: string | null;
           upload_signature: string;
-          user_metadata?: Json | null;
           version: string;
         };
         Update: {
@@ -645,7 +636,6 @@ export type Database = {
           key?: string;
           owner_id?: string | null;
           upload_signature?: string;
-          user_metadata?: Json | null;
           version?: string;
         };
         Relationships: [
