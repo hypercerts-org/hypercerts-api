@@ -65,9 +65,9 @@ export class UserController extends Controller {
           { name: "displayName", type: "string" },
           { name: "avatar", type: "string" },
         ],
-        UpdateRequest: [{ name: "user", type: "User" }],
+        UserUpdateRequest: [{ name: "user", type: "User" }],
       },
-      primaryType: "UpdateRequest",
+      primaryType: "UserUpdateRequest",
       signature: signature as `0x${string}`,
       message: {
         user: {
