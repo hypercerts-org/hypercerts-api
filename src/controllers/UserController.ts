@@ -94,6 +94,7 @@ export class UserController extends Controller {
           address,
           display_name: parsedBody.data.display_name,
           avatar: parsedBody.data.avatar,
+          chain_id,
         },
       ]);
 

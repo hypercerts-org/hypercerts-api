@@ -60,6 +60,7 @@ export const yoga = createYoga({
       session: () => null,
       ttl: 300_000,
       cache,
+      idFields: ["id", "address", "chain_id"],
     }),
   ],
 });

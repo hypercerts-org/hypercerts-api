@@ -214,7 +214,7 @@ export class SupabaseDataService {
       .insertInto("users")
       .values(users)
       .onConflict((oc) =>
-        oc.column("address").doUpdateSet((eb) => ({
+        oc.constraint("users_address_chain_id").doUpdateSet((eb) => ({
           avatar: eb.ref("excluded.avatar"),
           display_name: eb.ref("excluded.display_name"),
         })),

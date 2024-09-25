@@ -64,13 +64,6 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: "blueprints_admin_id_fkey";
-            columns: ["admin_id"];
-            isOneToOne: false;
-            referencedRelation: "users";
-            referencedColumns: ["address"];
-          },
-          {
             foreignKeyName: "blueprints_registry_id_fkey";
             columns: ["registry_id"];
             isOneToOne: false;
@@ -397,20 +390,26 @@ export type Database = {
         Row: {
           address: string;
           avatar: string | null;
+          chain_id: number;
           created_at: string;
           display_name: string | null;
+          id: string;
         };
         Insert: {
           address: string;
           avatar?: string | null;
+          chain_id: number;
           created_at?: string;
           display_name?: string | null;
+          id?: string;
         };
         Update: {
           address?: string;
           avatar?: string | null;
+          chain_id?: number;
           created_at?: string;
           display_name?: string | null;
+          id?: string;
         };
         Relationships: [];
       };
