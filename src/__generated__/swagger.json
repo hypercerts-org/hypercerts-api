@@ -117,6 +117,7 @@
 				"description": "Interface for a generic API response."
 			},
 			"AddOrUpdateUserRequest": {
+				"description": "Interface for a user add or update request.",
 				"properties": {
 					"display_name": {
 						"type": "string"
@@ -718,9 +719,12 @@
 			"HyperboardCreateRequest": {
 				"description": "Interface for creating a hyperboard",
 				"properties": {
-					"chainId": {
-						"type": "number",
-						"format": "double"
+					"chainIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
 					},
 					"title": {
 						"type": "string"
@@ -777,7 +781,7 @@
 					}
 				},
 				"required": [
-					"chainId",
+					"chainIds",
 					"title",
 					"collections",
 					"borderColor",
@@ -793,9 +797,12 @@
 					"id": {
 						"type": "string"
 					},
-					"chainId": {
-						"type": "number",
-						"format": "double"
+					"chainIds": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
 					},
 					"title": {
 						"type": "string"
@@ -859,7 +866,7 @@
 				},
 				"required": [
 					"id",
-					"chainId",
+					"chainIds",
 					"title",
 					"collections",
 					"borderColor",

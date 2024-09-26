@@ -23,6 +23,7 @@ import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 import { getEvmClient } from "../utils/getRpcUrl.js";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { CONSTANTS } from "@hypercerts-org/sdk";
+import _ from "lodash";
 
 const allChains = Object.keys(CONSTANTS.DEPLOYMENTS).map((chain) =>
   parseInt(chain),
@@ -45,12 +46,17 @@ export class HyperboardController extends Controller {
   ): Promise<HyperboardCreateResponse> {
     const inputSchema = z
       .object({
-        chainId: z
-          .number()
-          .int()
-          .refine((value) => allChains.includes(value), {
-            message: "Chain is not supported",
-          }),
+        chainIds: z
+          .array(
+            z
+              .number()
+              .int()
+              .refine((value) => allChains.includes(value), {
+                message: "Chain is not supported",
+              }),
+          )
+          .min(1, "Exactly 1 chain allowed")
+          .max(1, "Exactly 1 chain allowed"),
         title: z
           .string()
           .trim()
@@ -120,7 +126,7 @@ export class HyperboardController extends Controller {
         (values) => {
           // Check if all chainsIds are the same
           try {
-            const chainId = values.chainId;
+            const chainId = values.chainIds[0];
             const allHypercertIds = values.collections
               .flatMap((collection) =>
                 collection.hypercerts.map((hc) => hc.hypercertId),
@@ -156,7 +162,8 @@ export class HyperboardController extends Controller {
       };
     }
 
-    const { signature, adminAddress, chainId } = parsedBody.data;
+    const { signature, adminAddress, chainIds } = parsedBody.data;
+    const chainId = chainIds[0];
     const client = getEvmClient(chainId);
     const success = await client.verifyTypedData({
       address: adminAddress as `0x${string}`,
@@ -190,20 +197,27 @@ export class HyperboardController extends Controller {
     const dataService = new SupabaseDataService();
     let hyperboardId: string;
     try {
-      const hyperboard = await dataService.upsertHyperboards([
+      const hyperboards = await dataService.upsertHyperboards([
         {
-          admin_id: adminAddress,
           background_image: parsedBody.data.backgroundImg,
           tile_border_color: parsedBody.data.borderColor,
-          chain_id: chainId,
+          chain_ids: parsedBody.data.chainIds,
           name: parsedBody.data.title,
           grayscale_images: false,
         },
       ]);
-      if (!hyperboard.data?.[0]?.id) {
+      if (!hyperboards[0]?.id) {
         throw new Error("Hyperboard must have an id to add collections.");
       }
-      hyperboardId = hyperboard.data?.[0]?.id;
+      hyperboardId = hyperboards[0]?.id;
+      const admin = await dataService.addAdminToHyperboard(
+        hyperboardId,
+        adminAddress,
+        chainId,
+      );
+      if (!admin) {
+        throw new Error("Admin must be added to hyperboard.");
+      }
     } catch (err) {
       console.error(err);
       this.setStatus(400);
@@ -218,28 +232,42 @@ export class HyperboardController extends Controller {
       try {
         const collectionCreateResponse = await dataService.upsertCollections([
           {
-            admin_id: adminAddress,
             name: collection.title,
             description: collection.description,
-            chain_id: chainId,
+            chain_ids: [chainId],
           },
         ]);
 
-        const collectionId = collectionCreateResponse.data?.[0]?.id;
+        const collectionId = collectionCreateResponse[0]?.id;
         if (!collectionId) {
           throw new Error("Collection must have an id to add claims.");
         }
 
+        const admin = await dataService.addAdminToCollection(
+          collectionId,
+          adminAddress,
+          chainId,
+        );
+
+        if (!admin) {
+          throw new Error("Admin must be added to collection.");
+        }
+
         const hypercerts = collection.hypercerts.map((hc) => ({
           hypercert_id: hc.hypercertId,
-          display_size: hc.factor,
-          admin_id: adminAddress,
-          chain_id: chainId,
           collection_id: collectionId,
         }));
         await dataService.upsertHypercerts(hypercerts);
-
         await dataService.addCollectionToHyperboard(hyperboardId, collectionId);
+
+        await dataService.upsertHyperboardHypercertMetadata(
+          collection.hypercerts.map((hc) => ({
+            hypercert_id: hc.hypercertId,
+            hyperboard_id: hyperboardId,
+            collection_id: collectionId,
+            display_size: hc.factor,
+          })),
+        );
       } catch (e) {
         console.error(e);
         this.setStatus(400);
@@ -273,12 +301,17 @@ export class HyperboardController extends Controller {
     const inputSchema = z
       .object({
         id: z.string().uuid(),
-        chainId: z
-          .number()
-          .int()
-          .refine((value) => allChains.includes(value), {
-            message: "Chain is not supported",
-          }),
+        chainIds: z
+          .array(
+            z
+              .number()
+              .int()
+              .refine((value) => allChains.includes(value), {
+                message: "Chain is not supported",
+              }),
+          )
+          .min(1, "Exactly 1 chain allowed")
+          .max(1, "Exactly 1 chain allowed"),
         title: z
           .string()
           .trim()
@@ -350,7 +383,7 @@ export class HyperboardController extends Controller {
         (values) => {
           // Check if all chainsIds are the same
           try {
-            const chainId = values.chainId;
+            const chainId = values.chainIds[0];
             const allHypercertIds = values.collections
               .flatMap((collection) =>
                 collection.hypercerts.map((hc) => hc.hypercertId),
@@ -386,7 +419,8 @@ export class HyperboardController extends Controller {
       };
     }
 
-    const { signature, adminAddress, chainId } = parsedBody.data;
+    const { signature, adminAddress, chainIds } = parsedBody.data;
+    const chainId = chainIds[0];
     const client = getEvmClient(chainId);
     const success = await client.verifyTypedData({
       address: adminAddress as `0x${string}`,
@@ -419,14 +453,39 @@ export class HyperboardController extends Controller {
 
     const dataService = new SupabaseDataService();
 
+    const hyperboard = await dataService.getHyperboardById(hyperboardId);
+    console.log("The hyperboard", hyperboard);
+
+    if (!hyperboard) {
+      this.setStatus(404);
+      return {
+        success: false,
+        message: "Hyperboard not found",
+        data: null,
+      };
+    }
+
+    // Check if the admin is authorized to update the hyperboard
+    const adminUser = hyperboard.admins.find(
+      (admin) => admin.address === adminAddress && admin.chain_id === chainId,
+    );
+
+    if (!adminUser) {
+      this.setStatus(401);
+      return {
+        success: false,
+        message: "Not authorized to update hyperboard",
+        data: null,
+      };
+    }
+
     try {
-      dataService.upsertHyperboards([
+      await dataService.upsertHyperboards([
         {
           id: hyperboardId,
-          admin_id: adminAddress,
           background_image: parsedBody.data.backgroundImg || null,
           tile_border_color: parsedBody.data.borderColor,
-          chain_id: chainId,
+          chain_ids: _.uniq([...hyperboard.chain_ids, chainId]),
           name: parsedBody.data.title,
           grayscale_images: false,
         },
@@ -446,27 +505,39 @@ export class HyperboardController extends Controller {
     );
     for (const collection of collectionsToUpdate) {
       try {
+        if (!collection.id) {
+          continue;
+        }
+        const currentCollection = await dataService.getCollectionById(
+          collection.id,
+        );
+        if (!currentCollection) {
+          throw new Error("Collection not found");
+        }
         const collectionsResult = await dataService.upsertCollections([
           {
             id: collection.id,
-            admin_id: adminAddress,
             name: collection.title,
+            chain_ids: _.uniq([...currentCollection.chain_ids, chainId]),
             description: collection.description,
-            chain_id: chainId,
           },
         ]);
-        const collectionId = collectionsResult.data?.[0]?.id;
+        const collectionId = collectionsResult[0]?.id;
         if (!collectionId) {
           throw new Error("Collection must have an id to add claims.");
         }
         await dataService.upsertHypercerts(
           collection.hypercerts.map((hc) => ({
-            id: hc.id,
             hypercert_id: hc.hypercertId,
-            display_size: hc.factor,
-            admin_id: adminAddress,
-            chain_id: chainId,
             collection_id: collectionId,
+          })),
+        );
+        await dataService.upsertHyperboardHypercertMetadata(
+          collection.hypercerts.map((hc) => ({
+            hypercert_id: hc.hypercertId,
+            hyperboard_id: hyperboardId,
+            collection_id: collectionId,
+            display_size: hc.factor,
           })),
         );
       } catch (e) {
@@ -487,26 +558,39 @@ export class HyperboardController extends Controller {
       try {
         const collectionCreateResponse = await dataService.upsertCollections([
           {
-            admin_id: adminAddress,
             name: collection.title,
             description: collection.description,
-            chain_id: chainId,
+            chain_ids: [chainId],
           },
         ]);
 
-        const collectionId = collectionCreateResponse.data?.[0]?.id;
+        const collectionId = collectionCreateResponse[0]?.id;
         if (!collectionId) {
           throw new Error("Collection must have an id to add claims.");
+        }
+        const admin = await dataService.addAdminToCollection(
+          collectionId,
+          adminAddress,
+          chainId,
+        );
+
+        if (!admin) {
+          throw new Error("Admin must be added to collection.");
         }
 
         const hypercerts = collection.hypercerts.map((hc) => ({
           hypercert_id: hc.hypercertId,
-          display_size: hc.factor,
-          admin_id: adminAddress,
-          chain_id: chainId,
           collection_id: collectionId,
         }));
         await dataService.upsertHypercerts(hypercerts);
+        await dataService.upsertHyperboardHypercertMetadata(
+          collection.hypercerts.map((hc) => ({
+            hypercert_id: hc.hypercertId,
+            hyperboard_id: hyperboardId,
+            collection_id: collectionId,
+            display_size: hc.factor,
+          })),
+        );
 
         await dataService.addCollectionToHyperboard(hyperboardId, collectionId);
       } catch (e) {
@@ -561,7 +645,7 @@ export class HyperboardController extends Controller {
     const dataService = new SupabaseDataService();
     const hyperboard = await dataService.getHyperboardById(hyperboardId);
 
-    if (!hyperboard.data) {
+    if (!hyperboard) {
       this.setStatus(404);
       return {
         success: false,
@@ -569,8 +653,14 @@ export class HyperboardController extends Controller {
       };
     }
 
-    const { admin_id, chain_id } = hyperboard.data;
-    if (!(admin_id === adminAddress)) {
+    const { admins, chain_ids } = hyperboard;
+    const chain_id = chain_ids[0];
+    if (
+      !admins.find(
+        (admin) =>
+          admin.address === adminAddress && admin.chain_id === chain_id,
+      )
+    ) {
       this.setStatus(401);
       return {
         success: false,

@@ -210,7 +210,7 @@ const models: TsoaRoute.Models = {
     "HyperboardCreateRequest": {
         "dataType": "refObject",
         "properties": {
-            "chainId": {"dataType":"double","required":true},
+            "chainIds": {"dataType":"array","array":{"dataType":"double"},"required":true},
             "title": {"dataType":"string","required":true},
             "collections": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"hypercerts":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"hypercertId":{"dataType":"string","required":true}}},"required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true}}},"required":true},
             "backgroundImg": {"dataType":"string"},
@@ -225,7 +225,7 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "id": {"dataType":"string","required":true},
-            "chainId": {"dataType":"double","required":true},
+            "chainIds": {"dataType":"array","array":{"dataType":"double"},"required":true},
             "title": {"dataType":"string","required":true},
             "collections": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"hypercerts":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"hypercertId":{"dataType":"string","required":true},"id":{"dataType":"string"}}},"required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"id":{"dataType":"string"}}},"required":true},
             "backgroundImg": {"dataType":"string"},

@@ -152,8 +152,6 @@ revoke truncate on table "public"."registries" from "service_role";
 
 revoke update on table "public"."registries" from "service_role";
 
-alter table "public"."blueprints" drop constraint "blueprints_admin_id_fkey";
-
 alter table "public"."blueprints" drop constraint "blueprints_registry_id_fkey";
 
 alter table "public"."claims" drop constraint "claims_registry_id_fkey";

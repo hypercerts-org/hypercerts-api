@@ -20,6 +20,7 @@ import { expressionBuilder, Kysely } from "kysely";
 import { generateFilterValues } from "../graphql/schemas/utils/filters-kysely.js";
 import { SortOrder } from "../graphql/schemas/enums/sortEnums.js";
 import { kyselyData } from "../client/kysely.js";
+import { jsonArrayFrom } from "kysely/helpers/postgres";
 
 @singleton()
 export class SupabaseDataService {
@@ -133,7 +134,12 @@ export class SupabaseDataService {
   getHyperboards(args: GetHyperboardsArgs) {
     let query = this.supabaseData
       .from("hyperboards")
-      .select("*, collections(*, hypercerts(*))", { count: "exact" });
+      .select(
+        "*, collections!hyperboard_collections(*, hypercerts!claims_registry_id_fkey(*)), admins:users!hyperboard_admins(*), hypercert_metadata:hyperboard_hypercert_metadata!hyperboard_hypercert_metadata_hyperboard_id_fkey(*)",
+        {
+          count: "exact",
+        },
+      );
 
     const { where, sort, offset, first } = args;
 
@@ -232,6 +238,194 @@ export class SupabaseDataService {
     };
   }
 
+  async upsertHypercerts(
+    hypercerts: DataDatabase["public"]["Tables"]["hypercerts"]["Insert"][],
+  ) {
+    return this.db
+      .insertInto("hypercerts")
+      .values(hypercerts)
+      .onConflict((oc) =>
+        oc.columns(["hypercert_id", "collection_id"]).doUpdateSet((eb) => ({
+          hypercert_id: eb.ref("excluded.hypercert_id"),
+          collection_id: eb.ref("excluded.collection_id"),
+        })),
+      )
+      .returning(["hypercert_id", "collection_id"])
+      .execute();
+  }
+
+  async upsertCollections(
+    collections: DataDatabase["public"]["Tables"]["collections"]["Insert"][],
+  ) {
+    return this.db
+      .insertInto("collections")
+      .values(collections)
+      .onConflict((oc) =>
+        oc.column("id").doUpdateSet((eb) => ({
+          id: eb.ref("excluded.id"),
+          name: eb.ref("excluded.name"),
+          description: eb.ref("excluded.description"),
+          chain_ids: eb.ref("excluded.chain_ids"),
+          hidden: eb.ref("excluded.hidden"),
+        })),
+      )
+      .returning(["id"])
+      .execute();
+  }
+
+  async upsertHyperboardHypercertMetadata(
+    metadata: DataDatabase["public"]["Tables"]["hyperboard_hypercert_metadata"]["Insert"][],
+  ) {
+    return this.db
+      .insertInto("hyperboard_hypercert_metadata")
+      .values(metadata)
+      .onConflict((oc) =>
+        oc
+          .columns(["hyperboard_id", "hypercert_id", "collection_id"])
+          .doUpdateSet((eb) => ({
+            hyperboard_id: eb.ref("excluded.hyperboard_id"),
+            hypercert_id: eb.ref("excluded.hypercert_id"),
+            display_size: eb.ref("excluded.display_size"),
+          })),
+      )
+      .returning(["hyperboard_id", "hypercert_id", "collection_id"])
+      .execute();
+  }
+
+  async upsertHyperboards(
+    hyperboards: DataDatabase["public"]["Tables"]["hyperboards"]["Insert"][],
+  ) {
+    return this.db
+      .insertInto("hyperboards")
+      .values(hyperboards)
+      .onConflict((oc) =>
+        oc.column("id").doUpdateSet((eb) => ({
+          id: eb.ref("excluded.id"),
+          name: eb.ref("excluded.name"),
+          chain_ids: eb.ref("excluded.chain_ids"),
+          background_image: eb.ref("excluded.background_image"),
+          grayscale_images: eb.ref("excluded.grayscale_images"),
+          tile_border_color: eb.ref("excluded.tile_border_color"),
+        })),
+      )
+      .returning(["id"])
+      .execute();
+  }
+
+  async getHyperboardById(hyperboardId: string) {
+    const res = await this.getHyperboards({
+      where: { id: { eq: hyperboardId } },
+    });
+    return res.data?.[0];
+  }
+
+  async deleteHyperboard(hyperboardId: string) {
+    return this.db
+      .deleteFrom("hyperboards")
+      .where("id", "=", hyperboardId)
+      .execute();
+  }
+
+  async getCollectionById(collectionId: string) {
+    return this.db
+      .selectFrom("collections")
+      .selectAll()
+      .where("id", "=", collectionId)
+      .executeTakeFirst();
+  }
+
+  async addCollectionToHyperboard(hyperboardId: string, collectionId: string) {
+    return this.db
+      .insertInto("hyperboard_collections")
+      .values([
+        {
+          hyperboard_id: hyperboardId,
+          collection_id: collectionId,
+        },
+      ])
+      .onConflict((oc) =>
+        oc.columns(["hyperboard_id", "collection_id"]).doUpdateSet((eb) => ({
+          hyperboard_id: eb.ref("excluded.hyperboard_id"),
+          collection_id: eb.ref("excluded.collection_id"),
+        })),
+      )
+      .returning(["hyperboard_id", "collection_id"])
+      .execute();
+  }
+
+  async getOrCreateUser(address: string, chainId: number) {
+    const user = await this.db
+      .selectFrom("users")
+      .select(["id"])
+      .where("address", "=", address)
+      .where("chain_id", "=", chainId)
+      .execute();
+
+    if (user.length === 0) {
+      return this.db
+        .insertInto("users")
+        .values([
+          {
+            address,
+            chain_id: chainId,
+          },
+        ])
+        .returning(["id"])
+        .execute()
+        .then((res) => res[0]);
+    }
+
+    return user[0];
+  }
+
+  async addAdminToHyperboard(
+    hyperboardId: string,
+    adminAddress: string,
+    chainId: number,
+  ) {
+    const user = await this.getOrCreateUser(adminAddress, chainId);
+    return this.db
+      .insertInto("hyperboard_admins")
+      .values([
+        {
+          hyperboard_id: hyperboardId,
+          user_id: user.id,
+        },
+      ])
+      .onConflict((oc) =>
+        oc.columns(["hyperboard_id", "user_id"]).doUpdateSet((eb) => ({
+          hyperboard_id: eb.ref("excluded.hyperboard_id"),
+          user_id: eb.ref("excluded.user_id"),
+        })),
+      )
+      .returning(["hyperboard_id", "user_id"])
+      .executeTakeFirst();
+  }
+
+  async addAdminToCollection(
+    collectionId: string,
+    adminAddress: string,
+    chainId: number,
+  ) {
+    const user = await this.getOrCreateUser(adminAddress, chainId);
+    return this.db
+      .insertInto("collection_admins")
+      .values([
+        {
+          collection_id: collectionId,
+          user_id: user.id,
+        },
+      ])
+      .onConflict((oc) =>
+        oc.columns(["collection_id", "user_id"]).doUpdateSet((eb) => ({
+          collection_id: eb.ref("excluded.collection_id"),
+          user_id: eb.ref("excluded.user_id"),
+        })),
+      )
+      .returning(["collection_id", "user_id"])
+      .executeTakeFirst();
+  }
+
   getDataQuery<
     DB extends KyselyDataDatabase,
     T extends keyof DB & string,
@@ -241,6 +435,36 @@ export class SupabaseDataService {
     switch (tableName) {
       case "users":
         return this.db.selectFrom("users").selectAll();
+      case "hyperboards":
+        return (
+          this.db
+            .selectFrom("hyperboards")
+            .selectAll()
+            // .select((eb) => [
+            //   jsonArrayFrom(
+            //     eb
+            //       .selectFrom("hyperboard_admins")
+            //       .select(["hyperboard_id", "user_id"])
+            //       .whereRef("id", "=", "hyperboard_admins.hyperboard_id"),
+            //   ).as("admins"),
+            // ])
+            .select((eb) => [
+              jsonArrayFrom(
+                eb
+                  .selectFrom("hyperboard_admins")
+                  .select((eb) => [
+                    jsonArrayFrom(
+                      eb
+                        .selectFrom("users")
+                        .select(["address", "chain_id"])
+                        .whereRef("id", "=", "hyperboard_admins.user_id"),
+                    ).as("users"),
+                  ])
+                  .whereRef("id", "=", "hyperboard_admins.hyperboard_id"),
+              ).as("admins"),
+            ])
+        );
+
       default:
         throw new Error(`Table ${tableName.toString()} not found`);
     }
@@ -255,6 +479,10 @@ export class SupabaseDataService {
     switch (tableName) {
       case "users":
         return this.db.selectFrom("users").select((expressionBuilder) => {
+          return expressionBuilder.fn.countAll().as("count");
+        });
+      case "hyperboards":
+        return this.db.selectFrom("hyperboards").select((expressionBuilder) => {
           return expressionBuilder.fn.countAll().as("count");
         });
       default:
@@ -275,6 +503,7 @@ export class SupabaseDataService {
     },
   ) {
     let query = this.getDataQuery(tableName, args);
+    console.log(query.compile().sql);
 
     const { where, first, offset, sort } = args;
     const eb = expressionBuilder(query);
@@ -402,102 +631,5 @@ export class SupabaseDataService {
     }
 
     return query;
-  }
-
-  async addHypercertsToCollection(
-    collectionId: string,
-    hypercerts: Omit<
-      DataDatabase["public"]["Tables"]["hypercerts"]["Insert"],
-      "collection_id"
-    >[],
-  ) {
-    return this.supabaseData
-      .from("hypercerts")
-      .insert(
-        hypercerts.map((hypercert) => ({
-          ...hypercert,
-          collection_id: collectionId,
-        })),
-      )
-      .select("*")
-      .throwOnError();
-  }
-
-  async createHyperboard(
-    hyperboard: DataDatabase["public"]["Tables"]["hyperboards"]["Insert"],
-  ) {
-    return this.supabaseData
-      .from("hyperboards")
-      .insert([hyperboard])
-      .select("*")
-      .single()
-      .throwOnError();
-  }
-
-  async addCollectionToHyperboard(hyperboardId: string, collectionId: string) {
-    return this.supabaseData
-      .from("hyperboard_collections")
-      .insert([
-        {
-          hyperboard_id: hyperboardId,
-          collection_id: collectionId,
-        },
-      ])
-      .select("*")
-      .throwOnError();
-  }
-
-  async getHyperboardById(hyperboardId: string) {
-    return this.supabaseData
-      .from("hyperboards")
-      .select("*")
-      .eq("id", hyperboardId)
-      .maybeSingle()
-      .throwOnError();
-  }
-
-  async deleteHyperboard(hyperboardId: string) {
-    return this.supabaseData
-      .from("hyperboards")
-      .delete()
-      .eq("id", hyperboardId)
-      .single()
-      .throwOnError();
-  }
-
-  async upsertHyperboards(
-    hyperboards: DataDatabase["public"]["Tables"]["hyperboards"]["Insert"][],
-  ) {
-    return this.supabaseData
-      .from("hyperboards")
-      .upsert(
-        hyperboards.map((hb) => ({ ...hb, id: hb.id || crypto.randomUUID() })),
-      )
-      .select("*")
-      .throwOnError();
-  }
-
-  async upsertCollections(
-    collections: DataDatabase["public"]["Tables"]["collections"]["Insert"][],
-  ) {
-    return this.supabaseData
-      .from("collections")
-      .upsert(
-        collections.map((c) => ({ ...c, id: c.id || crypto.randomUUID() })),
-      )
-      .select("*")
-      .throwOnError();
-  }
-
-  async upsertHypercerts(
-    hypercerts: DataDatabase["public"]["Tables"]["hypercerts"]["Insert"][],
-  ) {
-    return this.supabaseData
-      .from("hypercerts")
-      .upsert(
-        hypercerts.map((hc) => ({ ...hc, id: hc.id || crypto.randomUUID() })),
-      )
-      .select("*")
-      .throwOnError();
   }
 }

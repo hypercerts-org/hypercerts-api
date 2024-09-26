@@ -10,6 +10,9 @@ class User {
 
   @Field({ description: "The avatar of the user", nullable: true })
   avatar?: string;
+
+  @Field()
+  chain_id?: number;
 }
 
 export { User };

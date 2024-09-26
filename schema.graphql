@@ -252,11 +252,8 @@ input BooleanSearchOptions {
 
 """Collection of hypercerts for reference and display purposes"""
 type Collection {
-  """Address of the collection owner"""
-  admin_id: String!
-
   """Chain ID of the collection"""
-  chain_id: EthBigInt
+  chain_ids: [EthBigInt!]
 
   """ID of the collection"""
   created_at: String!
@@ -445,18 +442,20 @@ type GetUsersResponse {
 
 """Hyperboard of hypercerts for reference and display purposes"""
 type Hyperboard {
-  """Address of the hyperboard owner"""
-  admin_id: String!
+  admins: [User!]!
 
   """Background image of the hyperboard"""
   background_image: String
 
   """Chain ID of the hyperboard"""
-  chain_id: EthBigInt
+  chain_ids: [EthBigInt!]
   collections: [Collection!]!
 
   """Whether the hyperboard should be rendered as a grayscale image"""
-  grayscale_image: Boolean
+  grayscale_images: Boolean
+
+  """Hypercert metadata entries within the context of the hyperboard"""
+  hypercert_metadata: [HypercertMetadata!]
   id: ID!
 
   """Name of the collection"""
@@ -574,22 +573,21 @@ type HypercertBaseType {
 
 """Collection hypercert entry"""
 type HypercertEntry {
-  """Address of the hypercert owner"""
-  admin_id: String!
-
-  """Chain ID of the hypercert"""
-  chain_id: EthBigInt
-
-  """Display size of the hypercert"""
-  display_size: Float!
-
   """ID of the hypercert"""
   hypercert_id: String!
-  id: ID!
 }
 
 input HypercertFetchInput {
   by: HypercertSortOptions
+}
+
+"""Hypercert metadata entries within the context of a hyperboard"""
+type HypercertMetadata {
+  """Factor of the hypercert"""
+  display_size: Float!
+
+  """ID of the hypercert"""
+  hypercert_id: String!
 }
 
 input HypercertSortOptions {
@@ -906,6 +904,7 @@ type User {
 
   """The avatar of the user"""
   avatar: String
+  chain_id: Float!
 
   """The display name of the user"""
   display_name: String

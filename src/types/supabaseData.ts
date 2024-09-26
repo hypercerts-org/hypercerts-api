@@ -34,29 +34,56 @@ export type Database = {
   };
   public: {
     Tables: {
+      blueprint_admins: {
+        Row: {
+          blueprint_id: number;
+          created_at: string;
+          user_id: string;
+        };
+        Insert: {
+          blueprint_id: number;
+          created_at?: string;
+          user_id: string;
+        };
+        Update: {
+          blueprint_id?: number;
+          created_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "blueprint_admins_blueprint_id_fkey";
+            columns: ["blueprint_id"];
+            isOneToOne: false;
+            referencedRelation: "blueprints";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "blueprint_admins_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       blueprints: {
         Row: {
-          admin_id: string;
           created_at: string;
-          display_size: number;
           form_values: Json;
           id: number;
           minted: boolean;
           minter_address: string;
         };
         Insert: {
-          admin_id: string;
           created_at?: string;
-          display_size?: number;
           form_values: Json;
           id?: number;
           minted?: boolean;
           minter_address: string;
         };
         Update: {
-          admin_id?: string;
           created_at?: string;
-          display_size?: number;
           form_values?: Json;
           id?: number;
           minted?: boolean;
@@ -64,26 +91,69 @@ export type Database = {
         };
         Relationships: [];
       };
+      collection_admins: {
+        Row: {
+          collection_id: string;
+          created_at: string;
+          user_id: string;
+        };
+        Insert: {
+          collection_id: string;
+          created_at?: string;
+          user_id: string;
+        };
+        Update: {
+          collection_id?: string;
+          created_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "collection_admins_admin_address_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "collection_admins_collection_id_fkey";
+            columns: ["collection_id"];
+            isOneToOne: false;
+            referencedRelation: "collections";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       collection_blueprints: {
         Row: {
           blueprint_id: number;
           collection_id: string;
           created_at: string;
+          display_size: number;
         };
         Insert: {
           blueprint_id: number;
           collection_id: string;
           created_at?: string;
+          display_size: number;
         };
         Update: {
           blueprint_id?: number;
           collection_id?: string;
           created_at?: string;
+          display_size?: number;
         };
         Relationships: [
           {
-            foreignKeyName: "blueprints_registry_id_fkey";
-            columns: ["registry_id"];
+            foreignKeyName: "collection_blueprints_blueprint_id_fkey";
+            columns: ["blueprint_id"];
+            isOneToOne: false;
+            referencedRelation: "blueprints";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "collection_blueprints_collection_id_fkey";
+            columns: ["collection_id"];
             isOneToOne: false;
             referencedRelation: "collections";
             referencedColumns: ["id"];
@@ -92,8 +162,7 @@ export type Database = {
       };
       collections: {
         Row: {
-          admin_id: string;
-          chain_id: number;
+          chain_ids: number[];
           created_at: string;
           description: string;
           hidden: boolean;
@@ -101,8 +170,7 @@ export type Database = {
           name: string;
         };
         Insert: {
-          admin_id: string;
-          chain_id: number;
+          chain_ids: number[];
           created_at?: string;
           description: string;
           hidden?: boolean;
@@ -110,8 +178,7 @@ export type Database = {
           name: string;
         };
         Update: {
-          admin_id?: string;
-          chain_id?: number;
+          chain_ids?: number[];
           created_at?: string;
           description?: string;
           hidden?: boolean;
@@ -195,6 +262,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      hyperboard_admins: {
+        Row: {
+          created_at: string;
+          hyperboard_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          hyperboard_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          hyperboard_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "hyperboard_admins_admin_address_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "hyperboard_admins_hyperboard_id_fkey";
+            columns: ["hyperboard_id"];
+            isOneToOne: false;
+            referencedRelation: "hyperboards";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       hyperboard_collections: {
         Row: {
           collection_id: string;
@@ -234,11 +334,56 @@ export type Database = {
           },
         ];
       };
+      hyperboard_hypercert_metadata: {
+        Row: {
+          collection_id: string;
+          created_at: string;
+          display_size: number | null;
+          hyperboard_id: string;
+          hypercert_id: string;
+        };
+        Insert: {
+          collection_id: string;
+          created_at?: string;
+          display_size?: number | null;
+          hyperboard_id: string;
+          hypercert_id: string;
+        };
+        Update: {
+          collection_id?: string;
+          created_at?: string;
+          display_size?: number | null;
+          hyperboard_id?: string;
+          hypercert_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "hyperboard_hypercert_metadata_collection_id_fkey";
+            columns: ["collection_id"];
+            isOneToOne: false;
+            referencedRelation: "collections";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "hyperboard_hypercert_metadata_hyperboard_id_fkey";
+            columns: ["hyperboard_id"];
+            isOneToOne: false;
+            referencedRelation: "hyperboards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "hyperboard_hypercert_metadata_hypercert_id_collection_id_fkey";
+            columns: ["hypercert_id", "collection_id"];
+            isOneToOne: false;
+            referencedRelation: "hypercerts";
+            referencedColumns: ["hypercert_id", "collection_id"];
+          },
+        ];
+      };
       hyperboards: {
         Row: {
-          admin_id: string;
           background_image: string | null;
-          chain_id: number;
+          chain_ids: number[];
           created_at: string | null;
           grayscale_images: boolean;
           id: string;
@@ -246,9 +391,8 @@ export type Database = {
           tile_border_color: string | null;
         };
         Insert: {
-          admin_id: string;
           background_image?: string | null;
-          chain_id: number;
+          chain_ids: number[];
           created_at?: string | null;
           grayscale_images?: boolean;
           id?: string;
@@ -256,9 +400,8 @@ export type Database = {
           tile_border_color?: string | null;
         };
         Update: {
-          admin_id?: string;
           background_image?: string | null;
-          chain_id?: number;
+          chain_ids?: number[];
           created_at?: string | null;
           grayscale_images?: boolean;
           id?: string;
@@ -269,31 +412,19 @@ export type Database = {
       };
       hypercerts: {
         Row: {
-          admin_id: string;
-          chain_id: number;
           collection_id: string;
           created_at: string;
-          display_size: number;
           hypercert_id: string;
-          id: string;
         };
         Insert: {
-          admin_id: string;
-          chain_id: number;
           collection_id: string;
           created_at?: string;
-          display_size?: number;
           hypercert_id: string;
-          id?: string;
         };
         Update: {
-          admin_id?: string;
-          chain_id?: number;
           collection_id?: string;
           created_at?: string;
-          display_size?: number;
           hypercert_id?: string;
-          id?: string;
         };
         Relationships: [
           {
@@ -457,17 +588,6 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      add_claim_from_blueprint: {
-        Args: {
-          registry_id: string;
-          hypercert_id: string;
-          chain_id: number;
-          admin_id: string;
-          owner_id: string;
-          blueprint_id: number;
-        };
-        Returns: string;
-      };
       default_sponsor_metadata_by_address: {
         Args: {
           addresses: string[];

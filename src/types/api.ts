@@ -96,7 +96,7 @@ export type HyperboardCreateResponse = ApiResponse<{
  * Interface for creating a hyperboard
  */
 export interface HyperboardCreateRequest {
-  chainId: number;
+  chainIds: number[];
   title: string;
   collections: {
     title: string;
@@ -117,7 +117,7 @@ export interface HyperboardCreateRequest {
  */
 export interface HyperboardUpdateRequest {
   id: string;
-  chainId: number;
+  chainIds: number[];
   title: string;
   collections: {
     id?: string;

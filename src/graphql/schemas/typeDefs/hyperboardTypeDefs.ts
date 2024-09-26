@@ -1,6 +1,7 @@
 import { Field, ObjectType } from "type-graphql";
 import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
+import { User } from "./userTypeDefs.js";
 
 @ObjectType({
   description: "Hyperboard of hypercerts for reference and display purposes",
@@ -8,13 +9,11 @@ import { EthBigInt } from "../../scalars/ethBigInt.js";
 class Hyperboard extends BasicTypeDef {
   @Field({ description: "Name of the collection" })
   name?: string;
-  @Field({ description: "Address of the hyperboard owner" })
-  admin_id?: string;
-  @Field(() => EthBigInt, {
+  @Field(() => [EthBigInt], {
     nullable: true,
     description: "Chain ID of the hyperboard",
   })
-  chain_id?: bigint | number;
+  chain_ids?: (bigint | number)[];
   @Field({ nullable: true, description: "Background image of the hyperboard" })
   background_image?: string;
   @Field({
@@ -22,7 +21,7 @@ class Hyperboard extends BasicTypeDef {
     description:
       "Whether the hyperboard should be rendered as a grayscale image",
   })
-  grayscale_image?: boolean;
+  grayscale_images?: boolean;
   @Field({
     nullable: true,
     description: "Color of the borders of the hyperboard",
@@ -30,16 +29,17 @@ class Hyperboard extends BasicTypeDef {
   tile_border_color?: string;
 
   @Field(() => [Collection])
-  collections?: {
-    id: string;
-    created_at: string;
-    name: string;
-    description: string;
-    admin_id: string;
-    hidden: boolean;
-    chain_id: number;
-    hypercerts: [];
-  }[];
+  collections?: Collection[];
+
+  @Field(() => [User])
+  admins?: User[];
+
+  @Field(() => [HypercertMetadata], {
+    nullable: true,
+    description:
+      "Hypercert metadata entries within the context of the hyperboard",
+  })
+  hypercert_metadata?: HypercertMetadata[];
 }
 
 @ObjectType({
@@ -52,37 +52,36 @@ class Collection extends BasicTypeDef {
   name?: string;
   @Field({ description: "Description of the collection" })
   description?: string;
-  @Field({ description: "Address of the collection owner" })
-  admin_id?: string;
   @Field({ description: "Whether the collection should be hidden" })
   hidden?: boolean;
-  @Field(() => EthBigInt, {
+  @Field(() => [EthBigInt], {
     nullable: true,
     description: "Chain ID of the collection",
   })
-  chain_id?: number;
+  chain_ids?: number[];
   @Field(() => [HypercertEntry], {
     nullable: true,
     description: "Hypercert entries in the collection",
   })
-  hypercerts?: [];
+  hypercerts?: HypercertEntry[];
 }
 
 @ObjectType({
   description: "Collection hypercert entry",
 })
-class HypercertEntry extends BasicTypeDef {
+class HypercertEntry {
   @Field({ description: "ID of the hypercert" })
   hypercert_id?: string;
-  @Field({ description: "Display size of the hypercert" })
+}
+
+@ObjectType({
+  description: "Hypercert metadata entries within the context of a hyperboard",
+})
+class HypercertMetadata {
+  @Field({ description: "ID of the hypercert" })
+  hypercert_id?: string;
+  @Field({ description: "Factor of the hypercert" })
   display_size?: number;
-  @Field({ description: "Address of the hypercert owner" })
-  admin_id?: string;
-  @Field(() => EthBigInt, {
-    nullable: true,
-    description: "Chain ID of the hypercert",
-  })
-  chain_id?: bigint | number;
 }
 
 export { Hyperboard };
