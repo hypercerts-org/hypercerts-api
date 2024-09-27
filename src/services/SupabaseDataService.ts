@@ -132,14 +132,28 @@ export class SupabaseDataService {
   }
 
   getHyperboards(args: GetHyperboardsArgs) {
-    let query = this.supabaseData
-      .from("hyperboards")
-      .select(
-        "*, collections!hyperboard_collections(*, hypercerts!claims_registry_id_fkey(*)), admins:users!hyperboard_admins(*), hypercert_metadata:hyperboard_hypercert_metadata!hyperboard_hypercert_metadata_hyperboard_id_fkey(*)",
-        {
-          count: "exact",
-        },
+    let query = this.supabaseData.from("hyperboards").select(
+      `*,
+          collections!hyperboard_collections(
+            *,
+            hypercerts!claims_registry_id_fkey(*),
+            blueprints(*),
+            blueprint_metadata:hyperboard_blueprint_metadata(*),
+            admins:users!collection_admins(*)
+          ),
+          admins:users!hyperboard_admins(*),
+          hypercert_metadata:hyperboard_hypercert_metadata!hyperboard_hypercert_metadata_hyperboard_id_fkey(*)
+      `,
+      {
+        count: "exact",
+      },
+    );
+    if (args.where?.id?.eq) {
+      query = query.eq(
+        "collections.blueprint_metadata.hyperboard_id",
+        args.where.id.eq,
       );
+    }
 
     const { where, sort, offset, first } = args;
 

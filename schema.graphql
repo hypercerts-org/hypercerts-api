@@ -252,6 +252,8 @@ input BooleanSearchOptions {
 
 """Collection of hypercerts for reference and display purposes"""
 type Collection {
+  admins: [User!]!
+
   """Chain ID of the collection"""
   chain_ids: [EthBigInt!]
 
@@ -263,9 +265,6 @@ type Collection {
 
   """Whether the collection should be hidden"""
   hidden: Boolean!
-
-  """Hypercert entries in the collection"""
-  hypercerts: [HypercertEntry!]
   id: ID!
 
   """Name of the collection"""
@@ -449,17 +448,14 @@ type Hyperboard {
 
   """Chain ID of the hyperboard"""
   chain_ids: [EthBigInt!]
-  collections: [Collection!]!
 
   """Whether the hyperboard should be rendered as a grayscale image"""
   grayscale_images: Boolean
-
-  """Hypercert metadata entries within the context of the hyperboard"""
-  hypercert_metadata: [HypercertMetadata!]
   id: ID!
 
   """Name of the collection"""
   name: String!
+  sections: SectionWrapper!
 
   """Color of the borders of the hyperboard"""
   tile_border_color: String
@@ -571,23 +567,8 @@ type HypercertBaseType {
   uri: String
 }
 
-"""Collection hypercert entry"""
-type HypercertEntry {
-  """ID of the hypercert"""
-  hypercert_id: String!
-}
-
 input HypercertFetchInput {
   by: HypercertSortOptions
-}
-
-"""Hypercert metadata entries within the context of a hyperboard"""
-type HypercertMetadata {
-  """Factor of the hypercert"""
-  display_size: Float!
-
-  """ID of the hypercert"""
-  hypercert_id: String!
 }
 
 input HypercertSortOptions {
@@ -871,6 +852,49 @@ input SaleWhereInput {
   seller: StringSearchOptions
   strategy_id: BigIntSearchOptions
   transaction_hash: IdSearchOptions
+}
+
+"""Section entry representing a collection within a hyperboard"""
+type Section {
+  collection: Collection!
+  entries: [SectionEntry!]!
+  label: String!
+  owners: [SectionOwner!]!
+}
+
+"""Section entry representing a hypercert or blueprint within a section"""
+type SectionEntry {
+  display_size: Float!
+
+  """ID of the hypercert or blueprint"""
+  id: String!
+  is_blueprint: Boolean!
+
+  """Name of the hypercert or blueprint"""
+  name: String
+  owners: [SectionEntryOwner!]!
+  percentage_of_section: Float!
+  total_units: BigInt
+}
+
+type SectionEntryOwner {
+  address: String!
+  avatar: String
+  display_name: String
+  percentage: Float!
+  units: BigInt
+}
+
+type SectionOwner {
+  address: String!
+  avatar: String
+  display_name: String
+  percentage_owned: Float!
+}
+
+type SectionWrapper {
+  count: Float!
+  data: [Section!]!
 }
 
 """The direction to sort the query results"""

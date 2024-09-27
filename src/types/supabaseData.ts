@@ -129,19 +129,16 @@ export type Database = {
           blueprint_id: number;
           collection_id: string;
           created_at: string;
-          display_size: number;
         };
         Insert: {
           blueprint_id: number;
           collection_id: string;
           created_at?: string;
-          display_size: number;
         };
         Update: {
           blueprint_id?: number;
           collection_id?: string;
           created_at?: string;
-          display_size?: number;
         };
         Relationships: [
           {
@@ -288,6 +285,52 @@ export type Database = {
           },
           {
             foreignKeyName: "hyperboard_admins_hyperboard_id_fkey";
+            columns: ["hyperboard_id"];
+            isOneToOne: false;
+            referencedRelation: "hyperboards";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      hyperboard_blueprint_metadata: {
+        Row: {
+          blueprint_id: number;
+          collection_id: string;
+          created_at: string;
+          display_size: number | null;
+          hyperboard_id: string;
+        };
+        Insert: {
+          blueprint_id: number;
+          collection_id: string;
+          created_at?: string;
+          display_size?: number | null;
+          hyperboard_id: string;
+        };
+        Update: {
+          blueprint_id?: number;
+          collection_id?: string;
+          created_at?: string;
+          display_size?: number | null;
+          hyperboard_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "hyperboard_blueprint_metadata_collection_id_blueprint_id_fkey";
+            columns: ["collection_id", "blueprint_id"];
+            isOneToOne: false;
+            referencedRelation: "collection_blueprints";
+            referencedColumns: ["collection_id", "blueprint_id"];
+          },
+          {
+            foreignKeyName: "hyperboard_blueprint_metadata_collection_id_fkey";
+            columns: ["collection_id"];
+            isOneToOne: false;
+            referencedRelation: "collections";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "hyperboard_blueprint_metadata_hyperboard_id_fkey";
             columns: ["hyperboard_id"];
             isOneToOne: false;
             referencedRelation: "hyperboards";

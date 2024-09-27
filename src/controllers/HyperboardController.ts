@@ -20,10 +20,10 @@ import type {
 import { z } from "zod";
 import { isValidHypercertId } from "../utils/hypercertIds.js";
 import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
-import { getEvmClient } from "../utils/getRpcUrl.js";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { CONSTANTS } from "@hypercerts-org/sdk";
 import _ from "lodash";
+import { verifyAuthSignedData } from "../utils/verifyAuthSignedData.js";
 
 const allChains = Object.keys(CONSTANTS.DEPLOYMENTS).map((chain) =>
   parseInt(chain),
@@ -164,25 +164,22 @@ export class HyperboardController extends Controller {
 
     const { signature, adminAddress, chainIds } = parsedBody.data;
     const chainId = chainIds[0];
-    const client = getEvmClient(chainId);
-    const success = await client.verifyTypedData({
+
+    const success = await verifyAuthSignedData({
       address: adminAddress as `0x${string}`,
       signature: signature as `0x${string}`,
-      domain: {
-        name: "Hypercerts",
-        version: "1",
-        chainId: chainId,
-      },
       types: {
         Hyperboard: [{ name: "title", type: "string" }],
-        CreateRequest: [{ name: "hyperboard", type: "Hyperboard" }],
+        HyperboardCreateRequest: [{ name: "hyperboard", type: "Hyperboard" }],
       },
-      primaryType: "CreateRequest",
+      primaryType: "HyperboardCreateRequest",
       message: {
         hyperboard: {
+          // TODO: Must contain chain id
           title: parsedBody.data.title,
         },
       },
+      chainId,
     });
 
     if (!success) {
@@ -230,8 +227,11 @@ export class HyperboardController extends Controller {
 
     for (const collection of parsedBody.data.collections) {
       try {
+        // TODO: Add support for adding an existing collection to a hyperboard
+        // TODO: If collection already exists, you should not be granted admin rights to it
         const collectionCreateResponse = await dataService.upsertCollections([
           {
+            id: collection.id,
             name: collection.title,
             description: collection.description,
             chain_ids: [chainId],
@@ -421,25 +421,23 @@ export class HyperboardController extends Controller {
 
     const { signature, adminAddress, chainIds } = parsedBody.data;
     const chainId = chainIds[0];
-    const client = getEvmClient(chainId);
-    const success = await client.verifyTypedData({
+    const success = await verifyAuthSignedData({
       address: adminAddress as `0x${string}`,
       signature: signature as `0x${string}`,
-      domain: {
-        name: "Hypercerts",
-        version: "1",
-        chainId: chainId,
-      },
+
       types: {
         Hyperboard: [{ name: "id", type: "string" }],
-        UpdateRequest: [{ name: "hyperboard", type: "Hyperboard" }],
+        HyperboardUpdateRequest: [{ name: "hyperboard", type: "Hyperboard" }],
       },
-      primaryType: "UpdateRequest",
+      primaryType: "HyperboardUpdateRequest",
       message: {
+        // TODO: Must contain chain id
+
         hyperboard: {
           id: parsedBody.data.id,
         },
       },
+      chainId,
     });
 
     if (!success) {
@@ -454,7 +452,6 @@ export class HyperboardController extends Controller {
     const dataService = new SupabaseDataService();
 
     const hyperboard = await dataService.getHyperboardById(hyperboardId);
-    console.log("The hyperboard", hyperboard);
 
     if (!hyperboard) {
       this.setStatus(404);
@@ -668,25 +665,22 @@ export class HyperboardController extends Controller {
       };
     }
 
-    const client = getEvmClient(chain_id);
-    const success = await client.verifyTypedData({
+    const success = await verifyAuthSignedData({
       address: adminAddress as `0x${string}`,
       signature: signature as `0x${string}`,
-      domain: {
-        name: "Hypercerts",
-        version: "1",
-        chainId: chain_id,
-      },
       types: {
         Hyperboard: [{ name: "id", type: "string" }],
-        DeleteRequest: [{ name: "hyperboard", type: "Hyperboard" }],
+        HyperboardDeleteRequest: [{ name: "hyperboard", type: "Hyperboard" }],
       },
-      primaryType: "DeleteRequest",
+      primaryType: "HyperboardDeleteRequest",
       message: {
+        // TODO: Must contain chain id
+
         hyperboard: {
           id: hyperboardId,
         },
       },
+      chainId: chain_id,
     });
 
     if (!success) {

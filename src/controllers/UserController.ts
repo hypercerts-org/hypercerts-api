@@ -14,8 +14,8 @@ import type {
   ApiResponse,
 } from "../types/api.js";
 import { z } from "zod";
-import { getEvmClient } from "../utils/getRpcUrl.js";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
+import { verifyAuthSignedData } from "../utils/verifyAuthSignedData.js";
 
 @Route("v1/users")
 @Tags("Users")
@@ -51,15 +51,9 @@ export class UserController extends Controller {
     }
 
     const { signature, chain_id } = parsedBody.data;
-    const client = getEvmClient(chain_id);
 
-    const correctSignature = await client.verifyTypedData({
+    const correctSignature = await verifyAuthSignedData({
       address: address as `0x${string}`,
-      domain: {
-        name: "Hypercerts",
-        version: "1",
-        chainId: chain_id,
-      },
       types: {
         User: [
           { name: "displayName", type: "string" },
@@ -70,11 +64,13 @@ export class UserController extends Controller {
       primaryType: "UserUpdateRequest",
       signature: signature as `0x${string}`,
       message: {
+        // TODO: Must contain chain id
         user: {
           displayName: parsedBody.data.display_name || "",
           avatar: parsedBody.data.avatar || "",
         },
       },
+      chainId: chain_id,
     });
 
     if (!correctSignature) {
