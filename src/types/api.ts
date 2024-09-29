@@ -124,7 +124,6 @@ export interface HyperboardUpdateRequest {
     title: string;
     description: string;
     hypercerts: {
-      id?: string;
       hypercertId: string;
       factor: number;
     }[];

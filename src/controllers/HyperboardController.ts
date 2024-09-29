@@ -170,14 +170,17 @@ export class HyperboardController extends Controller {
       signature: signature as `0x${string}`,
       types: {
         Hyperboard: [{ name: "title", type: "string" }],
-        HyperboardCreateRequest: [{ name: "hyperboard", type: "Hyperboard" }],
+        HyperboardCreateRequest: [
+          { name: "hyperboard", type: "Hyperboard" },
+          { name: "chainId", type: "uint256" },
+        ],
       },
       primaryType: "HyperboardCreateRequest",
       message: {
         hyperboard: {
-          // TODO: Must contain chain id
           title: parsedBody.data.title,
         },
+        chainId: BigInt(chainId),
       },
       chainId,
     });
@@ -427,15 +430,17 @@ export class HyperboardController extends Controller {
 
       types: {
         Hyperboard: [{ name: "id", type: "string" }],
-        HyperboardUpdateRequest: [{ name: "hyperboard", type: "Hyperboard" }],
+        HyperboardUpdateRequest: [
+          { name: "hyperboard", type: "Hyperboard" },
+          { name: "chainId", type: "uint256" },
+        ],
       },
       primaryType: "HyperboardUpdateRequest",
       message: {
-        // TODO: Must contain chain id
-
         hyperboard: {
           id: parsedBody.data.id,
         },
+        chainId: BigInt(chainId),
       },
       chainId,
     });

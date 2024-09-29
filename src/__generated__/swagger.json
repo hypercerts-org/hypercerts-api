@@ -819,9 +819,6 @@
 											},
 											"hypercertId": {
 												"type": "string"
-											},
-											"id": {
-												"type": "string"
 											}
 										},
 										"required": [
