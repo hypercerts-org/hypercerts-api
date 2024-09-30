@@ -472,36 +472,6 @@ export class SupabaseDataService {
     switch (tableName) {
       case "users":
         return this.db.selectFrom("users").selectAll();
-      case "hyperboards":
-        return (
-          this.db
-            .selectFrom("hyperboards")
-            .selectAll()
-            // .select((eb) => [
-            //   jsonArrayFrom(
-            //     eb
-            //       .selectFrom("hyperboard_admins")
-            //       .select(["hyperboard_id", "user_id"])
-            //       .whereRef("id", "=", "hyperboard_admins.hyperboard_id"),
-            //   ).as("admins"),
-            // ])
-            .select((eb) => [
-              jsonArrayFrom(
-                eb
-                  .selectFrom("hyperboard_admins")
-                  .select((eb) => [
-                    jsonArrayFrom(
-                      eb
-                        .selectFrom("users")
-                        .select(["address", "chain_id"])
-                        .whereRef("id", "=", "hyperboard_admins.user_id"),
-                    ).as("users"),
-                  ])
-                  .whereRef("id", "=", "hyperboard_admins.hyperboard_id"),
-              ).as("admins"),
-            ])
-        );
-
       default:
         throw new Error(`Table ${tableName.toString()} not found`);
     }

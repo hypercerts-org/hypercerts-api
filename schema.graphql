@@ -453,7 +453,7 @@ type Hyperboard {
   grayscale_images: Boolean
   id: ID!
 
-  """Name of the collection"""
+  """Name of the hyperboard"""
   name: String!
   sections: SectionWrapper!
 
@@ -854,7 +854,7 @@ input SaleWhereInput {
   transaction_hash: IdSearchOptions
 }
 
-"""Section entry representing a collection within a hyperboard"""
+"""Section representing a collection within a hyperboard"""
 type Section {
   collection: Collection!
   entries: [SectionEntry!]!
@@ -862,7 +862,7 @@ type Section {
   owners: [SectionOwner!]!
 }
 
-"""Section entry representing a hypercert or blueprint within a section"""
+"""Entry representing a hypercert or blueprint within a section"""
 type SectionEntry {
   display_size: Float!
 

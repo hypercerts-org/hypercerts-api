@@ -8,7 +8,7 @@ import { GraphQLBigInt } from "graphql-scalars";
   description: "Hyperboard of hypercerts for reference and display purposes",
 })
 class Hyperboard extends BasicTypeDef {
-  @Field({ description: "Name of the collection" })
+  @Field({ description: "Name of the hyperboard" })
   name?: string;
   @Field(() => [EthBigInt], {
     nullable: true,
@@ -68,7 +68,7 @@ class Collection extends BasicTypeDef {
 }
 
 @ObjectType({
-  description: "Section entry representing a collection within a hyperboard",
+  description: "Section representing a collection within a hyperboard",
 })
 class Section {
   @Field()
@@ -97,8 +97,7 @@ class SectionOwner {
 }
 
 @ObjectType({
-  description:
-    "Section entry representing a hypercert or blueprint within a section",
+  description: "Entry representing a hypercert or blueprint within a section",
 })
 class SectionEntry {
   @Field({ description: "ID of the hypercert or blueprint" })
