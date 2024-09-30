@@ -138,7 +138,13 @@ class HyperboardResolver extends HyperboardBaseResolver {
               collection,
               hypercert_metadata: hyperboard.hypercert_metadata,
               blueprints: collection.blueprints,
-              fractions: fractions.filter((x) => !!x),
+              fractions: fractions
+                .filter((x) => !!x)
+                .filter((fraction) =>
+                  collection.hypercerts
+                    .map((x) => x.hypercert_id)
+                    .includes(fraction.hypercert_id),
+                ),
               blueprintMetadata: collection.blueprint_metadata,
               allowlistEntries: allowlistEntries,
               hypercerts: hypercerts
@@ -235,6 +241,7 @@ const processRegistryForDisplay = ({
       }
 
       if (!metadata) {
+        console.log(hypercertId, hypercertMetadataByHypercertId);
         throw new Error(
           `[HyperboardResolver::processRegistryForDisplay] Metadata not found for ${hypercertId}`,
         );
