@@ -56,14 +56,11 @@ class HyperboardResolver extends HyperboardBaseResolver {
 
       const allowlistEntries = await Promise.all(
         hypercertIds.map((hypercertId) =>
-          this.getAllowlistRecords(
-            {
-              where: { hypercert_id: { eq: hypercertId } },
-            },
-            true,
-          ),
+          this.getAllowlistRecords({
+            where: { hypercert_id: { eq: hypercertId } },
+          }),
         ),
-      );
+      ).then((res) => res.flatMap((x) => x?.data).filter((x) => !!x));
 
       const hypercerts = await Promise.all(
         hypercertIds.map((hypercertId) =>
@@ -78,17 +75,17 @@ class HyperboardResolver extends HyperboardBaseResolver {
 
       // Get a deduplicated list of all owners
       const ownerAddresses = _.uniq([
-        ...fractions.map((x) => x?.user_address),
-        ...allowlistEntries.map((x) => x?.owner_address),
-        ...(res.data?.map(
+        ...fractions.map((x) => x?.owner_address),
+        ...allowlistEntries.flatMap((x) => x?.owner_address),
+        ...(res.data?.flatMap(
           (hyperboard) =>
-            hyperboard?.collections?.map((collection) =>
-              collection.blueprints
-                .map((blueprint) => blueprint.minter_address)
-                .flat(3),
+            hyperboard?.collections?.flatMap((collection) =>
+              collection.blueprints.flatMap(
+                (blueprint) => blueprint.minter_address,
+              ),
             ) || [],
         ) || []),
-      ]) as string[];
+      ]).filter((x) => !!x) as string[];
 
       const users = await Promise.all(
         ownerAddresses.map((address) =>
@@ -143,7 +140,7 @@ class HyperboardResolver extends HyperboardBaseResolver {
               blueprints: collection.blueprints,
               fractions: fractions.filter((x) => !!x),
               blueprintMetadata: collection.blueprint_metadata,
-              allowlistEntries: allowlistEntries.filter((x) => !!x),
+              allowlistEntries: allowlistEntries,
               hypercerts: hypercerts
                 .filter((x) => !!x)
                 .map((hypercert) => ({
