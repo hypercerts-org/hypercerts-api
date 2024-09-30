@@ -1346,18 +1346,6 @@ export type introspection = {
             "args": []
           },
           {
-            "name": "hidden",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              }
-            },
-            "args": []
-          },
-          {
             "name": "id",
             "type": {
               "kind": "NON_NULL",

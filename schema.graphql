@@ -257,14 +257,11 @@ type Collection {
   """Chain ID of the collection"""
   chain_ids: [EthBigInt!]
 
-  """ID of the collection"""
+  """Creation timestamp of the collection"""
   created_at: String!
 
   """Description of the collection"""
   description: String!
-
-  """Whether the collection should be hidden"""
-  hidden: Boolean!
   id: ID!
 
   """Name of the collection"""
