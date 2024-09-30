@@ -141,8 +141,8 @@ export class SupabaseDataService {
             blueprint_metadata:hyperboard_blueprint_metadata(*),
             admins:users!collection_admins(*)
           ),
-          admins:users!hyperboard_admins(*),
-          adminsForFilter:users!inner(address),
+          admins:users!inner(*),
+          users!inner(address),
           hypercert_metadata:hyperboard_hypercert_metadata!hyperboard_hypercert_metadata_hyperboard_id_fkey(*)
       `,
       {
@@ -160,7 +160,7 @@ export class SupabaseDataService {
 
     // Filter by admin according to https://github.com/orgs/supabase/discussions/16234#discussioncomment-6642525
     if (where?.admin_id?.eq) {
-      query = query.eq("adminsForFilter.address", where?.admin_id?.eq);
+      query = query.eq("users.address", where?.admin_id?.eq);
       delete where.admin_id;
     }
 

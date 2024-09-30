@@ -675,15 +675,17 @@ export class HyperboardController extends Controller {
       signature: signature as `0x${string}`,
       types: {
         Hyperboard: [{ name: "id", type: "string" }],
-        HyperboardDeleteRequest: [{ name: "hyperboard", type: "Hyperboard" }],
+        HyperboardDeleteRequest: [
+          { name: "hyperboard", type: "Hyperboard" },
+          { name: "chainId", type: "uint256" },
+        ],
       },
       primaryType: "HyperboardDeleteRequest",
       message: {
-        // TODO: Must contain chain id
-
         hyperboard: {
           id: hyperboardId,
         },
+        chainId: BigInt(chain_id),
       },
       chainId: chain_id,
     });
