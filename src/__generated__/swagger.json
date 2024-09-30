@@ -756,6 +756,9 @@
 								},
 								"title": {
 									"type": "string"
+								},
+								"id": {
+									"type": "string"
 								}
 							},
 							"required": [
@@ -794,9 +797,6 @@
 			"HyperboardUpdateRequest": {
 				"description": "Interface for updating a hyperboard",
 				"properties": {
-					"id": {
-						"type": "string"
-					},
 					"chainIds": {
 						"items": {
 							"type": "number",
@@ -859,16 +859,19 @@
 					},
 					"signature": {
 						"type": "string"
+					},
+					"id": {
+						"type": "string"
 					}
 				},
 				"required": [
-					"id",
 					"chainIds",
 					"title",
 					"collections",
 					"borderColor",
 					"adminAddress",
-					"signature"
+					"signature",
+					"id"
 				],
 				"type": "object",
 				"additionalProperties": false

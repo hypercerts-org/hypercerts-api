@@ -455,7 +455,7 @@ type Hyperboard {
 
   """Name of the hyperboard"""
   name: String!
-  sections: SectionWrapper!
+  sections: SectionResponseType!
 
   """Color of the borders of the hyperboard"""
   tile_border_color: String
@@ -878,21 +878,33 @@ type SectionEntry {
 }
 
 type SectionEntryOwner {
+  """The address of the user"""
   address: String!
+
+  """The avatar of the user"""
   avatar: String
+  chain_id: Float!
+
+  """The display name of the user"""
   display_name: String
   percentage: Float!
   units: BigInt
 }
 
 type SectionOwner {
+  """The address of the user"""
   address: String!
+
+  """The avatar of the user"""
   avatar: String
+  chain_id: Float!
+
+  """The display name of the user"""
   display_name: String
   percentage_owned: Float!
 }
 
-type SectionWrapper {
+type SectionResponseType {
   count: Float!
   data: [Section!]!
 }

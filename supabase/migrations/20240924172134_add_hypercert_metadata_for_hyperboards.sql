@@ -30,7 +30,7 @@ create table "public"."hyperboard_hypercert_metadata"
     "created_at"    timestamp with time zone not null default now(),
     "hyperboard_id" uuid                     not null,
     "collection_id" uuid                     not null,
-    "display_size"  bigint                            default '1'::bigint,
+    "display_size"  numeric(78,0)                            default '1'::numeric(78,0),
     "hypercert_id"  text                     not null
 );
 
@@ -45,10 +45,10 @@ alter table "public"."hypercerts"
     drop column "id";
 
 alter table "public"."collections"
-    alter column chain_id type bigint[] using array [chain_id]::bigint[];
+    alter column chain_id type numeric(78,0)[] using array [chain_id]::numeric(78,0)[];
 
 alter table "public"."hyperboards"
-    alter column chain_id type bigint[] using array [chain_id]::bigint[];
+    alter column chain_id type numeric(78,0)[] using array [chain_id]::numeric(78,0)[];
 
 
 CREATE UNIQUE INDEX collection_admins_pkey ON public.collection_admins USING btree (collection_id, user_id);
@@ -367,7 +367,7 @@ alter table "public"."blueprints"
     drop column "display_size";
 
 alter table "public"."collection_blueprints"
-    add column "display_size" bigint not null;
+    add column "display_size" numeric(78,0) not null;
 
 alter table "public"."hyperboards"
     drop column "admin_id";
@@ -376,11 +376,11 @@ alter table "public"."collections"
     drop column "chain_id";
 
 alter table "public"."collections"
-    add column "chain_ids" bigint[] not null;
+    add column "chain_ids" numeric(78,0)[] not null;
 
 alter table "public"."hyperboards"
     drop column "chain_id";
 
 alter table "public"."hyperboards"
-    add column "chain_ids" bigint[] not null;
+    add column "chain_ids" numeric(78,0)[] not null;
 

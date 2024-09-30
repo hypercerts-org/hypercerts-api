@@ -2275,7 +2275,7 @@ export type introspection = {
               "kind": "NON_NULL",
               "ofType": {
                 "kind": "OBJECT",
-                "name": "SectionWrapper",
+                "name": "SectionResponseType",
                 "ofType": null
               }
             },
@@ -4897,6 +4897,18 @@ export type introspection = {
             "args": []
           },
           {
+            "name": "chain_id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
             "name": "display_name",
             "type": {
               "kind": "SCALAR",
@@ -4955,6 +4967,18 @@ export type introspection = {
             "args": []
           },
           {
+            "name": "chain_id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
             "name": "display_name",
             "type": {
               "kind": "SCALAR",
@@ -4980,7 +5004,7 @@ export type introspection = {
       },
       {
         "kind": "OBJECT",
-        "name": "SectionWrapper",
+        "name": "SectionResponseType",
         "fields": [
           {
             "name": "count",

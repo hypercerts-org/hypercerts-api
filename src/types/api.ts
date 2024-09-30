@@ -100,6 +100,7 @@ export interface HyperboardCreateRequest {
   chainIds: number[];
   title: string;
   collections: {
+    id?: string;
     title: string;
     description: string;
     hypercerts: {
@@ -116,21 +117,6 @@ export interface HyperboardCreateRequest {
 /**
  * Interface for updating a hyperboard
  */
-export interface HyperboardUpdateRequest {
+export interface HyperboardUpdateRequest extends HyperboardCreateRequest {
   id: string;
-  chainIds: number[];
-  title: string;
-  collections: {
-    id?: string;
-    title: string;
-    description: string;
-    hypercerts: {
-      hypercertId: string;
-      factor: number;
-    }[];
-  }[];
-  backgroundImg?: string;
-  borderColor: string;
-  adminAddress: string;
-  signature: string;
 }

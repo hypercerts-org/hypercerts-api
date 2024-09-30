@@ -14,7 +14,7 @@ class Hyperboard extends BasicTypeDef {
     nullable: true,
     description: "Chain ID of the hyperboard",
   })
-  chain_ids?: (bigint | number)[];
+  chain_ids?: (bigint | number | string)[];
   @Field({ nullable: true, description: "Background image of the hyperboard" })
   background_image?: string;
   @Field({
@@ -32,12 +32,12 @@ class Hyperboard extends BasicTypeDef {
   @Field(() => [User])
   admins?: User[];
 
-  @Field(() => SectionWrapper)
-  sections?: SectionWrapper[];
+  @Field(() => SectionResponseType)
+  sections?: SectionResponseType[];
 }
 
 @ObjectType({})
-class SectionWrapper {
+class SectionResponseType {
   @Field(() => [Section])
   data?: Section[];
 
@@ -61,7 +61,7 @@ class Collection extends BasicTypeDef {
     nullable: true,
     description: "Chain ID of the collection",
   })
-  chain_ids?: number[];
+  chain_ids?: (bigint | number | string)[];
 
   @Field(() => [User])
   admins?: User[];
@@ -85,15 +85,9 @@ class Section {
 }
 
 @ObjectType()
-class SectionOwner {
+class SectionOwner extends User {
   @Field()
   percentage_owned?: number;
-  @Field()
-  address?: string;
-  @Field({ nullable: true })
-  avatar?: string;
-  @Field({ nullable: true })
-  display_name?: string;
 }
 
 @ObjectType({
@@ -111,24 +105,18 @@ class SectionEntry {
   @Field({ description: "Name of the hypercert or blueprint", nullable: true })
   name?: string;
   @Field(() => GraphQLBigInt, { nullable: true })
-  total_units?: bigint;
+  total_units?: bigint | number | string;
 
   @Field(() => [SectionEntryOwner])
   owners?: SectionEntryOwner[];
 }
 
 @ObjectType()
-class SectionEntryOwner {
+class SectionEntryOwner extends User {
   @Field()
   percentage?: number;
-  @Field()
-  address?: string;
   @Field(() => GraphQLBigInt, { nullable: true })
-  units?: bigint;
-  @Field({ nullable: true })
-  avatar?: string;
-  @Field({ nullable: true })
-  display_name?: string;
+  units?: bigint | number | string;
 }
 
 export { Hyperboard };
