@@ -64,6 +64,7 @@ export class HyperboardController extends Controller {
           .max(100, "Use at most 100 characters"),
         collections: z.array(
           z.object({
+            id: z.string().uuid().optional(),
             title: z
               .string()
               .trim()
@@ -228,13 +229,80 @@ export class HyperboardController extends Controller {
       };
     }
 
-    for (const collection of parsedBody.data.collections) {
+    const collectionsToUpdate = parsedBody.data.collections.filter(
+      (collection) => !!collection.id,
+    );
+    for (const collection of collectionsToUpdate) {
       try {
-        // TODO: Add support for adding an existing collection to a hyperboard
-        // TODO: If collection already exists, you should not be granted admin rights to it
+        if (!collection.id) {
+          continue;
+        }
+        const currentCollection = await dataService.getCollectionById(
+          collection.id,
+        );
+        if (!currentCollection) {
+          throw new Error(`Collection with id ${collection.id} not found`);
+        }
+
+        // Add the collection to the hyperboard
+        await dataService.addCollectionToHyperboard(
+          hyperboardId,
+          collection.id,
+        );
+        // Update metadata anyway because they are not collection specific
+        await dataService.upsertHyperboardHypercertMetadata(
+          collection.hypercerts.map((hc) => ({
+            hypercert_id: hc.hypercertId,
+            hyperboard_id: hyperboardId,
+            collection_id: currentCollection.id,
+            display_size: hc.factor,
+          })),
+        );
+
+        const currentUserIsAdminForCollection =
+          currentCollection.collection_admins
+            .flatMap((x) => x.admins)
+            .find(
+              (admin) =>
+                admin.chain_id === chainId && admin.address === adminAddress,
+            );
+
+        if (currentUserIsAdminForCollection) {
+          // Update collection if you are an admin of the collection
+          await dataService.upsertCollections([
+            {
+              id: collection.id,
+              name: collection.title,
+              chain_ids: _.uniq([...currentCollection.chain_ids, chainId]),
+              description: collection.description,
+            },
+          ]);
+          // Update hypercerts in the collection if you are an admin of the collection
+          await dataService.upsertHypercerts(
+            collection.hypercerts.map((hc) => ({
+              hypercert_id: hc.hypercertId,
+              collection_id: currentCollection.id,
+            })),
+          );
+        }
+      } catch (e) {
+        console.error(e);
+        this.setStatus(400);
+        return {
+          success: false,
+          message: "Error updating collection",
+          data: null,
+        };
+      }
+    }
+
+    const collectionsToCreate = parsedBody.data.collections.filter(
+      (collection) => !collection.id,
+    );
+    for (const collection of collectionsToCreate) {
+      try {
         const collectionCreateResponse = await dataService.upsertCollections([
           {
-            id: collection.id,
             name: collection.title,
             description: collection.description,
             chain_ids: [chainId],
@@ -246,6 +314,7 @@ export class HyperboardController extends Controller {
           throw new Error("Collection must have an id to add claims.");
         }
 
+        // Add current user as admin to the collection because they are creating it
         const admin = await dataService.addAdminToCollection(
           collectionId,
           adminAddress,
@@ -261,8 +330,6 @@ export class HyperboardController extends Controller {
           collection_id: collectionId,
         }));
         await dataService.upsertHypercerts(hypercerts);
-        await dataService.addCollectionToHyperboard(hyperboardId, collectionId);
-
         await dataService.upsertHyperboardHypercertMetadata(
           collection.hypercerts.map((hc) => ({
             hypercert_id: hc.hypercertId,
@@ -271,6 +338,8 @@ export class HyperboardController extends Controller {
             display_size: hc.factor,
           })),
         );
+
+        await dataService.addCollectionToHyperboard(hyperboardId, collectionId);
       } catch (e) {
         console.error(e);
         this.setStatus(400);
@@ -514,34 +583,55 @@ export class HyperboardController extends Controller {
           collection.id,
         );
         if (!currentCollection) {
-          throw new Error("Collection not found");
+          throw new Error(`Collection with id ${collection.id} not found`);
         }
-        const collectionsResult = await dataService.upsertCollections([
-          {
-            id: collection.id,
-            name: collection.title,
-            chain_ids: _.uniq([...currentCollection.chain_ids, chainId]),
-            description: collection.description,
-          },
-        ]);
-        const collectionId = collectionsResult[0]?.id;
-        if (!collectionId) {
-          throw new Error("Collection must have an id to add claims.");
-        }
-        await dataService.upsertHypercerts(
-          collection.hypercerts.map((hc) => ({
-            hypercert_id: hc.hypercertId,
-            collection_id: collectionId,
-          })),
+
+        // Add the collection to the hyperboard if it hasn't been added already
+        const isCollectionInHyperboard = !!hyperboard.collections.find(
+          (c) => c.id === collection.id,
         );
+        if (!isCollectionInHyperboard) {
+          await dataService.addCollectionToHyperboard(
+            hyperboardId,
+            collection.id,
+          );
+        }
+        // Update metadata anyway because they are not collection specific
         await dataService.upsertHyperboardHypercertMetadata(
           collection.hypercerts.map((hc) => ({
             hypercert_id: hc.hypercertId,
             hyperboard_id: hyperboardId,
-            collection_id: collectionId,
+            collection_id: currentCollection.id,
             display_size: hc.factor,
           })),
         );
+
+        const currentUserIsAdminForCollection =
+          currentCollection.collection_admins
+            .flatMap((x) => x.admins)
+            .find(
+              (admin) =>
+                admin.chain_id === chainId && admin.address === adminAddress,
+            );
+
+        if (currentUserIsAdminForCollection) {
+          // Update collection if you are an admin of the collection
+          await dataService.upsertCollections([
+            {
+              id: collection.id,
+              name: collection.title,
+              chain_ids: _.uniq([...currentCollection.chain_ids, chainId]),
+              description: collection.description,
+            },
+          ]);
+          // Update hypercerts in the collection if you are an admin of the collection
+          await dataService.upsertHypercerts(
+            collection.hypercerts.map((hc) => ({
+              hypercert_id: hc.hypercertId,
+              collection_id: currentCollection.id,
+            })),
+          );
+        }
       } catch (e) {
         console.error(e);
         this.setStatus(400);
@@ -570,6 +660,8 @@ export class HyperboardController extends Controller {
         if (!collectionId) {
           throw new Error("Collection must have an id to add claims.");
         }
+
+        // Add current user as admin to the collection because they are creating it
         const admin = await dataService.addAdminToCollection(
           collectionId,
           adminAddress,

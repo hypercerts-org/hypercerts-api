@@ -76,6 +76,7 @@ export type ValidationResponse = ApiResponse<ValidationResult>;
 /**
  * Interface for a user add or update request.
  */
+
 export interface AddOrUpdateUserRequest {
   display_name: string;
   avatar: string;

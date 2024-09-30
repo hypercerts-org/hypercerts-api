@@ -350,7 +350,23 @@ export class SupabaseDataService {
   async getCollectionById(collectionId: string) {
     return this.db
       .selectFrom("collections")
-      .selectAll()
+      .select((eb) => [
+        "id",
+        "chain_ids",
+        jsonArrayFrom(
+          eb
+            .selectFrom("collection_admins")
+            .select((eb) => [
+              jsonArrayFrom(
+                eb
+                  .selectFrom("users")
+                  .select(["address", "chain_id", "user_id"])
+                  .whereRef("user_id", "=", "user_id"),
+              ).as("admins"),
+            ])
+            .whereRef("collection_id", "=", "collections.id"),
+        ).as("collection_admins"),
+      ])
       .where("id", "=", collectionId)
       .executeTakeFirst();
   }
