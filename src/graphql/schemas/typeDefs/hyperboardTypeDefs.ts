@@ -49,14 +49,12 @@ class SectionResponseType {
   description: "Collection of hypercerts for reference and display purposes",
 })
 class Collection extends BasicTypeDef {
-  @Field({ description: "ID of the collection" })
+  @Field({ description: "Creation timestamp of the collection" })
   created_at?: string;
   @Field({ description: "Name of the collection" })
   name?: string;
   @Field({ description: "Description of the collection" })
   description?: string;
-  @Field({ description: "Whether the collection should be hidden" })
-  hidden?: boolean;
   @Field(() => [EthBigInt], {
     nullable: true,
     description: "Chain ID of the collection",
