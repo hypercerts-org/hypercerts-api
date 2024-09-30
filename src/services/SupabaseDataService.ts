@@ -142,20 +142,27 @@ export class SupabaseDataService {
             admins:users!collection_admins(*)
           ),
           admins:users!hyperboard_admins(*),
+          adminsForFilter:users!inner(address),
           hypercert_metadata:hyperboard_hypercert_metadata!hyperboard_hypercert_metadata_hyperboard_id_fkey(*)
       `,
       {
         count: "exact",
       },
     );
-    if (args.where?.id?.eq) {
+    const { where, sort, offset, first } = args;
+
+    if (where?.id?.eq) {
       query = query.eq(
         "collections.blueprint_metadata.hyperboard_id",
-        args.where.id.eq,
+        where.id.eq,
       );
     }
 
-    const { where, sort, offset, first } = args;
+    // Filter by admin according to https://github.com/orgs/supabase/discussions/16234#discussioncomment-6642525
+    if (where?.admin_id?.eq) {
+      query = query.eq("adminsForFilter.address", where?.admin_id?.eq);
+      delete where.admin_id;
+    }
 
     query = applyFilters({ query, where });
     query = applySorting({ query, sort });
@@ -517,7 +524,7 @@ export class SupabaseDataService {
     },
   ) {
     let query = this.getDataQuery(tableName, args);
-    console.log(query.compile().sql);
+    // console.log(query.compile().sql);
 
     const { where, first, offset, sort } = args;
     const eb = expressionBuilder(query);
