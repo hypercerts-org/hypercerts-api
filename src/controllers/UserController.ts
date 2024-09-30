@@ -59,16 +59,22 @@ export class UserController extends Controller {
           { name: "displayName", type: "string" },
           { name: "avatar", type: "string" },
         ],
-        UserUpdateRequest: [{ name: "user", type: "User" }],
+        UserUpdateRequest: [
+          { name: "user", type: "User" },
+          {
+            name: "chainId",
+            type: "uint256",
+          },
+        ],
       },
       primaryType: "UserUpdateRequest",
       signature: signature as `0x${string}`,
       message: {
-        // TODO: Must contain chain id
         user: {
           displayName: parsedBody.data.display_name || "",
           avatar: parsedBody.data.avatar || "",
         },
+        chainId: chain_id,
       },
       chainId: chain_id,
     });
