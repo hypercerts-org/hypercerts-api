@@ -171,19 +171,15 @@ export class HyperboardController extends Controller {
       signature: signature as `0x${string}`,
       types: {
         Hyperboard: [{ name: "title", type: "string" }],
-        HyperboardCreateRequest: [
-          { name: "hyperboard", type: "Hyperboard" },
-          { name: "chainId", type: "uint256" },
-        ],
+        HyperboardCreateRequest: [{ name: "hyperboard", type: "Hyperboard" }],
       },
       primaryType: "HyperboardCreateRequest",
       message: {
         hyperboard: {
           title: parsedBody.data.title,
         },
-        chainId: BigInt(chainId),
       },
-      chainId,
+      requiredChainId: chainId,
     });
 
     if (!success) {
@@ -511,19 +507,15 @@ export class HyperboardController extends Controller {
 
       types: {
         Hyperboard: [{ name: "id", type: "string" }],
-        HyperboardUpdateRequest: [
-          { name: "hyperboard", type: "Hyperboard" },
-          { name: "chainId", type: "uint256" },
-        ],
+        HyperboardUpdateRequest: [{ name: "hyperboard", type: "Hyperboard" }],
       },
       primaryType: "HyperboardUpdateRequest",
       message: {
         hyperboard: {
           id: parsedBody.data.id,
         },
-        chainId: BigInt(chainId),
       },
-      chainId,
+      requiredChainId: chainId,
     });
 
     if (!success) {
@@ -766,19 +758,15 @@ export class HyperboardController extends Controller {
       signature: signature as `0x${string}`,
       types: {
         Hyperboard: [{ name: "id", type: "string" }],
-        HyperboardDeleteRequest: [
-          { name: "hyperboard", type: "Hyperboard" },
-          { name: "chainId", type: "uint256" },
-        ],
+        HyperboardDeleteRequest: [{ name: "hyperboard", type: "Hyperboard" }],
       },
       primaryType: "HyperboardDeleteRequest",
       message: {
         hyperboard: {
           id: hyperboardId,
         },
-        chainId: BigInt(chain_id),
       },
-      chainId: chain_id,
+      requiredChainId: chain_id,
     });
 
     if (!success) {

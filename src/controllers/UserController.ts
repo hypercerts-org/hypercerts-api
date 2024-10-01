@@ -59,13 +59,7 @@ export class UserController extends Controller {
           { name: "displayName", type: "string" },
           { name: "avatar", type: "string" },
         ],
-        UserUpdateRequest: [
-          { name: "user", type: "User" },
-          {
-            name: "chainId",
-            type: "uint256",
-          },
-        ],
+        UserUpdateRequest: [{ name: "user", type: "User" }],
       },
       primaryType: "UserUpdateRequest",
       signature: signature as `0x${string}`,
@@ -74,9 +68,8 @@ export class UserController extends Controller {
           displayName: parsedBody.data.display_name || "",
           avatar: parsedBody.data.avatar || "",
         },
-        chainId: chain_id,
       },
-      chainId: chain_id,
+      requiredChainId: chain_id,
     });
 
     if (!correctSignature) {

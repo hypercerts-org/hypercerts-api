@@ -4887,12 +4887,9 @@ export type introspection = {
           {
             "name": "chain_id",
             "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Float",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "EthBigInt",
+              "ofType": null
             },
             "args": []
           },
@@ -4957,12 +4954,9 @@ export type introspection = {
           {
             "name": "chain_id",
             "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Float",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "EthBigInt",
+              "ofType": null
             },
             "args": []
           },
@@ -5129,12 +5123,9 @@ export type introspection = {
           {
             "name": "chain_id",
             "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Float",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "EthBigInt",
+              "ofType": null
             },
             "args": []
           },

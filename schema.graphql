@@ -880,7 +880,9 @@ type SectionEntryOwner {
 
   """The avatar of the user"""
   avatar: String
-  chain_id: Float!
+
+  """The chain ID of the user"""
+  chain_id: EthBigInt
 
   """The display name of the user"""
   display_name: String
@@ -894,7 +896,9 @@ type SectionOwner {
 
   """The avatar of the user"""
   avatar: String
-  chain_id: Float!
+
+  """The chain ID of the user"""
+  chain_id: EthBigInt
 
   """The display name of the user"""
   display_name: String
@@ -937,7 +941,9 @@ type User {
 
   """The avatar of the user"""
   avatar: String
-  chain_id: Float!
+
+  """The chain ID of the user"""
+  chain_id: EthBigInt
 
   """The display name of the user"""
   display_name: String

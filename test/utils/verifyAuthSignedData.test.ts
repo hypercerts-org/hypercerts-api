@@ -68,7 +68,7 @@ describe("verifyAuthSignedData", async () => {
       types,
       signature,
       primaryType: "test",
-      chainId: sepolia.id,
+      requiredChainId: sepolia.id,
     });
     expect(result).toEqual(true);
   });
@@ -84,7 +84,7 @@ describe("verifyAuthSignedData", async () => {
       types,
       signature,
       primaryType: "test",
-      chainId: sepolia.id,
+      requiredChainId: sepolia.id,
     });
     expect(result).toEqual(false);
   });
@@ -100,7 +100,7 @@ describe("verifyAuthSignedData", async () => {
       types,
       signature,
       primaryType: "test",
-      chainId: sepolia.id,
+      requiredChainId: sepolia.id,
     });
     expect(result).toEqual(false);
   });
@@ -116,7 +116,7 @@ describe("verifyAuthSignedData", async () => {
       types,
       signature,
       primaryType: "test",
-      chainId: optimism.id,
+      requiredChainId: optimism.id,
     });
     expect(result).toEqual(false);
   });
@@ -135,7 +135,7 @@ describe("verifyAuthSignedData", async () => {
       types,
       signature,
       primaryType: "test",
-      chainId: sepolia.id,
+      requiredChainId: sepolia.id,
     });
     expect(result).toEqual(false);
   });
@@ -155,7 +155,7 @@ describe("verifyAuthSignedData", async () => {
       types,
       signature,
       primaryType: "test",
-      chainId: sepolia.id,
+      requiredChainId: sepolia.id,
     });
     expect(result).toEqual(false);
   });
@@ -175,7 +175,7 @@ describe("verifyAuthSignedData", async () => {
       types,
       signature,
       primaryType: "test",
-      chainId: sepolia.id,
+      requiredChainId: sepolia.id,
     });
     expect(result).toEqual(false);
   });
@@ -195,7 +195,7 @@ describe("verifyAuthSignedData", async () => {
       types,
       signature,
       primaryType: "test",
-      chainId: sepolia.id,
+      requiredChainId: sepolia.id,
     });
     expect(result).toEqual(false);
   });
