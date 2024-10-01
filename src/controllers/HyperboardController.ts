@@ -113,8 +113,10 @@ export class HyperboardController extends Controller {
           }),
         ),
         backgroundImg: z
-          .string()
-          .url("Background image URL is not valid")
+          .union([
+            z.string().url("Background image URL is not valid"),
+            z.literal(""),
+          ])
           .optional(),
         borderColor: z
           .string()
@@ -437,8 +439,10 @@ export class HyperboardController extends Controller {
           }),
         ),
         backgroundImg: z
-          .string()
-          .url("Background image URL is not valid")
+          .union([
+            z.string().url("Background image URL is not valid"),
+            z.literal(""),
+          ])
           .optional(),
         borderColor: z
           .string()
@@ -587,16 +591,8 @@ export class HyperboardController extends Controller {
             collection.id,
           );
         }
-        // Update metadata anyway because they are not collection specific
-        await dataService.upsertHyperboardHypercertMetadata(
-          collection.hypercerts.map((hc) => ({
-            hypercert_id: hc.hypercertId,
-            hyperboard_id: hyperboardId,
-            collection_id: currentCollection.id,
-            display_size: hc.factor,
-          })),
-        );
 
+        // Update metadata anyway because they are not collection specific
         const currentUserIsAdminForCollection =
           currentCollection.collection_admins
             .flatMap((x) => x.admins)
@@ -620,6 +616,15 @@ export class HyperboardController extends Controller {
             collection.hypercerts.map((hc) => ({
               hypercert_id: hc.hypercertId,
               collection_id: currentCollection.id,
+            })),
+          );
+
+          await dataService.upsertHyperboardHypercertMetadata(
+            collection.hypercerts.map((hc) => ({
+              hypercert_id: hc.hypercertId,
+              hyperboard_id: hyperboardId,
+              collection_id: currentCollection.id,
+              display_size: hc.factor,
             })),
           );
         }

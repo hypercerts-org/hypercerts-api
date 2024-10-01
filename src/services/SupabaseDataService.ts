@@ -304,8 +304,9 @@ export class SupabaseDataService {
         oc
           .columns(["hyperboard_id", "hypercert_id", "collection_id"])
           .doUpdateSet((eb) => ({
-            hyperboard_id: eb.ref("excluded.hyperboard_id"),
             hypercert_id: eb.ref("excluded.hypercert_id"),
+            collection_id: eb.ref("excluded.collection_id"),
+            hyperboard_id: eb.ref("excluded.hyperboard_id"),
             display_size: eb.ref("excluded.display_size"),
           })),
       )
