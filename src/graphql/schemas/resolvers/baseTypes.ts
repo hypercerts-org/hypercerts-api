@@ -11,6 +11,7 @@ import { GetAttestationsArgs } from "../args/attestationArgs.js";
 import { GetHypercertsArgs } from "../args/hypercertsArgs.js";
 import { GetSalesArgs } from "../args/salesArgs.js";
 import { GetUserArgs } from "../args/userArgs.js";
+import { GetBlueprintArgs } from "../args/blueprintArgs.js";
 
 export function DataResponse<TItem extends object>(
   TItemClass: ClassType<TItem>,
@@ -60,6 +61,42 @@ export function createBaseResolver<T extends ClassType>(
         const error = e as Error;
         throw new Error(
           `[${entityFieldName}Resolver::getMetadata] Error fetching metadata: ${error.message}`,
+        );
+      }
+    }
+
+    getBlueprints(args: GetBlueprintArgs, single: boolean = false) {
+      console.debug(
+        `[${entityFieldName}Resolver::getBlueprints] Fetching blueprints`,
+      );
+
+      try {
+        const queries = this.supabaseDataService.getBlueprints(args);
+        if (single) {
+          return queries.data.executeTakeFirst();
+        }
+
+        return this.supabaseDataService.db
+          .transaction()
+          .execute(async (transaction) => {
+            const dataRes = await transaction.executeQuery(queries.data);
+            const countRes = await transaction.executeQuery(queries.count);
+            return {
+              data: dataRes.rows,
+              count: countRes.rows[0].count,
+            };
+          })
+          .then((res) => ({
+            ...res,
+            data: res.data.map((item) => ({
+              ...item,
+              admins: item.admins?.flatMap((x) => x.admins) || [],
+            })),
+          }));
+      } catch (e) {
+        const error = e as Error;
+        throw new Error(
+          `[${entityFieldName}Resolver::getBlueprints] Error fetching blueprints: ${error.message}`,
         );
       }
     }

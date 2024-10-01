@@ -21,6 +21,7 @@ import { generateFilterValues } from "../graphql/schemas/utils/filters-kysely.js
 import { SortOrder } from "../graphql/schemas/enums/sortEnums.js";
 import { kyselyData } from "../client/kysely.js";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
+import { GetBlueprintArgs } from "../graphql/schemas/args/blueprintArgs.js";
 
 @singleton()
 export class SupabaseDataService {
@@ -256,6 +257,13 @@ export class SupabaseDataService {
     return {
       data: this.handleGetData("users", args),
       count: this.handleGetCount("users", args),
+    };
+  }
+
+  getBlueprints(args: GetBlueprintArgs) {
+    return {
+      data: this.handleGetData("blueprints", args),
+      count: this.handleGetCount("blueprints", args),
     };
   }
 
@@ -514,6 +522,27 @@ export class SupabaseDataService {
     switch (tableName) {
       case "users":
         return this.db.selectFrom("users").selectAll();
+      case "blueprints":
+        return this.db.selectFrom("blueprints").select((eb) => [
+          "id",
+          "created_at",
+          "form_values",
+          "minter_address",
+          "minted",
+          jsonArrayFrom(
+            eb
+              .selectFrom("blueprint_admins")
+              .select((eb) => [
+                jsonArrayFrom(
+                  eb
+                    .selectFrom("users")
+                    .select(["address", "chain_id", "user_id"])
+                    .whereRef("user_id", "=", "user_id"),
+                ).as("admins"),
+              ])
+              .whereRef("blueprint_id", "=", "id"),
+          ).as("admins"),
+        ]);
       default:
         throw new Error(`Table ${tableName.toString()} not found`);
     }
@@ -532,6 +561,10 @@ export class SupabaseDataService {
         });
       case "hyperboards":
         return this.db.selectFrom("hyperboards").select((expressionBuilder) => {
+          return expressionBuilder.fn.countAll().as("count");
+        });
+      case "blueprints":
+        return this.db.selectFrom("blueprints").select((expressionBuilder) => {
           return expressionBuilder.fn.countAll().as("count");
         });
       default:

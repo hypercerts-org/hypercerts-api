@@ -52,7 +52,6 @@ export class BlueprintController extends Controller {
           .url("Please enter a valid link")
           .optional()
           .or(z.literal("")),
-        cardImage: z.string().url("Card image could not be generated"),
         tags: z
           .array(z.string())
           .min(1, "We need at least one tag")
