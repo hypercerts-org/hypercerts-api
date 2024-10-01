@@ -491,8 +491,20 @@ export class HyperboardController extends Controller {
       };
     }
 
-    const { signature, adminAddress, chainIds } = parsedBody.data;
-    const chainId = chainIds[0];
+    const dataService = new SupabaseDataService();
+    const hyperboard = await dataService.getHyperboardById(hyperboardId);
+
+    if (!hyperboard) {
+      this.setStatus(404);
+      return {
+        success: false,
+        message: "Hyperboard not found",
+        data: null,
+      };
+    }
+
+    const { signature, adminAddress } = parsedBody.data;
+    const chainId = hyperboard.chain_ids[0];
     const success = await verifyAuthSignedData({
       address: adminAddress as `0x${string}`,
       signature: signature as `0x${string}`,
@@ -523,19 +535,6 @@ export class HyperboardController extends Controller {
       };
     }
 
-    const dataService = new SupabaseDataService();
-
-    const hyperboard = await dataService.getHyperboardById(hyperboardId);
-
-    if (!hyperboard) {
-      this.setStatus(404);
-      return {
-        success: false,
-        message: "Hyperboard not found",
-        data: null,
-      };
-    }
-
     // Check if the admin is authorized to update the hyperboard
     const adminUser = hyperboard.admins.find(
       (admin) => admin.address === adminAddress && admin.chain_id === chainId,
@@ -556,7 +555,7 @@ export class HyperboardController extends Controller {
           id: hyperboardId,
           background_image: parsedBody.data.backgroundImg || null,
           tile_border_color: parsedBody.data.borderColor,
-          chain_ids: _.uniq([...hyperboard.chain_ids, chainId]),
+          chain_ids: hyperboard.chain_ids,
           name: parsedBody.data.title,
           grayscale_images: false,
         },
