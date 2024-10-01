@@ -12,7 +12,7 @@ class User {
   avatar?: string;
 
   @Field()
-  chain_id?: number;
+  chain_id?: bigint | number | string;
 }
 
 export { User };
