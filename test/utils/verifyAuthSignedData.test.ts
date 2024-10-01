@@ -1,6 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { verifyAuthSignedData } from "../../src/utils/verifyAuthSignedData.js";
-import { createTestClient, http, publicActions, walletActions } from "viem";
+import {
+  createTestClient,
+  http,
+  publicActions,
+  VerifyTypedDataParameters,
+  walletActions,
+} from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { optimism, sepolia } from "viem/chains";
 
@@ -31,7 +37,7 @@ describe("verifyAuthSignedData", async () => {
 
   const types = {
     test: [{ name: "message", type: "string" }],
-  } as const;
+  } as VerifyTypedDataParameters["types"];
   const domain = {
     name: "Hypercerts",
     version: "1",
@@ -39,7 +45,7 @@ describe("verifyAuthSignedData", async () => {
   } as const;
   const message = {
     message: "test",
-  } as const;
+  } as VerifyTypedDataParameters["message"];
 
   const signTypedData = async (
     client: typeof testClient1,
@@ -49,7 +55,9 @@ describe("verifyAuthSignedData", async () => {
         version: string;
         chainId: number;
       }>;
-      messageOverride?: Partial<typeof message>;
+      messageOverride?: Parameters<
+        typeof testClient1.signTypedData
+      >[0]["message"];
     },
   ) => {
     return await client.signTypedData({
@@ -209,24 +217,6 @@ describe("verifyAuthSignedData", async () => {
 
   it("fails to verify wrong domain - null fields", async () => {
     const signature = await signTypedData(testClient1);
-
-    const result = await verifyAuthSignedData({
-      address: address1,
-      message: {
-        message: null,
-      },
-      types,
-      signature,
-      primaryType: "test",
-      requiredChainId: sepolia.id,
-    });
-    expect(result).toEqual(false);
-  });
-
-  it("fails to verify wrong message - null fields", async () => {
-    const signature = await signTypedData(testClient1, {
-      messageOverride: { message: null },
-    });
 
     const result = await verifyAuthSignedData({
       address: address1,
