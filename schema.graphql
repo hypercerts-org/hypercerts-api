@@ -252,40 +252,20 @@ input BooleanSearchOptions {
 
 """Collection of hypercerts for reference and display purposes"""
 type Collection {
-  """Address of the collection owner"""
-  admin_id: String!
-
-  """Background image of the collection"""
-  background_image: String
+  admins: [User!]!
 
   """Chain ID of the collection"""
-  chain_id: EthBigInt
+  chain_ids: [EthBigInt!]
 
-  """Whether the collection should be rendered as a grayscale image"""
-  grayscale_image: Boolean
+  """Creation timestamp of the collection"""
+  created_at: String!
+
+  """Description of the collection"""
+  description: String!
   id: ID!
 
   """Name of the collection"""
   name: String!
-
-  """Color of the borders of the hypercert collection"""
-  tile_border_color: String
-}
-
-input CollectionFetchInput {
-  by: CollectionSortOptions
-}
-
-input CollectionSortOptions {
-  admin_id: SortOrder
-  chainId: SortOrder
-  name: SortOrder
-}
-
-input CollectionWhereInput {
-  admin_id: StringSearchOptions
-  chain_id: BigIntSearchOptions
-  id: IdSearchOptions
 }
 
 """Pointer to a contract deployed on a chain"""
@@ -404,11 +384,6 @@ type GetAttestationsSchemaResponse {
   data: [AttestationSchema!]
 }
 
-type GetCollectionsResponse {
-  count: Int
-  data: [Collection!]
-}
-
 """Pointer to a contract deployed on a chain"""
 type GetContractsResponse {
   count: Int
@@ -419,6 +394,11 @@ type GetContractsResponse {
 type GetFractionsResponse {
   count: Int
   data: [Fraction!]
+}
+
+type GetHyperboardsResponse {
+  count: Int
+  data: [Hyperboard!]
 }
 
 """
@@ -454,6 +434,44 @@ type GetSalesResponse {
 type GetUsersResponse {
   count: Int
   data: [User!]
+}
+
+"""Hyperboard of hypercerts for reference and display purposes"""
+type Hyperboard {
+  admins: [User!]!
+
+  """Background image of the hyperboard"""
+  background_image: String
+
+  """Chain ID of the hyperboard"""
+  chain_ids: [EthBigInt!]
+
+  """Whether the hyperboard should be rendered as a grayscale image"""
+  grayscale_images: Boolean
+  id: ID!
+
+  """Name of the hyperboard"""
+  name: String!
+  sections: SectionResponseType!
+
+  """Color of the borders of the hyperboard"""
+  tile_border_color: String
+}
+
+input HyperboardFetchInput {
+  by: HyperboardSortOptions
+}
+
+input HyperboardSortOptions {
+  admin_id: SortOrder
+  chainId: SortOrder
+  name: SortOrder
+}
+
+input HyperboardWhereInput {
+  admin_id: StringSearchOptions
+  chain_id: BigIntSearchOptions
+  id: IdSearchOptions
 }
 
 """
@@ -753,9 +771,9 @@ type Query {
   allowlistRecords(first: Int, offset: Int, sort: AllowlistRecordFetchInput, where: AllowlistRecordWhereInput): GetAllowlistRecordResponse!
   attestationSchemas(first: Int, offset: Int): GetAttestationsSchemaResponse!
   attestations(first: Int, offset: Int, sort: AttestationFetchInput, where: AttestationWhereInput): GetAttestationsResponse!
-  collections(first: Int, offset: Int, sort: CollectionFetchInput, where: CollectionWhereInput): GetCollectionsResponse!
   contracts(first: Int, offset: Int, sort: ContractFetchInput, where: ContractWhereInput): GetContractsResponse!
   fractions(first: Int, offset: Int, sort: FractionFetchInput, where: FractionWhereInput): GetFractionsResponse!
+  hyperboards(first: Int, offset: Int, sort: HyperboardFetchInput, where: HyperboardWhereInput): GetHyperboardsResponse!
   hypercerts(first: Int, offset: Int, sort: HypercertFetchInput, where: HypercertsWhereArgs): GetHypercertsResponse!
   metadata(first: Int, offset: Int, sort: MetadataFetchInput, where: MetadataWhereInput): GetMetadataResponse!
   orders(first: Int, offset: Int, sort: OrderFetchInput, where: OrderWhereInput): GetOrdersResponse!
@@ -833,6 +851,65 @@ input SaleWhereInput {
   transaction_hash: IdSearchOptions
 }
 
+"""Section representing a collection within a hyperboard"""
+type Section {
+  collection: Collection!
+  entries: [SectionEntry!]!
+  label: String!
+  owners: [SectionOwner!]!
+}
+
+"""Entry representing a hypercert or blueprint within a section"""
+type SectionEntry {
+  display_size: Float!
+
+  """ID of the hypercert or blueprint"""
+  id: String!
+  is_blueprint: Boolean!
+
+  """Name of the hypercert or blueprint"""
+  name: String
+  owners: [SectionEntryOwner!]!
+  percentage_of_section: Float!
+  total_units: BigInt
+}
+
+type SectionEntryOwner {
+  """The address of the user"""
+  address: String!
+
+  """The avatar of the user"""
+  avatar: String
+
+  """The chain ID of the user"""
+  chain_id: EthBigInt
+
+  """The display name of the user"""
+  display_name: String
+  percentage: Float!
+  units: BigInt
+}
+
+type SectionOwner {
+  """The address of the user"""
+  address: String!
+
+  """The avatar of the user"""
+  avatar: String
+
+  """The chain ID of the user"""
+  chain_id: EthBigInt
+
+  """The display name of the user"""
+  display_name: String
+  percentage_owned: Float!
+}
+
+type SectionResponseType {
+  count: Float!
+  data: [Section!]!
+}
+
 """The direction to sort the query results"""
 enum SortOrder {
   """Ascending order"""
@@ -864,6 +941,9 @@ type User {
 
   """The avatar of the user"""
   avatar: String
+
+  """The chain ID of the user"""
+  chain_id: EthBigInt
 
   """The display name of the user"""
   display_name: String
