@@ -4711,6 +4711,14 @@ export type introspection = {
               "name": "StringSearchOptions",
               "ofType": null
             }
+          },
+          {
+            "name": "chain_id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "BigIntSearchOptions",
+              "ofType": null
+            }
           }
         ]
       }
