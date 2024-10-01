@@ -27,6 +27,7 @@ enum OperatorSymbols {
   contains = "@>",
 }
 
+// TODO: remove when data client is updated
 export const generateFilterValues = (
   column: string,
   operator: OperatorType,
@@ -88,157 +89,107 @@ export const isFilterObject = (obj: never): boolean => {
   return Object.keys(obj).some((key) => filterKeys.includes(key));
 };
 
-export const buildSearchCondition = (
+// Helper functions for building conditions
+const buildEqualityCondition = (
   column: string,
-  value:
-    | StringSearchOptions
-    | NumberSearchOptions
-    | StringArraySearchOptions
-    | NumberArraySearchOptions,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value: any,
   tableName: string,
-): SqlBool => {
-  const conditions: SqlBool[] = [];
+): SqlBool => sql`${sql.raw(`"${tableName}"."${column}"`)} =
+${value}`;
 
-  if (value instanceof StringSearchOptions) {
-    if (value.contains) {
-      conditions.push(
-        sql`${sql.raw(`"${tableName}"."${column}"`)} ILIKE
-        ${"%" + value.contains + "%"}`,
-      );
-    }
-    if (value.startsWith) {
-      conditions.push(
-        sql`${sql.raw(`"${tableName}"."${column}"`)} ILIKE
-        ${value.startsWith + "%"}`,
-      );
-    }
-    if (value.endsWith) {
-      conditions.push(
-        sql`${sql.raw(`"${tableName}"."${column}"`)} ILIKE
-        ${"%" + value.endsWith}`,
-      );
-    }
-    if (value.eq) {
-      conditions.push(
-        sql`${sql.raw(`"${tableName}"."${column}"`)} =
-        ${value.eq}`,
-      );
-    }
-  } else if (value instanceof NumberSearchOptions) {
-    if (value.eq !== undefined) {
-      conditions.push(
-        sql`${sql.raw(`"${tableName}"."${column}"`)} =
-        ${value.eq}`,
-      );
-    }
-    if (value.gt !== undefined) {
-      conditions.push(
-        sql`${sql.raw(`"${tableName}"."${column}"`)} >
-        ${value.gt}`,
-      );
-    }
-    if (value.gte !== undefined) {
-      conditions.push(
-        sql`${sql.raw(`"${tableName}"."${column}"`)} >=
-        ${value.gte}`,
-      );
-    }
-    if (value.lt !== undefined) {
-      conditions.push(
-        sql`${sql.raw(`"${tableName}"."${column}"`)} <
-        ${value.lt}`,
-      );
-    }
-    if (value.lte !== undefined) {
-      conditions.push(
-        sql`${sql.raw(`"${tableName}"."${column}"`)} <=
-        ${value.lte}`,
-      );
-    }
-  } else if (value instanceof StringArraySearchOptions) {
-    if (value.contains && value.contains.length > 0) {
-      conditions.push(
-        sql`${sql.raw(`"${tableName}"."${column}"`)} @>
-        ${sql.raw(`ARRAY[${value.contains.map((v) => `'${v}'`).join(", ")}]`)}`,
-      );
-    }
-    if (value.overlaps && value.overlaps.length > 0) {
-      conditions.push(
-        sql`${sql.raw(`"${tableName}"."${column}"`)} &&
-        ${sql.raw(`ARRAY[${value.overlaps.map((v) => `'${v}'`).join(", ")}]`)}`,
-      );
-    }
-  } else if (value instanceof NumberArraySearchOptions) {
-    if (value.contains && value.contains.length > 0) {
-      conditions.push(
-        sql`${sql.raw(`"${tableName}"."${column}"`)} @>
-        ${sql.raw(`ARRAY[${value.contains.join(", ")}]`)}`,
-      );
-    }
-    if (value.overlaps && value.overlaps.length > 0) {
-      conditions.push(
-        sql`${sql.raw(`"${tableName}"."${column}"`)} &&
-        ${sql.raw(`ARRAY[${value.overlaps.join(", ")}]`)}`,
-      );
-    }
-  }
+const buildComparisonCondition = (
+  column: string,
+  operator: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value: any,
+  tableName: string,
+): SqlBool =>
+  sql`${sql.raw(`"${tableName}"."${column}"`)}
+  ${sql.raw(operator)}
+  ${value}`;
 
-  return sql.join(conditions, sql` AND `);
+const buildLikeCondition = (
+  column: string,
+  pattern: string,
+  tableName: string,
+): SqlBool => sql`${sql.raw(`"${tableName}"."${column}"`)} ILIKE
+${pattern}`;
+
+const buildArrayCondition = (
+  column: string,
+  operator: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  values: any[],
+  tableName: string,
+): SqlBool =>
+  sql`${sql.raw(`"${tableName}"."${column}"`)}
+  ${sql.raw(operator)}
+  ${sql.raw(`ARRAY[${values.map((v) => `'${v}'`).join(", ")}]`)}`;
+
+const conditionBuilders = {
+  eq: buildEqualityCondition,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  gt: (column: string, value: any, tableName: string) =>
+    buildComparisonCondition(column, ">", value, tableName),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  gte: (column: string, value: any, tableName: string) =>
+    buildComparisonCondition(column, ">=", value, tableName),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  lt: (column: string, value: any, tableName: string) =>
+    buildComparisonCondition(column, "<", value, tableName),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  lte: (column: string, value: any, tableName: string) =>
+    buildComparisonCondition(column, "<=", value, tableName),
+  contains: (column: string, value: string, tableName: string) =>
+    buildLikeCondition(column, `%${value}%`, tableName),
+  startsWith: (column: string, value: string, tableName: string) =>
+    buildLikeCondition(column, `${value}%`, tableName),
+  endsWith: (column: string, value: string, tableName: string) =>
+    buildLikeCondition(column, `%${value}`, tableName),
 };
-export const buildFilterCondition = (
+
+export const buildCondition = (
   column: string,
-  filter: never,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value: any,
   tableName: string,
 ): SqlBool => {
   const conditions: SqlBool[] = [];
 
-  if ("eq" in filter) {
-    conditions.push(
-      sql`${sql.raw(`"${tableName}"."${column}"`)} =
-      ${filter.eq}`,
-    );
-  }
-  if ("gt" in filter) {
-    conditions.push(
-      sql`${sql.raw(`"${tableName}"."${column}"`)} >
-      ${filter.gt}`,
-    );
-  }
-  if ("gte" in filter) {
-    conditions.push(
-      sql`${sql.raw(`"${tableName}"."${column}"`)} >=
-      ${filter.gte}`,
-    );
-  }
-  if ("lt" in filter) {
-    conditions.push(
-      sql`${sql.raw(`"${tableName}"."${column}"`)} <
-      ${filter.lt}`,
-    );
-  }
-  if ("lte" in filter) {
-    conditions.push(
-      sql`${sql.raw(`"${tableName}"."${column}"`)} <=
-      ${filter.lte}`,
-    );
-  }
-  if ("contains" in filter && typeof filter.contains === "string") {
-    conditions.push(
-      sql`${sql.raw(`"${tableName}"."${column}"`)} ILIKE
-      ${"%" + filter.contains + "%"}`,
-    );
-  }
-  if ("startsWith" in filter) {
-    conditions.push(
-      sql`${sql.raw(`"${tableName}"."${column}"`)} ILIKE
-      ${filter.startsWith + "%"}`,
-    );
-  }
-  if ("endsWith" in filter) {
-    conditions.push(
-      sql`${sql.raw(`"${tableName}"."${column}"`)} ILIKE
-      ${"%" + filter.endsWith}`,
-    );
+  if (
+    value instanceof StringSearchOptions ||
+    value instanceof NumberSearchOptions
+  ) {
+    Object.entries(value).forEach(([key, val]) => {
+      if (key in conditionBuilders && val !== undefined) {
+        conditions.push(conditionBuilders[key](column, val, tableName));
+      }
+    });
+  } else if (
+    value instanceof StringArraySearchOptions ||
+    value instanceof NumberArraySearchOptions
+  ) {
+    if (value.contains && value.contains.length > 0) {
+      conditions.push(
+        buildArrayCondition(column, "@>", value.contains, tableName),
+      );
+    }
+    if (value.overlaps && value.overlaps.length > 0) {
+      conditions.push(
+        buildArrayCondition(column, "&&", value.overlaps, tableName),
+      );
+    }
+  } else if (typeof value === "object" && value !== null) {
+    Object.entries(value).forEach(([key, val]) => {
+      if (key in conditionBuilders && val !== undefined) {
+        conditions.push(conditionBuilders[key](column, val, tableName));
+      } else if (key === "contains" && Array.isArray(val)) {
+        conditions.push(buildArrayCondition(column, "@>", val, tableName));
+      } else if (key === "overlaps" && Array.isArray(val)) {
+        conditions.push(buildArrayCondition(column, "&&", val, tableName));
+      }
+    });
   }
 
   return sql.join(conditions, sql` AND `);
@@ -246,41 +197,17 @@ export const buildFilterCondition = (
 
 export const buildWhereCondition = <T extends string>(
   column: string,
-  value: never,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value: any,
   tableName: T,
-  eb: never,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  eb: any,
 ): SqlBool | null => {
   if (!column || value === undefined) return null;
-  console.log(
-    "Building where condition for field",
-    column,
-    "in table",
-    tableName,
-  );
-
-  if (
-    value instanceof StringSearchOptions ||
-    value instanceof NumberSearchOptions ||
-    value instanceof StringArraySearchOptions ||
-    value instanceof NumberArraySearchOptions
-  ) {
-    console.log("Found search condition for column: ", column);
-    return buildSearchCondition(column, value, tableName);
-  }
 
   if (typeof value === "object" && value !== null) {
     if (isFilterObject(value)) {
-      console.log("Found filter condition for column: ", column);
-      if (
-        ("contains" in value && Array.isArray(value.contains)) ||
-        "overlaps" in value
-      ) {
-        // This is an array operation, use buildSearchCondition
-        return buildSearchCondition(column, value, tableName);
-      } else {
-        // This is a non-array operation, use buildFilterCondition
-        return buildFilterCondition(column, value, tableName);
-      }
+      return buildCondition(column, value, tableName);
     }
 
     const relatedTable = getTablePrefix(column);
@@ -288,8 +215,6 @@ export const buildWhereCondition = <T extends string>(
 
     for (const [nestedColumn, nestedValue] of Object.entries(value)) {
       if (!nestedColumn || nestedValue === undefined) continue;
-      console.log("Nested column", nestedColumn);
-      console.log("Nested value", nestedValue);
       const nestedCondition = buildWhereCondition(
         nestedColumn,
         nestedValue,
@@ -306,7 +231,6 @@ export const buildWhereCondition = <T extends string>(
       : null;
   }
 
-  console.log("Simple equality condition for column: ", column);
   return sql`${sql.raw(`"${tableName}"."${column}"`)} =
   ${value}`;
 };
