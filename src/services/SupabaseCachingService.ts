@@ -8,12 +8,12 @@ import { GetFractionsArgs } from "../graphql/schemas/args/fractionArgs.js";
 import { GetSalesArgs } from "../graphql/schemas/args/salesArgs.js";
 import { kyselyCaching } from "../client/kysely.js";
 import { supabaseCaching as supabaseClient } from "../client/supabase.js";
-import { generateFilterValues } from "../graphql/schemas/utils/filters-kysely.js";
-import { expressionBuilder, Kysely } from "kysely";
+import { expressionBuilder, Kysely, SqlBool } from "kysely";
 import { GetAllowlistRecordsArgs } from "../graphql/schemas/args/allowlistRecordArgs.js";
 import { singleton } from "tsyringe";
 import { BaseArgs } from "../graphql/schemas/args/baseArgs.js";
 import { SortOrder } from "../graphql/schemas/enums/sortEnums.js";
+import { buildWhereCondition } from "../graphql/schemas/utils/filters-kysely.js";
 
 @singleton()
 export class SupabaseCachingService {
@@ -230,97 +230,6 @@ export class SupabaseCachingService {
   }
 
   // Generalized query builder and handler of filter, sort, and pagination
-
-  handleGetData<
-    DB extends CachingDatabase,
-    T extends keyof DB & string,
-    A extends object,
-  >(
-    tableName: T,
-    args: BaseArgs<A> & {
-      first?: number;
-      offset?: number;
-    },
-  ) {
-    let query = this.getDataQuery(tableName, args);
-
-    const { where, first, offset, sort } = args;
-    const eb = expressionBuilder(query);
-
-    if (where) {
-      query = query.where(
-        eb.and(
-          Object.entries(where).flatMap(([column, value]) => {
-            if (!column || !value) return [];
-
-            if (typeof value === "object" && !Array.isArray(value)) {
-              return Object.entries(value).flatMap(([_column, _value]) => {
-                if (!_column || !_value) return [];
-
-                const res = generateFilterValues(column, _column, _value);
-                if (res.length > 0) {
-                  return eb(
-                    `${tableName.toString()}.${res[0]}`,
-                    res[1],
-                    res[2],
-                  );
-                }
-
-                const filters = [];
-                for (const [operator, operand] of Object.entries(_value)) {
-                  if (!operand) continue;
-
-                  let _table = column;
-                  if (column === "hypercerts") {
-                    _table = "claims";
-                  }
-                  if (column === "contract") {
-                    _table = "contracts";
-                  }
-
-                  if (column === "fractions") {
-                    _table = "fractions_view";
-                  }
-
-                  const [_col, _symbol, _input] = generateFilterValues(
-                    `${_table}.${_column}`,
-                    operator,
-                    operand,
-                  );
-
-                  filters.push(eb(_col, _symbol, _input));
-                }
-
-                return filters.flat();
-              });
-            }
-
-            return column && value ? eb(column, "=", value) : [];
-          }),
-        ),
-      );
-    }
-
-    if (sort) {
-      if (sort?.by) {
-        const { by } = sort;
-        for (const [column, direction] of Object.entries(by)) {
-          if (!column || !direction) continue;
-
-          const dir: "asc" | "desc" =
-            direction === SortOrder.ascending ? "asc" : "desc";
-
-          query = query.orderBy(column, dir);
-        }
-      }
-    }
-
-    if (first) query = query.limit(first);
-    if (offset) query = query.offset(offset);
-
-    return query;
-  }
-
   handleGetCount<
     DB extends CachingDatabase,
     T extends keyof DB & string,
@@ -338,57 +247,65 @@ export class SupabaseCachingService {
     const eb = expressionBuilder(query);
 
     if (where) {
-      query = query.where(
-        eb.and(
-          Object.entries(where).flatMap(([column, value]) => {
-            if (!column || !value) return [];
-
-            if (typeof value === "object" && !Array.isArray(value)) {
-              return Object.entries(value).flatMap(([_column, _value]) => {
-                if (!_column || !_value) return [];
-
-                const res = generateFilterValues(column, _column, _value);
-                if (res.length > 0) {
-                  return eb(
-                    `${tableName.toString()}.${res[0]}`,
-                    res[1],
-                    res[2],
-                  );
-                }
-
-                const filters = [];
-                for (const [operator, operand] of Object.entries(_value)) {
-                  if (!operand) continue;
-
-                  let _table = column;
-                  if (column === "hypercerts") {
-                    _table = "claims";
-                  }
-                  if (column === "contract") {
-                    _table = "contracts";
-                  }
-
-                  if (column === "fractions") {
-                    _table = "fractions_view";
-                  }
-
-                  const [_col, _symbol, _input] = generateFilterValues(
-                    `${_table}.${_column}`,
-                    operator,
-                    operand,
-                  );
-                  filters.push(eb(_col, _symbol, _input));
-                }
-
-                return filters.flat();
-              });
-            }
-            return column && value ? eb(column, "=", value) : [];
-          }),
-        ),
-      );
+      query = this.applyWhereConditions(query, where, tableName, eb);
     }
 
+    return query;
+  }
+
+  handleGetData<
+    DB extends CachingDatabase,
+    T extends keyof DB & string,
+    A extends object,
+  >(
+    tableName: T,
+    args: BaseArgs<A> & {
+      first?: number;
+      offset?: number;
+    },
+  ) {
+    let query = this.getDataQuery(tableName, args);
+    const { where, first, offset, sort } = args;
+    const eb = expressionBuilder(query);
+
+    if (where) {
+      query = this.applyWhereConditions(query, where, tableName, eb);
+    }
+
+    if (sort?.by) {
+      query = this.applySorting(query, sort.by);
+    }
+
+    if (first) query = query.limit(first);
+    if (offset) query = query.offset(offset);
+
+    return query;
+  }
+
+  private applyWhereConditions<T extends string>(
+    query: never,
+    where: never,
+    tableName: T,
+    eb: never,
+  ) {
+    const conditions = Object.entries(where)
+      .map(([column, value]) =>
+        buildWhereCondition(column, value, tableName, eb),
+      )
+      .filter(Boolean);
+
+    return conditions.reduce((q, condition) => {
+      return q.where(condition as SqlBool);
+    }, query);
+  }
+
+  private applySorting(query: never, sortBy: never) {
+    for (const [column, direction] of Object.entries(sortBy)) {
+      if (!column || !direction) continue;
+      const dir: "asc" | "desc" =
+        direction === SortOrder.ascending ? "asc" : "desc";
+      query = query.orderBy(column, dir);
+    }
     return query;
   }
 

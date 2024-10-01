@@ -3209,6 +3209,20 @@ export type introspection = {
                 }
               }
             }
+          },
+          {
+            "name": "overlaps",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "BigInt",
+                  "ofType": null
+                }
+              }
+            }
           }
         ]
       },
@@ -4607,6 +4621,20 @@ export type introspection = {
         "inputFields": [
           {
             "name": "contains",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            }
+          },
+          {
+            "name": "overlaps",
             "type": {
               "kind": "LIST",
               "ofType": {
