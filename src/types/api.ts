@@ -87,6 +87,13 @@ export interface AddOrUpdateUserRequest {
 export type AddOrUpdateUserResponse = ApiResponse<{ address: string } | null>;
 
 /**
+ * Interface for a blueprint add or update request.
+ */
+export type AddOrCreateBlueprintResponse = ApiResponse<{
+  blueprint_id: number;
+} | null>;
+
+/**
  * Response for a created hyperboard
  */
 export type HyperboardCreateResponse = ApiResponse<{
@@ -119,4 +126,12 @@ export interface HyperboardCreateRequest {
  */
 export interface HyperboardUpdateRequest extends HyperboardCreateRequest {
   id: string;
+}
+
+export interface BlueprintCreateRequest {
+  form_values: unknown;
+  minter_address: string;
+  admin_address: string;
+  signature: string;
+  chain_id: number;
 }

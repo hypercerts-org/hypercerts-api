@@ -876,6 +876,78 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"ApiResponse__blueprint_id-number_-or-null_": {
+				"properties": {
+					"errors": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+							},
+							{
+								"items": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"type": "array"
+							}
+						]
+					},
+					"message": {
+						"type": "string"
+					},
+					"data": {
+						"properties": {
+							"blueprint_id": {
+								"type": "number",
+								"format": "double"
+							}
+						},
+						"required": [
+							"blueprint_id"
+						],
+						"type": "object",
+						"nullable": true
+					},
+					"success": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"success"
+				],
+				"type": "object",
+				"description": "Interface for a generic API response."
+			},
+			"AddOrCreateBlueprintResponse": {
+				"$ref": "#/components/schemas/ApiResponse__blueprint_id-number_-or-null_",
+				"description": "Interface for a blueprint add or update request."
+			},
+			"BlueprintCreateRequest": {
+				"properties": {
+					"form_values": {},
+					"minter_address": {
+						"type": "string"
+					},
+					"admin_address": {
+						"type": "string"
+					},
+					"signature": {
+						"type": "string"
+					},
+					"chain_id": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"form_values",
+					"minter_address",
+					"admin_address",
+					"signature",
+					"chain_id"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"StoreAllowListRequest": {
 				"description": "Interface for storing an allow list dump on IPFS",
 				"properties": {
@@ -1901,6 +1973,59 @@
 						}
 					}
 				]
+			}
+		},
+		"/v1/blueprints": {
+			"post": {
+				"operationId": "CreateBlueprint",
+				"responses": {
+					"201": {
+						"description": "Blueprint created successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AddOrCreateBlueprintResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Validation failed",
+											"errors": {
+												"blueprint": "Invalid blueprint."
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Blueprints"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/BlueprintCreateRequest"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/v1/allowlists": {

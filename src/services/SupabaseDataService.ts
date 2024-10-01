@@ -463,6 +463,48 @@ export class SupabaseDataService {
       .executeTakeFirst();
   }
 
+  async upsertBlueprints(
+    blueprints: DataDatabase["public"]["Tables"]["blueprints"]["Insert"][],
+  ) {
+    return this.db
+      .insertInto("blueprints")
+      .values(blueprints)
+      .onConflict((oc) =>
+        oc.columns(["id"]).doUpdateSet((eb) => ({
+          id: eb.ref("excluded.id"),
+          form_values: eb.ref("excluded.form_values"),
+          minter_address: eb.ref("excluded.minter_address"),
+          minted: eb.ref("excluded.minted"),
+        })),
+      )
+      .returning(["id"])
+      .execute();
+  }
+
+  async addAdminToBlueprint(
+    blueprintId: number,
+    adminAddress: string,
+    chainId: number,
+  ) {
+    const user = await this.getOrCreateUser(adminAddress, chainId);
+    return this.db
+      .insertInto("blueprint_admins")
+      .values([
+        {
+          blueprint_id: blueprintId,
+          user_id: user.id,
+        },
+      ])
+      .onConflict((oc) =>
+        oc.columns(["blueprint_id", "user_id"]).doUpdateSet((eb) => ({
+          blueprint_id: eb.ref("excluded.blueprint_id"),
+          user_id: eb.ref("excluded.user_id"),
+        })),
+      )
+      .returning(["blueprint_id", "user_id"])
+      .executeTakeFirst();
+  }
+
   getDataQuery<
     DB extends KyselyDataDatabase,
     T extends keyof DB & string,
