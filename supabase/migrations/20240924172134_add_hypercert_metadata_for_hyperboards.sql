@@ -30,7 +30,7 @@ create table "public"."hyperboard_hypercert_metadata"
     "created_at"    timestamp with time zone not null default now(),
     "hyperboard_id" uuid                     not null,
     "collection_id" uuid                     not null,
-    "display_size"  numeric(78,0)                            default '1'::numeric(78,0),
+    "display_size"  bigint                            default '1'::bigint,
     "hypercert_id"  text                     not null
 );
 
@@ -367,7 +367,7 @@ alter table "public"."blueprints"
     drop column "display_size";
 
 alter table "public"."collection_blueprints"
-    add column "display_size" numeric(78,0) not null;
+    add column "display_size" bigint not null;
 
 alter table "public"."hyperboards"
     drop column "admin_id";
