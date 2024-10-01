@@ -117,6 +117,7 @@
 				"description": "Interface for a generic API response."
 			},
 			"AddOrUpdateUserRequest": {
+				"description": "Interface for a user add or update request.",
 				"properties": {
 					"display_name": {
 						"type": "string"

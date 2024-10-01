@@ -871,4 +871,5 @@ type User {
 
 input UserWhereInput {
   address: StringSearchOptions
+  chain_id: BigIntSearchOptions
 }
