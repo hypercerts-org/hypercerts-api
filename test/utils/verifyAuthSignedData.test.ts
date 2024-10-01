@@ -43,20 +43,22 @@ describe("verifyAuthSignedData", async () => {
 
   const signTypedData = async (
     client: typeof testClient1,
-    domainOverride?: Partial<{
-      name: string;
-      version: string;
-      chainId: number;
-    }>,
+    overrides?: {
+      domainOverride?: Partial<{
+        name: string;
+        version: string;
+        chainId: number;
+      }>;
+      messageOverride?: Partial<typeof message>;
+    },
   ) => {
     return await client.signTypedData({
-      domain: domainOverride ?? domain,
-      message,
+      domain: overrides?.domainOverride ?? domain,
+      message: overrides?.messageOverride ?? message,
       types,
       primaryType: "test",
     });
   };
-
   it("Verifies signature correctly", async () => {
     const signature = await signTypedData(testClient1);
 
@@ -123,8 +125,7 @@ describe("verifyAuthSignedData", async () => {
 
   it("Fails to verify with wrong domain - missing chain id", async () => {
     const signature = await signTypedData(testClient1, {
-      name: "Hypercerts",
-      version: "1",
+      domainOverride: { name: "Hypercerts", version: "1" },
     });
 
     const result = await verifyAuthSignedData({
@@ -142,9 +143,11 @@ describe("verifyAuthSignedData", async () => {
 
   it("Fails to verify with wrong domain - wrong chain id", async () => {
     const signature = await signTypedData(testClient1, {
-      name: "Hypercerts",
-      version: "1",
-      chainId: optimism.id,
+      domainOverride: {
+        name: "Hypercerts",
+        version: "1",
+        chainId: optimism.id,
+      },
     });
 
     const result = await verifyAuthSignedData({
@@ -162,9 +165,11 @@ describe("verifyAuthSignedData", async () => {
 
   it("Fails to verify with wrong domain - wrong name", async () => {
     const signature = await signTypedData(testClient1, {
-      name: "Wrong",
-      version: "1",
-      chainId: sepolia.id,
+      domainOverride: {
+        name: "Wrong",
+        version: "1",
+        chainId: sepolia.id,
+      },
     });
 
     const result = await verifyAuthSignedData({
@@ -182,9 +187,11 @@ describe("verifyAuthSignedData", async () => {
 
   it("Fails to verify with wrong domain - wrong version", async () => {
     const signature = await signTypedData(testClient1, {
-      name: "Hypercerts",
-      version: "2",
-      chainId: sepolia.id,
+      domainOverride: {
+        name: "Hypercerts",
+        version: "2",
+        chainId: sepolia.id,
+      },
     });
 
     const result = await verifyAuthSignedData({
@@ -198,5 +205,124 @@ describe("verifyAuthSignedData", async () => {
       requiredChainId: sepolia.id,
     });
     expect(result).toEqual(false);
+  });
+
+  it("fails to verify wrong domain - null fields", async () => {
+    const signature = await signTypedData(testClient1);
+
+    const result = await verifyAuthSignedData({
+      address: address1,
+      message: {
+        message: null,
+      },
+      types,
+      signature,
+      primaryType: "test",
+      requiredChainId: sepolia.id,
+    });
+    expect(result).toEqual(false);
+  });
+
+  it("fails to verify wrong message - null fields", async () => {
+    const signature = await signTypedData(testClient1, {
+      messageOverride: { message: null },
+    });
+
+    const result = await verifyAuthSignedData({
+      address: address1,
+      message: {
+        message: null,
+      },
+      types,
+      signature,
+      primaryType: "test",
+      requiredChainId: sepolia.id,
+    });
+    expect(result).toEqual(false);
+  });
+
+  it("fails to verify wrong message - different fields", async () => {
+    const signature = await signTypedData(testClient1, {
+      messageOverride: { message: "different", other: "fields" },
+    });
+
+    const result = await verifyAuthSignedData({
+      address: address1,
+      message: {
+        message: { message: "different", other: "fields" },
+      },
+      types,
+      signature,
+      primaryType: "test",
+      requiredChainId: sepolia.id,
+    });
+    expect(result).toEqual(false);
+  });
+
+  it("fails to verify wrong message - verify primary type", async () => {
+    const signature = await signTypedData(testClient1);
+
+    const result = await verifyAuthSignedData({
+      address: address1,
+      message: {
+        message: { message: "test" },
+      },
+      types,
+      signature,
+      primaryType: "mock",
+      requiredChainId: sepolia.id,
+    });
+    expect(result).toEqual(false);
+  });
+
+  it("fails to verify wrong message - signed different primary type", async () => {
+    const signature = await signTypedData(testClient1);
+
+    const result = await verifyAuthSignedData({
+      address: address1,
+      message: {
+        message: { message: "test" },
+      },
+      types,
+      signature,
+      primaryType: "mock",
+      requiredChainId: sepolia.id,
+    });
+    expect(result).toEqual(false);
+  });
+
+  it("fails to verify with malformed signature", async () => {
+    const signature = "0xInvalidSignature";
+
+    const result = await verifyAuthSignedData({
+      address: address1,
+      message: {
+        message: "test",
+      },
+      types,
+      signature,
+      primaryType: "test",
+      requiredChainId: sepolia.id,
+    });
+    expect(result).toEqual(false);
+  });
+
+  it("verifies message with special characters", async () => {
+    const specialMessage = {
+      message: "Test with special chars: éèàù@#$%^&*()_+",
+    };
+    const signature = await signTypedData(testClient1, {
+      messageOverride: specialMessage,
+    });
+
+    const result = await verifyAuthSignedData({
+      address: address1,
+      message: specialMessage,
+      types,
+      signature,
+      primaryType: "test",
+      requiredChainId: sepolia.id,
+    });
+    expect(result).toEqual(true);
   });
 });
