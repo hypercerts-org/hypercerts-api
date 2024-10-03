@@ -3321,6 +3321,20 @@ export type introspection = {
                 }
               }
             }
+          },
+          {
+            "name": "overlaps",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "BigInt",
+                  "ofType": null
+                }
+              }
+            }
           }
         ]
       },
@@ -5050,6 +5064,20 @@ export type introspection = {
                 }
               }
             }
+          },
+          {
+            "name": "overlaps",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
+            }
           }
         ]
       },
@@ -5168,10 +5196,10 @@ export type introspection = {
   }
 };
 
-import * as gqlTada from "gql.tada";
+import * as gqlTada from 'gql.tada';
 
-declare module "gql.tada" {
+declare module 'gql.tada' {
   interface setupSchema {
-    introspection: introspection;
+    introspection: introspection
   }
 }

@@ -696,7 +696,11 @@ input MetadataWhereInput {
 }
 
 input NumberArraySearchOptions {
+  """Array of numbers"""
   contains: [BigInt!]
+
+  """Array of numbers"""
+  overlaps: [BigInt!]
 }
 
 input NumberSearchOptions {
@@ -921,6 +925,7 @@ enum SortOrder {
 
 input StringArraySearchOptions {
   contains: [String!]
+  overlaps: [String!]
 }
 
 input StringSearchOptions {
