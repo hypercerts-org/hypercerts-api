@@ -76,6 +76,7 @@ export type ValidationResponse = ApiResponse<ValidationResult>;
 /**
  * Interface for a user add or update request.
  */
+
 export interface AddOrUpdateUserRequest {
   display_name: string;
   avatar: string;
@@ -84,3 +85,38 @@ export interface AddOrUpdateUserRequest {
 }
 
 export type AddOrUpdateUserResponse = ApiResponse<{ address: string } | null>;
+
+/**
+ * Response for a created hyperboard
+ */
+export type HyperboardCreateResponse = ApiResponse<{
+  id: string;
+} | null>;
+
+/**
+ * Interface for creating a hyperboard
+ */
+export interface HyperboardCreateRequest {
+  chainIds: number[];
+  title: string;
+  collections: {
+    id?: string;
+    title: string;
+    description: string;
+    hypercerts: {
+      hypercertId: string;
+      factor: number;
+    }[];
+  }[];
+  backgroundImg?: string;
+  borderColor: string;
+  adminAddress: string;
+  signature: string;
+}
+
+/**
+ * Interface for updating a hyperboard
+ */
+export interface HyperboardUpdateRequest extends HyperboardCreateRequest {
+  id: string;
+}

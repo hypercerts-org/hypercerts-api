@@ -142,6 +142,21 @@ const handleChangeUsers = (
   }
 };
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+const handleChangeHyperboards = (
+  payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
+) => {
+  console.log(payload);
+  switch (payload.eventType) {
+    case "UPDATE":
+    case "INSERT":
+      cache.invalidate([{ typename: "Hyperboard" }]);
+      break;
+    default:
+      break;
+  }
+};
+
 supabaseCaching
   .channel("schema-db-changes")
   .on(
@@ -219,5 +234,68 @@ supabaseData
       table: "users",
     },
     (payload) => handleChangeUsers(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "collections",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "hyperboards",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "hypercerts",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "hyperboard_hypercert_metadata",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "hyperboard_collections",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "hyperboard_blueprint_metadata",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "collection_blueprints",
+    },
+    (payload) => handleChangeHyperboards(payload),
   )
   .subscribe();

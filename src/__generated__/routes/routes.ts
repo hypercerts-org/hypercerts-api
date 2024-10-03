@@ -9,6 +9,8 @@ import { MetadataController } from './../../controllers/MetadataController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MarketplaceController } from './../../controllers/MarketplaceController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { HyperboardController } from './../../controllers/HyperboardController.js';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AllowListController } from './../../controllers/AllowListController.js';
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
 
@@ -191,6 +193,45 @@ const models: TsoaRoute.Models = {
         "properties": {
             "tokenIds": {"dataType":"array","array":{"dataType":"string"},"required":true},
             "chainId": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ApiResponse__id-string_-or-null_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string"},"data":{"dataType":"union","subSchemas":[{"dataType":"nestedObjectLiteral","nestedProperties":{"id":{"dataType":"string","required":true}}},{"dataType":"enum","enums":[null]}]},"success":{"dataType":"boolean","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "HyperboardCreateResponse": {
+        "dataType": "refAlias",
+        "type": {"ref":"ApiResponse__id-string_-or-null_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "HyperboardCreateRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "chainIds": {"dataType":"array","array":{"dataType":"double"},"required":true},
+            "title": {"dataType":"string","required":true},
+            "collections": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"hypercerts":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"hypercertId":{"dataType":"string","required":true}}},"required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"id":{"dataType":"string"}}},"required":true},
+            "backgroundImg": {"dataType":"string"},
+            "borderColor": {"dataType":"string","required":true},
+            "adminAddress": {"dataType":"string","required":true},
+            "signature": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "HyperboardUpdateRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "chainIds": {"dataType":"array","array":{"dataType":"double"},"required":true},
+            "title": {"dataType":"string","required":true},
+            "collections": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"hypercerts":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"hypercertId":{"dataType":"string","required":true}}},"required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"id":{"dataType":"string"}}},"required":true},
+            "backgroundImg": {"dataType":"string"},
+            "borderColor": {"dataType":"string","required":true},
+            "adminAddress": {"dataType":"string","required":true},
+            "signature": {"dataType":"string","required":true},
+            "id": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },
@@ -488,6 +529,99 @@ export function RegisterRoutes(app: Router) {
                 next,
                 validatedArgs,
                 successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/hyperboards',
+            ...(fetchMiddlewares<RequestHandler>(HyperboardController)),
+            ...(fetchMiddlewares<RequestHandler>(HyperboardController.prototype.createHyperboard)),
+
+            async function HyperboardController_createHyperboard(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"HyperboardCreateRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new HyperboardController();
+
+              await templateService.apiHandler({
+                methodName: 'createHyperboard',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.patch('/v1/hyperboards/:hyperboardId',
+            ...(fetchMiddlewares<RequestHandler>(HyperboardController)),
+            ...(fetchMiddlewares<RequestHandler>(HyperboardController.prototype.updateHyperboard)),
+
+            async function HyperboardController_updateHyperboard(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    hyperboardId: {"in":"path","name":"hyperboardId","required":true,"dataType":"string"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"HyperboardUpdateRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new HyperboardController();
+
+              await templateService.apiHandler({
+                methodName: 'updateHyperboard',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 204,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.delete('/v1/hyperboards/:hyperboardId',
+            ...(fetchMiddlewares<RequestHandler>(HyperboardController)),
+            ...(fetchMiddlewares<RequestHandler>(HyperboardController.prototype.deleteHyperboard)),
+
+            async function HyperboardController_deleteHyperboard(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    hyperboardId: {"in":"path","name":"hyperboardId","required":true,"dataType":"string"},
+                    adminAddress: {"in":"query","name":"adminAddress","required":true,"dataType":"string"},
+                    signature: {"in":"query","name":"signature","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new HyperboardController();
+
+              await templateService.apiHandler({
+                methodName: 'deleteHyperboard',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 204,
               });
             } catch (err) {
                 return next(err);
