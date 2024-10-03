@@ -16,19 +16,16 @@ import { singleton } from "tsyringe";
 import { GetUserArgs } from "../graphql/schemas/args/userArgs.js";
 import type { DataDatabase as KyselyDataDatabase } from "../types/kyselySupabaseData.js";
 import { BaseArgs } from "../graphql/schemas/args/baseArgs.js";
-import { expressionBuilder, Kysely } from "kysely";
-import { generateFilterValues } from "../graphql/schemas/utils/filters-kysely.js";
-import { SortOrder } from "../graphql/schemas/enums/sortEnums.js";
 import { kyselyData } from "../client/kysely.js";
+import { BaseSupabaseService } from "./BaseSupabaseService.js";
 
 @singleton()
-export class SupabaseDataService {
+export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase> {
   private supabaseData: SupabaseClient<DataDatabase>;
-  public readonly db: Kysely<KyselyDataDatabase>;
 
   constructor() {
+    super(kyselyData);
     this.supabaseData = supabaseData;
-    this.db = kyselyData;
   }
 
   storeOrder(
@@ -258,147 +255,5 @@ export class SupabaseDataService {
       default:
         throw new Error(`Table ${tableName.toString()} not found`);
     }
-  }
-
-  // Generalized query builder and handler of filter, sort, and pagination
-  handleGetData<
-    DB extends KyselyDataDatabase,
-    T extends keyof DB & string,
-    A extends object,
-  >(
-    tableName: T,
-    args: BaseArgs<A> & {
-      first?: number;
-      offset?: number;
-    },
-  ) {
-    let query = this.getDataQuery(tableName, args);
-
-    const { where, first, offset, sort } = args;
-    const eb = expressionBuilder(query);
-
-    if (where) {
-      query = query.where(
-        eb.and(
-          Object.entries(where).flatMap(([column, value]) => {
-            if (!column || !value) return [];
-
-            if (typeof value === "object" && !Array.isArray(value)) {
-              return Object.entries(value).flatMap(([_column, _value]) => {
-                if (!_column || !_value) return [];
-
-                const res = generateFilterValues(column, _column, _value);
-                if (res.length > 0) {
-                  return eb(
-                    `${tableName.toString()}.${res[0]}`,
-                    res[1],
-                    res[2],
-                  );
-                }
-
-                const filters = [];
-                for (const [operator, operand] of Object.entries(_value)) {
-                  if (!operand) continue;
-
-                  const _table = column;
-
-                  const [_col, _symbol, _input] = generateFilterValues(
-                    `${_table}.${_column}`,
-                    operator,
-                    operand,
-                  );
-
-                  filters.push(eb(_col, _symbol, _input));
-                }
-
-                return filters.flat();
-              });
-            }
-
-            return column && value ? eb(column, "=", value) : [];
-          }),
-        ),
-      );
-    }
-
-    if (sort) {
-      if (sort?.by) {
-        const { by } = sort;
-        for (const [column, direction] of Object.entries(by)) {
-          if (!column || !direction) continue;
-
-          const dir: "asc" | "desc" =
-            direction === SortOrder.ascending ? "asc" : "desc";
-
-          query = query.orderBy(column, dir);
-        }
-      }
-    }
-
-    if (first) query = query.limit(first);
-    if (offset) query = query.offset(offset);
-
-    return query;
-  }
-
-  handleGetCount<
-    DB extends KyselyDataDatabase,
-    T extends keyof DB & string,
-    A extends object,
-  >(
-    tableName: T,
-    args: BaseArgs<A> & {
-      first?: number;
-      offset?: number;
-    },
-  ) {
-    let query = this.getCountQuery(tableName, args);
-
-    const { where } = args;
-    const eb = expressionBuilder(query);
-
-    if (where) {
-      query = query.where(
-        eb.and(
-          Object.entries(where).flatMap(([column, value]) => {
-            if (!column || !value) return [];
-
-            if (typeof value === "object" && !Array.isArray(value)) {
-              return Object.entries(value).flatMap(([_column, _value]) => {
-                if (!_column || !_value) return [];
-
-                const res = generateFilterValues(column, _column, _value);
-                if (res.length > 0) {
-                  return eb(
-                    `${tableName.toString()}.${res[0]}`,
-                    res[1],
-                    res[2],
-                  );
-                }
-
-                const filters = [];
-                for (const [operator, operand] of Object.entries(_value)) {
-                  if (!operand) continue;
-
-                  const _table = column;
-
-                  const [_col, _symbol, _input] = generateFilterValues(
-                    `${_table}.${_column}`,
-                    operator,
-                    operand,
-                  );
-                  filters.push(eb(_col, _symbol, _input));
-                }
-
-                return filters.flat();
-              });
-            }
-            return column && value ? eb(column, "=", value) : [];
-          }),
-        ),
-      );
-    }
-
-    return query;
   }
 }
