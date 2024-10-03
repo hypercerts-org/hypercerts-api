@@ -5,10 +5,10 @@ import {
   BigIntSearchOptions,
   StringSearchOptions,
 } from "./searchOptions.js";
-import { Collection } from "../typeDefs/collectionTypeDefs.js";
+import { Hyperboard } from "../typeDefs/hyperboardTypeDefs.js";
 
 @InputType()
-export class BasicCollectionWhereInput implements WhereOptions<Collection> {
+export class BasicHyperboardWhereInput implements WhereOptions<Hyperboard> {
   @Field(() => IdSearchOptions, { nullable: true })
   id?: IdSearchOptions | null;
   @Field(() => BigIntSearchOptions, { nullable: true })

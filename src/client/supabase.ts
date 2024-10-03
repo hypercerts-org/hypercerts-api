@@ -2,9 +2,12 @@ import {
   supabaseCachingApiKey,
   supabaseCachingUrl,
   supabaseDataServiceApiKey,
-  supabaseDataUrl
+  supabaseDataUrl,
 } from "../utils/constants.js";
-import { createClient, RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import {
+  createClient,
+  RealtimePostgresChangesPayload,
+} from "@supabase/supabase-js";
 import { type Database as CachingDatabaseTypes } from "../types/supabaseCaching.js";
 import { type Database as DataDatabaseTypes } from "../types/supabaseData.js";
 import { cache } from "./graphql.js";
@@ -12,16 +15,18 @@ import { cache } from "./graphql.js";
 // Create a single supabase client for interacting with your database
 export const supabaseCaching = createClient<CachingDatabaseTypes>(
   supabaseCachingUrl,
-  supabaseCachingApiKey
+  supabaseCachingApiKey,
 );
 
 export const supabaseData = createClient<DataDatabaseTypes>(
   supabaseDataUrl,
-  supabaseDataServiceApiKey
+  supabaseDataServiceApiKey,
 );
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-const handleChangeClaims = (payload: RealtimePostgresChangesPayload<{ [key: string]: any; }>) => {
+const handleChangeClaims = (
+  payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
+) => {
   console.log(payload);
   switch (payload.eventType) {
     case "INSERT":
@@ -36,7 +41,9 @@ const handleChangeClaims = (payload: RealtimePostgresChangesPayload<{ [key: stri
 };
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-const handleChangeFractions = (payload: RealtimePostgresChangesPayload<{ [key: string]: any; }>) => {
+const handleChangeFractions = (
+  payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
+) => {
   console.log(payload);
   switch (payload.eventType) {
     case "INSERT":
@@ -51,7 +58,9 @@ const handleChangeFractions = (payload: RealtimePostgresChangesPayload<{ [key: s
 };
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-const handleChangeMetadata = (payload: RealtimePostgresChangesPayload<{ [key: string]: any; }>) => {
+const handleChangeMetadata = (
+  payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
+) => {
   console.log(payload);
   switch (payload.eventType) {
     case "INSERT":
@@ -66,7 +75,9 @@ const handleChangeMetadata = (payload: RealtimePostgresChangesPayload<{ [key: st
 };
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-const handleChangeSales = (payload: RealtimePostgresChangesPayload<{ [key: string]: any; }>) => {
+const handleChangeSales = (
+  payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
+) => {
   console.log(payload);
   switch (payload.eventType) {
     case "INSERT":
@@ -81,7 +92,9 @@ const handleChangeSales = (payload: RealtimePostgresChangesPayload<{ [key: strin
 };
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-const handleChangeAllowlistRecords = (payload: RealtimePostgresChangesPayload<{ [key: string]: any; }>) => {
+const handleChangeAllowlistRecords = (
+  payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
+) => {
   console.log(payload);
   switch (payload.eventType) {
     case "INSERT":
@@ -96,7 +109,9 @@ const handleChangeAllowlistRecords = (payload: RealtimePostgresChangesPayload<{ 
 };
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-const handleChangeAttestations = (payload: RealtimePostgresChangesPayload<{ [key: string]: any; }>) => {
+const handleChangeAttestations = (
+  payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
+) => {
   console.log(payload);
   switch (payload.eventType) {
     case "INSERT":
@@ -110,68 +125,177 @@ const handleChangeAttestations = (payload: RealtimePostgresChangesPayload<{ [key
   }
 };
 
-const changes = supabaseCaching
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+const handleChangeUsers = (
+  payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
+) => {
+  console.log(payload);
+  switch (payload.eventType) {
+    case "INSERT":
+      cache.invalidate([{ typename: "User" }]);
+      break;
+    case "UPDATE":
+      cache.invalidate([{ typename: "User", id: payload.new.address }]);
+      break;
+    default:
+      break;
+  }
+};
+
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+const handleChangeHyperboards = (
+  payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
+) => {
+  console.log(payload);
+  switch (payload.eventType) {
+    case "UPDATE":
+    case "INSERT":
+      cache.invalidate([{ typename: "Hyperboard" }]);
+      break;
+    default:
+      break;
+  }
+};
+
+supabaseCaching
   .channel("schema-db-changes")
   .on(
     "postgres_changes",
     {
       event: "*",
       schema: "public",
-      table: "claims"
+      table: "claims",
     },
-    (payload) => handleChangeClaims(payload)
-  ).on(
-    "postgres_changes",
-    {
-      event: "*",
-      schema: "public",
-      table: "fractions"
-    },
-    (payload) => handleChangeFractions(payload))
-  .on(
-    "postgres_changes",
-    {
-      event: "*",
-      schema: "public",
-      table: "metadata"
-    },
-    (payload) => handleChangeMetadata(payload)
+    (payload) => handleChangeClaims(payload),
   )
   .on(
     "postgres_changes",
     {
       event: "*",
       schema: "public",
-      table: "sales"
+      table: "fractions",
     },
-    (payload) => handleChangeSales(payload)
+    (payload) => handleChangeFractions(payload),
   )
   .on(
     "postgres_changes",
     {
       event: "*",
       schema: "public",
-      table: "sales"
+      table: "metadata",
     },
-    (payload) => handleChangeSales(payload)
+    (payload) => handleChangeMetadata(payload),
   )
   .on(
     "postgres_changes",
     {
       event: "*",
       schema: "public",
-      table: "allow_list_data"
+      table: "sales",
     },
-    (payload) => handleChangeAllowlistRecords(payload)
+    (payload) => handleChangeSales(payload),
   )
   .on(
     "postgres_changes",
     {
       event: "*",
       schema: "public",
-      table: "attestations"
+      table: "sales",
     },
-    (payload) => handleChangeAttestations(payload)
+    (payload) => handleChangeSales(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "allow_list_data",
+    },
+    (payload) => handleChangeAllowlistRecords(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "attestations",
+    },
+    (payload) => handleChangeAttestations(payload),
   )
   .subscribe();
 
+supabaseData
+  .channel("schema-db-changes")
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "users",
+    },
+    (payload) => handleChangeUsers(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "collections",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "hyperboards",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "hypercerts",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "hyperboard_hypercert_metadata",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "hyperboard_collections",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "hyperboard_blueprint_metadata",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "collection_blueprints",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .subscribe();

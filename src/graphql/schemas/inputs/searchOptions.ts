@@ -68,10 +68,22 @@ export class NumberSearchOptions {
 export class StringArraySearchOptions {
   @Field(() => [String], { nullable: true })
   contains?: string[];
+
+  @Field(() => [String], { nullable: true })
+  overlaps?: string[];
 }
 
 @InputType()
 export class NumberArraySearchOptions {
-  @Field(() => [GraphQLBigInt], { nullable: true })
-  contains?: bigint[] | number[];
+  @Field(() => [GraphQLBigInt], {
+    nullable: true,
+    description: "Array of numbers",
+  })
+  contains?: bigint[];
+
+  @Field(() => [GraphQLBigInt], {
+    nullable: true,
+    description: "Array of numbers",
+  })
+  overlaps?: bigint[];
 }
