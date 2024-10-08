@@ -146,7 +146,13 @@ class HyperboardResolver extends HyperboardBaseResolver {
                     .includes(fraction.hypercert_id),
                 ),
               blueprintMetadata: collection.blueprint_metadata,
-              allowlistEntries: allowlistEntries,
+              allowlistEntries: allowlistEntries
+                .filter((entry) => !!entry)
+                .filter((entry) =>
+                  collection.hypercerts
+                    .map((x) => x.hypercert_id)
+                    .includes(entry.hypercert_id),
+                ),
               hypercerts: hypercerts
                 .filter((x) => !!x)
                 .map((hypercert) => ({
@@ -219,7 +225,7 @@ const processRegistryForDisplay = ({
   const totalOfAllDisplaySizes = [
     ...hypercert_metadata,
     ...blueprintMetadata,
-  ].reduce((acc, curr) => acc + BigInt(curr.display_size || 0), 0n);
+  ].reduce((acc, curr) => acc + BigInt(curr?.display_size || 0), 0n);
   // Calculate the amount of surface per display size unit
   const displayPerUnit = (totalUnits * 10n ** 18n) / totalOfAllDisplaySizes;
 
@@ -483,10 +489,10 @@ const processRegistryForDisplay = ({
       const hypercert = hypercertsByHypercertId[id];
       const blueprint = blueprintsByBlueprintId[id];
 
-      const display_size = displayMetadata.display_size;
+      const display_size = displayMetadata?.display_size;
       if (!display_size) {
         throw new Error(
-          `[HyperboardResolver::processRegistryForDisplay] Display size not found for ${id}`,
+          `[HyperboardResolver::processRegistryForDisplay] Display size not found for ${id} while processing section ${collection.id}`,
         );
       }
 
@@ -497,7 +503,7 @@ const processRegistryForDisplay = ({
         id,
         is_blueprint,
         percentage_of_section,
-        display_size: displayMetadata.display_size,
+        display_size,
         total_units: BigInt(hypercert?.units || NUMBER_OF_UNITS_IN_HYPERCERT),
         name: hypercert?.name || blueprint?.form_values?.name,
         percentage: 100,
