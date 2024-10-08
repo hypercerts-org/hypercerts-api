@@ -948,6 +948,21 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"BlueprintDeleteRequest": {
+				"properties": {
+					"admin_address": {
+						"type": "string"
+					},
+					"signature": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"admin_address",
+					"signature"
+				],
+				"type": "object"
+			},
 			"StoreAllowListRequest": {
 				"description": "Interface for storing an allow list dump on IPFS",
 				"properties": {
@@ -2022,6 +2037,154 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/BlueprintCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/blueprints/blueprintId": {
+			"delete": {
+				"operationId": "DeleteBlueprint",
+				"responses": {
+					"200": {
+						"description": "Blueprint deleted successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"errors": {},
+												"data": {},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"data",
+												"message",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"data": {},
+												"errors": {
+													"properties": {
+														"blueprint": {},
+														"signature": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"signature"
+													],
+													"type": "object"
+												},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"message",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"data": {},
+												"errors": {
+													"properties": {
+														"signature": {},
+														"blueprint": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"blueprint"
+													],
+													"type": "object"
+												},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"message",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"errors": {},
+												"data": {},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"message",
+												"success"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Validation failed",
+											"errors": {
+												"blueprint": "Invalid blueprint."
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Blueprints"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/BlueprintDeleteRequest"
 							}
 						}
 					}

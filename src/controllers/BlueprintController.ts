@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Delete,
+  Path,
   Post,
   Response,
   Route,
@@ -11,6 +13,7 @@ import type {
   AddOrCreateBlueprintResponse,
   ApiResponse,
   BlueprintCreateRequest,
+  BlueprintDeleteRequest,
 } from "../types/api.js";
 import { z } from "zod";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
@@ -206,6 +209,103 @@ export class BlueprintController extends Controller {
     return {
       success: true,
       data: { blueprint_id: blueprintId },
+    };
+  }
+
+  // Delete blueprint method
+  @Delete("blueprintId")
+  @SuccessResponse(200, "Blueprint deleted successfully")
+  @Response<ApiResponse>(422, "Unprocessable content", {
+    success: false,
+    message: "Validation failed",
+    errors: { blueprint: "Invalid blueprint." },
+  })
+  public async deleteBlueprint(
+    @Path() blueprintId: number,
+    @Body() requestBody: BlueprintDeleteRequest,
+  ) {
+    const inputSchema = z.object({
+      signature: z.string(),
+      chain_id: z.number(),
+      admin_address: z
+        .string()
+        .refine((value) => isAddress(value), "Invalid admin address"),
+    });
+    const parsedBody = inputSchema.safeParse(requestBody);
+    if (!parsedBody.success) {
+      this.setStatus(400);
+      return {
+        success: false,
+        message: "Invalid input",
+        data: null,
+        errors: JSON.parse(parsedBody.error.toString()),
+      };
+    }
+
+    const { signature, admin_address, chain_id } = parsedBody.data;
+
+    const dataService = new SupabaseDataService();
+    const blueprint = await dataService.getBlueprintById(blueprintId);
+
+    if (!blueprint) {
+      this.setStatus(404);
+      return {
+        success: false,
+        message: "Blueprint not found",
+        errors: { blueprint: "Blueprint not found" },
+      };
+    }
+
+    const isAdmin = blueprint.admins.some(
+      (admin) => admin.address === admin_address && admin.chain_id === chain_id,
+    );
+
+    if (!isAdmin) {
+      this.setStatus(403);
+      return {
+        success: false,
+        message: "Unauthorized",
+        errors: { blueprint: "Unauthorized" },
+      };
+    }
+    const verified = verifyAuthSignedData({
+      types: {
+        Blueprint: [{ name: "id", type: "uint256" }],
+        BlueprintDeleteRequest: [{ name: "blueprint", type: "Blueprint" }],
+      },
+      primaryType: "BlueprintDeleteRequest",
+      message: {
+        blueprint: { id: blueprintId },
+      },
+      address: admin_address,
+      signature: signature as `0x${string}`,
+      requiredChainId: chain_id,
+    });
+
+    if (!verified) {
+      this.setStatus(422);
+      return {
+        success: false,
+        message: "Validation failed",
+        errors: { signature: "Invalid signature." },
+      };
+    }
+
+    try {
+      await dataService.deleteBlueprint(blueprintId);
+    } catch (error) {
+      this.setStatus(500);
+      return {
+        success: false,
+        message: "Failed to delete blueprint",
+        errors: { blueprint: "Failed to delete blueprint" },
+      };
+    }
+
+    this.setStatus(200);
+    return {
+      success: true,
+      message: "Blueprint deleted successfully",
     };
   }
 }

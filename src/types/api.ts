@@ -93,6 +93,12 @@ export type AddOrCreateBlueprintResponse = ApiResponse<{
   blueprint_id: number;
 } | null>;
 
+export type BlueprintDeleteRequest = {
+  signature: string;
+  chain_id: number;
+  admin_address: string;
+};
+
 /**
  * Response for a created hyperboard
  */

@@ -511,6 +511,43 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       .executeTakeFirst();
   }
 
+  async getBlueprintById(blueprintId: number) {
+    return this.db
+      .selectFrom("blueprints")
+      .where("id", "=", blueprintId)
+      .select((eb) => [
+        "id",
+        "created_at",
+        "form_values",
+        "minter_address",
+        "minted",
+        jsonArrayFrom(
+          eb
+            .selectFrom("blueprint_admins")
+            .select((eb) => [
+              jsonArrayFrom(
+                eb
+                  .selectFrom("users")
+                  .select(["address", "chain_id", "user_id"])
+                  .whereRef("user_id", "=", "user_id"),
+              ).as("admins"),
+            ])
+            .whereRef("blueprint_id", "=", "id"),
+        ).as("admins"),
+      ])
+      .executeTakeFirst()
+      .then(
+        (res) => res && { ...res, admins: res.admins.flatMap((x) => x.admins) },
+      );
+  }
+
+  async deleteBlueprint(blueprintId: number) {
+    return this.db
+      .deleteFrom("blueprints")
+      .where("id", "=", blueprintId)
+      .execute();
+  }
+
   getDataQuery<
     DB extends KyselyDataDatabase,
     T extends keyof DB & string,
