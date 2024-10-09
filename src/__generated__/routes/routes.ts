@@ -262,7 +262,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "BlueprintDeleteRequest": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"admin_address":{"dataType":"string","required":true},"signature":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"admin_address":{"dataType":"string","required":true},"chain_id":{"dataType":"double","required":true},"signature":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "StoreAllowListRequest": {
@@ -687,12 +687,13 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.delete('/v1/blueprints/blueprintId',
+        app.delete('/v1/blueprints/:blueprintId',
             ...(fetchMiddlewares<RequestHandler>(BlueprintController)),
             ...(fetchMiddlewares<RequestHandler>(BlueprintController.prototype.deleteBlueprint)),
 
             async function BlueprintController_deleteBlueprint(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    blueprintId: {"in":"path","name":"blueprintId","required":true,"dataType":"double"},
                     requestBody: {"in":"body","name":"requestBody","required":true,"ref":"BlueprintDeleteRequest"},
             };
 

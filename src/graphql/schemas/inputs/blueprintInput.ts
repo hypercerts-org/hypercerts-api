@@ -15,6 +15,9 @@ export class BasicBlueprintWhereInput implements WhereOptions<Blueprint> {
   @Field(() => StringSearchOptions, { nullable: true })
   minter_address?: StringSearchOptions | null;
 
+  @Field(() => StringSearchOptions, { nullable: true })
+  admin_address?: StringSearchOptions | null;
+
   @Field(() => BooleanSearchOptions, { nullable: true })
   minted?: BooleanSearchOptions | null;
 }

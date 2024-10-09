@@ -256,6 +256,7 @@ type Blueprint {
 }
 
 input BlueprintWhereInput {
+  admin_address: StringSearchOptions
   id: NumberSearchOptions
   minted: BooleanSearchOptions
   minter_address: StringSearchOptions

@@ -523,22 +523,17 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
         "minted",
         jsonArrayFrom(
           eb
-            .selectFrom("blueprint_admins")
-            .select((eb) => [
-              jsonArrayFrom(
-                eb
-                  .selectFrom("users")
-                  .select(["address", "chain_id", "user_id"])
-                  .whereRef("user_id", "=", "user_id"),
-              ).as("admins"),
-            ])
-            .whereRef("blueprint_id", "=", "id"),
+            .selectFrom("users")
+            .innerJoin(
+              "blueprint_admins",
+              "blueprint_admins.user_id",
+              "users.id",
+            )
+            .select(["id", "address", "chain_id", "display_name", "avatar"])
+            .whereRef("blueprint_admins.blueprint_id", "=", "blueprints.id"),
         ).as("admins"),
       ])
-      .executeTakeFirst()
-      .then(
-        (res) => res && { ...res, admins: res.admins.flatMap((x) => x.admins) },
-      );
+      .executeTakeFirst();
   }
 
   async deleteBlueprint(blueprintId: number) {
@@ -558,26 +553,30 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       case "users":
         return this.db.selectFrom("users").selectAll();
       case "blueprints":
-        return this.db.selectFrom("blueprints").select((eb) => [
-          "id",
-          "created_at",
-          "form_values",
-          "minter_address",
-          "minted",
-          jsonArrayFrom(
-            eb
-              .selectFrom("blueprint_admins")
-              .select((eb) => [
-                jsonArrayFrom(
-                  eb
-                    .selectFrom("users")
-                    .select(["address", "chain_id", "user_id"])
-                    .whereRef("user_id", "=", "user_id"),
-                ).as("admins"),
-              ])
-              .whereRef("blueprint_id", "=", "id"),
-          ).as("admins"),
-        ]);
+        return this.db
+          .selectFrom("blueprints")
+          .select((eb) => [
+            "id",
+            "created_at",
+            "form_values",
+            "minter_address",
+            "minted",
+            jsonArrayFrom(
+              eb
+                .selectFrom("users")
+                .innerJoin(
+                  "blueprint_admins",
+                  "blueprint_admins.user_id",
+                  "users.id",
+                )
+                .select(["id", "address", "chain_id", "display_name", "avatar"])
+                .whereRef(
+                  "blueprint_admins.blueprint_id",
+                  "=",
+                  "blueprints.id",
+                ),
+            ).as("admins"),
+          ]);
       default:
         throw new Error(`Table ${tableName.toString()} not found`);
     }

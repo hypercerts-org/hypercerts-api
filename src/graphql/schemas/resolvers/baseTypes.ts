@@ -85,14 +85,7 @@ export function createBaseResolver<T extends ClassType>(
               data: dataRes.rows,
               count: countRes.rows[0].count,
             };
-          })
-          .then((res) => ({
-            ...res,
-            data: res.data.map((item) => ({
-              ...item,
-              admins: item.admins?.flatMap((x) => x.admins) || [],
-            })),
-          }));
+          });
       } catch (e) {
         const error = e as Error;
         throw new Error(

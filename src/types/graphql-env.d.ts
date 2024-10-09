@@ -1360,6 +1360,14 @@ export type introspection = {
         "name": "BlueprintWhereInput",
         "inputFields": [
           {
+            "name": "admin_address",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
             "name": "id",
             "type": {
               "kind": "INPUT_OBJECT",
@@ -5379,10 +5387,10 @@ export type introspection = {
   }
 };
 
-import * as gqlTada from 'gql.tada';
+import * as gqlTada from "gql.tada";
 
-declare module 'gql.tada' {
+declare module "gql.tada" {
   interface setupSchema {
-    introspection: introspection
+    introspection: introspection;
   }
 }

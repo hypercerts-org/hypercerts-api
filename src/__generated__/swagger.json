@@ -953,12 +953,17 @@
 					"admin_address": {
 						"type": "string"
 					},
+					"chain_id": {
+						"type": "number",
+						"format": "double"
+					},
 					"signature": {
 						"type": "string"
 					}
 				},
 				"required": [
 					"admin_address",
+					"chain_id",
 					"signature"
 				],
 				"type": "object"
@@ -2043,7 +2048,7 @@
 				}
 			}
 		},
-		"/v1/blueprints/blueprintId": {
+		"/v1/blueprints/{blueprintId}": {
 			"delete": {
 				"operationId": "DeleteBlueprint",
 				"responses": {
@@ -2077,13 +2082,13 @@
 												"data": {},
 												"errors": {
 													"properties": {
-														"blueprint": {},
-														"signature": {
+														"signature": {},
+														"blueprint": {
 															"type": "string"
 														}
 													},
 													"required": [
-														"signature"
+														"blueprint"
 													],
 													"type": "object"
 												},
@@ -2106,13 +2111,13 @@
 												"data": {},
 												"errors": {
 													"properties": {
-														"signature": {},
-														"blueprint": {
+														"blueprint": {},
+														"signature": {
 															"type": "string"
 														}
 													},
 													"required": [
-														"blueprint"
+														"signature"
 													],
 													"type": "object"
 												},
@@ -2178,7 +2183,17 @@
 					"Blueprints"
 				],
 				"security": [],
-				"parameters": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "blueprintId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
 				"requestBody": {
 					"required": true,
 					"content": {

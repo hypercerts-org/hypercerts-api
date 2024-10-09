@@ -43,6 +43,7 @@ export class BlueprintController extends Controller {
           .max(100, "Max 100 characters"),
         logo: z.string().url("Logo URL is not valid"),
         banner: z.string().url("Banner URL is not valid"),
+        cardImage: z.string().url("Card image could not be generated"),
         description: z
           .string()
           .trim()
@@ -100,13 +101,6 @@ export class BlueprintController extends Controller {
               message: "Each contributor must be 50 characters or less",
             },
           ),
-        acceptTerms: z.boolean().refine((data) => data, {
-          message: "You must accept the terms and conditions",
-        }),
-        confirmContributorsPermission: z.boolean().refine((data) => data, {
-          message:
-            "You must confirm that all contributors gave their permission",
-        }),
         allowlistEntries: z
           .array(z.object({ address: z.string(), units: z.bigint() }))
           .optional(),
@@ -213,7 +207,7 @@ export class BlueprintController extends Controller {
   }
 
   // Delete blueprint method
-  @Delete("blueprintId")
+  @Delete("{blueprintId}")
   @SuccessResponse(200, "Blueprint deleted successfully")
   @Response<ApiResponse>(422, "Unprocessable content", {
     success: false,
