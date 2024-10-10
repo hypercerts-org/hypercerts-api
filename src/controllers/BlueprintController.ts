@@ -14,7 +14,7 @@ import type {
   ApiResponse,
   BlueprintCreateRequest,
   BlueprintDeleteRequest,
-  BlueprintMintRequest,
+  BlueprintQueueMintRequest,
 } from "../types/api.js";
 import { z } from "zod";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
@@ -315,7 +315,7 @@ export class BlueprintController extends Controller {
   })
   public async mintBlueprint(
     @Path() blueprintId: number,
-    @Body() requestBody: BlueprintMintRequest,
+    @Body() requestBody: BlueprintQueueMintRequest,
   ): Promise<AddOrCreateBlueprintResponse> {
     const inputSchema = z.object({
       signature: z.string(),
@@ -346,11 +346,11 @@ export class BlueprintController extends Controller {
             type: "string",
           },
         ],
-        BlueprintMintRequest: [{ name: "blueprint", type: "Blueprint" }],
+        BlueprintQueueMintRequest: [{ name: "blueprint", type: "Blueprint" }],
       },
-      primaryType: "BlueprintMintRequest",
+      primaryType: "BlueprintQueueMintRequest",
       message: {
-        blueprint: { id: blueprintId },
+        blueprint: { id: blueprintId, tx_hash },
       },
       address: minter_address,
       signature: signature as `0x${string}`,

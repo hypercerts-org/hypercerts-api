@@ -9,7 +9,7 @@ export const waitForTxThenMintBlueprint = async (
 ) => {
   const client = getEvmClient(chain_id);
 
-  const receipt = await client.getTransactionReceipt({
+  const receipt = await client.waitForTransactionReceipt({
     hash: tx_hash as `0x${string}`,
   });
 

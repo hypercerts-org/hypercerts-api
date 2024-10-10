@@ -20,6 +20,7 @@ import { kyselyData } from "../client/kysely.js";
 import { BaseSupabaseService } from "./BaseSupabaseService.js";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { GetBlueprintArgs } from "../graphql/schemas/args/blueprintArgs.js";
+import { sql } from "kysely";
 
 @singleton()
 export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase> {
@@ -41,30 +42,33 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       .returning(["hyperboard_id", "collection_id", "display_size"])
       .execute();
 
-    // Insert the new hypercert for each collection
-    await this.upsertHypercerts(
-      oldBlueprintMetadata.map((oldBlueprintMetadata) => ({
-        hypercert_id: hypercertId,
-        collection_id: oldBlueprintMetadata.collection_id,
-      })),
-    );
+    if (oldBlueprintMetadata.length) {
+      // Insert the new hypercert for each collection
+      await this.upsertHypercerts(
+        oldBlueprintMetadata.map((oldBlueprintMetadata) => ({
+          hypercert_id: hypercertId,
+          collection_id: oldBlueprintMetadata.collection_id,
+        })),
+      );
 
-    // Insert the new hypercert metadata for each collection
-    await this.upsertHyperboardHypercertMetadata(
-      oldBlueprintMetadata.map((oldBlueprintMetadata) => ({
-        hyperboard_id: oldBlueprintMetadata.hyperboard_id,
-        hypercert_id: hypercertId,
-        collection_id: oldBlueprintMetadata.collection_id,
-        display_size: oldBlueprintMetadata.display_size,
-      })),
-    );
+      // Insert the new hypercert metadata for each collection
+      await this.upsertHyperboardHypercertMetadata(
+        oldBlueprintMetadata.map((oldBlueprintMetadata) => ({
+          hyperboard_id: oldBlueprintMetadata.hyperboard_id,
+          hypercert_id: hypercertId,
+          collection_id: oldBlueprintMetadata.collection_id,
+          display_size: oldBlueprintMetadata.display_size,
+        })),
+      );
+    }
 
     // Set blueprint to minted
     await this.db
       .updateTable("blueprints")
-      .set({
+      .set((eb) => ({
         minted: true,
-      })
+        hypercert_ids: sql`array_append(${eb.ref("hypercert_ids")}, ${hypercertId})`,
+      }))
       .where("id", "=", blueprintId)
       .execute();
   }

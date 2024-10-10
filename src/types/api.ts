@@ -142,7 +142,7 @@ export interface BlueprintCreateRequest {
   chain_id: number;
 }
 
-export interface BlueprintMintRequest {
+export interface BlueprintQueueMintRequest {
   signature: string;
   chain_id: number;
   minter_address: string;

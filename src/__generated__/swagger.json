@@ -968,7 +968,7 @@
 				],
 				"type": "object"
 			},
-			"BlueprintMintRequest": {
+			"BlueprintQueueMintRequest": {
 				"properties": {
 					"signature": {
 						"type": "string"
@@ -2287,7 +2287,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/BlueprintMintRequest"
+								"$ref": "#/components/schemas/BlueprintQueueMintRequest"
 							}
 						}
 					}

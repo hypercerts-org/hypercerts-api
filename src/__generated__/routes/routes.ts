@@ -265,7 +265,7 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"admin_address":{"dataType":"string","required":true},"chain_id":{"dataType":"double","required":true},"signature":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "BlueprintMintRequest": {
+    "BlueprintQueueMintRequest": {
         "dataType": "refObject",
         "properties": {
             "signature": {"dataType":"string","required":true},
@@ -736,7 +736,7 @@ export function RegisterRoutes(app: Router) {
             async function BlueprintController_mintBlueprint(request: ExRequest, response: ExResponse, next: any) {
             const args: Record<string, TsoaRoute.ParameterSchema> = {
                     blueprintId: {"in":"path","name":"blueprintId","required":true,"dataType":"double"},
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"BlueprintMintRequest"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"BlueprintQueueMintRequest"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
