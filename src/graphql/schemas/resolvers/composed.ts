@@ -9,6 +9,7 @@ import { HyperboardResolver } from "./hyperboardResolver.js";
 import { AllowlistRecordResolver } from "./allowlistRecordResolver.js";
 import { SalesResolver } from "./salesResolver.js";
 import { UserResolver } from "./userResolver.js";
+import { BlueprintResolver } from "./blueprintResolver.js";
 
 export const resolvers = [
   ContractResolver,
@@ -22,4 +23,5 @@ export const resolvers = [
   AllowlistRecordResolver,
   SalesResolver,
   UserResolver,
+  BlueprintResolver,
 ] as const;

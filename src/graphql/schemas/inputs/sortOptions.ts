@@ -9,6 +9,7 @@ import type { Fraction } from "../typeDefs/fractionTypeDefs.js";
 import { Order } from "../typeDefs/orderTypeDefs.js";
 import { Sale } from "../typeDefs/salesTypeDefs.js";
 import { Hyperboard } from "../typeDefs/hyperboardTypeDefs.js";
+import { Blueprint } from "../typeDefs/blueprintTypeDefs.js";
 
 export type SortOptions<T extends object> = {
   [P in keyof T]: SortOrder | null;
@@ -66,6 +67,12 @@ export class MetadataSortOptions implements SortOptions<Metadata> {
   uri?: SortOrder;
   @Field(() => SortOrder, { nullable: true })
   allow_list_uri?: SortOrder;
+}
+
+@InputType()
+export class BlueprintSortOptions implements SortOptions<Blueprint> {
+  @Field(() => SortOrder, { nullable: true })
+  created_at?: SortOrder;
 }
 
 @InputType()
