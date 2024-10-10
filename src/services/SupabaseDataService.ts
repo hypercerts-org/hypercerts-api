@@ -30,6 +30,45 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
     this.supabaseData = supabaseData;
   }
 
+  async mintBlueprintAndSwapInCollections(
+    blueprintId: number,
+    hypercertId: string,
+  ) {
+    // Get all blueprint hyperboard metadata for this blueprint
+    const oldBlueprintMetadata = await this.db
+      .deleteFrom("hyperboard_blueprint_metadata")
+      .where("blueprint_id", "=", blueprintId)
+      .returning(["hyperboard_id", "collection_id", "display_size"])
+      .execute();
+
+    // Insert the new hypercert for each collection
+    await this.upsertHypercerts(
+      oldBlueprintMetadata.map((oldBlueprintMetadata) => ({
+        hypercert_id: hypercertId,
+        collection_id: oldBlueprintMetadata.collection_id,
+      })),
+    );
+
+    // Insert the new hypercert metadata for each collection
+    await this.upsertHyperboardHypercertMetadata(
+      oldBlueprintMetadata.map((oldBlueprintMetadata) => ({
+        hyperboard_id: oldBlueprintMetadata.hyperboard_id,
+        hypercert_id: hypercertId,
+        collection_id: oldBlueprintMetadata.collection_id,
+        display_size: oldBlueprintMetadata.display_size,
+      })),
+    );
+
+    // Set blueprint to minted
+    await this.db
+      .updateTable("blueprints")
+      .set({
+        minted: true,
+      })
+      .where("id", "=", blueprintId)
+      .execute();
+  }
+
   storeOrder(
     order: DataDatabase["public"]["Tables"]["marketplace_orders"]["Insert"],
   ) {

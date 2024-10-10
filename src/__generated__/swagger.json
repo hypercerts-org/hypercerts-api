@@ -968,6 +968,31 @@
 				],
 				"type": "object"
 			},
+			"BlueprintMintRequest": {
+				"properties": {
+					"signature": {
+						"type": "string"
+					},
+					"chain_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"minter_address": {
+						"type": "string"
+					},
+					"tx_hash": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"signature",
+					"chain_id",
+					"minter_address",
+					"tx_hash"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"StoreAllowListRequest": {
 				"description": "Interface for storing an allow list dump on IPFS",
 				"properties": {
@@ -2200,6 +2225,69 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/BlueprintDeleteRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/blueprints/mint/{blueprintId}": {
+			"post": {
+				"operationId": "MintBlueprint",
+				"responses": {
+					"201": {
+						"description": "Blueprint minted successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AddOrCreateBlueprintResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Validation failed",
+											"errors": {
+												"blueprint": "Invalid blueprint."
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Blueprints"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "blueprintId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/BlueprintMintRequest"
 							}
 						}
 					}

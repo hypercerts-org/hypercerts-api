@@ -265,6 +265,17 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"admin_address":{"dataType":"string","required":true},"chain_id":{"dataType":"double","required":true},"signature":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "BlueprintMintRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "signature": {"dataType":"string","required":true},
+            "chain_id": {"dataType":"double","required":true},
+            "minter_address": {"dataType":"string","required":true},
+            "tx_hash": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "StoreAllowListRequest": {
         "dataType": "refObject",
         "properties": {
@@ -712,6 +723,37 @@ export function RegisterRoutes(app: Router) {
                 next,
                 validatedArgs,
                 successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/blueprints/mint/:blueprintId',
+            ...(fetchMiddlewares<RequestHandler>(BlueprintController)),
+            ...(fetchMiddlewares<RequestHandler>(BlueprintController.prototype.mintBlueprint)),
+
+            async function BlueprintController_mintBlueprint(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    blueprintId: {"in":"path","name":"blueprintId","required":true,"dataType":"double"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"BlueprintMintRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new BlueprintController();
+
+              await templateService.apiHandler({
+                methodName: 'mintBlueprint',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
               });
             } catch (err) {
                 return next(err);

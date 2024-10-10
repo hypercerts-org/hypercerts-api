@@ -14,12 +14,15 @@ import type {
   ApiResponse,
   BlueprintCreateRequest,
   BlueprintDeleteRequest,
+  BlueprintMintRequest,
 } from "../types/api.js";
 import { z } from "zod";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { verifyAuthSignedData } from "../utils/verifyAuthSignedData.js";
 import { isAddress } from "viem";
 import { Json } from "../types/supabaseData.js";
+import { getEvmClient } from "../utils/getRpcUrl.js";
+import { waitForTxThenMintBlueprint } from "../utils/waitForTxThenMintBlueprint.js";
 
 @Route("v1/blueprints")
 @Tags("Blueprints")
@@ -300,6 +303,91 @@ export class BlueprintController extends Controller {
     return {
       success: true,
       message: "Blueprint deleted successfully",
+    };
+  }
+
+  @Post("mint/{blueprintId}")
+  @SuccessResponse(201, "Blueprint minted successfully")
+  @Response<ApiResponse>(422, "Unprocessable content", {
+    success: false,
+    message: "Validation failed",
+    errors: { blueprint: "Invalid blueprint." },
+  })
+  public async mintBlueprint(
+    @Path() blueprintId: number,
+    @Body() requestBody: BlueprintMintRequest,
+  ): Promise<AddOrCreateBlueprintResponse> {
+    const inputSchema = z.object({
+      signature: z.string(),
+      chain_id: z.number(),
+      minter_address: z
+        .string()
+        .refine((value) => isAddress(value), "Invalid minter address"),
+      tx_hash: z.string(),
+    });
+    const parsedBody = inputSchema.safeParse(requestBody);
+    if (!parsedBody.success) {
+      this.setStatus(400);
+      return {
+        success: false,
+        message: "Invalid input",
+        data: null,
+        errors: JSON.parse(parsedBody.error.toString()),
+      };
+    }
+
+    const { signature, chain_id, minter_address, tx_hash } = parsedBody.data;
+    const verified = verifyAuthSignedData({
+      types: {
+        Blueprint: [
+          { name: "id", type: "uint256" },
+          {
+            name: "tx_hash",
+            type: "string",
+          },
+        ],
+        BlueprintMintRequest: [{ name: "blueprint", type: "Blueprint" }],
+      },
+      primaryType: "BlueprintMintRequest",
+      message: {
+        blueprint: { id: blueprintId },
+      },
+      address: minter_address,
+      signature: signature as `0x${string}`,
+      requiredChainId: chain_id,
+    });
+
+    if (!verified) {
+      this.setStatus(422);
+      return {
+        success: false,
+        message: "Validation failed",
+        errors: { signature: "Invalid signature." },
+      };
+    }
+
+    const client = getEvmClient(chain_id);
+    const transaction = await client.getTransaction({
+      hash: tx_hash as `0x${string}`,
+    });
+
+    if (!transaction) {
+      this.setStatus(404);
+      return {
+        success: false,
+        message: "Transaction not found",
+        errors: { transaction: "Transaction not found" },
+      };
+    }
+
+    // Do not await
+    waitForTxThenMintBlueprint(tx_hash, chain_id, blueprintId);
+
+    this.setStatus(201);
+    return {
+      success: true,
+      data: { blueprint_id: blueprintId },
+      message: "Blueprint mint queued",
     };
   }
 }

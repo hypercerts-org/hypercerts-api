@@ -141,3 +141,10 @@ export interface BlueprintCreateRequest {
   signature: string;
   chain_id: number;
 }
+
+export interface BlueprintMintRequest {
+  signature: string;
+  chain_id: number;
+  minter_address: string;
+  tx_hash: string;
+}
