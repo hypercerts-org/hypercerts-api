@@ -31,14 +31,11 @@ class HyperboardResolver extends HyperboardBaseResolver {
 
       const fractions = await Promise.all(
         hypercertIds.map((hypercertId) =>
-          this.getFractions(
-            {
-              where: { hypercert_id: { eq: hypercertId } },
-            },
-            true,
-          ),
+          this.getFractions({
+            where: { hypercert_id: { eq: hypercertId } },
+          }).then((res) => res.data),
         ),
-      );
+      ).then((res) => res.flat());
 
       const metadata = await Promise.all(
         hypercertIds.map((hypercertId) =>
