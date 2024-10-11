@@ -149,8 +149,17 @@ const handleChangeHyperboards = (
   console.log(payload);
   switch (payload.eventType) {
     case "UPDATE":
+    case "DELETE":
     case "INSERT":
-      cache.invalidate([{ typename: "Hyperboard" }]);
+      cache.invalidate([
+        { typename: "Hyperboard" },
+        { typename: "Collection" },
+        { typename: "SectionResponseType" },
+        { typename: "Section" },
+        { typename: "SectionOwner" },
+        { typename: "SectionEntry" },
+        { typename: "SectionEntryOwner" },
+      ]);
       break;
     default:
       break;
