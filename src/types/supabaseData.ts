@@ -59,6 +59,13 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "blueprint_admins_blueprint_id_fkey";
+            columns: ["blueprint_id"];
+            isOneToOne: false;
+            referencedRelation: "blueprints_with_admins";
+            referencedColumns: ["id"];
+          },
+          {
             foreignKeyName: "blueprint_admins_user_id_fkey";
             columns: ["user_id"];
             isOneToOne: false;
@@ -149,6 +156,13 @@ export type Database = {
             columns: ["blueprint_id"];
             isOneToOne: false;
             referencedRelation: "blueprints";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "collection_blueprints_blueprint_id_fkey";
+            columns: ["blueprint_id"];
+            isOneToOne: false;
+            referencedRelation: "blueprints_with_admins";
             referencedColumns: ["id"];
           },
           {
@@ -631,7 +645,21 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      blueprints_with_admins: {
+        Row: {
+          admin_address: string | null;
+          admin_chain_id: number | null;
+          avatar: string | null;
+          created_at: string | null;
+          display_name: string | null;
+          form_values: Json | null;
+          hypercert_ids: string[] | null;
+          id: number | null;
+          minted: boolean | null;
+          minter_address: string | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       default_sponsor_metadata_by_address: {
@@ -750,6 +778,7 @@ export type Database = {
           owner_id: string | null;
           path_tokens: string[] | null;
           updated_at: string | null;
+          user_metadata: Json | null;
           version: string | null;
         };
         Insert: {
@@ -763,6 +792,7 @@ export type Database = {
           owner_id?: string | null;
           path_tokens?: string[] | null;
           updated_at?: string | null;
+          user_metadata?: Json | null;
           version?: string | null;
         };
         Update: {
@@ -776,6 +806,7 @@ export type Database = {
           owner_id?: string | null;
           path_tokens?: string[] | null;
           updated_at?: string | null;
+          user_metadata?: Json | null;
           version?: string | null;
         };
         Relationships: [
@@ -797,6 +828,7 @@ export type Database = {
           key: string;
           owner_id: string | null;
           upload_signature: string;
+          user_metadata: Json | null;
           version: string;
         };
         Insert: {
@@ -807,6 +839,7 @@ export type Database = {
           key: string;
           owner_id?: string | null;
           upload_signature: string;
+          user_metadata?: Json | null;
           version: string;
         };
         Update: {
@@ -817,6 +850,7 @@ export type Database = {
           key?: string;
           owner_id?: string | null;
           upload_signature?: string;
+          user_metadata?: Json | null;
           version?: string;
         };
         Relationships: [

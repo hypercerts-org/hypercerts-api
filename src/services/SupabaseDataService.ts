@@ -302,8 +302,8 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
 
   getBlueprints(args: GetBlueprintArgs) {
     return {
-      data: this.handleGetData("blueprints", args),
-      count: this.handleGetCount("blueprints", args),
+      data: this.handleGetData("blueprints_with_admins", args),
+      count: this.handleGetCount("blueprints_with_admins", args),
     };
   }
 
@@ -595,31 +595,9 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
     switch (tableName) {
       case "users":
         return this.db.selectFrom("users").selectAll();
+      case "blueprints_with_admins":
       case "blueprints":
-        return this.db
-          .selectFrom("blueprints")
-          .select((eb) => [
-            "id",
-            "created_at",
-            "form_values",
-            "minter_address",
-            "minted",
-            jsonArrayFrom(
-              eb
-                .selectFrom("users")
-                .innerJoin(
-                  "blueprint_admins",
-                  "blueprint_admins.user_id",
-                  "users.id",
-                )
-                .select(["id", "address", "chain_id", "display_name", "avatar"])
-                .whereRef(
-                  "blueprint_admins.blueprint_id",
-                  "=",
-                  "blueprints.id",
-                ),
-            ).as("admins"),
-          ]);
+        return this.db.selectFrom("blueprints_with_admins").selectAll();
       default:
         throw new Error(`Table ${tableName.toString()} not found`);
     }
@@ -640,10 +618,13 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
         return this.db.selectFrom("hyperboards").select((expressionBuilder) => {
           return expressionBuilder.fn.countAll().as("count");
         });
+      case "blueprints_with_admins":
       case "blueprints":
-        return this.db.selectFrom("blueprints").select((expressionBuilder) => {
-          return expressionBuilder.fn.countAll().as("count");
-        });
+        return this.db
+          .selectFrom("blueprints_with_admins")
+          .select((expressionBuilder) => {
+            return expressionBuilder.fn.countAll().as("count");
+          });
       default:
         throw new Error(`Table ${tableName.toString()} not found`);
     }
