@@ -172,13 +172,27 @@ export class HyperboardController extends Controller {
       address: adminAddress as `0x${string}`,
       signature: signature as `0x${string}`,
       types: {
-        Hyperboard: [{ name: "title", type: "string" }],
+        Hyperboard: [
+          { name: "title", type: "string" },
+          { name: "description", type: "string" },
+          { name: "borderColor", type: "string" },
+          { name: "hypercertIds", type: "string[]" },
+          { name: "factors", type: "uint256[]" },
+        ],
         HyperboardCreateRequest: [{ name: "hyperboard", type: "Hyperboard" }],
       },
       primaryType: "HyperboardCreateRequest",
       message: {
         hyperboard: {
           title: parsedBody.data.title,
+          description: parsedBody.data.collections[0].description,
+          borderColor: parsedBody.data.borderColor,
+          hypercertIds: parsedBody.data.collections.flatMap((collection) =>
+            collection.hypercerts.map((hc) => hc.hypercertId),
+          ),
+          factors: parsedBody.data.collections.flatMap((collection) => {
+            return collection.hypercerts.map((hc) => hc.factor);
+          }),
         },
       },
       requiredChainId: chainId,
@@ -510,13 +524,29 @@ export class HyperboardController extends Controller {
       signature: signature as `0x${string}`,
 
       types: {
-        Hyperboard: [{ name: "id", type: "string" }],
+        Hyperboard: [
+          { name: "id", type: "string" },
+          { name: "title", type: "string" },
+          { name: "description", type: "string" },
+          { name: "borderColor", type: "string" },
+          { name: "hypercertIds", type: "string[]" },
+          { name: "factors", type: "uint256[]" },
+        ],
         HyperboardUpdateRequest: [{ name: "hyperboard", type: "Hyperboard" }],
       },
       primaryType: "HyperboardUpdateRequest",
       message: {
         hyperboard: {
           id: parsedBody.data.id,
+          title: parsedBody.data.title,
+          description: parsedBody.data.collections[0].description,
+          borderColor: parsedBody.data.borderColor,
+          hypercertIds: parsedBody.data.collections.flatMap((collection) =>
+            collection.hypercerts.map((hc) => hc.hypercertId),
+          ),
+          factors: parsedBody.data.collections.flatMap((collection) => {
+            return collection.hypercerts.map((hc) => hc.factor);
+          }),
         },
       },
       requiredChainId: chainId,
