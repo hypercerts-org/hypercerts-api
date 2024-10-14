@@ -1357,6 +1357,34 @@ export type introspection = {
       },
       {
         "kind": "INPUT_OBJECT",
+        "name": "BlueprintFetchInput",
+        "inputFields": [
+          {
+            "name": "by",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "BlueprintSortOptions",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "BlueprintSortOptions",
+        "inputFields": [
+          {
+            "name": "created_at",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
+        "kind": "INPUT_OBJECT",
         "name": "BlueprintWhereInput",
         "inputFields": [
           {
@@ -4190,6 +4218,14 @@ export type introspection = {
                 "type": {
                   "kind": "SCALAR",
                   "name": "Int",
+                  "ofType": null
+                }
+              },
+              {
+                "name": "sort",
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "BlueprintFetchInput",
                   "ofType": null
                 }
               },

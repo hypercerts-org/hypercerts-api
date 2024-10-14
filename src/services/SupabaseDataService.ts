@@ -35,42 +35,68 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
     blueprintId: number,
     hypercertId: string,
   ) {
-    // Get all blueprint hyperboard metadata for this blueprint
-    const oldBlueprintMetadata = await this.db
-      .deleteFrom("hyperboard_blueprint_metadata")
-      .where("blueprint_id", "=", blueprintId)
-      .returning(["hyperboard_id", "collection_id", "display_size"])
-      .execute();
+    await this.db.transaction().execute(async (trx) => {
+      // Get all blueprint hyperboard metadata for this blueprint
+      const oldBlueprintMetadata = await trx
+        .deleteFrom("hyperboard_blueprint_metadata")
+        .where("blueprint_id", "=", blueprintId)
+        .returning(["hyperboard_id", "collection_id", "display_size"])
+        .execute();
 
-    if (oldBlueprintMetadata.length) {
-      // Insert the new hypercert for each collection
-      await this.upsertHypercerts(
-        oldBlueprintMetadata.map((oldBlueprintMetadata) => ({
-          hypercert_id: hypercertId,
-          collection_id: oldBlueprintMetadata.collection_id,
-        })),
-      );
+      if (oldBlueprintMetadata.length) {
+        // Insert the new hypercert for each collection
+        await trx
+          .insertInto("hypercerts")
+          .values(
+            oldBlueprintMetadata.map((oldBlueprintMetadata) => ({
+              hypercert_id: hypercertId,
+              collection_id: oldBlueprintMetadata.collection_id,
+            })),
+          )
+          .onConflict((oc) =>
+            oc.columns(["hypercert_id", "collection_id"]).doUpdateSet((eb) => ({
+              hypercert_id: eb.ref("excluded.hypercert_id"),
+              collection_id: eb.ref("excluded.collection_id"),
+            })),
+          )
+          .returning(["hypercert_id", "collection_id"])
+          .execute();
 
-      // Insert the new hypercert metadata for each collection
-      await this.upsertHyperboardHypercertMetadata(
-        oldBlueprintMetadata.map((oldBlueprintMetadata) => ({
-          hyperboard_id: oldBlueprintMetadata.hyperboard_id,
-          hypercert_id: hypercertId,
-          collection_id: oldBlueprintMetadata.collection_id,
-          display_size: oldBlueprintMetadata.display_size,
-        })),
-      );
-    }
+        // Insert the new hypercert metadata for each collection
+        await trx
+          .insertInto("hyperboard_hypercert_metadata")
+          .values(
+            oldBlueprintMetadata.map((oldBlueprintMetadata) => ({
+              hyperboard_id: oldBlueprintMetadata.hyperboard_id,
+              hypercert_id: hypercertId,
+              collection_id: oldBlueprintMetadata.collection_id,
+              display_size: oldBlueprintMetadata.display_size,
+            })),
+          )
+          .onConflict((oc) =>
+            oc
+              .columns(["hyperboard_id", "hypercert_id", "collection_id"])
+              .doUpdateSet((eb) => ({
+                hypercert_id: eb.ref("excluded.hypercert_id"),
+                collection_id: eb.ref("excluded.collection_id"),
+                hyperboard_id: eb.ref("excluded.hyperboard_id"),
+                display_size: eb.ref("excluded.display_size"),
+              })),
+          )
+          .returning(["hyperboard_id", "hypercert_id", "collection_id"])
+          .execute();
+      }
 
-    // Set blueprint to minted
-    await this.db
-      .updateTable("blueprints")
-      .set((eb) => ({
-        minted: true,
-        hypercert_ids: sql`array_append(${eb.ref("hypercert_ids")}, ${hypercertId})`,
-      }))
-      .where("id", "=", blueprintId)
-      .execute();
+      // Set blueprint to minted
+      await trx
+        .updateTable("blueprints")
+        .set((eb) => ({
+          minted: true,
+          hypercert_ids: sql`array_append(${eb.ref("hypercert_ids")}, ${hypercertId})`,
+        }))
+        .where("id", "=", blueprintId)
+        .execute();
+    });
   }
 
   storeOrder(

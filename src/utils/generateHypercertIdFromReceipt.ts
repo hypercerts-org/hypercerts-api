@@ -34,7 +34,7 @@ export const generateHypercertIdFromReceipt = (
   }
 
   // @ts-expect-error it really does exist!
-  const tokenIdBigNumber = args["claimID"] as BigNumber;
+  const tokenIdBigNumber = args["claimID"] as bigint;
 
   if (!tokenIdBigNumber) {
     throw new Error("No tokenId arg in event");

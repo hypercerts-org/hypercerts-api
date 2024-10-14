@@ -255,6 +255,14 @@ type Blueprint {
   minter_address: String!
 }
 
+input BlueprintFetchInput {
+  by: BlueprintSortOptions
+}
+
+input BlueprintSortOptions {
+  created_at: SortOrder
+}
+
 input BlueprintWhereInput {
   admin_address: StringSearchOptions
   id: NumberSearchOptions
@@ -796,7 +804,7 @@ type Query {
   allowlistRecords(first: Int, offset: Int, sort: AllowlistRecordFetchInput, where: AllowlistRecordWhereInput): GetAllowlistRecordResponse!
   attestationSchemas(first: Int, offset: Int): GetAttestationsSchemaResponse!
   attestations(first: Int, offset: Int, sort: AttestationFetchInput, where: AttestationWhereInput): GetAttestationsResponse!
-  blueprints(first: Int, offset: Int, where: BlueprintWhereInput): GetBlueprintResponse!
+  blueprints(first: Int, offset: Int, sort: BlueprintFetchInput, where: BlueprintWhereInput): GetBlueprintResponse!
   contracts(first: Int, offset: Int, sort: ContractFetchInput, where: ContractWhereInput): GetContractsResponse!
   fractions(first: Int, offset: Int, sort: FractionFetchInput, where: FractionWhereInput): GetFractionsResponse!
   hyperboards(first: Int, offset: Int, sort: HyperboardFetchInput, where: HyperboardWhereInput): GetHyperboardsResponse!

@@ -18,8 +18,8 @@ export class BlueprintFetchInput implements OrderOptions<Blueprint> {
 export class BlueprintArgs {
   @Field(() => BlueprintWhereInput, { nullable: true })
   where?: BlueprintWhereInput;
-  // @Field(() => BlueprintFetchInput, { nullable: true })
-  // sort?: BlueprintFetchInput;
+  @Field(() => BlueprintFetchInput, { nullable: true })
+  sort?: BlueprintFetchInput;
 }
 
 @ArgsType()
