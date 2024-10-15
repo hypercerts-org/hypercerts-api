@@ -75,6 +75,18 @@ export class HyperboardController extends Controller {
               .trim()
               .min(10, "Use at least 10 characters")
               .max(500, "Use at most 500 characters"),
+            blueprints: z.array(
+              z.object({
+                blueprintId: z
+                  .number()
+                  .int()
+                  .min(1, "Factor must be greater than 0"),
+                factor: z
+                  .number()
+                  .int()
+                  .min(1, "Factor must be greater than 0"),
+              }),
+            ),
             hypercerts: z
               .array(
                 z.object({
@@ -177,7 +189,9 @@ export class HyperboardController extends Controller {
           { name: "description", type: "string" },
           { name: "borderColor", type: "string" },
           { name: "hypercertIds", type: "string[]" },
-          { name: "factors", type: "uint256[]" },
+          { name: "hypercertFactors", type: "uint256[]" },
+          { name: "blueprintIds", type: "uint256[]" },
+          { name: "blueprintFactors", type: "uint256[]" },
         ],
         HyperboardCreateRequest: [{ name: "hyperboard", type: "Hyperboard" }],
       },
@@ -190,9 +204,17 @@ export class HyperboardController extends Controller {
           hypercertIds: parsedBody.data.collections.flatMap((collection) =>
             collection.hypercerts.map((hc) => hc.hypercertId),
           ),
-          factors: parsedBody.data.collections.flatMap((collection) => {
-            return collection.hypercerts.map((hc) => hc.factor);
-          }),
+          hypercertFactors: parsedBody.data.collections.flatMap(
+            (collection) => {
+              return collection.hypercerts.map((hc) => hc.factor);
+            },
+          ),
+          blueprintIds: parsedBody.data.collections.flatMap((collection) =>
+            collection.blueprints.map((bp) => BigInt(bp.blueprintId)),
+          ),
+          blueprintFactors: parsedBody.data.collections.flatMap((collection) =>
+            collection.blueprints.map((bp) => BigInt(bp.factor)),
+          ),
         },
       },
       requiredChainId: chainId,
@@ -296,6 +318,24 @@ export class HyperboardController extends Controller {
               collection_id: currentCollection.id,
             })),
           );
+
+          if (collection.blueprints?.length) {
+            await dataService.addBlueprintsToCollection(
+              collection.blueprints.map((bp) => ({
+                blueprint_id: bp.blueprintId,
+                collection_id: currentCollection.id,
+              })),
+            );
+
+            await dataService.upsertHyperboardBlueprintMetadata(
+              collection.blueprints.map((bp) => ({
+                blueprint_id: bp.blueprintId,
+                hyperboard_id: hyperboardId,
+                collection_id: currentCollection.id,
+                display_size: bp.factor,
+              })),
+            );
+          }
         }
       } catch (e) {
         console.error(e);
@@ -350,6 +390,24 @@ export class HyperboardController extends Controller {
             display_size: hc.factor,
           })),
         );
+
+        if (collection.blueprints?.length) {
+          await dataService.addBlueprintsToCollection(
+            collection.blueprints.map((bp) => ({
+              blueprint_id: bp.blueprintId,
+              collection_id: collectionId,
+            })),
+          );
+
+          await dataService.upsertHyperboardBlueprintMetadata(
+            collection.blueprints.map((bp) => ({
+              blueprint_id: bp.blueprintId,
+              hyperboard_id: hyperboardId,
+              collection_id: collectionId,
+              display_size: bp.factor,
+            })),
+          );
+        }
 
         await dataService.addCollectionToHyperboard(hyperboardId, collectionId);
       } catch (e) {
@@ -414,6 +472,18 @@ export class HyperboardController extends Controller {
               .trim()
               .min(10, "Use at least 10 characters")
               .max(500, "Use at most 500 characters"),
+            blueprints: z.array(
+              z.object({
+                blueprintId: z
+                  .number()
+                  .int()
+                  .min(1, "Factor must be greater than 0"),
+                factor: z
+                  .number()
+                  .int()
+                  .min(1, "Factor must be greater than 0"),
+              }),
+            ),
             hypercerts: z
               .array(
                 z.object({
@@ -530,7 +600,9 @@ export class HyperboardController extends Controller {
           { name: "description", type: "string" },
           { name: "borderColor", type: "string" },
           { name: "hypercertIds", type: "string[]" },
-          { name: "factors", type: "uint256[]" },
+          { name: "hypercertFactors", type: "uint256[]" },
+          { name: "blueprintIds", type: "uint256[]" },
+          { name: "blueprintFactors", type: "uint256[]" },
         ],
         HyperboardUpdateRequest: [{ name: "hyperboard", type: "Hyperboard" }],
       },
@@ -544,9 +616,17 @@ export class HyperboardController extends Controller {
           hypercertIds: parsedBody.data.collections.flatMap((collection) =>
             collection.hypercerts.map((hc) => hc.hypercertId),
           ),
-          factors: parsedBody.data.collections.flatMap((collection) => {
-            return collection.hypercerts.map((hc) => hc.factor);
-          }),
+          hypercertFactors: parsedBody.data.collections.flatMap(
+            (collection) => {
+              return collection.hypercerts.map((hc) => hc.factor);
+            },
+          ),
+          blueprintIds: parsedBody.data.collections.flatMap((collection) =>
+            collection.blueprints.map((bp) => BigInt(bp.blueprintId)),
+          ),
+          blueprintFactors: parsedBody.data.collections.flatMap((collection) =>
+            collection.blueprints.map((bp) => BigInt(bp.factor)),
+          ),
         },
       },
       requiredChainId: chainId,
@@ -657,6 +737,24 @@ export class HyperboardController extends Controller {
               display_size: hc.factor,
             })),
           );
+
+          if (collection.blueprints?.length) {
+            await dataService.addBlueprintsToCollection(
+              collection.blueprints.map((bp) => ({
+                blueprint_id: bp.blueprintId,
+                collection_id: currentCollection.id,
+              })),
+            );
+
+            await dataService.upsertHyperboardBlueprintMetadata(
+              collection.blueprints.map((bp) => ({
+                blueprint_id: bp.blueprintId,
+                hyperboard_id: hyperboardId,
+                collection_id: currentCollection.id,
+                display_size: bp.factor,
+              })),
+            );
+          }
         }
       } catch (e) {
         console.error(e);
@@ -711,6 +809,24 @@ export class HyperboardController extends Controller {
             display_size: hc.factor,
           })),
         );
+
+        if (collection.blueprints?.length) {
+          await dataService.addBlueprintsToCollection(
+            collection.blueprints.map((bp) => ({
+              blueprint_id: bp.blueprintId,
+              collection_id: collectionId,
+            })),
+          );
+
+          await dataService.upsertHyperboardBlueprintMetadata(
+            collection.blueprints.map((bp) => ({
+              blueprint_id: bp.blueprintId,
+              hyperboard_id: hyperboardId,
+              collection_id: collectionId,
+              display_size: bp.factor,
+            })),
+          );
+        }
 
         await dataService.addCollectionToHyperboard(hyperboardId, collectionId);
       } catch (e) {

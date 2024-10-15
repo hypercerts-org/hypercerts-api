@@ -11,6 +11,8 @@ import { MarketplaceController } from './../../controllers/MarketplaceController
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { HyperboardController } from './../../controllers/HyperboardController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { BlueprintController } from './../../controllers/BlueprintController.js';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AllowListController } from './../../controllers/AllowListController.js';
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
 
@@ -212,7 +214,7 @@ const models: TsoaRoute.Models = {
         "properties": {
             "chainIds": {"dataType":"array","array":{"dataType":"double"},"required":true},
             "title": {"dataType":"string","required":true},
-            "collections": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"hypercerts":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"hypercertId":{"dataType":"string","required":true}}},"required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"id":{"dataType":"string"}}},"required":true},
+            "collections": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"hypercerts":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"hypercertId":{"dataType":"string","required":true}}},"required":true},"blueprints":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"blueprintId":{"dataType":"double","required":true}}},"required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"id":{"dataType":"string"}}},"required":true},
             "backgroundImg": {"dataType":"string"},
             "borderColor": {"dataType":"string","required":true},
             "adminAddress": {"dataType":"string","required":true},
@@ -226,12 +228,50 @@ const models: TsoaRoute.Models = {
         "properties": {
             "chainIds": {"dataType":"array","array":{"dataType":"double"},"required":true},
             "title": {"dataType":"string","required":true},
-            "collections": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"hypercerts":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"hypercertId":{"dataType":"string","required":true}}},"required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"id":{"dataType":"string"}}},"required":true},
+            "collections": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"hypercerts":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"hypercertId":{"dataType":"string","required":true}}},"required":true},"blueprints":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"blueprintId":{"dataType":"double","required":true}}},"required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"id":{"dataType":"string"}}},"required":true},
             "backgroundImg": {"dataType":"string"},
             "borderColor": {"dataType":"string","required":true},
             "adminAddress": {"dataType":"string","required":true},
             "signature": {"dataType":"string","required":true},
             "id": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ApiResponse__blueprint_id-number_-or-null_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string"},"data":{"dataType":"union","subSchemas":[{"dataType":"nestedObjectLiteral","nestedProperties":{"blueprint_id":{"dataType":"double","required":true}}},{"dataType":"enum","enums":[null]}]},"success":{"dataType":"boolean","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "AddOrCreateBlueprintResponse": {
+        "dataType": "refAlias",
+        "type": {"ref":"ApiResponse__blueprint_id-number_-or-null_","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "BlueprintCreateRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "form_values": {"dataType":"any","required":true},
+            "minter_address": {"dataType":"string","required":true},
+            "admin_address": {"dataType":"string","required":true},
+            "signature": {"dataType":"string","required":true},
+            "chain_id": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "BlueprintDeleteRequest": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"admin_address":{"dataType":"string","required":true},"chain_id":{"dataType":"double","required":true},"signature":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "BlueprintQueueMintRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "signature": {"dataType":"string","required":true},
+            "chain_id": {"dataType":"double","required":true},
+            "minter_address": {"dataType":"string","required":true},
+            "tx_hash": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },
@@ -622,6 +662,98 @@ export function RegisterRoutes(app: Router) {
                 next,
                 validatedArgs,
                 successStatus: 204,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/blueprints',
+            ...(fetchMiddlewares<RequestHandler>(BlueprintController)),
+            ...(fetchMiddlewares<RequestHandler>(BlueprintController.prototype.createBlueprint)),
+
+            async function BlueprintController_createBlueprint(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"BlueprintCreateRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new BlueprintController();
+
+              await templateService.apiHandler({
+                methodName: 'createBlueprint',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.delete('/v1/blueprints/:blueprintId',
+            ...(fetchMiddlewares<RequestHandler>(BlueprintController)),
+            ...(fetchMiddlewares<RequestHandler>(BlueprintController.prototype.deleteBlueprint)),
+
+            async function BlueprintController_deleteBlueprint(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    blueprintId: {"in":"path","name":"blueprintId","required":true,"dataType":"double"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"BlueprintDeleteRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new BlueprintController();
+
+              await templateService.apiHandler({
+                methodName: 'deleteBlueprint',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/blueprints/mint/:blueprintId',
+            ...(fetchMiddlewares<RequestHandler>(BlueprintController)),
+            ...(fetchMiddlewares<RequestHandler>(BlueprintController.prototype.mintBlueprint)),
+
+            async function BlueprintController_mintBlueprint(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    blueprintId: {"in":"path","name":"blueprintId","required":true,"dataType":"double"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"BlueprintQueueMintRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new BlueprintController();
+
+              await templateService.apiHandler({
+                methodName: 'mintBlueprint',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
               });
             } catch (err) {
                 return next(err);

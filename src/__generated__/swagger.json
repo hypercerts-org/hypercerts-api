@@ -751,6 +751,26 @@
 									},
 									"type": "array"
 								},
+								"blueprints": {
+									"items": {
+										"properties": {
+											"factor": {
+												"type": "number",
+												"format": "double"
+											},
+											"blueprintId": {
+												"type": "number",
+												"format": "double"
+											}
+										},
+										"required": [
+											"factor",
+											"blueprintId"
+										],
+										"type": "object"
+									},
+									"type": "array"
+								},
 								"description": {
 									"type": "string"
 								},
@@ -763,6 +783,7 @@
 							},
 							"required": [
 								"hypercerts",
+								"blueprints",
 								"description",
 								"title"
 							],
@@ -829,6 +850,26 @@
 									},
 									"type": "array"
 								},
+								"blueprints": {
+									"items": {
+										"properties": {
+											"factor": {
+												"type": "number",
+												"format": "double"
+											},
+											"blueprintId": {
+												"type": "number",
+												"format": "double"
+											}
+										},
+										"required": [
+											"factor",
+											"blueprintId"
+										],
+										"type": "object"
+									},
+									"type": "array"
+								},
 								"description": {
 									"type": "string"
 								},
@@ -841,6 +882,7 @@
 							},
 							"required": [
 								"hypercerts",
+								"blueprints",
 								"description",
 								"title"
 							],
@@ -872,6 +914,123 @@
 					"adminAddress",
 					"signature",
 					"id"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ApiResponse__blueprint_id-number_-or-null_": {
+				"properties": {
+					"errors": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+							},
+							{
+								"items": {
+									"$ref": "#/components/schemas/Error"
+								},
+								"type": "array"
+							}
+						]
+					},
+					"message": {
+						"type": "string"
+					},
+					"data": {
+						"properties": {
+							"blueprint_id": {
+								"type": "number",
+								"format": "double"
+							}
+						},
+						"required": [
+							"blueprint_id"
+						],
+						"type": "object",
+						"nullable": true
+					},
+					"success": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"success"
+				],
+				"type": "object",
+				"description": "Interface for a generic API response."
+			},
+			"AddOrCreateBlueprintResponse": {
+				"$ref": "#/components/schemas/ApiResponse__blueprint_id-number_-or-null_",
+				"description": "Interface for a blueprint add or update request."
+			},
+			"BlueprintCreateRequest": {
+				"properties": {
+					"form_values": {},
+					"minter_address": {
+						"type": "string"
+					},
+					"admin_address": {
+						"type": "string"
+					},
+					"signature": {
+						"type": "string"
+					},
+					"chain_id": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"form_values",
+					"minter_address",
+					"admin_address",
+					"signature",
+					"chain_id"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BlueprintDeleteRequest": {
+				"properties": {
+					"admin_address": {
+						"type": "string"
+					},
+					"chain_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"signature": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"admin_address",
+					"chain_id",
+					"signature"
+				],
+				"type": "object"
+			},
+			"BlueprintQueueMintRequest": {
+				"properties": {
+					"signature": {
+						"type": "string"
+					},
+					"chain_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"minter_address": {
+						"type": "string"
+					},
+					"tx_hash": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"signature",
+					"chain_id",
+					"minter_address",
+					"tx_hash"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1901,6 +2060,280 @@
 						}
 					}
 				]
+			}
+		},
+		"/v1/blueprints": {
+			"post": {
+				"operationId": "CreateBlueprint",
+				"responses": {
+					"201": {
+						"description": "Blueprint created successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AddOrCreateBlueprintResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Validation failed",
+											"errors": {
+												"blueprint": "Invalid blueprint."
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Blueprints"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/BlueprintCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/blueprints/{blueprintId}": {
+			"delete": {
+				"operationId": "DeleteBlueprint",
+				"responses": {
+					"200": {
+						"description": "Blueprint deleted successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"errors": {},
+												"data": {},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"data",
+												"message",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"data": {},
+												"errors": {
+													"properties": {
+														"signature": {},
+														"blueprint": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"blueprint"
+													],
+													"type": "object"
+												},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"message",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"data": {},
+												"errors": {
+													"properties": {
+														"blueprint": {},
+														"signature": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"signature"
+													],
+													"type": "object"
+												},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"message",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"errors": {},
+												"data": {},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"message",
+												"success"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Validation failed",
+											"errors": {
+												"blueprint": "Invalid blueprint."
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Blueprints"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "blueprintId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/BlueprintDeleteRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/blueprints/mint/{blueprintId}": {
+			"post": {
+				"operationId": "MintBlueprint",
+				"responses": {
+					"201": {
+						"description": "Blueprint minted successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AddOrCreateBlueprintResponse"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable content",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"success": false,
+											"message": "Validation failed",
+											"errors": {
+												"blueprint": "Invalid blueprint."
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Blueprints"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "blueprintId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/BlueprintQueueMintRequest"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/v1/allowlists": {

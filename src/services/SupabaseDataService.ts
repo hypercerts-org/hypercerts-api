@@ -19,6 +19,8 @@ import { BaseArgs } from "../graphql/schemas/args/baseArgs.js";
 import { kyselyData } from "../client/kysely.js";
 import { BaseSupabaseService } from "./BaseSupabaseService.js";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
+import { GetBlueprintArgs } from "../graphql/schemas/args/blueprintArgs.js";
+import { sql } from "kysely";
 
 @singleton()
 export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase> {
@@ -27,6 +29,74 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
   constructor() {
     super(kyselyData);
     this.supabaseData = supabaseData;
+  }
+
+  async mintBlueprintAndSwapInCollections(
+    blueprintId: number,
+    hypercertId: string,
+  ) {
+    await this.db.transaction().execute(async (trx) => {
+      // Get all blueprint hyperboard metadata for this blueprint
+      const oldBlueprintMetadata = await trx
+        .deleteFrom("hyperboard_blueprint_metadata")
+        .where("blueprint_id", "=", blueprintId)
+        .returning(["hyperboard_id", "collection_id", "display_size"])
+        .execute();
+
+      if (oldBlueprintMetadata.length) {
+        // Insert the new hypercert for each collection
+        await trx
+          .insertInto("hypercerts")
+          .values(
+            oldBlueprintMetadata.map((oldBlueprintMetadata) => ({
+              hypercert_id: hypercertId,
+              collection_id: oldBlueprintMetadata.collection_id,
+            })),
+          )
+          .onConflict((oc) =>
+            oc.columns(["hypercert_id", "collection_id"]).doUpdateSet((eb) => ({
+              hypercert_id: eb.ref("excluded.hypercert_id"),
+              collection_id: eb.ref("excluded.collection_id"),
+            })),
+          )
+          .returning(["hypercert_id", "collection_id"])
+          .execute();
+
+        // Insert the new hypercert metadata for each collection
+        await trx
+          .insertInto("hyperboard_hypercert_metadata")
+          .values(
+            oldBlueprintMetadata.map((oldBlueprintMetadata) => ({
+              hyperboard_id: oldBlueprintMetadata.hyperboard_id,
+              hypercert_id: hypercertId,
+              collection_id: oldBlueprintMetadata.collection_id,
+              display_size: oldBlueprintMetadata.display_size,
+            })),
+          )
+          .onConflict((oc) =>
+            oc
+              .columns(["hyperboard_id", "hypercert_id", "collection_id"])
+              .doUpdateSet((eb) => ({
+                hypercert_id: eb.ref("excluded.hypercert_id"),
+                collection_id: eb.ref("excluded.collection_id"),
+                hyperboard_id: eb.ref("excluded.hyperboard_id"),
+                display_size: eb.ref("excluded.display_size"),
+              })),
+          )
+          .returning(["hyperboard_id", "hypercert_id", "collection_id"])
+          .execute();
+      }
+
+      // Set blueprint to minted
+      await trx
+        .updateTable("blueprints")
+        .set((eb) => ({
+          minted: true,
+          hypercert_ids: sql`array_append(${eb.ref("hypercert_ids")}, ${hypercertId})`,
+        }))
+        .where("id", "=", blueprintId)
+        .execute();
+    });
   }
 
   storeOrder(
@@ -256,6 +326,13 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
     };
   }
 
+  getBlueprints(args: GetBlueprintArgs) {
+    return {
+      data: this.handleGetData("blueprints_with_admins", args),
+      count: this.handleGetCount("blueprints_with_admins", args),
+    };
+  }
+
   async upsertHypercerts(
     hypercerts: DataDatabase["public"]["Tables"]["hypercerts"]["Insert"][],
   ) {
@@ -461,6 +538,113 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       .executeTakeFirst();
   }
 
+  async upsertBlueprints(
+    blueprints: DataDatabase["public"]["Tables"]["blueprints"]["Insert"][],
+  ) {
+    return this.db
+      .insertInto("blueprints")
+      .values(blueprints)
+      .onConflict((oc) =>
+        oc.columns(["id"]).doUpdateSet((eb) => ({
+          id: eb.ref("excluded.id"),
+          form_values: eb.ref("excluded.form_values"),
+          minter_address: eb.ref("excluded.minter_address"),
+          minted: eb.ref("excluded.minted"),
+        })),
+      )
+      .returning(["id"])
+      .execute();
+  }
+
+  async upsertHyperboardBlueprintMetadata(
+    metadata: DataDatabase["public"]["Tables"]["hyperboard_blueprint_metadata"]["Insert"][],
+  ) {
+    return this.db
+      .insertInto("hyperboard_blueprint_metadata")
+      .values(metadata)
+      .onConflict((oc) =>
+        oc
+          .columns(["hyperboard_id", "blueprint_id", "collection_id"])
+          .doUpdateSet((eb) => ({
+            blueprint_id: eb.ref("excluded.blueprint_id"),
+            collection_id: eb.ref("excluded.collection_id"),
+            hyperboard_id: eb.ref("excluded.hyperboard_id"),
+            display_size: eb.ref("excluded.display_size"),
+          })),
+      )
+      .returning(["hyperboard_id", "blueprint_id", "collection_id"])
+      .execute();
+  }
+
+  async addBlueprintsToCollection(
+    values: DataDatabase["public"]["Tables"]["collection_blueprints"]["Insert"][],
+  ) {
+    return this.db
+      .insertInto("collection_blueprints")
+      .values(values)
+      .onConflict((oc) =>
+        oc.columns(["blueprint_id", "collection_id"]).doNothing(),
+      )
+      .returning(["blueprint_id", "collection_id"])
+      .execute();
+  }
+
+  async addAdminToBlueprint(
+    blueprintId: number,
+    adminAddress: string,
+    chainId: number,
+  ) {
+    const user = await this.getOrCreateUser(adminAddress, chainId);
+    return this.db
+      .insertInto("blueprint_admins")
+      .values([
+        {
+          blueprint_id: blueprintId,
+          user_id: user.id,
+        },
+      ])
+      .onConflict((oc) =>
+        oc.columns(["blueprint_id", "user_id"]).doUpdateSet((eb) => ({
+          blueprint_id: eb.ref("excluded.blueprint_id"),
+          user_id: eb.ref("excluded.user_id"),
+        })),
+      )
+      .returning(["blueprint_id", "user_id"])
+      .executeTakeFirst();
+  }
+
+  async getBlueprintById(blueprintId: number) {
+    return this.db
+      .selectFrom("blueprints")
+      .where("id", "=", blueprintId)
+      .select((eb) => [
+        "id",
+        "created_at",
+        "form_values",
+        "minter_address",
+        "minted",
+        jsonArrayFrom(
+          eb
+            .selectFrom("users")
+            .innerJoin(
+              "blueprint_admins",
+              "blueprint_admins.user_id",
+              "users.id",
+            )
+            .select(["id", "address", "chain_id", "display_name", "avatar"])
+            .whereRef("blueprint_admins.blueprint_id", "=", "blueprints.id"),
+        ).as("admins"),
+      ])
+      .executeTakeFirst();
+  }
+
+  async deleteBlueprint(blueprintId: number) {
+    return this.db
+      .deleteFrom("blueprints")
+      .where("id", "=", blueprintId)
+      .execute();
+  }
+
   getDataQuery<
     DB extends KyselyDataDatabase,
     T extends keyof DB & string,
@@ -470,6 +654,9 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
     switch (tableName) {
       case "users":
         return this.db.selectFrom("users").selectAll();
+      case "blueprints_with_admins":
+      case "blueprints":
+        return this.db.selectFrom("blueprints_with_admins").selectAll();
       default:
         throw new Error(`Table ${tableName.toString()} not found`);
     }
@@ -490,6 +677,13 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
         return this.db.selectFrom("hyperboards").select((expressionBuilder) => {
           return expressionBuilder.fn.countAll().as("count");
         });
+      case "blueprints_with_admins":
+      case "blueprints":
+        return this.db
+          .selectFrom("blueprints_with_admins")
+          .select((expressionBuilder) => {
+            return expressionBuilder.fn.countAll().as("count");
+          });
       default:
         throw new Error(`Table ${tableName.toString()} not found`);
     }
