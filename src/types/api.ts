@@ -116,6 +116,10 @@ export interface HyperboardCreateRequest {
     id?: string;
     title: string;
     description: string;
+    blueprints: {
+      blueprintId: number;
+      factor: number;
+    }[];
     hypercerts: {
       hypercertId: string;
       factor: number;

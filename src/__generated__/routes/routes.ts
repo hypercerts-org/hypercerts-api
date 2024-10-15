@@ -214,7 +214,7 @@ const models: TsoaRoute.Models = {
         "properties": {
             "chainIds": {"dataType":"array","array":{"dataType":"double"},"required":true},
             "title": {"dataType":"string","required":true},
-            "collections": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"hypercerts":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"hypercertId":{"dataType":"string","required":true}}},"required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"id":{"dataType":"string"}}},"required":true},
+            "collections": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"hypercerts":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"hypercertId":{"dataType":"string","required":true}}},"required":true},"blueprints":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"blueprintId":{"dataType":"double","required":true}}},"required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"id":{"dataType":"string"}}},"required":true},
             "backgroundImg": {"dataType":"string"},
             "borderColor": {"dataType":"string","required":true},
             "adminAddress": {"dataType":"string","required":true},
@@ -228,7 +228,7 @@ const models: TsoaRoute.Models = {
         "properties": {
             "chainIds": {"dataType":"array","array":{"dataType":"double"},"required":true},
             "title": {"dataType":"string","required":true},
-            "collections": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"hypercerts":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"hypercertId":{"dataType":"string","required":true}}},"required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"id":{"dataType":"string"}}},"required":true},
+            "collections": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"hypercerts":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"hypercertId":{"dataType":"string","required":true}}},"required":true},"blueprints":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"factor":{"dataType":"double","required":true},"blueprintId":{"dataType":"double","required":true}}},"required":true},"description":{"dataType":"string","required":true},"title":{"dataType":"string","required":true},"id":{"dataType":"string"}}},"required":true},
             "backgroundImg": {"dataType":"string"},
             "borderColor": {"dataType":"string","required":true},
             "adminAddress": {"dataType":"string","required":true},

@@ -751,6 +751,26 @@
 									},
 									"type": "array"
 								},
+								"blueprints": {
+									"items": {
+										"properties": {
+											"factor": {
+												"type": "number",
+												"format": "double"
+											},
+											"blueprintId": {
+												"type": "number",
+												"format": "double"
+											}
+										},
+										"required": [
+											"factor",
+											"blueprintId"
+										],
+										"type": "object"
+									},
+									"type": "array"
+								},
 								"description": {
 									"type": "string"
 								},
@@ -763,6 +783,7 @@
 							},
 							"required": [
 								"hypercerts",
+								"blueprints",
 								"description",
 								"title"
 							],
@@ -829,6 +850,26 @@
 									},
 									"type": "array"
 								},
+								"blueprints": {
+									"items": {
+										"properties": {
+											"factor": {
+												"type": "number",
+												"format": "double"
+											},
+											"blueprintId": {
+												"type": "number",
+												"format": "double"
+											}
+										},
+										"required": [
+											"factor",
+											"blueprintId"
+										],
+										"type": "object"
+									},
+									"type": "array"
+								},
 								"description": {
 									"type": "string"
 								},
@@ -841,6 +882,7 @@
 							},
 							"required": [
 								"hypercerts",
+								"blueprints",
 								"description",
 								"title"
 							],

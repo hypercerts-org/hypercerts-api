@@ -556,6 +556,39 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       .execute();
   }
 
+  async upsertHyperboardBlueprintMetadata(
+    metadata: DataDatabase["public"]["Tables"]["hyperboard_blueprint_metadata"]["Insert"][],
+  ) {
+    return this.db
+      .insertInto("hyperboard_blueprint_metadata")
+      .values(metadata)
+      .onConflict((oc) =>
+        oc
+          .columns(["hyperboard_id", "blueprint_id", "collection_id"])
+          .doUpdateSet((eb) => ({
+            blueprint_id: eb.ref("excluded.blueprint_id"),
+            collection_id: eb.ref("excluded.collection_id"),
+            hyperboard_id: eb.ref("excluded.hyperboard_id"),
+            display_size: eb.ref("excluded.display_size"),
+          })),
+      )
+      .returning(["hyperboard_id", "blueprint_id", "collection_id"])
+      .execute();
+  }
+
+  async addBlueprintsToCollection(
+    values: DataDatabase["public"]["Tables"]["collection_blueprints"]["Insert"][],
+  ) {
+    return this.db
+      .insertInto("collection_blueprints")
+      .values(values)
+      .onConflict((oc) =>
+        oc.columns(["blueprint_id", "collection_id"]).doNothing(),
+      )
+      .returning(["blueprint_id", "collection_id"])
+      .execute();
+  }
+
   async addAdminToBlueprint(
     blueprintId: number,
     adminAddress: string,
