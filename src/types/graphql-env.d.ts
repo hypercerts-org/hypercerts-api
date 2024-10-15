@@ -3107,6 +3107,20 @@ export type introspection = {
               "name": "UUID",
               "ofType": null
             }
+          },
+          {
+            "name": "in",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "UUID",
+                  "ofType": null
+                }
+              }
+            }
           }
         ]
       },
@@ -3546,6 +3560,20 @@ export type introspection = {
               "kind": "SCALAR",
               "name": "Int",
               "ofType": null
+            }
+          },
+          {
+            "name": "in",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
             }
           },
           {

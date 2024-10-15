@@ -98,6 +98,13 @@ const buildEqualityCondition = (
 ): SqlBool => sql`${sql.raw(`"${tableName}"."${column}"`)} =
 ${value}`;
 
+const buildInCondition = (
+  column: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  values: any[],
+  tableName: string,
+): SqlBool => sql`${sql.raw(`"${tableName}"."${column}"`)} = ANY(${values})`;
+
 const buildComparisonCondition = (
   column: string,
   operator: string,
@@ -129,6 +136,9 @@ const buildArrayCondition = (
 
 const conditionBuilders = {
   eq: buildEqualityCondition,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  in: (column: string, value: any, tableName: string) =>
+    buildInCondition(column, value, tableName),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   gt: (column: string, value: any, tableName: string) =>
     buildComparisonCondition(column, ">", value, tableName),

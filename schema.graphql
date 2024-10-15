@@ -635,6 +635,7 @@ input HypercertsWhereArgs {
 
 input IdSearchOptions {
   eq: UUID
+  in: [UUID!]
 }
 
 """
@@ -736,6 +737,7 @@ input NumberSearchOptions {
   eq: Int
   gt: Int
   gte: Int
+  in: [Int!]
   lt: Int
   lte: Int
 }
