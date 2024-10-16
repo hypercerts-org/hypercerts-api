@@ -185,7 +185,7 @@
 				"$ref": "#/components/schemas/ApiResponse__cid-string__",
 				"description": "Interface for a storage response."
 			},
-			"HypercertClaimdata_36_1": {
+			"HypercertClaimdata": {
 				"description": "Properties of an impact claim",
 				"properties": {
 					"impact_scope": {
@@ -380,7 +380,7 @@
 						"type": "array"
 					},
 					"hypercert": {
-						"$ref": "#/components/schemas/HypercertClaimdata_36_1"
+						"$ref": "#/components/schemas/HypercertClaimdata"
 					}
 				},
 				"required": [
