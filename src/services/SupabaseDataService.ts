@@ -96,6 +96,12 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
         }))
         .where("id", "=", blueprintId)
         .execute();
+
+      // Delete blueprint from collections, because it has been replaced by a hypercert
+      await trx
+        .deleteFrom("collection_blueprints")
+        .where("blueprint_id", "=", blueprintId)
+        .execute();
     });
   }
 
