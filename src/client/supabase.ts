@@ -143,6 +143,26 @@ const handleChangeUsers = (
 };
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
+const handleChangeBlueprints = (
+  payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
+) => {
+  console.log(payload);
+  switch (payload.eventType) {
+    case "INSERT":
+      cache.invalidate([{ typename: "Blueprint" }]);
+      break;
+    case "UPDATE":
+      cache.invalidate([{ typename: "Blueprint", id: payload.new.id }]);
+      break;
+    case "DELETE":
+      cache.invalidate([{ typename: "Blueprint" }]);
+      break;
+    default:
+      break;
+  }
+};
+
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 const handleChangeHyperboards = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
@@ -159,6 +179,8 @@ const handleChangeHyperboards = (
         { typename: "SectionOwner" },
         { typename: "SectionEntry" },
         { typename: "SectionEntryOwner" },
+        { typename: "User" },
+        { typename: "Blueprint" },
       ]);
       break;
     default:
@@ -314,7 +336,10 @@ supabaseData
       schema: "public",
       table: "blueprints",
     },
-    (payload) => handleChangeHyperboards(payload),
+    (payload) => {
+      handleChangeBlueprints(payload);
+      handleChangeHyperboards(payload);
+    },
   )
   .on(
     "postgres_changes",
