@@ -964,6 +964,7 @@ input StringSearchOptions {
   contains: String
   endsWith: String
   eq: String
+  in: [String!]
   startsWith: String
 }
 
