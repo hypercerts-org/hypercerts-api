@@ -307,4 +307,40 @@ supabaseData
     },
     (payload) => handleChangeHyperboards(payload),
   )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "blueprints",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "users",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "collection_admins",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "hyperboard_admins",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
   .subscribe();
