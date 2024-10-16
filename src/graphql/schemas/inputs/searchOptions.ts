@@ -21,6 +21,9 @@ export class StringSearchOptions {
   @Field({ nullable: true })
   eq?: string;
 
+  @Field(() => [String], { nullable: true })
+  in?: string[];
+
   @Field({ nullable: true })
   contains?: string;
 
