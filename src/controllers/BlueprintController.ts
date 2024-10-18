@@ -105,7 +105,7 @@ export class BlueprintController extends Controller {
             },
           ),
         allowlistEntries: z
-          .array(z.object({ address: z.string(), units: z.bigint() }))
+          .array(z.object({ address: z.string(), units: z.string() }))
           .optional(),
         allowlistURL: z
           .string()
