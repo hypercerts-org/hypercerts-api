@@ -31,7 +31,7 @@ class HyperboardResolver extends HyperboardBaseResolver {
       }).then((res) => res.data);
 
       const allowlistEntries = await this.getAllowlistRecords({
-        where: { hypercert_id: { in: hypercertIds } },
+        where: { hypercert_id: { in: hypercertIds }, claimed: { eq: false } },
       }).then((res) => res.data);
 
       const hypercerts = await this.getHypercerts({

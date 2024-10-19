@@ -32,8 +32,17 @@ describe("processCollectionToSection", async () => {
     created_at: new Date().toISOString(),
   };
 
-  const hypercert: CachingDatabase["public"]["Tables"]["claims"]["Row"] = {
-    hypercert_id: "test",
+  const user2: DataDatabase["public"]["Tables"]["users"]["Row"] = {
+    address: "0x2",
+    chain_id: sepolia.id,
+    avatar: "testAvatar2",
+    display_name: "testDisplayName2",
+    id: "testUser2",
+    created_at: new Date().toISOString(),
+  };
+
+  const hypercert1: CachingDatabase["public"]["Tables"]["claims"]["Row"] = {
+    hypercert_id: "test1",
     uri: "test",
     units: 1,
     id: "test",
@@ -51,8 +60,27 @@ describe("processCollectionToSection", async () => {
     sales_count: 1,
   };
 
+  const hypercert2: CachingDatabase["public"]["Tables"]["claims"]["Row"] = {
+    hypercert_id: "test2",
+    uri: "test",
+    units: 100,
+    id: "test",
+    token_id: 2,
+    owner_address: user1.address,
+    attestations_count: 1,
+    claim_attestation_count: 1,
+    contracts_id: "test",
+    creation_block_number: 1,
+    creation_block_timestamp: 1,
+    creator_address: user1.address,
+    last_update_block_number: 1,
+    last_update_block_timestamp: 1,
+    value: 1,
+    sales_count: 1,
+  };
+
   const allowlistEntry1 = {
-    hypercert_id: "test",
+    hypercert_id: "test1",
     entry: 1,
     id: "testAllowlistEntry 1",
     user_address: "0x1",
@@ -67,7 +95,7 @@ describe("processCollectionToSection", async () => {
     hypercert_allow_lists_id: "test",
   };
   const allowlistEntry2 = {
-    hypercert_id: "test",
+    hypercert_id: "test1",
     entry: 1,
     id: "testAllowlistEntry 2",
     user_address: "0x2",
@@ -82,11 +110,20 @@ describe("processCollectionToSection", async () => {
     hypercert_allow_lists_id: "test",
   };
 
-  const hypercertMetadata: DataDatabase["public"]["Tables"]["hyperboard_hypercert_metadata"]["Row"] =
+  const hypercertMetadata1: DataDatabase["public"]["Tables"]["hyperboard_hypercert_metadata"]["Row"] =
     {
-      hypercert_id: hypercert.hypercert_id as string,
+      hypercert_id: hypercert1.hypercert_id as string,
       hyperboard_id: "testHyperboard1",
       collection_id: "testCollection1",
+      display_size: 1,
+      created_at: new Date().toISOString(),
+    };
+
+  const hypercertMetadata2: DataDatabase["public"]["Tables"]["hyperboard_hypercert_metadata"]["Row"] =
+    {
+      hypercert_id: hypercert2.hypercert_id as string,
+      hyperboard_id: "testHyperboard2",
+      collection_id: "testCollection2",
       display_size: 1,
       created_at: new Date().toISOString(),
     };
@@ -103,8 +140,8 @@ describe("processCollectionToSection", async () => {
   it("should process allowlist entries according to size", async () => {
     const section = processCollectionToSection({
       ...emptyArgs,
-      hypercerts: [hypercert],
-      hypercert_metadata: [hypercertMetadata],
+      hypercerts: [hypercert1],
+      hypercert_metadata: [hypercertMetadata1],
       allowlistEntries: [allowlistEntry1, allowlistEntry2],
     });
 
@@ -121,11 +158,26 @@ describe("processCollectionToSection", async () => {
     ).toBe(75);
   });
 
+  it("should ignore allowlist entries that have already been claimed", () => {
+    const section = processCollectionToSection({
+      ...emptyArgs,
+      hypercerts: [hypercert1],
+      hypercert_metadata: [hypercertMetadata1],
+      allowlistEntries: [
+        allowlistEntry1,
+        { ...allowlistEntry2, claimed: true },
+      ],
+    });
+
+    expect(section.owners.length).toBe(1);
+    expect(section.owners[0].percentage_owned).toBe(100);
+  });
+
   it("should use correct user metadata for allowlist entries", async () => {
     const { owners } = processCollectionToSection({
       ...emptyArgs,
-      hypercerts: [hypercert],
-      hypercert_metadata: [hypercertMetadata],
+      hypercerts: [hypercert1],
+      hypercert_metadata: [hypercertMetadata1],
       allowlistEntries: [allowlistEntry1],
       users: [user1],
     });
@@ -136,5 +188,46 @@ describe("processCollectionToSection", async () => {
     expect(
       owners.find((owner) => owner.address === user1.address)?.display_name,
     ).toBe(user1.display_name);
+  });
+
+  it("Should adjust for display size", () => {
+    const { owners } = processCollectionToSection({
+      ...emptyArgs,
+      hypercerts: [hypercert1, hypercert2],
+      hypercert_metadata: [hypercertMetadata1, hypercertMetadata2],
+      users: [user1, user2],
+      fractions: [
+        {
+          fraction_id: "fraction1",
+          hypercert_id: hypercert1.hypercert_id,
+          owner_address: user1.address,
+          token_id: 1,
+          units: 1,
+          creation_block_timestamp: 1,
+          creation_block_number: 1,
+          last_update_block_number: 1,
+          last_update_block_timestamp: 1,
+          id: "test1",
+          claims_id: "test1",
+          value: 1,
+        },
+        {
+          fraction_id: "fraction2",
+          hypercert_id: hypercert2.hypercert_id,
+          owner_address: user2.address,
+          token_id: 2,
+          units: 100,
+          creation_block_timestamp: 1,
+          creation_block_number: 1,
+          last_update_block_number: 1,
+          last_update_block_timestamp: 1,
+          id: "test2",
+          claims_id: "test2",
+          value: 1,
+        },
+      ],
+    });
+
+    expect(owners[0].percentage_owned).toBe(owners[1].percentage_owned);
   });
 });
