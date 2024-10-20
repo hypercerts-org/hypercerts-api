@@ -131,7 +131,7 @@ export const processCollectionToSection = ({
         owner: entry.user_address,
         unitsAdjustedForDisplaySize:
           (BigInt(entry.units || 0) * displayUnitsPerUnit) / 10n ** 14n,
-        isBlueprint: true,
+        isBlueprint: false,
         hypercertId: entry.hypercert_id,
         units: BigInt(entry.units || 0),
       };
@@ -164,7 +164,7 @@ export const processCollectionToSection = ({
         (NUMBER_OF_UNITS_IN_HYPERCERT * displayUnitsPerUnit) / 10n ** 14n,
       isBlueprint: true,
       hypercertId: blueprint.id,
-      units: blueprint.form_values?.units || 0,
+      units: NUMBER_OF_UNITS_IN_HYPERCERT,
     };
   });
 
@@ -244,14 +244,43 @@ export const processCollectionToSection = ({
   const entries = Object.entries(fractionsByHypercertsId).map(
     ([id, entriesById]) => {
       const is_blueprint = entriesById.every((x) => x.isBlueprint);
-      const hypercert = hypercertsByHypercertId[id];
 
-      if (!hypercert?.units) {
+      let unitsForHypercert: bigint;
+      let name: string;
+      if (is_blueprint) {
+        unitsForHypercert = NUMBER_OF_UNITS_IN_HYPERCERT;
+        name = blueprintsByBlueprintId[id]?.form_values?.name;
+      } else {
+        const hypercert = hypercertsByHypercertId[id];
+
+        if (!hypercert) {
+          throw new Error(
+            `[HyperboardResolver::processRegistryForDisplay] Hypercert not found for ${id}`,
+          );
+        }
+
+        if (!hypercert?.units) {
+          throw new Error(
+            `[HyperboardResolver::processRegistryForDisplay] Hypercert not found for ${id}`,
+          );
+        }
+
+        unitsForHypercert = BigInt(hypercert.units);
+
+        if (!hypercert?.name) {
+          throw new Error(
+            `[HyperboardResolver::processRegistryForDisplay] Hypercert name not found for ${id}`,
+          );
+        }
+
+        name = hypercert.name;
+      }
+
+      if (!unitsForHypercert) {
         throw new Error(
-          `[HyperboardResolver::processRegistryForDisplay] Hypercert not found for ${id}`,
+          `[HyperboardResolver::processRegistryForDisplay] Units not found for ${id}`,
         );
       }
-      const unitsForHypercert = BigInt(hypercert.units);
 
       const owners = _.chain(entriesById)
         .groupBy((fraction) => fraction.ownerId)
@@ -280,7 +309,6 @@ export const processCollectionToSection = ({
       const displayMetadata =
         hypercertMetadataByHypercertId[id] ||
         blueprintMetadataByBlueprintId[id];
-      const blueprint = blueprintsByBlueprintId[id];
 
       const display_size = displayMetadata?.display_size;
       if (!display_size) {
@@ -297,8 +325,8 @@ export const processCollectionToSection = ({
         is_blueprint,
         percentage_of_section,
         display_size,
-        total_units: BigInt(hypercert?.units || NUMBER_OF_UNITS_IN_HYPERCERT),
-        name: hypercert?.name || blueprint?.form_values?.name,
+        total_units: unitsForHypercert,
+        name,
         percentage: 100,
         owners,
       };
