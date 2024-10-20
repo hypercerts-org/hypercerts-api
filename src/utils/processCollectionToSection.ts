@@ -31,8 +31,8 @@ export const processCollectionToSection = ({
   );
   const totalUnitsInBlueprints =
     BigInt(blueprints.length) * NUMBER_OF_UNITS_IN_HYPERCERT;
-  const totalUnitsInClaims = fractions.reduce(
-    (acc, fraction) => acc + BigInt(fraction.units || 0),
+  const totalUnitsInClaims = hypercerts.reduce(
+    (acc, hypercert) => acc + BigInt(hypercert.units || 0),
     0n,
   );
   const totalUnits =
@@ -81,10 +81,7 @@ export const processCollectionToSection = ({
         BigInt(metadata.display_size) * displayPerUnit;
 
       // The total number of units in this claim
-      const totalUnitsInClaim = fractions.reduce(
-        (acc, curr) => acc + BigInt(curr.units || 0),
-        0n,
-      );
+      const totalUnitsInClaim = BigInt(hypercert.units || 0);
 
       if (totalUnitsInClaim === 0n) {
         return [];
@@ -101,42 +98,44 @@ export const processCollectionToSection = ({
           (BigInt(fraction.units || 0) * displayUnitsPerUnit) / 10n ** 14n,
         isBlueprint: false,
         hypercertId,
-        hypercertOwnerAddress: hypercert.owner_address,
+        units: BigInt(fraction.units || 0),
       }));
     })
     .flat();
 
-  const allowlistResults = allowlistEntries.map((entry) => {
-    if (!entry.hypercert_id) {
-      throw new Error(
-        `[HyperboardResolver::processRegistryForDisplay] Allowlist entry does not have a hypercert_id`,
-      );
-    }
-    // Calculate the number of units per display unit
-    const hypercert = hypercertsByHypercertId[entry.hypercert_id];
+  const allowlistResults = allowlistEntries
+    .filter((entry) => !entry.claimed)
+    .map((entry) => {
+      if (!entry.hypercert_id) {
+        throw new Error(
+          `[HyperboardResolver::processRegistryForDisplay] Allowlist entry does not have a hypercert_id`,
+        );
+      }
+      // Calculate the number of units per display unit
+      const hypercert = hypercertsByHypercertId[entry.hypercert_id];
 
-    if (!hypercert) {
-      throw new Error(
-        `[HyperboardResolver::processRegistryForDisplay] Hypercert not found for ${entry.hypercert_id}`,
-      );
-    }
+      if (!hypercert) {
+        throw new Error(
+          `[HyperboardResolver::processRegistryForDisplay] Hypercert not found for ${entry.hypercert_id}`,
+        );
+      }
 
-    if (!hypercert.units) {
-      throw new Error(
-        `[HyperboardResolver::processRegistryForDisplay] Hypercert does not have units`,
-      );
-    }
+      if (!hypercert.units) {
+        throw new Error(
+          `[HyperboardResolver::processRegistryForDisplay] Hypercert does not have units`,
+        );
+      }
 
-    const displayUnitsPerUnit = displayPerUnit / BigInt(hypercert.units);
-    return {
-      owner: entry.user_address,
-      unitsAdjustedForDisplaySize:
-        (BigInt(entry.units || 0) * displayUnitsPerUnit) / 10n ** 14n,
-      isBlueprint: true,
-      hypercertId: entry.hypercert_id,
-      hypercertOwnerAddress: undefined,
-    };
-  });
+      const displayUnitsPerUnit = displayPerUnit / BigInt(hypercert.units);
+      return {
+        owner: entry.user_address,
+        unitsAdjustedForDisplaySize:
+          (BigInt(entry.units || 0) * displayUnitsPerUnit) / 10n ** 14n,
+        isBlueprint: true,
+        hypercertId: entry.hypercert_id,
+        units: BigInt(entry.units || 0),
+      };
+    });
 
   const blueprintMetadataByBlueprintId = _.keyBy(
     blueprintMetadata,
@@ -165,7 +164,7 @@ export const processCollectionToSection = ({
         (NUMBER_OF_UNITS_IN_HYPERCERT * displayUnitsPerUnit) / 10n ** 14n,
       isBlueprint: true,
       hypercertId: blueprint.id,
-      hypercertOwnerAddress: undefined,
+      units: blueprint.form_values?.units || 0,
     };
   });
 
@@ -178,6 +177,7 @@ export const processCollectionToSection = ({
     }
     return {
       ...fraction,
+      units: fraction.units,
       displayData: {
         ...(usersByAddress[fraction.owner] || { address: fraction.owner }),
         value: fraction.owner,
@@ -244,22 +244,27 @@ export const processCollectionToSection = ({
   const entries = Object.entries(fractionsByHypercertsId).map(
     ([id, entriesById]) => {
       const is_blueprint = entriesById.every((x) => x.isBlueprint);
-      const allUnitsAdjustedForDisplaySize = entriesById.reduce(
-        (acc, curr) => acc + curr.unitsAdjustedForDisplaySize,
-        0n,
-      );
+      const hypercert = hypercertsByHypercertId[id];
+
+      if (!hypercert?.units) {
+        throw new Error(
+          `[HyperboardResolver::processRegistryForDisplay] Hypercert not found for ${id}`,
+        );
+      }
+      const unitsForHypercert = BigInt(hypercert.units);
 
       const owners = _.chain(entriesById)
         .groupBy((fraction) => fraction.ownerId)
         .mapValues((fractionsPerOwner) => {
-          const totalUnitsAdjustedForDisplaySizeForOwner =
-            fractionsPerOwner.reduce(
-              (acc, curr) => acc + curr.unitsAdjustedForDisplaySize,
-              0n,
-            );
+          // Calculate the total number of units for this owner
+          // We do not have to adjust for display size, as this is within a single hypercert
+          const totalUnitsForOwner = fractionsPerOwner.reduce(
+            (acc, curr) => acc + curr.units,
+            0n,
+          );
           const percentage = calculateBigIntPercentage(
-            totalUnitsAdjustedForDisplaySizeForOwner,
-            allUnitsAdjustedForDisplaySize,
+            totalUnitsForOwner,
+            unitsForHypercert,
           );
           return {
             percentage,
@@ -267,10 +272,7 @@ export const processCollectionToSection = ({
             avatar: fractionsPerOwner[0].displayData.avatar,
             display_name: fractionsPerOwner[0].displayData.display_name,
             address: fractionsPerOwner[0].displayData.address,
-            units: fractionsPerOwner.reduce(
-              (acc, curr) => acc + curr.unitsAdjustedForDisplaySize,
-              0n,
-            ),
+            units: totalUnitsForOwner,
           };
         })
         .values()
@@ -278,7 +280,6 @@ export const processCollectionToSection = ({
       const displayMetadata =
         hypercertMetadataByHypercertId[id] ||
         blueprintMetadataByBlueprintId[id];
-      const hypercert = hypercertsByHypercertId[id];
       const blueprint = blueprintsByBlueprintId[id];
 
       const display_size = displayMetadata?.display_size;
