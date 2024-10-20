@@ -339,6 +339,14 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
     };
   }
 
+  async deleteAllHypercertsFromCollection(collectionId: string) {
+    return this.db
+      .deleteFrom("hypercerts")
+      .where("collection_id", "=", collectionId)
+      .returning("hypercert_id")
+      .execute();
+  }
+
   async upsertHypercerts(
     hypercerts: DataDatabase["public"]["Tables"]["hypercerts"]["Insert"][],
   ) {
@@ -542,6 +550,14 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       )
       .returning(["collection_id", "user_id"])
       .executeTakeFirst();
+  }
+
+  async deleteAllBlueprintsFromCollection(collectionId: string) {
+    return this.db
+      .deleteFrom("collection_blueprints")
+      .where("collection_id", "=", collectionId)
+      .returning("blueprint_id")
+      .execute();
   }
 
   async upsertBlueprints(
