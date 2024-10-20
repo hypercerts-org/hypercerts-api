@@ -281,13 +281,11 @@ export class HyperboardController extends Controller {
           throw new Error(`Collection with id ${collection.id} not found`);
         }
 
-        if (collection.hypercerts?.length) {
-          // Add the collection to the hyperboard
-          await dataService.addCollectionToHyperboard(
-            hyperboardId,
-            collection.id,
-          );
-        }
+        // Add the collection to the hyperboard
+        await dataService.addCollectionToHyperboard(
+          hyperboardId,
+          collection.id,
+        );
 
         const currentUserIsAdminForCollection =
           currentCollection.collection_admins
