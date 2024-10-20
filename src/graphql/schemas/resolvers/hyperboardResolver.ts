@@ -26,17 +26,20 @@ class HyperboardResolver extends HyperboardBaseResolver {
           )
           .flat(2) || [];
 
-      const fractions = await this.getFractions({
-        where: { hypercert_id: { in: hypercertIds } },
-      }).then((res) => res.data);
-
-      const allowlistEntries = await this.getAllowlistRecords({
-        where: { hypercert_id: { in: hypercertIds }, claimed: { eq: false } },
-      }).then((res) => res.data);
-
-      const hypercerts = await this.getHypercerts({
-        where: { hypercert_id: { in: hypercertIds } },
-      }).then((res) => res.data);
+      const [fractions, allowlistEntries, hypercerts] = await Promise.all([
+        this.getFractions({
+          where: { hypercert_id: { in: hypercertIds } },
+        }).then((res) => res.data),
+        this.getAllowlistRecords({
+          where: {
+            hypercert_id: { in: hypercertIds },
+            claimed: { eq: false },
+          },
+        }).then((res) => res.data),
+        this.getHypercerts({
+          where: { hypercert_id: { in: hypercertIds } },
+        }).then((res) => res.data),
+      ]);
 
       const metadata = await this.getMetadata({
         where: { hypercerts: { hypercert_id: { in: hypercertIds } } },
@@ -58,7 +61,7 @@ class HyperboardResolver extends HyperboardBaseResolver {
       // Get a deduplicated list of all owners
       const ownerAddresses = _.uniq([
         ...fractions.map((x) => x?.owner_address),
-        ...allowlistEntries.flatMap((x) => x?.owner_address),
+        ...allowlistEntries.flatMap((x) => x?.user_address),
         ...(res.data?.flatMap(
           (hyperboard) =>
             hyperboard?.collections?.flatMap((collection) =>
@@ -74,28 +77,6 @@ class HyperboardResolver extends HyperboardBaseResolver {
       }).then((res) => res.data);
 
       const metadataByUri = _.keyBy(metadata, "uri");
-      console.log("collection", JSON.stringify(res, null, 2));
-      console.log("fractions", JSON.stringify(fractions, null, 2));
-      console.log("metadata", JSON.stringify(metadata, null, 2));
-      console.log(
-        "allowlist_entries",
-        JSON.stringify(allowlistEntries, null, 2),
-      );
-      console.log(
-        "hypercerts",
-        JSON.stringify(
-          hypercerts
-            .filter((x) => !!x)
-            .map((hypercert) => ({
-              ...hypercert,
-              name: metadataByUri[hypercert.uri]?.name,
-            })),
-          null,
-          2,
-        ),
-      );
-      console.log("users", JSON.stringify(users, null, 2));
-
       const { error, data, count } = res;
 
       if (error) {
@@ -145,11 +126,6 @@ class HyperboardResolver extends HyperboardBaseResolver {
             },
           };
         }) || [];
-
-      console.log(
-        "processedRegistries",
-        JSON.stringify(hyperboardWithSections, null, 2),
-      );
 
       return {
         data: hyperboardWithSections,
