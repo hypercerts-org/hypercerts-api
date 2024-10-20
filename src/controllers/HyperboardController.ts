@@ -63,66 +63,69 @@ export class HyperboardController extends Controller {
           .min(1, "Title is required")
           .max(100, "Use at most 100 characters"),
         collections: z.array(
-          z.object({
-            id: z.string().uuid().optional(),
-            title: z
-              .string()
-              .trim()
-              .min(1, "Title is required")
-              .max(100, "Use at most 100 characters"),
-            description: z
-              .string()
-              .trim()
-              .min(10, "Use at least 10 characters")
-              .max(500, "Use at most 500 characters"),
-            blueprints: z.array(
-              z.object({
-                blueprintId: z
-                  .number()
-                  .int()
-                  .min(1, "Factor must be greater than 0"),
-                factor: z
-                  .number()
-                  .int()
-                  .min(1, "Factor must be greater than 0"),
-              }),
-            ),
-            hypercerts: z
-              .array(
+          z
+            .object({
+              id: z.string().uuid().optional(),
+              title: z
+                .string()
+                .trim()
+                .min(1, "Title is required")
+                .max(100, "Use at most 100 characters"),
+              description: z
+                .string()
+                .trim()
+                .min(10, "Use at least 10 characters")
+                .max(500, "Use at most 500 characters"),
+              blueprints: z.array(
                 z.object({
-                  hypercertId: z
-                    .string()
-                    .trim()
-                    .refine((value) => {
-                      if (!value || value === "") {
-                        return true;
-                      }
-
-                      try {
-                        return isValidHypercertId(value);
-                      } catch (e) {
-                        console.error(e);
-                        return false;
-                      }
-                    }, "Invalid hypercert ID"),
+                  blueprintId: z.number().int(),
                   factor: z
                     .number()
                     .int()
                     .min(1, "Factor must be greater than 0"),
                 }),
-              )
-              .min(1, "At least one hypercert is required")
-              .refine(
-                (hypercerts) => {
-                  const hypercertIds = hypercerts.map((hc) => hc.hypercertId);
-                  return hypercertIds.length === new Set(hypercertIds).size;
-                },
-                {
-                  message: "Hypercerts must be unique",
-                  path: ["hypercerts"],
-                },
               ),
-          }),
+              hypercerts: z
+                .array(
+                  z.object({
+                    hypercertId: z
+                      .string()
+                      .trim()
+                      .refine((value) => {
+                        if (!value || value === "") {
+                          return true;
+                        }
+
+                        try {
+                          return isValidHypercertId(value);
+                        } catch (e) {
+                          console.error(e);
+                          return false;
+                        }
+                      }, "Invalid hypercert ID"),
+                    factor: z
+                      .number()
+                      .int()
+                      .min(1, "Factor must be greater than 0"),
+                  }),
+                )
+                .refine(
+                  (hypercerts) => {
+                    const hypercertIds = hypercerts.map((hc) => hc.hypercertId);
+                    return hypercertIds.length === new Set(hypercertIds).size;
+                  },
+                  {
+                    message: "Hypercerts must be unique",
+                    path: ["hypercerts"],
+                  },
+                ),
+            })
+            .refine((val) => {
+              if (!val.hypercerts.length && !val.blueprints.length) {
+                return false;
+              }
+              return true;
+            }, "Collections must contain 1 blueprint or hypercert"),
         ),
         backgroundImg: z
           .union([
@@ -278,20 +281,13 @@ export class HyperboardController extends Controller {
           throw new Error(`Collection with id ${collection.id} not found`);
         }
 
-        // Add the collection to the hyperboard
-        await dataService.addCollectionToHyperboard(
-          hyperboardId,
-          collection.id,
-        );
-        // Update metadata anyway because they are not collection specific
-        await dataService.upsertHyperboardHypercertMetadata(
-          collection.hypercerts.map((hc) => ({
-            hypercert_id: hc.hypercertId,
-            hyperboard_id: hyperboardId,
-            collection_id: currentCollection.id,
-            display_size: hc.factor,
-          })),
-        );
+        if (collection.hypercerts?.length) {
+          // Add the collection to the hyperboard
+          await dataService.addCollectionToHyperboard(
+            hyperboardId,
+            collection.id,
+          );
+        }
 
         const currentUserIsAdminForCollection =
           currentCollection.collection_admins
@@ -311,13 +307,31 @@ export class HyperboardController extends Controller {
               description: collection.description,
             },
           ]);
-          // Update hypercerts in the collection if you are an admin of the collection
-          await dataService.upsertHypercerts(
-            collection.hypercerts.map((hc) => ({
-              hypercert_id: hc.hypercertId,
-              collection_id: currentCollection.id,
-            })),
-          );
+
+          // Remove all hypercerts from the collection
+          await dataService.deleteAllHypercertsFromCollection(collection.id);
+
+          if (collection.hypercerts?.length) {
+            // Update hypercerts in the collection if you are an admin of the collection
+            await dataService.upsertHypercerts(
+              collection.hypercerts.map((hc) => ({
+                hypercert_id: hc.hypercertId,
+                collection_id: currentCollection.id,
+              })),
+            );
+
+            // Update metadata anyway because they are not collection specific
+            await dataService.upsertHyperboardHypercertMetadata(
+              collection.hypercerts.map((hc) => ({
+                hypercert_id: hc.hypercertId,
+                hyperboard_id: hyperboardId,
+                collection_id: currentCollection.id,
+                display_size: hc.factor,
+              })),
+            );
+          }
+
+          await dataService.deleteAllBlueprintsFromCollection(collection.id);
 
           if (collection.blueprints?.length) {
             await dataService.addBlueprintsToCollection(
@@ -377,19 +391,21 @@ export class HyperboardController extends Controller {
           throw new Error("Admin must be added to collection.");
         }
 
-        const hypercerts = collection.hypercerts.map((hc) => ({
-          hypercert_id: hc.hypercertId,
-          collection_id: collectionId,
-        }));
-        await dataService.upsertHypercerts(hypercerts);
-        await dataService.upsertHyperboardHypercertMetadata(
-          collection.hypercerts.map((hc) => ({
+        if (collection.hypercerts?.length) {
+          const hypercerts = collection.hypercerts.map((hc) => ({
             hypercert_id: hc.hypercertId,
-            hyperboard_id: hyperboardId,
             collection_id: collectionId,
-            display_size: hc.factor,
-          })),
-        );
+          }));
+          await dataService.upsertHypercerts(hypercerts);
+          await dataService.upsertHyperboardHypercertMetadata(
+            collection.hypercerts.map((hc) => ({
+              hypercert_id: hc.hypercertId,
+              hyperboard_id: hyperboardId,
+              collection_id: collectionId,
+              display_size: hc.factor,
+            })),
+          );
+        }
 
         if (collection.blueprints?.length) {
           await dataService.addBlueprintsToCollection(
@@ -460,67 +476,73 @@ export class HyperboardController extends Controller {
           .min(1, "Title is required")
           .max(100, "Use at most 100 characters"),
         collections: z.array(
-          z.object({
-            id: z.string().uuid().optional(),
-            title: z
-              .string()
-              .trim()
-              .min(1, "Title is required")
-              .max(100, "Use at most 100 characters"),
-            description: z
-              .string()
-              .trim()
-              .min(10, "Use at least 10 characters")
-              .max(500, "Use at most 500 characters"),
-            blueprints: z.array(
-              z.object({
-                blueprintId: z
-                  .number()
-                  .int()
-                  .min(1, "Factor must be greater than 0"),
-                factor: z
-                  .number()
-                  .int()
-                  .min(1, "Factor must be greater than 0"),
-              }),
-            ),
-            hypercerts: z
-              .array(
+          z
+            .object({
+              id: z.string().uuid().optional(),
+              title: z
+                .string()
+                .trim()
+                .min(1, "Title is required")
+                .max(100, "Use at most 100 characters"),
+              description: z
+                .string()
+                .trim()
+                .min(10, "Use at least 10 characters")
+                .max(500, "Use at most 500 characters"),
+              blueprints: z.array(
                 z.object({
-                  id: z.string().uuid().optional(),
-                  hypercertId: z
-                    .string()
-                    .trim()
-                    .refine((value) => {
-                      if (!value || value === "") {
-                        return true;
-                      }
-
-                      try {
-                        return isValidHypercertId(value);
-                      } catch (e) {
-                        console.error(e);
-                        return false;
-                      }
-                    }, "Invalid hypercert ID"),
+                  blueprintId: z
+                    .number()
+                    .int()
+                    .min(1, "Factor must be greater than 0"),
                   factor: z
                     .number()
                     .int()
                     .min(1, "Factor must be greater than 0"),
                 }),
-              )
-              .min(1, "At least one hypercert is required")
-              .refine(
-                (hypercerts) => {
-                  const hypercertIds = hypercerts.map((hc) => hc.hypercertId);
-                  return hypercertIds.length === new Set(hypercertIds).size;
-                },
-                {
-                  message: "Hypercerts must be unique",
-                  path: ["hypercerts"],
-                },
               ),
-          }),
+              hypercerts: z
+                .array(
+                  z.object({
+                    id: z.string().uuid().optional(),
+                    hypercertId: z
+                      .string()
+                      .trim()
+                      .refine((value) => {
+                        if (!value || value === "") {
+                          return true;
+                        }
+
+                        try {
+                          return isValidHypercertId(value);
+                        } catch (e) {
+                          console.error(e);
+                          return false;
+                        }
+                      }, "Invalid hypercert ID"),
+                    factor: z
+                      .number()
+                      .int()
+                      .min(1, "Factor must be greater than 0"),
+                  }),
+                )
+                .refine(
+                  (hypercerts) => {
+                    const hypercertIds = hypercerts.map((hc) => hc.hypercertId);
+                    return hypercertIds.length === new Set(hypercertIds).size;
+                  },
+                  {
+                    message: "Hypercerts must be unique",
+                    path: ["hypercerts"],
+                  },
+                ),
+            })
+            .refine((val) => {
+              if (!val.hypercerts.length && !val.blueprints.length) {
+                return false;
+              }
+              return true;
+            }, "Collections must contain 1 blueprint or hypercert"),
         ),
         backgroundImg: z
           .union([
@@ -721,24 +743,35 @@ export class HyperboardController extends Controller {
               description: collection.description,
             },
           ]);
-          // Update hypercerts in the collection if you are an admin of the collection
-          await dataService.upsertHypercerts(
-            collection.hypercerts.map((hc) => ({
-              hypercert_id: hc.hypercertId,
-              collection_id: currentCollection.id,
-            })),
-          );
 
-          await dataService.upsertHyperboardHypercertMetadata(
-            collection.hypercerts.map((hc) => ({
-              hypercert_id: hc.hypercertId,
-              hyperboard_id: hyperboardId,
-              collection_id: currentCollection.id,
-              display_size: hc.factor,
-            })),
-          );
+          // Start with removing all hypercerts from the collection
+          await dataService.deleteAllHypercertsFromCollection(collection.id);
+
+          if (collection.hypercerts?.length) {
+            // Update hypercerts in the collection if you are an admin of the collection
+            await dataService.upsertHypercerts(
+              collection.hypercerts.map((hc) => ({
+                hypercert_id: hc.hypercertId,
+                collection_id: currentCollection.id,
+              })),
+            );
+
+            // Add metadata for all newly added hypercerts
+            await dataService.upsertHyperboardHypercertMetadata(
+              collection.hypercerts.map((hc) => ({
+                hypercert_id: hc.hypercertId,
+                hyperboard_id: hyperboardId,
+                collection_id: currentCollection.id,
+                display_size: hc.factor,
+              })),
+            );
+          }
+
+          // Delete all blueprints from teh collection for a fresh start
+          await dataService.deleteAllBlueprintsFromCollection(collection.id);
 
           if (collection.blueprints?.length) {
+            // Add blueprints to the collection
             await dataService.addBlueprintsToCollection(
               collection.blueprints.map((bp) => ({
                 blueprint_id: bp.blueprintId,
@@ -746,6 +779,7 @@ export class HyperboardController extends Controller {
               })),
             );
 
+            // Add metadata for all newly added blueprints
             await dataService.upsertHyperboardBlueprintMetadata(
               collection.blueprints.map((bp) => ({
                 blueprint_id: bp.blueprintId,
