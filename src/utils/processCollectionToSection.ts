@@ -249,7 +249,7 @@ export const processCollectionToSection = ({
       let name: string;
       if (is_blueprint) {
         unitsForHypercert = NUMBER_OF_UNITS_IN_HYPERCERT;
-        name = blueprintsByBlueprintId[id]?.form_values?.name;
+        name = blueprintsByBlueprintId[id]?.form_values?.title;
       } else {
         const hypercert = hypercertsByHypercertId[id];
 
