@@ -7,7 +7,11 @@ import _ from "lodash";
 export const processSectionsToHyperboardOwnership = (
   sections: Pick<Section, "owners">[],
 ): HyperboardOwner[] => {
-  if (!sections.length) {
+  const numberOfSectionsWithOwners = sections.filter(
+    (section) => !!section.owners?.length,
+  ).length;
+
+  if (numberOfSectionsWithOwners === 0) {
     return [];
   }
 
@@ -18,7 +22,7 @@ export const processSectionsToHyperboardOwnership = (
       ...values[0],
       percentage_owned:
         values.reduce((acc, owner) => acc + (owner?.percentage_owned || 0), 0) /
-        sections.length,
+        numberOfSectionsWithOwners,
     }))
     .values()
     .value();

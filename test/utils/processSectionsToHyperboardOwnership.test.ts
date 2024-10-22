@@ -18,6 +18,25 @@ describe("processSectionsToHyperboardOwnership", async () => {
     expect(owners.length).toBe(0);
   });
 
+  it("should return ignore sections without owners", async () => {
+    const owners = processSectionsToHyperboardOwnership([
+      {
+        owners: [
+          {
+            address: "0x123",
+            percentage_owned: 100,
+          },
+        ],
+      },
+      {
+        owners: [],
+      },
+    ]);
+    expect(owners.length).toBe(1);
+    expect(owners[0].address).toBe("0x123");
+    expect(owners[0].percentage_owned).toBe(100);
+  });
+
   it("should process a single section with a single owner", async () => {
     const owners = processSectionsToHyperboardOwnership([
       {
