@@ -5,7 +5,7 @@ import {
 import _ from "lodash";
 
 export const processSectionsToHyperboardOwnership = (
-  sections: Section[],
+  sections: Pick<Section, "owners">[],
 ): HyperboardOwner[] => {
   if (!sections.length) {
     return [];
