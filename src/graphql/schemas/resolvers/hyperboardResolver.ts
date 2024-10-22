@@ -4,6 +4,7 @@ import { GetHyperboardsArgs } from "../args/hyperboardArgs.js";
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
 import _ from "lodash";
 import { processCollectionToSection } from "../../../utils/processCollectionToSection.js";
+import { processSectionsToHyperboardOwnership } from "../../../utils/processSectionsToHyperboardOwnership.js";
 
 @ObjectType()
 class GetHyperboardsResponse extends DataResponse(Hyperboard) {}
@@ -118,8 +119,10 @@ class HyperboardResolver extends HyperboardBaseResolver {
               users: users.filter((x) => !!x),
             }),
           );
+          const owners = processSectionsToHyperboardOwnership(sections);
           return {
             ...hyperboard,
+            owners,
             sections: {
               data: sections,
               count: sections.length,
