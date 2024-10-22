@@ -2440,6 +2440,24 @@ export type introspection = {
             "args": []
           },
           {
+            "name": "owners",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "HyperboardOwner",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "args": []
+          },
+          {
             "name": "sections",
             "type": {
               "kind": "NON_NULL",
@@ -2476,6 +2494,64 @@ export type introspection = {
             }
           }
         ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "HyperboardOwner",
+        "fields": [
+          {
+            "name": "address",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "avatar",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "chain_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "EthBigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "display_name",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "percentage_owned",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
       },
       {
         "kind": "INPUT_OBJECT",
@@ -5026,7 +5102,7 @@ export type introspection = {
                   "kind": "NON_NULL",
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "SectionOwner",
+                    "name": "HyperboardOwner",
                     "ofType": null
                   }
                 }
@@ -5189,64 +5265,6 @@ export type introspection = {
               "kind": "SCALAR",
               "name": "BigInt",
               "ofType": null
-            },
-            "args": []
-          }
-        ],
-        "interfaces": []
-      },
-      {
-        "kind": "OBJECT",
-        "name": "SectionOwner",
-        "fields": [
-          {
-            "name": "address",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "args": []
-          },
-          {
-            "name": "avatar",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
-            "name": "chain_id",
-            "type": {
-              "kind": "SCALAR",
-              "name": "EthBigInt",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
-            "name": "display_name",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
-            "name": "percentage_owned",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Float",
-                "ofType": null
-              }
             },
             "args": []
           }

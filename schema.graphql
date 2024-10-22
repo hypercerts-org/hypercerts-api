@@ -481,6 +481,7 @@ type Hyperboard {
 
   """Name of the hyperboard"""
   name: String!
+  owners: [HyperboardOwner!]!
   sections: SectionResponseType!
 
   """Color of the borders of the hyperboard"""
@@ -489,6 +490,21 @@ type Hyperboard {
 
 input HyperboardFetchInput {
   by: HyperboardSortOptions
+}
+
+type HyperboardOwner {
+  """The address of the user"""
+  address: String!
+
+  """The avatar of the user"""
+  avatar: String
+
+  """The chain ID of the user"""
+  chain_id: EthBigInt
+
+  """The display name of the user"""
+  display_name: String
+  percentage_owned: Float!
 }
 
 input HyperboardSortOptions {
@@ -892,7 +908,7 @@ type Section {
   collection: Collection!
   entries: [SectionEntry!]!
   label: String!
-  owners: [SectionOwner!]!
+  owners: [HyperboardOwner!]!
 }
 
 """Entry representing a hypercert or blueprint within a section"""
@@ -924,21 +940,6 @@ type SectionEntryOwner {
   display_name: String
   percentage: Float!
   units: BigInt
-}
-
-type SectionOwner {
-  """The address of the user"""
-  address: String!
-
-  """The avatar of the user"""
-  avatar: String
-
-  """The chain ID of the user"""
-  chain_id: EthBigInt
-
-  """The display name of the user"""
-  display_name: String
-  percentage_owned: Float!
 }
 
 type SectionResponseType {

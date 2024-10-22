@@ -34,6 +34,9 @@ class Hyperboard extends BasicTypeDef {
 
   @Field(() => SectionResponseType)
   sections?: SectionResponseType[];
+
+  @Field(() => [HyperboardOwner])
+  owners?: HyperboardOwner[];
 }
 
 @ObjectType({})
@@ -68,7 +71,7 @@ class Collection extends BasicTypeDef {
 @ObjectType({
   description: "Section representing a collection within a hyperboard",
 })
-class Section {
+export class Section {
   @Field()
   label?: string;
 
@@ -78,12 +81,12 @@ class Section {
   @Field(() => [SectionEntry])
   entries?: SectionEntry[];
 
-  @Field(() => [SectionOwner])
-  owners?: SectionOwner[];
+  @Field(() => [HyperboardOwner])
+  owners?: HyperboardOwner[];
 }
 
 @ObjectType()
-class SectionOwner extends User {
+export class HyperboardOwner extends User {
   @Field()
   percentage_owned?: number;
 }
