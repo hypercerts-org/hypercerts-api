@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { processCollectionToSection } from "../../src/utils/processCollectionToSection.js";
 import { sepolia } from "viem/chains";
-import { Database as CachingDatabase } from "../../src/types/supabaseCaching.js";
 import { Database as DataDatabase } from "../../src/types/supabaseData.js";
 
 describe("processCollectionToSection", async () => {
@@ -41,7 +40,7 @@ describe("processCollectionToSection", async () => {
     created_at: new Date().toISOString(),
   };
 
-  const hypercert1: CachingDatabase["public"]["Tables"]["claims"]["Row"] = {
+  const hypercert1 = {
     hypercert_id: "test1",
     uri: "test",
     units: 1,
@@ -58,9 +57,10 @@ describe("processCollectionToSection", async () => {
     last_update_block_timestamp: 1,
     value: 1,
     sales_count: 1,
+    name: "test1",
   };
 
-  const hypercert2: CachingDatabase["public"]["Tables"]["claims"]["Row"] = {
+  const hypercert2 = {
     hypercert_id: "test2",
     uri: "test",
     units: 100,
@@ -77,6 +77,7 @@ describe("processCollectionToSection", async () => {
     last_update_block_timestamp: 1,
     value: 1,
     sales_count: 1,
+    name: "test2",
   };
 
   const allowlistEntry1 = {
@@ -140,7 +141,9 @@ describe("processCollectionToSection", async () => {
   it("should process allowlist entries according to size", async () => {
     const section = processCollectionToSection({
       ...emptyArgs,
-      hypercerts: [hypercert1],
+      hypercerts: [
+        { ...hypercert1, units: allowlistEntry1.units + allowlistEntry2.units },
+      ],
       hypercert_metadata: [hypercertMetadata1],
       allowlistEntries: [allowlistEntry1, allowlistEntry2],
     });
@@ -193,7 +196,7 @@ describe("processCollectionToSection", async () => {
   it("Should adjust for display size", () => {
     const { owners } = processCollectionToSection({
       ...emptyArgs,
-      hypercerts: [hypercert1, hypercert2],
+      hypercerts: [hypercert1, { ...hypercert2, units: 157 }],
       hypercert_metadata: [hypercertMetadata1, hypercertMetadata2],
       users: [user1, user2],
       fractions: [
@@ -216,7 +219,7 @@ describe("processCollectionToSection", async () => {
           hypercert_id: hypercert2.hypercert_id,
           owner_address: user2.address,
           token_id: 2,
-          units: 100,
+          units: 157,
           creation_block_timestamp: 1,
           creation_block_number: 1,
           last_update_block_number: 1,

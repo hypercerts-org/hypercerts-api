@@ -20,23 +20,20 @@ export const processCollectionToSection = ({
   blueprintMetadata: DataDatabase["public"]["Tables"]["hyperboard_blueprint_metadata"]["Row"][];
   fractions: CachingDatabase["public"]["Views"]["fractions_view"]["Row"][];
   allowlistEntries: CachingDatabase["public"]["Views"]["claimable_fractions_with_proofs"]["Row"][];
-  hypercerts: CachingDatabase["public"]["Tables"]["claims"]["Row"][];
+  hypercerts: (CachingDatabase["public"]["Tables"]["claims"]["Row"] & {
+    name: string;
+  })[];
   users: DataDatabase["public"]["Tables"]["users"]["Row"][];
 }) => {
   const NUMBER_OF_UNITS_IN_HYPERCERT = parseUnits("1", 8);
-  // Calculate the total number of units in all claims, allowlistEntries and blueprints combined
-  const totalUnitsInAllowlistEntries = allowlistEntries.reduce(
-    (acc, entry) => acc + BigInt(entry.units || 0),
-    0n,
-  );
+  // Calculate the total number of units in all claims and blueprints combined
   const totalUnitsInBlueprints =
     BigInt(blueprints.length) * NUMBER_OF_UNITS_IN_HYPERCERT;
   const totalUnitsInClaims = hypercerts.reduce(
     (acc, hypercert) => acc + BigInt(hypercert.units || 0),
     0n,
   );
-  const totalUnits =
-    totalUnitsInClaims + totalUnitsInBlueprints + totalUnitsInAllowlistEntries;
+  const totalUnits = totalUnitsInClaims + totalUnitsInBlueprints;
 
   const totalOfAllDisplaySizes = [
     ...hypercert_metadata,
@@ -204,35 +201,6 @@ export const processCollectionToSection = ({
       ownerId: fraction.owner,
     };
   });
-  const totalUnitsAdjustedForDisplaySizeInAllEntries = [
-    ...fractionsWithDisplayData,
-    ...bluePrintsAndAllowlistWithDisplayData,
-  ].reduce((acc, curr) => acc + curr.unitsAdjustedForDisplaySize, 0n);
-  // Group by owner, merge with display data and calculate total value of all fractions per owner
-  const owners = _.chain([
-    ...fractionsWithDisplayData,
-    ...bluePrintsAndAllowlistWithDisplayData,
-  ])
-    .groupBy((fraction) => fraction.ownerId)
-    .mapValues((fractionsPerOwner) => {
-      const totalUnitsAdjustedForDisplaySizeForOwner = fractionsPerOwner.reduce(
-        (acc, curr) => acc + curr.unitsAdjustedForDisplaySize,
-        0n,
-      );
-      const percentage_owned = calculateBigIntPercentage(
-        totalUnitsAdjustedForDisplaySizeForOwner,
-        totalUnitsAdjustedForDisplaySizeInAllEntries,
-      );
-      return {
-        avatar: fractionsPerOwner[0].displayData.avatar,
-        display_name: fractionsPerOwner[0].displayData.display_name,
-        address: fractionsPerOwner[0].displayData.address,
-        chain_id: fractionsPerOwner[0].displayData.chain_id,
-        percentage_owned,
-      };
-    })
-    .values()
-    .value();
 
   const fractionsByHypercertsId = _.groupBy(
     [...fractionsWithDisplayData, ...bluePrintsAndAllowlistWithDisplayData],
@@ -249,6 +217,7 @@ export const processCollectionToSection = ({
       let name: string;
       if (is_blueprint) {
         unitsForHypercert = NUMBER_OF_UNITS_IN_HYPERCERT;
+        // @ts-expect-error form value types
         name = blueprintsByBlueprintId[id]?.form_values?.title;
       } else {
         const hypercert = hypercertsByHypercertId[id];
@@ -332,6 +301,38 @@ export const processCollectionToSection = ({
       };
     },
   );
+
+  const owners = _.chain(entries)
+    .flatMap((entry) => {
+      const metadata =
+        hypercertMetadataByHypercertId[entry.id] ||
+        blueprintMetadataByBlueprintId[entry.id];
+      const display_size = metadata?.display_size;
+      if (display_size === null) {
+        throw new Error(
+          `[HyperboardResolver::processRegistryForDisplay] Display size not found for ${entry.id} while processing section ${collection.id}`,
+        );
+      }
+      return entry.owners.map((owner) => ({
+        ...owner,
+        percentage: (owner.percentage || 0) * display_size,
+      }));
+    })
+    .groupBy((owner) => owner.address)
+    .mapValues((owners) => {
+      const percentage_owned =
+        owners.reduce((acc, curr) => acc + curr.percentage, 0) /
+        Number(totalOfAllDisplaySizes);
+      return {
+        avatar: owners[0].avatar,
+        display_name: owners[0].display_name,
+        address: owners[0].address,
+        chain_id: owners[0].chain_id,
+        percentage_owned,
+      };
+    })
+    .values()
+    .value();
 
   return {
     collection,
