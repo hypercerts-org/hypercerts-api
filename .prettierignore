@@ -3,3 +3,4 @@ build
 coverage
 dist
 **/__generated__/
+src/types/graphql-env.d.ts
