@@ -6,7 +6,25 @@ The hypercerts API is the touchpoint for developers to interact with the hyperce
 
 ### Environment variables
 
+#### W3UP
+
 In `env.template` you'll find KEY and PROOF which are [w3up](https://web3.storage/docs/w3up-client/) key and proofs which you need to set up yourself for local otherwise you'll be superadmin 😉
+
+#### Supabase JS
+
+SupabaseJS is used to connect to both the the caching and data service. The local variables are deterministic and provided in the template.
+
+#### Kysely
+
+Kysely is implemented in favor of SupabaseJS as it allows for more flexibility and complexity in queries. To connect to the database you need to set the `CACHING_DATABASE_URL` and `DATA_DATABASE_URL` in the `.env` file. By default, the local variables are set to the local Supabase instance.
+
+#### Sentry
+
+Sentry is used for monitoring and error reporting. You can read more about it [here](https://docs.sentry.io/platforms/javascript/guides/node/configuration/env-vars/). When Sentry is set to `local` it will be disabled by default.
+
+#### RPCs
+
+The API implements a fallback to the first available RPC. You can set the RPCs in the `.env` file.
 
 ### Supabase
 
@@ -17,15 +35,15 @@ In `env.template` you'll find KEY and PROOF which are [w3up](https://web3.storag
 
 This will spin up 2 Supabase instances in Docker, one for the indexer service (caching) and one for the data service (static data) which are both exposed by the API.
 
-From both instances, you need to get their respective keys and add them to the env vars. When in doubt you can run `supabase status` to fetch the keys again.
+From both instances, you can get their respective keys and add them to the env vars. When in doubt you can run `supabase status` to fetch the keys again. By default this is not needed for local development.
 
 ### Run the API locally
 
 `pnpm dev`
 
-This will run a live production instance (I'm proud that it's production) by running swc
+This will run a live production instance by running `swc` to compile the code and `nodemon` to restart the server on changes.
 
-You can then find the API at localhost:4000/spec (Swagger instance) and the Graph at localhost:4000/v1/graphql
+You can then find the API at `localhost:4000/spec` (Swagger instance) and the GraphQL at `localhost:4000/v1/graphql`
 
 ## Deployments
 
