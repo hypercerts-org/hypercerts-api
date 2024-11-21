@@ -2,10 +2,9 @@ import * as Sentry from '@sentry/node';
 import {assertExists} from "./utils/assertExists.js";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 
-const SENTRY_DSN = assertExists(process.env.SENTRY_DSN, "SENTRY_DSN");
 // Ensure to call this before importing any other modules!
 Sentry.init({
-    dsn: SENTRY_DSN,
+    dsn: process.env.SENTRY_DSN,
     integrations: [
         nodeProfilingIntegration(),
     ],
