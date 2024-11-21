@@ -99,10 +99,6 @@ graph TB
     Indexer --> IPFS
     Indexer --> EAS
     
-    classDef apiEndpoint fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef database fill:#69b,stroke:#333,stroke-width:2px;
-    classDef external fill:#fcba03,stroke:#333,stroke-width:2px;
-    
     class Swagger,GraphQL,Upload apiEndpoint;
     class Static,Indexer database;
     class IPFS,Blockchain,EAS external;
