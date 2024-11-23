@@ -143,14 +143,45 @@ const handleChangeUsers = (
 };
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
+const handleChangeBlueprints = (
+  payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
+) => {
+  console.log(payload);
+  switch (payload.eventType) {
+    case "INSERT":
+      cache.invalidate([{ typename: "Blueprint" }]);
+      break;
+    case "UPDATE":
+      cache.invalidate([{ typename: "Blueprint", id: payload.new.id }]);
+      break;
+    case "DELETE":
+      cache.invalidate([{ typename: "Blueprint" }]);
+      break;
+    default:
+      break;
+  }
+};
+
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 const handleChangeHyperboards = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
   console.log(payload);
   switch (payload.eventType) {
     case "UPDATE":
+    case "DELETE":
     case "INSERT":
-      cache.invalidate([{ typename: "Hyperboard" }]);
+      cache.invalidate([
+        { typename: "Hyperboard" },
+        { typename: "Collection" },
+        { typename: "SectionResponseType" },
+        { typename: "Section" },
+        { typename: "SectionOwner" },
+        { typename: "SectionEntry" },
+        { typename: "SectionEntryOwner" },
+        { typename: "User" },
+        { typename: "Blueprint" },
+      ]);
       break;
     default:
       break;
@@ -295,6 +326,45 @@ supabaseData
       event: "*",
       schema: "public",
       table: "collection_blueprints",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "blueprints",
+    },
+    (payload) => {
+      handleChangeBlueprints(payload);
+      handleChangeHyperboards(payload);
+    },
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "users",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "collection_admins",
+    },
+    (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "hyperboard_admins",
     },
     (payload) => handleChangeHyperboards(payload),
   )

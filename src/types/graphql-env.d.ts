@@ -1271,6 +1271,157 @@ export type introspection = {
         ]
       },
       {
+        "kind": "OBJECT",
+        "name": "Blueprint",
+        "fields": [
+          {
+            "name": "admins",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "User",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "created_at",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "form_values",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "JSON",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "minted",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "minter_address",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "BlueprintFetchInput",
+        "inputFields": [
+          {
+            "name": "by",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "BlueprintSortOptions",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "BlueprintSortOptions",
+        "inputFields": [
+          {
+            "name": "created_at",
+            "type": {
+              "kind": "ENUM",
+              "name": "SortOrder",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "BlueprintWhereInput",
+        "inputFields": [
+          {
+            "name": "admin_address",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NumberSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "minted",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "BooleanSearchOptions",
+              "ofType": null
+            }
+          },
+          {
+            "name": "minter_address",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "StringSearchOptions",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      {
         "kind": "INPUT_OBJECT",
         "name": "BooleanSearchOptions",
         "inputFields": [
@@ -1883,6 +2034,37 @@ export type introspection = {
       },
       {
         "kind": "OBJECT",
+        "name": "GetBlueprintResponse",
+        "fields": [
+          {
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "data",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Blueprint",
+                  "ofType": null
+                }
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
         "name": "GetContractsResponse",
         "fields": [
           {
@@ -2258,6 +2440,24 @@ export type introspection = {
             "args": []
           },
           {
+            "name": "owners",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "LIST",
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "HyperboardOwner",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "args": []
+          },
+          {
             "name": "sections",
             "type": {
               "kind": "NON_NULL",
@@ -2294,6 +2494,64 @@ export type introspection = {
             }
           }
         ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "HyperboardOwner",
+        "fields": [
+          {
+            "name": "address",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "avatar",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "chain_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "EthBigInt",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "display_name",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "percentage_owned",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
       },
       {
         "kind": "INPUT_OBJECT",
@@ -2925,6 +3183,20 @@ export type introspection = {
               "name": "UUID",
               "ofType": null
             }
+          },
+          {
+            "name": "in",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "UUID",
+                  "ofType": null
+                }
+              }
+            }
           }
         ]
       },
@@ -3364,6 +3636,20 @@ export type introspection = {
               "kind": "SCALAR",
               "name": "Int",
               "ofType": null
+            }
+          },
+          {
+            "name": "in",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              }
             }
           },
           {
@@ -4007,6 +4293,51 @@ export type introspection = {
                 "type": {
                   "kind": "INPUT_OBJECT",
                   "name": "AttestationWhereInput",
+                  "ofType": null
+                }
+              }
+            ]
+          },
+          {
+            "name": "blueprints",
+            "type": {
+              "kind": "NON_NULL",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "GetBlueprintResponse",
+                "ofType": null
+              }
+            },
+            "args": [
+              {
+                "name": "first",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              {
+                "name": "offset",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              {
+                "name": "sort",
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "BlueprintFetchInput",
+                  "ofType": null
+                }
+              },
+              {
+                "name": "where",
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "BlueprintWhereInput",
                   "ofType": null
                 }
               }
@@ -4771,7 +5102,7 @@ export type introspection = {
                   "kind": "NON_NULL",
                   "ofType": {
                     "kind": "OBJECT",
-                    "name": "SectionOwner",
+                    "name": "HyperboardOwner",
                     "ofType": null
                   }
                 }
@@ -4942,64 +5273,6 @@ export type introspection = {
       },
       {
         "kind": "OBJECT",
-        "name": "SectionOwner",
-        "fields": [
-          {
-            "name": "address",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "args": []
-          },
-          {
-            "name": "avatar",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
-            "name": "chain_id",
-            "type": {
-              "kind": "SCALAR",
-              "name": "EthBigInt",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
-            "name": "display_name",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "args": []
-          },
-          {
-            "name": "percentage_owned",
-            "type": {
-              "kind": "NON_NULL",
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Float",
-                "ofType": null
-              }
-            },
-            "args": []
-          }
-        ],
-        "interfaces": []
-      },
-      {
-        "kind": "OBJECT",
         "name": "SectionResponseType",
         "fields": [
           {
@@ -5107,6 +5380,20 @@ export type introspection = {
               "kind": "SCALAR",
               "name": "String",
               "ofType": null
+            }
+          },
+          {
+            "name": "in",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "NON_NULL",
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              }
             }
           },
           {

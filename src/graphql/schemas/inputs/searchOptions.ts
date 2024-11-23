@@ -11,12 +11,18 @@ export class BooleanSearchOptions {
 export class IdSearchOptions {
   @Field(() => GraphQLUUID, { nullable: true })
   eq?: string;
+
+  @Field(() => [GraphQLUUID], { nullable: true })
+  in?: string[];
 }
 
 @InputType()
 export class StringSearchOptions {
   @Field({ nullable: true })
   eq?: string;
+
+  @Field(() => [String], { nullable: true })
+  in?: string[];
 
   @Field({ nullable: true })
   contains?: string;
@@ -50,6 +56,9 @@ export class BigIntSearchOptions {
 export class NumberSearchOptions {
   @Field(() => Int, { nullable: true })
   eq?: number;
+
+  @Field(() => [Int], { nullable: true })
+  in?: number[];
 
   @Field(() => Int, { nullable: true })
   gt?: number;
