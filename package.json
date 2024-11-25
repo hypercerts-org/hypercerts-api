@@ -31,6 +31,7 @@
     "@hypercerts-org/sdk": "2.3.0",
     "@ipld/car": "^5.2.5",
     "@openzeppelin/merkle-tree": "^1.0.5",
+    "@safe-global/api-kit": "^2.5.4",
     "@sentry/integrations": "^7.114.0",
     "@sentry/node": "^8.2.1",
     "@sentry/profiling-node": "^8.2.1",

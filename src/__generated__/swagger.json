@@ -116,9 +116,19 @@
 				"type": "object",
 				"description": "Interface for a generic API response."
 			},
-			"AddOrUpdateUserRequest": {
-				"description": "Interface for a user add or update request.",
+			"EOAUserUpsertRequest": {
 				"properties": {
+					"chain_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"type": {
+						"type": "string",
+						"enum": [
+							"eoa"
+						],
+						"nullable": false
+					},
 					"display_name": {
 						"type": "string"
 					},
@@ -127,20 +137,50 @@
 					},
 					"signature": {
 						"type": "string"
-					},
-					"chain_id": {
-						"type": "number",
-						"format": "double"
 					}
 				},
 				"required": [
-					"display_name",
-					"avatar",
-					"signature",
-					"chain_id"
+					"chain_id",
+					"type",
+					"signature"
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"MultisigUserUpsertRequest": {
+				"properties": {
+					"chain_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"type": {
+						"type": "string",
+						"enum": [
+							"multisig"
+						],
+						"nullable": false
+					},
+					"messageHash": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"chain_id",
+					"type",
+					"messageHash"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"AddOrUpdateUserRequest": {
+				"anyOf": [
+					{
+						"$ref": "#/components/schemas/EOAUserUpsertRequest"
+					},
+					{
+						"$ref": "#/components/schemas/MultisigUserUpsertRequest"
+					}
+				]
 			},
 			"ApiResponse__cid-string__": {
 				"properties": {
@@ -1133,6 +1173,24 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/AddOrUpdateUserRequest"
+							},
+							"examples": {
+								"Example 1": {
+									"value": {
+										"type": "eoa",
+										"chain_id": 11155111,
+										"display_name": "Dana's Profile",
+										"avatar": "https://example.com/avatar.png",
+										"signature": "0x1234567890abcdef"
+									}
+								},
+								"Example 2": {
+									"value": {
+										"type": "multisig",
+										"chain_id": 11155111,
+										"messageHash": "0x1234567890abcdef"
+									}
+								}
 							}
 						}
 					}

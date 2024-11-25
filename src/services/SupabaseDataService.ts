@@ -662,6 +662,16 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       .execute();
   }
 
+  async addSignatureRequest(
+    request: DataDatabase["public"]["Tables"]["signature_requests"]["Insert"]
+  ) {
+    return this.db
+      .insertInto("signature_requests")
+      .values(request)
+      .returning(["safe_address", "message_hash"])
+      .execute();
+  }
+
   getDataQuery<
     DB extends KyselyDataDatabase,
     T extends keyof DB & string,
