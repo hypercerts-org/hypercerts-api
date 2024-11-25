@@ -16,6 +16,14 @@ import type {
 import { z } from "zod";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { verifyAuthSignedData } from "../utils/verifyAuthSignedData.js";
+import { UserUpsertError } from "../lib/users/errors.js";
+
+const inputSchema = z.object({
+  display_name: z.string().optional(),
+  avatar: z.string().optional(),
+  signature: z.string(),
+  chain_id: z.number(),
+});
 
 @Route("v1/users")
 @Tags("Users")
@@ -33,89 +41,104 @@ export class UserController extends Controller {
     @Path() address: string,
     @Body() requestBody: AddOrUpdateUserRequest,
   ): Promise<AddOrUpdateUserResponse> {
-    const inputSchema = z.object({
-      display_name: z.string().optional(),
-      avatar: z.string().optional(),
-      signature: z.string(),
-      chain_id: z.number(),
-    });
-    const parsedBody = inputSchema.safeParse(requestBody);
-    if (!parsedBody.success) {
-      this.setStatus(400);
-      return {
-        success: false,
-        message: "Invalid input",
-        data: null,
-        errors: JSON.parse(parsedBody.error.toString()),
-      };
-    }
-
-    const { signature, chain_id } = parsedBody.data;
-
-    const correctSignature = await verifyAuthSignedData({
-      address: address as `0x${string}`,
-      types: {
-        User: [
-          { name: "displayName", type: "string" },
-          { name: "avatar", type: "string" },
-        ],
-        UserUpdateRequest: [{ name: "user", type: "User" }],
-      },
-      primaryType: "UserUpdateRequest",
-      signature: signature as `0x${string}`,
-      message: {
-        user: {
-          displayName: parsedBody.data.display_name || "",
-          avatar: parsedBody.data.avatar || "",
-        },
-      },
-      requiredChainId: chain_id,
-    });
-
-    if (!correctSignature) {
-      this.setStatus(401);
-      return {
-        success: false,
-        message: "Invalid signature",
-        data: null,
-      };
-    }
-
-    // Add or update user
-    const dataService = new SupabaseDataService();
     try {
-      const users = await dataService.upsertUsers([
-        {
-          address,
-          display_name: parsedBody.data.display_name,
-          avatar: parsedBody.data.avatar,
-          chain_id,
-        },
-      ]);
-
-      if (!users.length) {
-        this.setStatus(500);
-        return {
-          success: false,
-          message: "Error adding or updating user",
-          data: null,
-        };
-      }
-
-      this.setStatus(201);
-      return {
-        success: true,
-        message: "User added or updated successfully",
-        data: { address: users[0].address },
-      };
+      const parsedBody = parseInput(requestBody);
+      await throwIfInvalidSignature(address, parsedBody);
+      const user = await upsertUser(address, parsedBody);
+      return this.successResponse(user);
     } catch (error) {
-      console.error(error);
-      this.setStatus(500);
+      return this.errorResponse(error);
+    }
+  }
+
+  successResponse(data: { address: string }) {
+    this.setStatus(201);
+    return {
+      success: true,
+      message: "User added or updated successfully",
+      data,
+    };
+  }
+
+  errorResponse(error: unknown) {
+    if (error instanceof UserUpsertError) {
+      this.setStatus(error.code);
       return {
         success: false,
-        message: "Error adding or updating user",
+        message: error.message,
         data: null,
+        errors: error.errors,
       };
     }
+    // Default error
+    this.setStatus(500);
+    return {
+      success: false,
+      message: "Error adding or updating user",
+      data: null,
+    };
+  }
+}
+
+function parseInput(input: unknown): z.infer<typeof inputSchema> {
+  const parsedBody = inputSchema.safeParse(input);
+  if (!parsedBody.success) {
+    const userUpdateError = new UserUpsertError(400, "Invalid input");
+    userUpdateError.errors = JSON.parse(parsedBody.error.toString());
+    throw userUpdateError;
+  }
+  return parsedBody.data;
+}
+
+async function throwIfInvalidSignature(
+  address: string,
+  parsedBody: z.infer<typeof inputSchema>,
+): Promise<void> {
+  const isValidSignature = await verifyAuthSignedData({
+    address: address as `0x${string}`,
+    types: {
+      User: [
+        { name: "displayName", type: "string" },
+        { name: "avatar", type: "string" },
+      ],
+      UserUpdateRequest: [{ name: "user", type: "User" }],
+    },
+    primaryType: "UserUpdateRequest",
+    signature: parsedBody.signature as `0x${string}`,
+    message: {
+      user: {
+        displayName: parsedBody.display_name || "",
+        avatar: parsedBody.avatar || "",
+      },
+    },
+    requiredChainId: parsedBody.chain_id,
+  });
+  if (!isValidSignature) {
+    throw new UserUpsertError(401, "Invalid signature");
+  }
+}
+
+async function upsertUser(
+  address: string,
+  parsedBody: z.infer<typeof inputSchema>,
+): Promise<{ address: string }> {
+  const dataService = new SupabaseDataService();
+  try {
+    const users = await dataService.upsertUsers([
+      {
+        address,
+        display_name: parsedBody.display_name,
+        avatar: parsedBody.avatar,
+        chain_id: parsedBody.chain_id,
+      },
+    ]);
+
+    if (!users.length) {
+      throw new UserUpsertError(500, "Error adding or updating user");
+    }
+    return users[0];
+  } catch (error) {
+    console.error(error);
+    throw new UserUpsertError(500, "Error adding or updating user");
   }
 }
