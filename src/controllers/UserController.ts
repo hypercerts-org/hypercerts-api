@@ -1,3 +1,4 @@
+import { z } from "zod";
 import {
   Body,
   Controller,
@@ -8,28 +9,35 @@ import {
   SuccessResponse,
   Tags,
 } from "tsoa";
+
 import type {
   AddOrUpdateUserRequest,
   AddOrUpdateUserResponse,
   ApiResponse,
 } from "../types/api.js";
-import { z } from "zod";
-import { SupabaseDataService } from "../services/SupabaseDataService.js";
-import { verifyAuthSignedData } from "../utils/verifyAuthSignedData.js";
 import { UserUpsertError } from "../lib/users/errors.js";
-
-const inputSchema = z.object({
-  display_name: z.string().optional(),
-  avatar: z.string().optional(),
-  signature: z.string(),
-  chain_id: z.number(),
-});
+import { USER_UPDATE_REQUEST_SCHEMA } from "../lib/users/schemas.js";
+import { createStrategy } from "../lib/users/UserUpsertStrategy.js";
 
 @Route("v1/users")
 @Tags("Users")
 export class UserController extends Controller {
   /**
    * Add or update a user
+   *
+   * @example requestBody {
+   *    "type": "eoa",
+   *    "chain_id": 11155111,
+   *    "display_name": "Dana's Profile",
+   *    "avatar": "https://example.com/avatar.png",
+   *    "signature": "0x1234567890abcdef"
+   *  }
+   *
+   * @example requestBody {
+   *    "type": "multisig",
+   *    "chain_id": 11155111,
+   *    "messageHash": "0x1234567890abcdef"
+   *  }
    */
   @Post(`{address}`)
   @SuccessResponse(201, "User updated successfully", "application/json")
@@ -43,9 +51,8 @@ export class UserController extends Controller {
   ): Promise<AddOrUpdateUserResponse> {
     try {
       const parsedBody = parseInput(requestBody);
-      await throwIfInvalidSignature(address, parsedBody);
-      const user = await upsertUser(address, parsedBody);
-      return this.successResponse(user);
+      const strategy = createStrategy(address, parsedBody);
+      return await strategy.execute();
     } catch (error) {
       return this.errorResponse(error);
     }
@@ -70,6 +77,10 @@ export class UserController extends Controller {
         errors: error.errors,
       };
     }
+    console.error(
+      "Error adding or updating user",
+      error instanceof Error ? error.message : error,
+    );
     // Default error
     this.setStatus(500);
     return {
@@ -80,65 +91,14 @@ export class UserController extends Controller {
   }
 }
 
-function parseInput(input: unknown): z.infer<typeof inputSchema> {
-  const parsedBody = inputSchema.safeParse(input);
+function parseInput(
+  input: unknown,
+): z.infer<typeof USER_UPDATE_REQUEST_SCHEMA> {
+  const parsedBody = USER_UPDATE_REQUEST_SCHEMA.safeParse(input);
   if (!parsedBody.success) {
     const userUpdateError = new UserUpsertError(400, "Invalid input");
     userUpdateError.errors = JSON.parse(parsedBody.error.toString());
     throw userUpdateError;
   }
   return parsedBody.data;
-}
-
-async function throwIfInvalidSignature(
-  address: string,
-  parsedBody: z.infer<typeof inputSchema>,
-): Promise<void> {
-  const isValidSignature = await verifyAuthSignedData({
-    address: address as `0x${string}`,
-    types: {
-      User: [
-        { name: "displayName", type: "string" },
-        { name: "avatar", type: "string" },
-      ],
-      UserUpdateRequest: [{ name: "user", type: "User" }],
-    },
-    primaryType: "UserUpdateRequest",
-    signature: parsedBody.signature as `0x${string}`,
-    message: {
-      user: {
-        displayName: parsedBody.display_name || "",
-        avatar: parsedBody.avatar || "",
-      },
-    },
-    requiredChainId: parsedBody.chain_id,
-  });
-  if (!isValidSignature) {
-    throw new UserUpsertError(401, "Invalid signature");
-  }
-}
-
-async function upsertUser(
-  address: string,
-  parsedBody: z.infer<typeof inputSchema>,
-): Promise<{ address: string }> {
-  const dataService = new SupabaseDataService();
-  try {
-    const users = await dataService.upsertUsers([
-      {
-        address,
-        display_name: parsedBody.display_name,
-        avatar: parsedBody.avatar,
-        chain_id: parsedBody.chain_id,
-      },
-    ]);
-
-    if (!users.length) {
-      throw new UserUpsertError(500, "Error adding or updating user");
-    }
-    return users[0];
-  } catch (error) {
-    console.error(error);
-    throw new UserUpsertError(500, "Error adding or updating user");
-  }
 }
