@@ -188,6 +188,22 @@ const handleChangeHyperboards = (
   }
 };
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+const handleChangeOrders = (
+  payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
+) => {
+  console.log(payload);
+  switch (payload.eventType) {
+    case "INSERT":
+    case "UPDATE":
+    case "DELETE":
+      cache.invalidate([{ typename: "Order" }]);
+      break;
+    default:
+      break;
+  }
+};
+
 supabaseCaching
   .channel("schema-db-changes")
   .on(
@@ -367,5 +383,23 @@ supabaseData
       table: "hyperboard_admins",
     },
     (payload) => handleChangeHyperboards(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "marketplace_orders",
+    },
+    (payload) => handleChangeOrders(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "marketplace_order_nonces",
+    },
+    (payload) => handleChangeOrders(payload),
   )
   .subscribe();
