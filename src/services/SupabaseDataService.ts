@@ -673,6 +673,28 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       .execute();
   }
 
+  async getSignatureRequest(safe_address: string, message_hash: string) {
+    return this.db
+      .selectFrom("signature_requests")
+      .selectAll()
+      .where("safe_address", "=", safe_address)
+      .where("message_hash", "=", message_hash)
+      .executeTakeFirst();
+  }
+
+  async updateSignatureRequestStatus(
+    safe_address: string,
+    message_hash: string,
+    status: DataDatabase["public"]["Enums"]["signature_request_status_enum"],
+  ) {
+    return this.db
+      .updateTable("signature_requests")
+      .set({ status })
+      .where("safe_address", "=", safe_address)
+      .where("message_hash", "=", message_hash)
+      .execute();
+  }
+
   getSignatureRequests(args: GetSignatureRequestArgs) {
     return {
       data: this.handleGetData("signature_requests", args),
