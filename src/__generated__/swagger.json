@@ -1285,6 +1285,40 @@
 				}
 			}
 		},
+		"/v1/signature-requests/process": {
+			"post": {
+				"operationId": "ProcessSignatureRequests",
+				"responses": {
+					"200": {
+						"description": "Signature requests processing started",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"SignatureRequests"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
 		"/v1/metadata": {
 			"post": {
 				"operationId": "StoreMetadata",

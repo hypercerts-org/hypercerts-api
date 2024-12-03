@@ -395,6 +395,35 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/signature-requests/process',
+            ...(fetchMiddlewares<RequestHandler>(SignatureRequestController)),
+            ...(fetchMiddlewares<RequestHandler>(SignatureRequestController.prototype.processSignatureRequests)),
+
+            async function SignatureRequestController_processSignatureRequests(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new SignatureRequestController();
+
+              await templateService.apiHandler({
+                methodName: 'processSignatureRequests',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/v1/metadata',
             ...(fetchMiddlewares<RequestHandler>(MetadataController)),
             ...(fetchMiddlewares<RequestHandler>(MetadataController.prototype.storeMetadata)),

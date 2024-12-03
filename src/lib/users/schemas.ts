@@ -1,5 +1,21 @@
 import { z } from "zod";
 
+// This is the message schema that is signed by the multisig
+export const USER_UPDATE_MESSAGE_SCHEMA = z.object({
+  metadata: z.object({
+    timestamp: z.number(),
+  }),
+  user: z.object({
+    displayName: z.string().optional(),
+    avatar: z.string().optional(),
+  }),
+});
+
+export type MultisigUserUpdateMessage = z.infer<
+  typeof USER_UPDATE_MESSAGE_SCHEMA
+>;
+
+// API request schemas for user updates
 export const USER_UPDATE_REQUEST_BASE_SCHEMA = z.object({
   chain_id: z.number(),
 });

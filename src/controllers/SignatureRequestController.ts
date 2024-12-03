@@ -11,6 +11,7 @@ import {
 
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { verifyAuthSignedData } from "../utils/verifyAuthSignedData.js";
+import { SignatureRequestProcessor } from "../services/SignatureRequestProcessor.js";
 
 interface CancelSignatureRequest {
   signature: string;
@@ -72,6 +73,25 @@ export class SignatureRequestController extends Controller {
         return this.errorResponse(
           `Invalid signature request status: ${signatureRequest.status}`,
         );
+    }
+  }
+
+  @Post("process")
+  @SuccessResponse(200, "Signature requests processing started")
+  public async processSignatureRequests(): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      const processor = SignatureRequestProcessor.getInstance();
+      console.log("Processing pending requests");
+      await processor.processPendingRequests();
+      return this.successResponse("Signature requests processing started");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      return this.errorResponse(
+        `Failed to process signature requests: ${message}`,
+      );
     }
   }
 
