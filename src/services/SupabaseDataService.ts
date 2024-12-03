@@ -150,15 +150,10 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
   }
 
   getOrders(args: GetOrdersArgs) {
-    let query = this.supabaseData.from("marketplace_orders").select("*");
-
-    const { where, sort, offset, first } = args;
-
-    query = applyFilters({ query, where });
-    query = applySorting({ query, sort });
-    query = applyPagination({ query, pagination: { first, offset } });
-
-    return query;
+    return {
+      data: this.handleGetData("marketplace_orders", args),
+      count: this.handleGetCount("marketplace_orders", args),
+    };
   }
 
   getOrdersByTokenId({
@@ -674,11 +669,14 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   >(tableName: T, args: BaseArgs<A>) {
     switch (tableName) {
-      case "users":
-        return this.db.selectFrom("users").selectAll();
       case "blueprints_with_admins":
       case "blueprints":
         return this.db.selectFrom("blueprints_with_admins").selectAll();
+      case "orders":
+      case "marketplace_orders":
+        return this.db.selectFrom("marketplace_orders").selectAll();
+      case "users":
+        return this.db.selectFrom("users").selectAll();
       default:
         throw new Error(`Table ${tableName.toString()} not found`);
     }
@@ -691,14 +689,6 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   >(tableName: T, args: BaseArgs<A>) {
     switch (tableName) {
-      case "users":
-        return this.db.selectFrom("users").select((expressionBuilder) => {
-          return expressionBuilder.fn.countAll().as("count");
-        });
-      case "hyperboards":
-        return this.db.selectFrom("hyperboards").select((expressionBuilder) => {
-          return expressionBuilder.fn.countAll().as("count");
-        });
       case "blueprints_with_admins":
       case "blueprints":
         return this.db
@@ -706,6 +696,21 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
           .select((expressionBuilder) => {
             return expressionBuilder.fn.countAll().as("count");
           });
+      case "hyperboards":
+        return this.db.selectFrom("hyperboards").select((expressionBuilder) => {
+          return expressionBuilder.fn.countAll().as("count");
+        });
+      case "orders":
+      case "marketplace_orders":
+        return this.db
+          .selectFrom("marketplace_orders")
+          .select((expressionBuilder) => {
+            return expressionBuilder.fn.countAll().as("count");
+          });
+      case "users":
+        return this.db.selectFrom("users").select((expressionBuilder) => {
+          return expressionBuilder.fn.countAll().as("count");
+        });
       default:
         throw new Error(`Table ${tableName.toString()} not found`);
     }
