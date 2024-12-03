@@ -1,4 +1,10 @@
 import {
+  addressesByNetwork,
+  HypercertExchangeClient,
+  utils,
+} from "@hypercerts-org/marketplace-sdk";
+import { ethers, verifyTypedData } from "ethers";
+import {
   Body,
   Controller,
   Delete,
@@ -8,21 +14,15 @@ import {
   SuccessResponse,
   Tags,
 } from "tsoa";
-import { ApiResponse } from "../types/api.js";
-import {
-  addressesByNetwork,
-  HypercertExchangeClient,
-  utils,
-} from "@hypercerts-org/marketplace-sdk";
-import { ethers, verifyTypedData } from "ethers";
 import { z } from "zod";
+import { ApiResponse } from "../types/api.js";
 
-import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { isAddress, verifyMessage } from "viem";
-import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
+import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { getFractionsById } from "../utils/getFractionsById.js";
-import { getHypercertTokenId } from "../utils/tokenIds.js";
 import { getRpcUrl } from "../utils/getRpcUrl.js";
+import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
+import { getHypercertTokenId } from "../utils/tokenIds.js";
 
 export interface CreateOrderRequest {
   signature: string;
@@ -435,7 +435,7 @@ export class MarketplaceController extends Controller {
     const { orderId, signature } = parsedQuery.data;
 
     const supabase = new SupabaseDataService();
-    const orderRes = await supabase.getOrders({
+    const orders = await supabase.getOrders({
       where: {
         id: {
           eq: orderId,
@@ -443,7 +443,7 @@ export class MarketplaceController extends Controller {
       },
     });
 
-    if (!orderRes.data?.length) {
+    if (!orders.data?.length) {
       this.setStatus(404);
       return {
         success: false,
@@ -452,16 +452,7 @@ export class MarketplaceController extends Controller {
       };
     }
 
-    if (orderRes.error) {
-      this.setStatus(500);
-      return {
-        success: false,
-        message: "Could not fetch order",
-        data: null,
-      };
-    }
-
-    const signerAddress = orderRes.data[0].signer;
+    const signerAddress = orders.data[0].signer;
 
     const signatureCorrect = await verifyMessage({
       message: `Delete listing ${orderId}`,
