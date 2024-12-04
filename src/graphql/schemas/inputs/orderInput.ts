@@ -4,6 +4,7 @@ import {
   IdSearchOptions,
   BigIntSearchOptions,
   StringSearchOptions,
+  BooleanSearchOptions,
 } from "./searchOptions.js";
 import { Order } from "../typeDefs/orderTypeDefs.js";
 
@@ -17,4 +18,8 @@ export class BasicOrderWhereInput implements WhereOptions<Order> {
   signer?: StringSearchOptions | null;
   @Field(() => StringSearchOptions, { nullable: true })
   hypercert_id?: StringSearchOptions | null;
+  @Field(() => BooleanSearchOptions, { nullable: true })
+  invalidated?: BooleanSearchOptions | null;
+  @Field(() => StringSearchOptions, { nullable: true })
+  currency?: StringSearchOptions | null;
 }

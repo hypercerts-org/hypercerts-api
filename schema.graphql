@@ -813,8 +813,10 @@ input OrderSortOptions {
 
 input OrderWhereInput {
   chainId: BigIntSearchOptions
+  currency: StringSearchOptions
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
+  invalidated: BooleanSearchOptions
   signer: StringSearchOptions
 }
 

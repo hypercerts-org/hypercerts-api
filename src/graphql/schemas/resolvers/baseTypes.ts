@@ -332,6 +332,33 @@ export function createBaseResolver<T extends ClassType>(
       }
     }
 
+    getOrders(args: GetOrdersArgs, single: boolean = false) {
+      console.debug(`[${entityFieldName}Resolver::getOrders] Fetching orders`);
+
+      try {
+        const queries = this.supabaseDataService.getOrders(args);
+        if (single) {
+          return queries.data.executeTakeFirst();
+        }
+
+        return this.supabaseDataService.db
+          .transaction()
+          .execute(async (transaction) => {
+            const dataRes = await transaction.executeQuery(queries.data);
+            const countRes = await transaction.executeQuery(queries.count);
+            return {
+              data: dataRes.rows,
+              count: countRes.rows[0].count,
+            };
+          });
+      } catch (e) {
+        const error = e as Error;
+        throw new Error(
+          `[${entityFieldName}Resolver::getOrders] Error fetching orders: ${error.message}`,
+        );
+      }
+    }
+
     parseAttestation(item: { [K in keyof T]: T[K] }) {
       const decodedData = item?.data;
       // TODO cleaner handling of bigints in created attestations

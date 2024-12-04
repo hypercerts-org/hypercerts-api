@@ -92,7 +92,6 @@ class HypercertResolver extends HypercertBaseResolver {
     };
 
     try {
-      console.log("Getting fractions for hypercert", hypercert.hypercert_id);
       const { data: fractionsRes } = await this.getFractions({
         where: { hypercert_id: { eq: hypercert.hypercert_id } },
       });
@@ -105,39 +104,21 @@ class HypercertResolver extends HypercertBaseResolver {
         return defaultValue;
       }
 
-      console.log(
-        `[HypercertResolver::orders] Fetching orders for ${hypercert.hypercert_id}`,
-      );
-
-      const ordersRes = await this.supabaseDataService.getOrders({
+      const orders = await this.getOrders({
         where: { hypercert_id: { eq: hypercert.hypercert_id } },
       });
 
-      if (!ordersRes) {
+      if (!orders) {
         console.warn(
           `[HypercertResolver::orders] Error fetching orders for ${hypercert.hypercert_id}`,
-          ordersRes,
+          orders,
         );
         return defaultValue;
       }
 
-      const {
-        data: ordersData,
-        error: ordersError,
-        count: ordersCount,
-      } = ordersRes;
+      const { data: ordersData, count: ordersCount } = orders;
 
-      if (ordersError) {
-        console.error(
-          `[HypercertResolver::orders] Error fetching orders for ${hypercert.hypercert_id}: `,
-          ordersError,
-        );
-        return defaultValue;
-      }
-
-      const validOrders = ordersData.filter((order) => !order.invalidated);
-
-      const ordersByFraction = _.groupBy(validOrders, (order) =>
+      const ordersByFraction = _.groupBy(ordersData, (order) =>
         order.itemIds[0].toString(),
       );
 
@@ -149,10 +130,15 @@ class HypercertResolver extends HypercertBaseResolver {
         priceInUSD: string;
         pricePerPercentInUSD: string;
       })[] = [];
+
+      const activeOrders = ordersData.filter((order) => !order.invalidated);
+      const activeOrdersByFraction = _.groupBy(activeOrders, (order) =>
+        order.itemIds[0].toString(),
+      );
       // For each fraction, find all orders and find the max units for sale for that fraction
       const totalUnitsForSale = (
         await Promise.all(
-          Object.keys(ordersByFraction).map(async (tokenId) => {
+          Object.keys(activeOrdersByFraction).map(async (tokenId) => {
             const fractionId = `${chainId}-${contractAddress}-${tokenId}`;
             const fraction = fractionsRes.find(
               (fraction) => fraction.fraction_id === fractionId,

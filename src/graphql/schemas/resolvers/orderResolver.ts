@@ -10,9 +10,6 @@ import { Order } from "../typeDefs/orderTypeDefs.js";
 import { GetOrdersArgs } from "../args/orderArgs.js";
 import { getHypercertTokenId } from "../../../utils/tokenIds.js";
 import { getAddress } from "viem";
-import { HypercertExchangeClient } from "@hypercerts-org/marketplace-sdk";
-import { ethers } from "ethers";
-import { getRpcUrl } from "../../../utils/getRpcUrl.js";
 import { addPriceInUsdToOrder } from "../../../utils/addPriceInUSDToOrder.js";
 import _ from "lodash";
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
@@ -25,29 +22,20 @@ const OrderBaseResolver = createBaseResolver("order");
 @Resolver(() => Order)
 class OrderResolver extends OrderBaseResolver {
   @Query(() => GetOrdersResponse)
-  async orders(@Args() args: GetOrdersArgs) {
+  async orders(@Args() args: GetOrdersArgs, single: boolean = false) {
     try {
-      const res = await this.supabaseDataService.getOrders(args);
+      const ordersRes = await this.getOrders(args, single);
 
-      const { data: orders, error, count } = res;
-
-      if (error) {
-        console.warn(`[OrderResolver::orders] Error fetching orders: `, error);
-        return { orders };
+      if (!ordersRes) {
+        return {
+          data: [],
+          count: 0,
+        };
       }
 
-      const groupedOrders = orders.reduce(
-        (acc, order) => {
-          if (!acc[order.chainId]) {
-            acc[order.chainId] = [];
-          }
-          acc[order.chainId].push(order);
-          return acc;
-        },
-        {} as Record<string, (typeof orders)[number][]>,
-      );
+      const { data, count } = ordersRes;
 
-      const allHypercertIds = _.uniq(orders.map((order) => order.hypercert_id));
+      const allHypercertIds = _.uniq(data.map((order) => order.hypercert_id));
       // TODO: Update this once array filters are available
       const allHypercerts = await Promise.all(
         allHypercertIds.map(async (hypercertId) => {
@@ -69,44 +57,8 @@ class OrderResolver extends OrderBaseResolver {
         ),
       );
 
-      const ordersAfterCheckingValidity = await Promise.all(
-        Object.entries(groupedOrders).map(async ([chainId, ordersForChain]) => {
-          const chainIdParsed = parseInt(chainId);
-          const hypercertExchangeClient = new HypercertExchangeClient(
-            chainIdParsed,
-            // @ts-expect-error - TODO: fix these types
-            new ethers.JsonRpcProvider(getRpcUrl(chainIdParsed)),
-          );
-
-          const validityResults =
-            await hypercertExchangeClient.checkOrdersValidity(
-              ordersForChain.filter((order) => !order.invalidated),
-            );
-          const tokenIdsWithInvalidOrder = validityResults
-            .filter((result) => !result.valid)
-            .map((result) => BigInt(result.order.itemIds[0]));
-          if (tokenIdsWithInvalidOrder.length) {
-            console.log(
-              "[OrderResolver::orders]:: Found invalid orders",
-              tokenIdsWithInvalidOrder,
-            );
-            // Fire off the validation but don't wait for it to finish
-            this.supabaseDataService.validateOrdersByTokenIds({
-              tokenIds: tokenIdsWithInvalidOrder.map((id) => id.toString()),
-              chainId: chainIdParsed,
-            });
-          }
-          return ordersForChain.map((order) => {
-            if (tokenIdsWithInvalidOrder.includes(BigInt(order.itemIds[0]))) {
-              return { ...order, invalidated: true };
-            }
-            return order;
-          });
-        }),
-      ).then((res) => res.flat());
-
       const ordersWithPrices = await Promise.all(
-        orders.map(async (order) => {
+        data.map(async (order) => {
           const hypercert = allHypercerts[order.hypercert_id.toLowerCase()];
           if (!hypercert?.units) {
             console.warn(
@@ -120,11 +72,11 @@ class OrderResolver extends OrderBaseResolver {
 
       return {
         data: ordersWithPrices,
-        count: count ? count : ordersAfterCheckingValidity?.length,
+        count: count ? count : ordersWithPrices?.length,
       };
     } catch (e) {
       throw new Error(
-        `[ContractResolver::orders] Error fetching orders: ${(e as Error).message}`,
+        `[OrderResolver::orders] Error fetching orders: ${(e as Error).message}`,
       );
     }
   }
