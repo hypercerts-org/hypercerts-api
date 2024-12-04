@@ -119,7 +119,6 @@ const fallBackProvider = (chainId: number) => {
 };
 
 /* Returns a PublicClient instance for the configured network. */
-// @ts-expect-error viem typings
 export const getEvmClient = (chainId: number) =>
   createPublicClient({
     chain: selectedNetwork(chainId),
