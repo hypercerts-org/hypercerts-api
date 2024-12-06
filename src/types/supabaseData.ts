@@ -592,6 +592,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      signature_requests: {
+        Row: {
+          chain_id: number;
+          created_at: string;
+          message: Json;
+          message_hash: string;
+          purpose: Database["public"]["Enums"]["purpose_enum"];
+          safe_address: string;
+          status: Database["public"]["Enums"]["signature_request_status_enum"];
+        };
+        Insert: {
+          chain_id: number;
+          created_at?: string;
+          message: Json;
+          message_hash: string;
+          purpose?: Database["public"]["Enums"]["purpose_enum"];
+          safe_address: string;
+          status?: Database["public"]["Enums"]["signature_request_status_enum"];
+        };
+        Update: {
+          chain_id?: number;
+          created_at?: string;
+          message?: Json;
+          message_hash?: string;
+          purpose?: Database["public"]["Enums"]["purpose_enum"];
+          safe_address?: string;
+          status?: Database["public"]["Enums"]["signature_request_status_enum"];
+        };
+        Relationships: [];
+      };
       users: {
         Row: {
           address: string;
@@ -698,7 +728,8 @@ export type Database = {
       };
     };
     Enums: {
-      [_ in never]: never;
+      purpose_enum: "update_user_data";
+      signature_request_status_enum: "pending" | "executed" | "canceled";
     };
     CompositeTypes: {
       [_ in never]: never;

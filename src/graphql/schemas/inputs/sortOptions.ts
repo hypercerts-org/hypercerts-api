@@ -10,6 +10,7 @@ import { Order } from "../typeDefs/orderTypeDefs.js";
 import { Sale } from "../typeDefs/salesTypeDefs.js";
 import { Hyperboard } from "../typeDefs/hyperboardTypeDefs.js";
 import { Blueprint } from "../typeDefs/blueprintTypeDefs.js";
+import { SignatureRequest } from "../typeDefs/signatureRequestTypeDefs.js";
 
 export type SortOptions<T extends object> = {
   [P in keyof T]: SortOrder | null;
@@ -219,4 +220,21 @@ export class HyperboardSortOptions implements SortOptions<Hyperboard> {
   admin_id?: SortOrder;
   @Field(() => SortOrder, { nullable: true })
   chainId?: SortOrder;
+}
+
+@InputType()
+export class SignatureRequestSortOptions
+  implements SortOptions<SignatureRequest>
+{
+  @Field(() => SortOrder, { nullable: true })
+  safe_address?: SortOrder;
+
+  @Field(() => SortOrder, { nullable: true })
+  message_hash?: SortOrder;
+
+  @Field(() => SortOrder, { nullable: true })
+  created_at?: SortOrder;
+
+  @Field(() => SortOrder, { nullable: true })
+  purpose?: SortOrder;
 }
