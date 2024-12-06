@@ -1,5 +1,11 @@
 import type { HypercertMetadata } from "@hypercerts-org/sdk";
 
+/*
+ * The types in this file somewhat replicate the zod schemas we use in our controllers.
+ * Currently tsoa doesn't work with zod inferred types.
+ * See https://github.com/lukeautry/tsoa/issues/1256.
+ */
+
 /**
  * Interface for storing metadata on IPFS.
  */
