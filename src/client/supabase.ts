@@ -204,6 +204,21 @@ const handleChangeOrders = (
   }
 };
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+const handleChangeSignatureRequests = (
+  payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
+) => {
+  switch (payload.eventType) {
+    case "INSERT":
+    case "UPDATE":
+    case "DELETE":
+      cache.invalidate([{ typename: "SignatureRequest" }]);
+      break;
+    default:
+      break;
+  }
+};
+
 supabaseCaching
   .channel("schema-db-changes")
   .on(
@@ -401,5 +416,14 @@ supabaseData
       table: "marketplace_order_nonces",
     },
     (payload) => handleChangeOrders(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "signature_requests",
+    },
+    (payload) => handleChangeSignatureRequests(payload),
   )
   .subscribe();
