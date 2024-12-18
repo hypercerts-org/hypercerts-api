@@ -22,7 +22,7 @@ export default class SignatureRequestProcessor {
   async processPendingRequests(): Promise<void> {
     const pendingRequests = await this.getPendingRequests();
 
-    console.log(`Found ${pendingRequests.length} pending requests`);
+    console.log(`Found ${pendingRequests.length} pending signature requests`);
 
     for (const request of pendingRequests) {
       const command = getCommand(request);

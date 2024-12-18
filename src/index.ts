@@ -8,6 +8,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerJson from "./__generated__/swagger.json" assert { type: "json" };
 import { RegisterRoutes } from "./__generated__/routes/routes.js";
 import * as Sentry from "@sentry/node";
+import SignatureRequestProcessorCron from "./cron/SignatureRequestProcessing.js";
 
 // @ts-expect-error BigInt is not supported by JSON
 BigInt.prototype.toJSON = function () {
@@ -47,6 +48,9 @@ RegisterRoutes(app);
 
 // The error handler must be registered before any other error middleware and after all controllers
 Sentry.setupExpressErrorHandler(app);
+
+// Start Safe signature request processing cron job
+SignatureRequestProcessorCron.start();
 
 app.listen(PORT, () => {
   console.log(
