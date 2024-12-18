@@ -8,7 +8,7 @@ import { SafeApiQueue } from "./SafeApiQueue.js";
 type SignatureRequest =
   Database["public"]["Tables"]["signature_requests"]["Row"];
 
-export class SignatureRequestProcessor {
+export default class SignatureRequestProcessor {
   private static instance: SignatureRequestProcessor;
 
   private readonly dataService: SupabaseDataService;
