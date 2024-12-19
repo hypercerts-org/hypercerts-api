@@ -1,5 +1,11 @@
 import type { HypercertMetadata } from "@hypercerts-org/sdk";
 
+/*
+ * The types in this file somewhat replicate the zod schemas we use in our controllers.
+ * Currently tsoa doesn't work with zod inferred types.
+ * See https://github.com/lukeautry/tsoa/issues/1256.
+ */
+
 /**
  * Interface for storing metadata on IPFS.
  */
@@ -76,13 +82,25 @@ export type ValidationResponse = ApiResponse<ValidationResult>;
 /**
  * Interface for a user add or update request.
  */
-
-export interface AddOrUpdateUserRequest {
-  display_name: string;
-  avatar: string;
-  signature: string;
+interface BaseUserUpsertRequest {
   chain_id: number;
 }
+
+interface EOAUserUpsertRequest extends BaseUserUpsertRequest {
+  type: "eoa";
+  display_name?: string;
+  avatar?: string;
+  signature: string;
+}
+
+interface MultisigUserUpsertRequest extends BaseUserUpsertRequest {
+  type: "multisig";
+  messageHash: string;
+}
+
+export type AddOrUpdateUserRequest =
+  | EOAUserUpsertRequest
+  | MultisigUserUpsertRequest;
 
 export type AddOrUpdateUserResponse = ApiResponse<{ address: string } | null>;
 

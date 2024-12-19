@@ -116,9 +116,19 @@
 				"type": "object",
 				"description": "Interface for a generic API response."
 			},
-			"AddOrUpdateUserRequest": {
-				"description": "Interface for a user add or update request.",
+			"EOAUserUpsertRequest": {
 				"properties": {
+					"chain_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"type": {
+						"type": "string",
+						"enum": [
+							"eoa"
+						],
+						"nullable": false
+					},
 					"display_name": {
 						"type": "string"
 					},
@@ -127,6 +137,58 @@
 					},
 					"signature": {
 						"type": "string"
+					}
+				},
+				"required": [
+					"chain_id",
+					"type",
+					"signature"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"MultisigUserUpsertRequest": {
+				"properties": {
+					"chain_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"type": {
+						"type": "string",
+						"enum": [
+							"multisig"
+						],
+						"nullable": false
+					},
+					"messageHash": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"chain_id",
+					"type",
+					"messageHash"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"AddOrUpdateUserRequest": {
+				"anyOf": [
+					{
+						"$ref": "#/components/schemas/EOAUserUpsertRequest"
+					},
+					{
+						"$ref": "#/components/schemas/MultisigUserUpsertRequest"
+					}
+				]
+			},
+			"CancelSignatureRequest": {
+				"properties": {
+					"signature": {
+						"type": "string"
+					},
+					"owner_address": {
+						"type": "string"
 					},
 					"chain_id": {
 						"type": "number",
@@ -134,9 +196,8 @@
 					}
 				},
 				"required": [
-					"display_name",
-					"avatar",
 					"signature",
+					"owner_address",
 					"chain_id"
 				],
 				"type": "object",
@@ -1133,10 +1194,129 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/AddOrUpdateUserRequest"
+							},
+							"examples": {
+								"Example 1": {
+									"value": {
+										"type": "eoa",
+										"chain_id": 11155111,
+										"display_name": "Dana's Profile",
+										"avatar": "https://example.com/avatar.png",
+										"signature": "0x1234567890abcdef"
+									}
+								},
+								"Example 2": {
+									"value": {
+										"type": "multisig",
+										"chain_id": 11155111,
+										"messageHash": "0x1234567890abcdef"
+									}
+								}
 							}
 						}
 					}
 				}
+			}
+		},
+		"/v1/signature-requests/{safe_address}-{message_hash}/cancel": {
+			"post": {
+				"operationId": "CancelSignatureRequest",
+				"responses": {
+					"200": {
+						"description": "Signature request canceled successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized"
+					},
+					"404": {
+						"description": "Signature request not found"
+					}
+				},
+				"tags": [
+					"SignatureRequests"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "safe_address",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "message_hash",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CancelSignatureRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/signature-requests/process": {
+			"post": {
+				"operationId": "ProcessSignatureRequests",
+				"responses": {
+					"200": {
+						"description": "Signature requests processing started",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"success": {
+											"type": "boolean"
+										}
+									},
+									"required": [
+										"message",
+										"success"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"SignatureRequests"
+				],
+				"security": [],
+				"parameters": []
 			}
 		},
 		"/v1/metadata": {

@@ -1,5 +1,9 @@
 import { Field, InputType, Int } from "type-graphql";
 import { GraphQLBigInt, GraphQLUUID } from "graphql-scalars";
+import {
+  SignatureRequestPurpose,
+  SignatureRequestStatus,
+} from "../typeDefs/signatureRequestTypeDefs.js";
 
 @InputType()
 export class BooleanSearchOptions {
@@ -95,4 +99,16 @@ export class NumberArraySearchOptions {
     description: "Array of numbers",
   })
   overlaps?: bigint[];
+}
+
+@InputType()
+export class SignatureRequestPurposeSearchOptions {
+  @Field(() => SignatureRequestPurpose, { nullable: true })
+  eq?: SignatureRequestPurpose;
+}
+
+@InputType()
+export class SignatureRequestStatusSearchOptions {
+  @Field(() => SignatureRequestStatus, { nullable: true })
+  eq?: SignatureRequestStatus;
 }

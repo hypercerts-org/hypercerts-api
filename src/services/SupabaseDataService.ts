@@ -21,6 +21,7 @@ import { BaseSupabaseService } from "./BaseSupabaseService.js";
 import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { GetBlueprintArgs } from "../graphql/schemas/args/blueprintArgs.js";
 import { sql } from "kysely";
+import { GetSignatureRequestArgs } from "../graphql/schemas/args/signatureRequestArgs.js";
 
 @singleton()
 export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase> {
@@ -662,6 +663,45 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       .execute();
   }
 
+  async addSignatureRequest(
+    request: DataDatabase["public"]["Tables"]["signature_requests"]["Insert"],
+  ) {
+    return this.db
+      .insertInto("signature_requests")
+      .values(request)
+      .returning(["safe_address", "message_hash"])
+      .execute();
+  }
+
+  async getSignatureRequest(safe_address: string, message_hash: string) {
+    return this.db
+      .selectFrom("signature_requests")
+      .selectAll()
+      .where("safe_address", "=", safe_address)
+      .where("message_hash", "=", message_hash)
+      .executeTakeFirst();
+  }
+
+  async updateSignatureRequestStatus(
+    safe_address: string,
+    message_hash: string,
+    status: DataDatabase["public"]["Enums"]["signature_request_status_enum"],
+  ) {
+    return this.db
+      .updateTable("signature_requests")
+      .set({ status })
+      .where("safe_address", "=", safe_address)
+      .where("message_hash", "=", message_hash)
+      .execute();
+  }
+
+  getSignatureRequests(args: GetSignatureRequestArgs) {
+    return {
+      data: this.handleGetData("signature_requests", args),
+      count: this.handleGetCount("signature_requests", args),
+    };
+  }
+
   getDataQuery<
     DB extends KyselyDataDatabase,
     T extends keyof DB & string,
@@ -677,6 +717,8 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
         return this.db.selectFrom("marketplace_orders").selectAll();
       case "users":
         return this.db.selectFrom("users").selectAll();
+      case "signature_requests":
+        return this.db.selectFrom("signature_requests").selectAll();
       default:
         throw new Error(`Table ${tableName.toString()} not found`);
     }
@@ -704,6 +746,12 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       case "marketplace_orders":
         return this.db
           .selectFrom("marketplace_orders")
+          .select((expressionBuilder) => {
+            return expressionBuilder.fn.countAll().as("count");
+          });
+      case "signature_requests":
+        return this.db
+          .selectFrom("signature_requests")
           .select((expressionBuilder) => {
             return expressionBuilder.fn.countAll().as("count");
           });

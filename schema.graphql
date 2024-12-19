@@ -460,6 +460,11 @@ type GetSalesResponse {
   data: [Sale!]
 }
 
+type GetSignatureRequestResponse {
+  count: Int
+  data: [SignatureRequest!]
+}
+
 type GetUsersResponse {
   count: Int
   data: [User!]
@@ -505,6 +510,9 @@ type HyperboardOwner {
   """The display name of the user"""
   display_name: String
   percentage_owned: Float!
+
+  """Pending signature requests for the user"""
+  signature_requests: [SignatureRequest!]
 }
 
 input HyperboardSortOptions {
@@ -832,6 +840,7 @@ type Query {
   metadata(first: Int, offset: Int, sort: MetadataFetchInput, where: MetadataWhereInput): GetMetadataResponse!
   orders(first: Int, offset: Int, sort: OrderFetchInput, where: OrderWhereInput): GetOrdersResponse!
   sales(first: Int, offset: Int, sort: SaleFetchInput, where: SaleWhereInput): GetSalesResponse!
+  signatureRequests(first: Int, offset: Int, sort: SignatureRequestFetchInput, where: SignatureRequestWhereInput): GetSignatureRequestResponse!
   users(first: Int, offset: Int, where: UserWhereInput): GetUsersResponse!
 }
 
@@ -941,12 +950,79 @@ type SectionEntryOwner {
   """The display name of the user"""
   display_name: String
   percentage: Float!
+
+  """Pending signature requests for the user"""
+  signature_requests: [SignatureRequest!]
   units: BigInt
 }
 
 type SectionResponseType {
   count: Float!
   data: [Section!]!
+}
+
+"""Pending signature request for a user"""
+type SignatureRequest {
+  """The chain ID of the signature request"""
+  chain_id: EthBigInt!
+
+  """The message data in JSON format"""
+  message: String!
+
+  """The hash of the Safe message (not the message to be signed)"""
+  message_hash: String!
+
+  """The purpose of the signature request"""
+  purpose: SignatureRequestPurpose!
+
+  """The safe address of the user who needs to sign"""
+  safe_address: String!
+
+  """The status of the signature request"""
+  status: SignatureRequestStatus!
+
+  """Timestamp of when the signature request was created"""
+  timestamp: EthBigInt!
+}
+
+input SignatureRequestFetchInput {
+  by: SignatureRequestSortOptions
+}
+
+"""Purpose of the signature request"""
+enum SignatureRequestPurpose {
+  UPDATE_USER_DATA
+}
+
+input SignatureRequestPurposeSearchOptions {
+  eq: SignatureRequestPurpose
+}
+
+input SignatureRequestSortOptions {
+  message_hash: SortOrder
+  purpose: SortOrder
+  safe_address: SortOrder
+  timestamp: SortOrder
+}
+
+"""Status of the signature request"""
+enum SignatureRequestStatus {
+  CANCELED
+  EXECUTED
+  PENDING
+}
+
+input SignatureRequestStatusSearchOptions {
+  eq: SignatureRequestStatus
+}
+
+input SignatureRequestWhereInput {
+  chain_id: BigIntSearchOptions
+  message_hash: StringSearchOptions
+  purpose: SignatureRequestPurposeSearchOptions
+  safe_address: StringSearchOptions
+  status: SignatureRequestStatusSearchOptions
+  timestamp: BigIntSearchOptions
 }
 
 """The direction to sort the query results"""
@@ -988,6 +1064,9 @@ type User {
 
   """The display name of the user"""
   display_name: String
+
+  """Pending signature requests for the user"""
+  signature_requests: [SignatureRequest!]
 }
 
 input UserWhereInput {

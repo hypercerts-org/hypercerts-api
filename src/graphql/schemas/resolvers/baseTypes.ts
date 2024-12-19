@@ -12,6 +12,7 @@ import { GetHypercertsArgs } from "../args/hypercertsArgs.js";
 import { GetSalesArgs } from "../args/salesArgs.js";
 import { GetUserArgs } from "../args/userArgs.js";
 import { GetBlueprintArgs } from "../args/blueprintArgs.js";
+import { GetSignatureRequestArgs } from "../args/signatureRequestArgs.js";
 
 export function DataResponse<TItem extends object>(
   TItemClass: ClassType<TItem>,
@@ -369,6 +370,38 @@ export function createBaseResolver<T extends ClassType>(
         ...item,
         attestation: decodedData,
       };
+    }
+
+    getSignatureRequests(
+      args: GetSignatureRequestArgs,
+      single: boolean = false,
+    ) {
+      console.debug(
+        `[${entityFieldName}Resolver::getSignatureRequests] Fetching signature requests`,
+      );
+
+      try {
+        const queries = this.supabaseDataService.getSignatureRequests(args);
+        if (single) {
+          return queries.data.executeTakeFirst();
+        }
+
+        return this.supabaseDataService.db
+          .transaction()
+          .execute(async (transaction) => {
+            const dataRes = await transaction.executeQuery(queries.data);
+            const countRes = await transaction.executeQuery(queries.count);
+            return {
+              data: dataRes.rows,
+              count: countRes.rows[0].count,
+            };
+          });
+      } catch (e) {
+        const error = e as Error;
+        throw new Error(
+          `[${entityFieldName}Resolver::getSignatureRequests] Error fetching signature requests: ${error.message}`,
+        );
+      }
     }
   }
 

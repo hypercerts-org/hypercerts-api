@@ -5,6 +5,8 @@ import { TsoaRoute, fetchMiddlewares, ExpressTemplateService } from '@tsoa/runti
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { UserController } from './../../controllers/UserController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { SignatureRequestController } from './../../controllers/SignatureRequestController.js';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MetadataController } from './../../controllers/MetadataController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MarketplaceController } from './../../controllers/MarketplaceController.js';
@@ -51,12 +53,38 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string"},"data":{"dataType":"void"},"success":{"dataType":"boolean","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "AddOrUpdateUserRequest": {
+    "EOAUserUpsertRequest": {
         "dataType": "refObject",
         "properties": {
-            "display_name": {"dataType":"string","required":true},
-            "avatar": {"dataType":"string","required":true},
+            "chain_id": {"dataType":"double","required":true},
+            "type": {"dataType":"enum","enums":["eoa"],"required":true},
+            "display_name": {"dataType":"string"},
+            "avatar": {"dataType":"string"},
             "signature": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "MultisigUserUpsertRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "chain_id": {"dataType":"double","required":true},
+            "type": {"dataType":"enum","enums":["multisig"],"required":true},
+            "messageHash": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "AddOrUpdateUserRequest": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"ref":"EOAUserUpsertRequest"},{"ref":"MultisigUserUpsertRequest"}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CancelSignatureRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "signature": {"dataType":"string","required":true},
+            "owner_address": {"dataType":"string","required":true},
             "chain_id": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
@@ -329,6 +357,67 @@ export function RegisterRoutes(app: Router) {
                 next,
                 validatedArgs,
                 successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/signature-requests/:safe_address-:message_hash/cancel',
+            ...(fetchMiddlewares<RequestHandler>(SignatureRequestController)),
+            ...(fetchMiddlewares<RequestHandler>(SignatureRequestController.prototype.cancelSignatureRequest)),
+
+            async function SignatureRequestController_cancelSignatureRequest(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    safe_address: {"in":"path","name":"safe_address","required":true,"dataType":"string"},
+                    message_hash: {"in":"path","name":"message_hash","required":true,"dataType":"string"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CancelSignatureRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new SignatureRequestController();
+
+              await templateService.apiHandler({
+                methodName: 'cancelSignatureRequest',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/signature-requests/process',
+            ...(fetchMiddlewares<RequestHandler>(SignatureRequestController)),
+            ...(fetchMiddlewares<RequestHandler>(SignatureRequestController.prototype.processSignatureRequests)),
+
+            async function SignatureRequestController_processSignatureRequests(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new SignatureRequestController();
+
+              await templateService.apiHandler({
+                methodName: 'processSignatureRequests',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
               });
             } catch (err) {
                 return next(err);
