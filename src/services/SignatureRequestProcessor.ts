@@ -8,7 +8,7 @@ import { SafeApiQueue } from "./SafeApiQueue.js";
 type SignatureRequest =
   Database["public"]["Tables"]["signature_requests"]["Row"];
 
-export class SignatureRequestProcessor {
+export default class SignatureRequestProcessor {
   private static instance: SignatureRequestProcessor;
 
   private readonly dataService: SupabaseDataService;
@@ -22,7 +22,7 @@ export class SignatureRequestProcessor {
   async processPendingRequests(): Promise<void> {
     const pendingRequests = await this.getPendingRequests();
 
-    console.log(`Found ${pendingRequests.length} pending requests`);
+    console.log(`Found ${pendingRequests.length} pending signature requests`);
 
     for (const request of pendingRequests) {
       const command = getCommand(request);

@@ -11,7 +11,7 @@ import {
 
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { verifyAuthSignedData } from "../utils/verifyAuthSignedData.js";
-import { SignatureRequestProcessor } from "../services/SignatureRequestProcessor.js";
+import SignatureRequestProcessor from "../services/SignatureRequestProcessor.js";
 
 interface CancelSignatureRequest {
   signature: string;
