@@ -11,10 +11,10 @@ import {
 } from "tsoa";
 import type {
   BlueprintResponse,
-  ApiResponse,
   BlueprintCreateRequest,
   BlueprintDeleteRequest,
   BlueprintQueueMintRequest,
+  BaseResponse,
 } from "../types/api.js";
 import { z } from "zod";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
@@ -29,7 +29,7 @@ import { waitForTxThenMintBlueprint } from "../utils/waitForTxThenMintBlueprint.
 export class BlueprintController extends Controller {
   @Post()
   @SuccessResponse(201, "Blueprint created successfully")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BlueprintResponse>(422, "Unprocessable content", {
     success: false,
     message: "Validation failed",
     errors: { blueprint: "Invalid blueprint." },
@@ -211,7 +211,7 @@ export class BlueprintController extends Controller {
   // Delete blueprint method
   @Delete("{blueprintId}")
   @SuccessResponse(200, "Blueprint deleted successfully")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Validation failed",
     errors: { blueprint: "Invalid blueprint." },
@@ -307,7 +307,7 @@ export class BlueprintController extends Controller {
 
   @Post("mint/{blueprintId}")
   @SuccessResponse(201, "Blueprint minted successfully")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Validation failed",
     errors: { blueprint: "Invalid blueprint." },

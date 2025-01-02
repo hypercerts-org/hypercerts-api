@@ -12,7 +12,7 @@ import {
   Patch,
 } from "tsoa";
 import type {
-  ApiResponse,
+  BaseResponse,
   HyperboardCreateRequest,
   HyperboardResponse,
   HyperboardUpdateRequest,
@@ -37,7 +37,7 @@ export class HyperboardController extends Controller {
    */
   @Post()
   @SuccessResponse(201, "Data uploaded successfully", "application/json")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Errors while validating hyperboard",
   })
@@ -441,7 +441,7 @@ export class HyperboardController extends Controller {
 
   @Patch("{hyperboardId}")
   @SuccessResponse(204, "Hyperboard updated successfully")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Errors while updating hyperboard",
   })
@@ -871,7 +871,7 @@ export class HyperboardController extends Controller {
 
   @Delete("{hyperboardId}")
   @SuccessResponse(204, "Hyperboard deleted successfully")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Errors while deleting hyperboard",
   })
@@ -879,7 +879,7 @@ export class HyperboardController extends Controller {
     @Path() hyperboardId: string,
     @Query() adminAddress: string,
     @Query() signature: string,
-  ): Promise<ApiResponse> {
+  ): Promise<BaseResponse> {
     const inputSchema = z.object({
       adminAddress: z.string(),
       signature: z.string(),

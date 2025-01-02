@@ -12,7 +12,7 @@ import {
 
 import type {
   AddOrUpdateUserRequest,
-  ApiResponse,
+  BaseResponse,
   UserResponse,
 } from "../types/api.js";
 import { UserUpsertError } from "../lib/users/errors.js";
@@ -41,7 +41,7 @@ export class UserController extends Controller {
    */
   @Post(`{address}`)
   @SuccessResponse(201, "User updated successfully", "application/json")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Errors while validating user",
   })

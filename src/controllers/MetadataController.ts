@@ -10,7 +10,7 @@ import {
 } from "tsoa";
 import { StorageService } from "../services/StorageService.js";
 import type {
-  ApiResponse,
+  BaseResponse,
   StorageResponse,
   StoreMetadataRequest,
   StoreMetadataWithAllowlistRequest,
@@ -35,7 +35,7 @@ export class MetadataController extends Controller {
    */
   @Post()
   @SuccessResponse(201, "Data uploaded successfully")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Validation failed",
     errors: { metadata: "Invalid metadata." },
@@ -102,12 +102,12 @@ export class MetadataController extends Controller {
    */
   @Post("/with-allowlist")
   @SuccessResponse(201, "Data uploaded successfully")
-  @Response<ApiResponse>(409, "Conflict", {
+  @Response<BaseResponse>(409, "Conflict", {
     success: false,
     message: "Allow list detected in metadata",
     errors: { metadata: "Allowlist URI already present in metadata." },
   })
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Validation failed",
     errors: { metadata: "Invalid metadata." },
@@ -187,7 +187,7 @@ export class MetadataController extends Controller {
    */
   @Post("/validate")
   @SuccessResponse(200, "Valid metadata", "application/json")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Validation failed",
     errors: { metadata: "Invalid metadata." },
@@ -252,7 +252,7 @@ export class MetadataController extends Controller {
    */
   @Post("/with-allowlist/validate")
   @SuccessResponse(200, "Valid metadata", "application/json")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Validation failed",
     errors: { metadata: "Invalid metadata." },

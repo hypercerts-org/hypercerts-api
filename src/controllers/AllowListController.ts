@@ -59,12 +59,12 @@ export class AllowListController extends Controller {
         success: true,
         data: cid,
       };
-    } catch (error) {
+    } catch (e) {
       this.setStatus(500);
       return {
         success: false,
-        message: "Error uploading data",
-        errors: { allowList: "Error uploading data" },
+        message: "Errors while validating allow list",
+        errors: { allowList: (e as Error).message },
       };
     }
   }
@@ -103,13 +103,13 @@ export class AllowListController extends Controller {
         success: true,
         valid: true,
       };
-    } catch (error) {
+    } catch (e) {
       this.setStatus(500);
       return {
         success: false,
         valid: false,
-        message: "Error uploading data",
-        errors: { allowList: "Error uploading data" },
+        message: "Errors while validating allow list",
+        errors: { allowList: (e as Error).message },
       };
     }
   }
