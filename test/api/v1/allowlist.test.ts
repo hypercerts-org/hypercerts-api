@@ -1,101 +1,126 @@
-import { describe, it, afterEach, afterAll } from "vitest";
+import { describe, test, vi } from "vitest";
 import { expect } from "chai";
-import { createMocks, RequestMethod } from "node-mocks-http";
-import { Request, Response } from "express";
+import {
+  incorrectMerkleTree,
+  mockMerkleTree,
+} from "../../test-utils/mockMerkleTree.js";
+import { mock } from "vitest-mock-extended";
+import { AllowListController } from "../../../src/controllers/AllowListController.js";
+import { StorageService } from "../../../src/services/StorageService.js";
 
-import sinon from "sinon";
-
-import { data } from "../../test-utils";
-import { Client } from "@web3-storage/w3up-client";
-import { allowlistHandler } from "@/handlers/v1/web3up/allowlist";
-import { Link } from "@web3-storage/access";
-
-describe("W3Up Client allowlist", async () => {
-  const { metadata, merkleTree, someData } = data;
-
-  const storeBlobMock = sinon
-    .stub(Client.prototype, "uploadFile")
-    .resolves({ "/": merkleTree.cid } as unknown as Link); //TODO better Link object creation
-
-  const mockRequestResponse = (method: RequestMethod = "POST") => {
-    const { req, res }: { req: Request; res: Response } = createMocks({
-      method,
-    });
-    req.headers = {
-      "Content-Type": "application/json",
-    };
-    req.body = { allowList: merkleTree.data, totalUnits: 100n };
-    return { req, res };
+const mocks = vi.hoisted(() => {
+  return {
+    init: vi.fn(),
   };
+});
 
-  afterEach(() => {
-    sinon.resetHistory();
+vi.mock("../../../src/services/StorageService", async () => {
+  return {
+    StorageService: { init: mocks.init },
+  };
+});
+
+describe("Allow list upload at v1/allowlists", async () => {
+  const controller = new AllowListController();
+  const mockStorage = mock<StorageService>();
+
+  test("Stores a new allowlist and returns CID", async () => {
+    mocks.init.mockResolvedValue(mockStorage);
+
+    mockStorage.uploadFile.mockResolvedValue({ cid: "TEST_CID" });
+    const requestBody = {
+      allowList: mockMerkleTree,
+      totalUnits: "100000000",
+    };
+    const response = await controller.storeAllowList(requestBody);
+
+    expect(response.success).to.be.true;
+    expect(response.data).to.not.be.undefined;
+    expect(response.data?.cid).to.eq("TEST_CID");
   });
 
-  afterAll(() => {
-    sinon.resetBehavior();
+  test("Returns errors and message when allowlist is invalid", async () => {
+    mocks.init.mockResolvedValue(mockStorage);
+
+    mockStorage.uploadFile.mockResolvedValue({ cid: "TEST_CID" });
+    const requestBody = {
+      allowList: incorrectMerkleTree,
+      totalUnits: "100000000",
+    };
+    const response = await controller.storeAllowList(requestBody);
+
+    expect(response.success).to.be.false;
+    expect(response.data).to.be.undefined;
+    expect(response.message).to.eq("Errors while validating allow list");
+    expect(response.errors).to.deep.eq({
+      allowListData: "Data could not be parsed to OpenZeppelin MerkleTree",
+    });
   });
 
-  it("POST valid allowList - 200", async () => {
-    const { req, res } = mockRequestResponse();
-    await allowlistHandler(req, res);
+  test("Handles errors during upload", async () => {
+    mocks.init.mockResolvedValue(mockStorage);
 
-    expect(res.statusCode).to.eq(200);
-    expect(res.getHeaders()).to.deep.eq({ "content-type": "application/json" });
-    expect(res.statusMessage).to.eq("OK");
+    const mockError = new Error("Error uploading data");
+    mockStorage.uploadFile.mockRejectedValue(mockError);
 
-    //TODO better typing and check on returned CID
-    // @ts-ignore
-    expect(res._getJSONData().message).to.eq("Data uploaded succesfully");
-    // @ts-ignore
-    expect(res._getJSONData().cid).to.not.be.undefined;
+    const requestBody = {
+      allowList: mockMerkleTree,
+      totalUnits: "100000000",
+    };
+    const response = await controller.storeAllowList(requestBody);
 
-    expect(storeBlobMock.callCount).to.eq(1);
+    expect(response.success).to.be.false;
+    expect(response.data).to.be.undefined;
+    expect(response.errors).to.deep.eq({
+      allowList: "Error uploading data",
+    });
+  });
+});
+
+describe("Allow list validation at v1/allowlists/validate", async () => {
+  const controller = new AllowListController();
+
+  test("Validates correctness of allowlist and returns results", async () => {
+    const requestBody = {
+      allowList: mockMerkleTree,
+      totalUnits: "100",
+    };
+    const response = await controller.validateAllowList(requestBody);
+    expect(response.valid).to.be.true;
+    expect(response.success).to.be.true;
+    expect(response.message).to.be.eq(
+      "Allowlist is a valid hypercerts allowlist object.",
+    );
   });
 
-  it("GET allowlist not allowed - 405", async () => {
-    const { req, res } = mockRequestResponse();
-    req.method = "GET";
-    await allowlistHandler(req, res);
+  test("Returns errors and message when allowlist is invalid", async () => {
+    const requestBody = {
+      allowList: incorrectMerkleTree,
+      totalUnits: "100",
+    };
+    const response = await controller.validateAllowList(requestBody);
 
-    expect(res.statusCode).to.eq(405);
-    expect(res.getHeaders()).to.deep.eq({ "content-type": "application/json" });
-    expect(res.statusMessage).to.eq("OK");
-
-    //TODO better typing and check on returned CID
-    // @ts-ignore
-    expect(res._getJSONData().message).to.eq("Not allowed");
-
-    expect(storeBlobMock.callCount).to.eq(0);
+    expect(response.success).to.be.true;
+    expect(response.valid).to.be.false;
+    expect(response.message).to.eq("Errors while validating allow list");
+    expect(response.errors).to.deep.eq({
+      allowListData: "Data could not be parsed to OpenZeppelin MerkleTree",
+    });
   });
 
-  it("POST incorrect allowlist - 400", async () => {
-    const { req, res } = mockRequestResponse();
-    req.body = { allowList: data.someData.data, totalUnits: 100n };
-    await allowlistHandler(req, res);
+  test("Returns errors and message when total units doesn't match allow list", async () => {
+    const requestBody = {
+      allowList: mockMerkleTree,
+      totalUnits: "99",
+    };
+    const response = await controller.validateAllowList(requestBody);
 
-    expect(res.statusCode).to.eq(400);
-    expect(res.getHeaders()).to.deep.eq({ "content-type": "application/json" });
-    expect(res.statusMessage).to.eq("OK");
-
-    //TODO better typing and check on returned CID
-    // @ts-ignore
-    expect(res._getJSONData().message).to.eq("Not a valid merkle tree object");
-  });
-
-  it("POST upload allowlist fails - 500", async () => {
-    const { req, res } = mockRequestResponse();
-    storeBlobMock.rejects();
-    await allowlistHandler(req, res);
-
-    expect(res.statusCode).to.eq(500);
-    expect(res.getHeaders()).to.deep.eq({ "content-type": "application/json" });
-    expect(res.statusMessage).to.eq("OK");
-
-    //TODO better typing and check on returned CID
-    // @ts-ignore
-    expect(res._getJSONData().message).to.eq("Error uploading data");
-
-    expect(storeBlobMock.callCount).to.eq(1);
+    expect(response.success).to.be.true;
+    expect(response.valid).to.be.false;
+    expect(response.message).to.eq("Errors while validating allow list");
+    expect(response.errors).to.deep.eq({
+      units:
+        "Total units in allowlist must match total units [expected: 99, got: 100]",
+    });
   });
 });

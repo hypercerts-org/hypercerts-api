@@ -38,26 +38,35 @@ export class AllowListController extends Controller {
   ): Promise<StorageResponse> {
     const storage = await StorageService.init();
 
-    const result = parseAndValidateMerkleTree(requestBody);
+    try {
+      const result = parseAndValidateMerkleTree(requestBody);
 
-    if (!result.valid || !result.data) {
-      this.setStatus(422);
+      if (!result.valid || !result.data) {
+        this.setStatus(422);
+        return {
+          success: false,
+          message: "Errors while validating allow list",
+          errors: result.errors,
+        };
+      }
+
+      const cid = await storage.uploadFile({
+        file: jsonToBlob(requestBody.allowList),
+      });
+      this.setStatus(201);
+
+      return {
+        success: true,
+        data: cid,
+      };
+    } catch (error) {
+      this.setStatus(500);
       return {
         success: false,
-        message: "Errors while validating allow list",
-        errors: result.errors,
+        message: "Error uploading data",
+        errors: { allowList: "Error uploading data" },
       };
     }
-
-    const cid = await storage.uploadFile({
-      file: jsonToBlob(requestBody.allowList),
-    });
-    this.setStatus(201);
-
-    return {
-      success: true,
-      data: cid,
-    };
   }
 
   /**
