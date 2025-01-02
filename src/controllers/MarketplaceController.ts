@@ -15,7 +15,6 @@ import {
   Tags,
 } from "tsoa";
 import { z } from "zod";
-import { ApiResponse } from "../types/api.js";
 
 import { isAddress, verifyMessage } from "viem";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
@@ -23,6 +22,7 @@ import { getFractionsById } from "../utils/getFractionsById.js";
 import { getRpcUrl } from "../utils/getRpcUrl.js";
 import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
 import { getHypercertTokenId } from "../utils/tokenIds.js";
+import { BaseResponse } from "../types/api.js";
 
 export interface CreateOrderRequest {
   signature: string;
@@ -63,7 +63,7 @@ export class MarketplaceController extends Controller {
    */
   @Post("/orders")
   @SuccessResponse(201, "Order created successfully")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Order could not be created",
   })
@@ -263,7 +263,7 @@ export class MarketplaceController extends Controller {
    * Updates and returns the order nonce for a user on a specific chain.
    */
   @Post("/order-nonce")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Order nonce could not be updated",
   })
@@ -360,7 +360,7 @@ export class MarketplaceController extends Controller {
    */
   @Post("/orders/validate")
   @SuccessResponse(200, "Order validated successfully")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Order could not be validated",
   })
@@ -411,7 +411,7 @@ export class MarketplaceController extends Controller {
    */
   @Delete("/orders")
   @SuccessResponse(200, "Order deleted successfully")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Order could not be deleted",
   })

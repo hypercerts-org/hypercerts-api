@@ -10,8 +10,8 @@ import {
 } from "tsoa";
 import type {
   AddOrUpdateUserRequest,
-  AddOrUpdateUserResponse,
-  ApiResponse,
+  BaseResponse,
+  UserResponse,
 } from "../types/api.js";
 import { z } from "zod";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
@@ -25,14 +25,14 @@ export class UserController extends Controller {
    */
   @Post(`{address}`)
   @SuccessResponse(201, "User updated successfully", "application/json")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Errors while validating user",
   })
   public async addOrUpdateUser(
     @Path() address: string,
     @Body() requestBody: AddOrUpdateUserRequest,
-  ): Promise<AddOrUpdateUserResponse> {
+  ): Promise<UserResponse> {
     const inputSchema = z.object({
       display_name: z.string().optional(),
       avatar: z.string().optional(),
@@ -45,7 +45,6 @@ export class UserController extends Controller {
       return {
         success: false,
         message: "Invalid input",
-        data: null,
         errors: JSON.parse(parsedBody.error.toString()),
       };
     }
@@ -77,7 +76,6 @@ export class UserController extends Controller {
       return {
         success: false,
         message: "Invalid signature",
-        data: null,
       };
     }
 
@@ -98,7 +96,6 @@ export class UserController extends Controller {
         return {
           success: false,
           message: "Error adding or updating user",
-          data: null,
         };
       }
 
@@ -114,7 +111,6 @@ export class UserController extends Controller {
       return {
         success: false,
         message: "Error adding or updating user",
-        data: null,
       };
     }
   }
