@@ -1,0 +1,54 @@
+name: "Unit tests"
+on:
+  pull_request:
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    environment: test
+
+    env:
+      PORT: 4000
+      SUPABASE_CACHING_DB_URL: "https://test.supabase.com"
+      SUPABASE_CACHING_ANON_API_KEY: "test"
+      SUPABASE_DATA_DB_URL: "https://test.supabase.com"
+      SUPABASE_DATA_SERVICE_API_KEY: "test"
+      KEY: "test"
+      PROOF: "test"
+
+      ALCHEMY_API_KEY: "test"
+      DRPC_API_KEY: "test"
+      INFURA_API_KEY: "test"
+
+      INDEXER_ENVIRONMENT: "test"
+
+      CACHING_DATABASE_URL: "https://test.supabase.com"
+      DATA_DATABASE_URL: "https://test.supabase.com"
+
+    permissions:
+      # Required to checkout the code
+      contents: read
+      # Required to put a comment into the pull-request
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Install Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: "Run unit tests"
+        run: pnpm test:coverage
+      - name: "Report Coverage"
+        # Set if: always() to also generate the report if tests are failing
+        # Only works if you set `reportOnFailure: true` in your vite config as specified above
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@v2
