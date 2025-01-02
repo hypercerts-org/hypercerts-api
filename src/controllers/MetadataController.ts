@@ -40,46 +40,55 @@ export class MetadataController extends Controller {
     message: "Validation failed",
     errors: { metadata: "Invalid metadata." },
   })
-  public async storeMetadata(
-    @Body() requestBody: StoreMetadataRequest,
-  ): Promise<StorageResponse> {
+  public async storeMetadata(@Body() requestBody: StoreMetadataRequest) {
     const storage = await StorageService.init();
-    const metadataValidationResult = validateMetadataAndClaimdata(
-      requestBody.metadata,
-    );
+    const { metadata } = requestBody;
 
-    if (!metadataValidationResult.valid) {
-      this.setStatus(422);
-      return {
-        success: false,
-        message: "Validation failed",
-        errors: metadataValidationResult.errors,
-      };
-    }
-
-    if (requestBody.metadata.allowList) {
-      const allowListValidationResult = await validateRemoteAllowList(
-        requestBody.metadata.allowList,
-      );
-
-      if (!allowListValidationResult.valid) {
+    try {
+      const metadataValidationResult = validateMetadataAndClaimdata(metadata);
+      if (!metadataValidationResult.valid) {
         this.setStatus(422);
         return {
           success: false,
-          message: "Errors while validating allow list",
-          errors: allowListValidationResult.errors,
+          valid: false,
+          message: "Errors while validating metadata",
+          errors: metadataValidationResult.errors,
         };
       }
-    }
 
-    const cid = await storage.uploadFile({
-      file: jsonToBlob(metadataValidationResult.data),
-    });
-    this.setStatus(201);
-    return {
-      success: true,
-      data: cid,
-    };
+      // Validate allowlist separately if it exists
+      if (metadata.allowList) {
+        const allowListValidationResult = await validateRemoteAllowList(
+          metadata.allowList,
+        );
+        if (!allowListValidationResult.valid) {
+          this.setStatus(422);
+          return {
+            success: false,
+            valid: false,
+            message: "Errors while validating allow list",
+            errors: allowListValidationResult.errors,
+          };
+        }
+      }
+
+      const cid = await storage.uploadFile({
+        file: jsonToBlob(metadataValidationResult.data),
+      });
+      this.setStatus(201);
+
+      return {
+        success: true,
+        data: cid,
+      };
+    } catch (e) {
+      this.setStatus(422);
+      return {
+        success: false,
+        message: "Error while storing metadata",
+        errors: { metadata: (e as Error).message },
+      };
+    }
   }
 
   /**

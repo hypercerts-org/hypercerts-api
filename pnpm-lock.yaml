@@ -267,9 +267,15 @@ importers:
       typescript-eslint:
         specifier: ^7.7.0
         version: 7.7.0(eslint@8.56.0)(typescript@5.5.3)
+      vite-tsconfig-paths:
+        specifier: ^5.1.4
+        version: 5.1.4(typescript@5.5.3)(vite@5.0.11(@types/node@20.10.6))
       vitest:
         specifier: ^1.1.3
         version: 1.1.3(@types/node@20.10.6)
+      vitest-mock-extended:
+        specifier: ^2.0.2
+        version: 2.0.2(typescript@5.5.3)(vitest@1.1.3(@types/node@20.10.6))
 
 packages:
 
@@ -314,6 +320,7 @@ packages:
 
   '@ardatan/relay-compiler@12.0.0':
     resolution: {integrity: sha512-9anThAaj1dQr6IGmzBMcfzOQKTa5artjuPmw8NYK/fiGEMjADbSguBY2FMDykt+QhilR3wc9VA/3yVju7JHg7Q==}
+    hasBin: true
     peerDependencies:
       graphql: '*'
 
@@ -1018,6 +1025,7 @@ packages:
 
   '@graphql-codegen/cli@5.0.2':
     resolution: {integrity: sha512-MBIaFqDiLKuO4ojN6xxG9/xL9wmfD3ZjZ7RsPjwQnSHBCUXnEkdKvX+JVpx87Pq29Ycn8wTJUguXnTZ7Di0Mlw==}
+    hasBin: true
     peerDependencies:
       '@parcel/watcher': ^2.1.0
       graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
@@ -1979,6 +1987,7 @@ packages:
 
   '@openzeppelin/hardhat-upgrades@3.2.1':
     resolution: {integrity: sha512-Zy5M3QhkzwGdpzQmk+xbWdYOGJWjoTvwbBKYLhctu9B91DoprlhDRaZUwCtunwTdynkTDGdVfGr0kIkvycyKjw==}
+    hasBin: true
     peerDependencies:
       '@nomicfoundation/hardhat-ethers': ^3.0.0
       '@nomicfoundation/hardhat-verify': ^2.0.0
@@ -2319,6 +2328,7 @@ packages:
   '@snaplet/seed@0.97.20':
     resolution: {integrity: sha512-+lnqESgwP92O1266vsTyoRgrg4hMCUTybBUxDT1ICMBFcvdjgwcOaUt8Xjj81YvxYkZlu5+TTBIjyNQT4nP4jQ==}
     engines: {node: '>=18.5.0'}
+    hasBin: true
     peerDependencies:
       '@prisma/client': '>=5'
       '@snaplet/copycat': '>=2'
@@ -2377,6 +2387,7 @@ packages:
   '@swc/cli@0.3.12':
     resolution: {integrity: sha512-h7bvxT+4+UDrLWJLFHt6V+vNAcUNii2G4aGSSotKz1ECEk4MyEh5CWxmeSscwuz5K3i+4DWTgm4+4EyMCQKn+g==}
     engines: {node: '>= 16.14.0'}
+    hasBin: true
     peerDependencies:
       '@swc/core': ^1.2.66
       chokidar: ^3.5.1
@@ -4521,6 +4532,9 @@ packages:
     resolution: {integrity: sha512-jhIXaOzy1sb8IyocaruWSn1TjmnBVs8Ayhcy83rmxNJ8q2uWKCAj3CnJY+KpGSXCueAPc0i05kVvVKtP1t9S3g==}
     engines: {node: '>=10'}
 
+  globrex@0.1.2:
+    resolution: {integrity: sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==}
+
   gopd@1.0.1:
     resolution: {integrity: sha512-d65bNlIadxvpb/A2abVdlqKqV563juRnZ1Wtk6s1sIR8uNsXR70xqIzVqxVf1eTqDunwT2MkczEeaezCKTZhwA==}
 
@@ -4533,6 +4547,7 @@ packages:
 
   gql.tada@1.8.3:
     resolution: {integrity: sha512-0H81I3M54jKTDHbnNWhXDf57Ie2d2raxnFCc93zdYjXHnrXe522jrio9AAFwqBlGx/xtaP3ILSSUw7J9H31LAA==}
+    hasBin: true
     peerDependencies:
       typescript: ^5.0.0
 
@@ -4614,6 +4629,7 @@ packages:
 
   hardhat@2.22.16:
     resolution: {integrity: sha512-d52yQZ09u0roL6GlgJSvtknsBtIuj9JrJ/U8VMzr/wue+gO5v2tQayvOX6llerlR57Zw2EOTQjLAt6RpHvjwHA==}
+    hasBin: true
     peerDependencies:
       ts-node: '*'
       typescript: '*'
@@ -6841,6 +6857,14 @@ packages:
     resolution: {integrity: sha512-WZ/iAJrKDhdINv1WG6KZIGHrZDar6VfhftG1QJFpVbOYZMYJLJOvZOo1amictRXVdBXZIgBHKswMTXzElngprA==}
     engines: {node: '>=14.13.1'}
 
+  ts-essentials@10.0.4:
+    resolution: {integrity: sha512-lwYdz28+S4nicm+jFi6V58LaAIpxzhg9rLdgNC1VsdP/xiFBseGhF1M/shwCk6zMmwahBZdXcl34LVHrEang3A==}
+    peerDependencies:
+      typescript: '>=4.5.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   ts-invariant@0.4.4:
     resolution: {integrity: sha512-uEtWkFM/sdZvRNNDL3Ehu4WVpwaulhwQszV8mrtcdeE8nN00BV9mAmQ88RkrBhFgl9gMgvjJLAQcZbnPXI9mlA==}
 
@@ -6852,6 +6876,7 @@ packages:
 
   ts-node@10.9.2:
     resolution: {integrity: sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==}
+    hasBin: true
     peerDependencies:
       '@swc/core': '>=1.2.50'
       '@swc/wasm': '>=1.2.50'
@@ -6861,6 +6886,16 @@ packages:
       '@swc/core':
         optional: true
       '@swc/wasm':
+        optional: true
+
+  tsconfck@3.1.4:
+    resolution: {integrity: sha512-kdqWFGVJqe+KGYvlSO9NIaWn9jT1Ny4oKVzAJsKii5eoE9snzTJzL4+MMVOMn+fikWGFmKEylcXL710V/kIPJQ==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+    peerDependencies:
+      typescript: ^5.0.0
+    peerDependenciesMeta:
+      typescript:
         optional: true
 
   tsconfig-paths@4.2.0:
@@ -6967,6 +7002,7 @@ packages:
   typedoc@0.26.5:
     resolution: {integrity: sha512-Vn9YKdjKtDZqSk+by7beZ+xzkkr8T8CYoiasqyt4TTRFy5+UHzL/mF/o4wGBjRF+rlWQHDb0t6xCpA3JNL5phg==}
     engines: {node: '>= 18'}
+    hasBin: true
     peerDependencies:
       typescript: 4.6.x || 4.7.x || 4.8.x || 4.9.x || 5.0.x || 5.1.x || 5.2.x || 5.3.x || 5.4.x || 5.5.x
 
@@ -7065,6 +7101,7 @@ packages:
 
   update-browserslist-db@1.0.13:
     resolution: {integrity: sha512-xebP81SNcPuNpPP3uzeW1NYXxI3rxyJzF3pD6sH4jE7o/IX+WtSpwnVU+qIsDPyk0d3hmFQ7mjqc6AtV604hbg==}
+    hasBin: true
     peerDependencies:
       browserslist: '>= 4.21.0'
 
@@ -7150,9 +7187,18 @@ packages:
     resolution: {integrity: sha512-BLSO72YAkIUuNrOx+8uznYICJfTEbvBAmWClY3hpath5+h1mbPS5OMn42lrTxXuyCazVyZoDkSRnju78GiVCqA==}
     engines: {node: ^18.0.0 || >=20.0.0}
 
+  vite-tsconfig-paths@5.1.4:
+    resolution: {integrity: sha512-cYj0LRuLV2c2sMqhqhGpaO3LretdtMn/BVX4cPLanIZuwwrkVl+lK84E/miEXkCHWXuq65rhNN4rXsBcOB3S4w==}
+    peerDependencies:
+      vite: '*'
+    peerDependenciesMeta:
+      vite:
+        optional: true
+
   vite@5.0.11:
     resolution: {integrity: sha512-XBMnDjZcNAw/G1gEiskiM1v6yzM4GE5aMGvhWTlHAYYhxb7S3/V1s3m2LDHa8Vh6yIWYYB0iJwsEaS523c4oYA==}
     engines: {node: ^18.0.0 || >=20.0.0}
+    hasBin: true
     peerDependencies:
       '@types/node': ^18.0.0 || >=20.0.0
       less: '*'
@@ -7177,9 +7223,16 @@ packages:
       terser:
         optional: true
 
+  vitest-mock-extended@2.0.2:
+    resolution: {integrity: sha512-n3MBqVITKyclZ0n0y66hkT4UiiEYFQn9tteAnIxT0MPz1Z8nFcPUG3Cf0cZOyoPOj/cq6Ab1XFw2lM/qM5EDWQ==}
+    peerDependencies:
+      typescript: 3.x || 4.x || 5.x
+      vitest: '>=2.0.0'
+
   vitest@1.1.3:
     resolution: {integrity: sha512-2l8om1NOkiA90/Y207PsEvJLYygddsOyr81wLQ20Ra8IlLKbyQncWsGZjnbkyG2KwwuTXLQjEPOJuxGMG8qJBQ==}
     engines: {node: ^18.0.0 || >=20.0.0}
+    hasBin: true
     peerDependencies:
       '@edge-runtime/vm': '*'
       '@types/node': ^18.0.0 || >=20.0.0
@@ -7569,7 +7622,7 @@ snapshots:
       '@babel/traverse': 7.23.9
       '@babel/types': 7.23.9
       convert-source-map: 2.0.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.6
       gensync: 1.0.0-beta.2
       json5: 2.2.3
       semver: 6.3.1
@@ -7871,7 +7924,7 @@ snapshots:
       '@babel/helper-split-export-declaration': 7.22.6
       '@babel/parser': 7.24.7
       '@babel/types': 7.23.9
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.6
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
@@ -10975,7 +11028,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/typescript-estree': 7.7.0(typescript@5.5.3)
       '@typescript-eslint/utils': 7.7.0(eslint@8.56.0)(typescript@5.5.3)
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.6
       eslint: 8.56.0
       ts-api-utils: 1.3.0(typescript@5.5.3)
     optionalDependencies:
@@ -10989,7 +11042,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 7.7.0
       '@typescript-eslint/visitor-keys': 7.7.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.6
       globby: 11.1.0
       is-glob: 4.0.3
       minimatch: 9.0.4
@@ -11377,7 +11430,7 @@ snapshots:
 
   agent-base@7.1.0:
     dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.6
     transitivePeerDependencies:
       - supports-color
 
@@ -13236,6 +13289,8 @@ snapshots:
       merge2: 1.4.1
       slash: 3.0.0
 
+  globrex@0.1.2: {}
+
   gopd@1.0.1:
     dependencies:
       get-intrinsic: 1.2.4
@@ -13518,7 +13573,7 @@ snapshots:
   http-proxy-agent@7.0.2:
     dependencies:
       agent-base: 7.1.0
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.6
     transitivePeerDependencies:
       - supports-color
 
@@ -15117,7 +15172,7 @@ snapshots:
 
   require-in-the-middle@7.3.0:
     dependencies:
-      debug: 4.3.4(supports-color@8.1.1)
+      debug: 4.3.6
       module-details-from-path: 1.0.3
       resolve: 1.22.8
     transitivePeerDependencies:
@@ -15771,6 +15826,10 @@ snapshots:
 
   ts-deepmerge@7.0.0: {}
 
+  ts-essentials@10.0.4(typescript@5.5.3):
+    optionalDependencies:
+      typescript: 5.5.3
+
   ts-invariant@0.4.4:
     dependencies:
       tslib: 1.14.1
@@ -15841,6 +15900,10 @@ snapshots:
       yn: 3.1.1
     optionalDependencies:
       '@swc/core': 1.6.5
+
+  tsconfck@3.1.4(typescript@5.5.3):
+    optionalDependencies:
+      typescript: 5.5.3
 
   tsconfig-paths@4.2.0:
     dependencies:
@@ -16138,6 +16201,17 @@ snapshots:
       - supports-color
       - terser
 
+  vite-tsconfig-paths@5.1.4(typescript@5.5.3)(vite@5.0.11(@types/node@20.10.6)):
+    dependencies:
+      debug: 4.3.6
+      globrex: 0.1.2
+      tsconfck: 3.1.4(typescript@5.5.3)
+    optionalDependencies:
+      vite: 5.0.11(@types/node@20.10.6)
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
   vite@5.0.11(@types/node@20.10.6):
     dependencies:
       esbuild: 0.19.11
@@ -16146,6 +16220,12 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.10.6
       fsevents: 2.3.3
+
+  vitest-mock-extended@2.0.2(typescript@5.5.3)(vitest@1.1.3(@types/node@20.10.6)):
+    dependencies:
+      ts-essentials: 10.0.4(typescript@5.5.3)
+      typescript: 5.5.3
+      vitest: 1.1.3(@types/node@20.10.6)
 
   vitest@1.1.3(@types/node@20.10.6):
     dependencies:
