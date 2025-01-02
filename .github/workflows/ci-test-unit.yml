@@ -16,7 +16,7 @@ jobs:
       KEY: "test"
       PROOF: "test"
 
-      ALCHEMY_API_KEY: "test"
+      ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
       DRPC_API_KEY: "test"
       INFURA_API_KEY: "test"
 
