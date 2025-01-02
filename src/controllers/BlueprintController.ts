@@ -10,7 +10,7 @@ import {
   Tags,
 } from "tsoa";
 import type {
-  AddOrCreateBlueprintResponse,
+  BlueprintResponse,
   ApiResponse,
   BlueprintCreateRequest,
   BlueprintDeleteRequest,
@@ -36,7 +36,7 @@ export class BlueprintController extends Controller {
   })
   public async createBlueprint(
     @Body() requestBody: BlueprintCreateRequest,
-  ): Promise<AddOrCreateBlueprintResponse> {
+  ): Promise<BlueprintResponse> {
     const inputSchema = z.object({
       form_values: z.object({
         title: z
@@ -131,7 +131,6 @@ export class BlueprintController extends Controller {
       return {
         success: false,
         message: "Invalid input",
-        data: null,
         errors: JSON.parse(parsedBody.error.toString()),
       };
     }
@@ -316,7 +315,7 @@ export class BlueprintController extends Controller {
   public async mintBlueprint(
     @Path() blueprintId: number,
     @Body() requestBody: BlueprintQueueMintRequest,
-  ): Promise<AddOrCreateBlueprintResponse> {
+  ): Promise<BlueprintResponse> {
     const inputSchema = z.object({
       signature: z.string(),
       chain_id: z.number(),
@@ -331,7 +330,6 @@ export class BlueprintController extends Controller {
       return {
         success: false,
         message: "Invalid input",
-        data: null,
         errors: JSON.parse(parsedBody.error.toString()),
       };
     }

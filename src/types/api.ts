@@ -5,6 +5,23 @@ import type { HypercertMetadata } from "@hypercerts-org/sdk";
  * Currently tsoa doesn't work with zod inferred types.
  * See https://github.com/lukeautry/tsoa/issues/1256.
  */
+// Base response type for all API responses
+export interface ApiResponse {
+  success: boolean; // Whether the API call itself succeeded
+  message?: string; // Human readable message about the operation
+  errors?: Record<string, string | string[]>; // Any errors that occurred
+}
+
+// Response for operations that return data
+export interface DataResponse<T> extends ApiResponse {
+  data?: T;
+}
+
+// Response specifically for validation operations
+export interface ValidationResponse extends ApiResponse {
+  valid: boolean; // Whether the validated content is valid
+  data?: unknown; // Optional validated/transformed data
+}
 
 /**
  * Interface for storing metadata on IPFS.
@@ -51,33 +68,17 @@ export interface ValidateMetadataWithAllowlistRequest
     ValidateAllowListRequest {}
 
 /**
- * Interface for a generic API response.
- */
-export type ApiResponse<T = void> = {
-  success: boolean;
-  data?: T;
-  message?: string;
-  errors?: Record<string, string | string[]> | Error[];
-};
-
-/**
  * Interface for a storage response.
  */
-export type StorageResponse = ApiResponse<{ cid: string }>;
+export interface StorageResponse extends DataResponse<{ cid: string }> {}
 
 /**
  * Interface for a validation response.
  */
-export type ValidationResult<T = void> = {
-  valid: boolean;
-  data?: T;
-  errors?: Record<string, string | string[]>;
-};
-
-/**
- * Interface for a validation response.
- */
-export type ValidationResponse = ApiResponse<ValidationResult>;
+export interface ValidationResponse extends ApiResponse {
+  valid: boolean; // Whether the validated content is valid
+  data?: unknown; // Optional validated/transformed data
+}
 
 /**
  * Interface for a user add or update request.
@@ -102,14 +103,13 @@ export type AddOrUpdateUserRequest =
   | EOAUserUpsertRequest
   | MultisigUserUpsertRequest;
 
-export type AddOrUpdateUserResponse = ApiResponse<{ address: string } | null>;
+export interface UserResponse extends DataResponse<{ address: string }> {}
 
 /**
  * Interface for a blueprint add or update request.
  */
-export type AddOrCreateBlueprintResponse = ApiResponse<{
-  blueprint_id: number;
-} | null>;
+export interface BlueprintResponse
+  extends DataResponse<{ blueprint_id: number }> {}
 
 export type BlueprintDeleteRequest = {
   signature: string;
@@ -120,9 +120,7 @@ export type BlueprintDeleteRequest = {
 /**
  * Response for a created hyperboard
  */
-export type HyperboardCreateResponse = ApiResponse<{
-  id: string;
-} | null>;
+export interface HyperboardResponse extends DataResponse<{ id: string }> {}
 
 /**
  * Interface for creating a hyperboard

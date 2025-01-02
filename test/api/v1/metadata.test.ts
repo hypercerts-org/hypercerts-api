@@ -69,24 +69,21 @@ describe("Metadata validation at v1/metadata/validate", async () => {
   const controller = new MetadataController();
 
   test("Validates a metadata set and returns results", async () => {
-    const requestBody = mockMetadata;
+    const response = await controller.validateMetadata({
+      metadata: mockMetadata,
+    });
 
-    const response = await controller.validateMetadata(requestBody);
-
-    expect(response.valid).to.be.true;
     expect(response.success).to.be.true;
     expect(response.message).to.be.eq("Metadata is valid hypercert metadata");
   });
 
   test("Returns errors and message when metadata is invalid", async () => {
-    const requestBody = incorrectMetadata;
-
-    const response = await controller.validateMetadata(requestBody);
+    const response = await controller.validateMetadata({
+      metadata: incorrectMetadata,
+    });
 
     expect(response.success).to.be.true;
-    expect(response.message).to.eq(
-      "Errors while validating metadata and/or allow list",
-    );
+    expect(response.message).to.eq("Errors while validating metadata");
     expect(response.errors).to.deep.eq({
       metadata: "Provided metadata is not a valid hypercert metadata object",
     });

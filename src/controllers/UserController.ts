@@ -12,8 +12,8 @@ import {
 
 import type {
   AddOrUpdateUserRequest,
-  AddOrUpdateUserResponse,
   ApiResponse,
+  UserResponse,
 } from "../types/api.js";
 import { UserUpsertError } from "../lib/users/errors.js";
 import { USER_UPDATE_REQUEST_SCHEMA } from "../lib/users/schemas.js";
@@ -48,7 +48,7 @@ export class UserController extends Controller {
   public async addOrUpdateUser(
     @Path() address: string,
     @Body() requestBody: AddOrUpdateUserRequest,
-  ): Promise<AddOrUpdateUserResponse> {
+  ): Promise<UserResponse> {
     try {
       const parsedBody = parseInput(requestBody);
       const strategy = createStrategy(address, parsedBody);
@@ -73,7 +73,6 @@ export class UserController extends Controller {
       return {
         success: false,
         message: error.message,
-        data: null,
         errors: error.errors,
       };
     }
@@ -86,7 +85,6 @@ export class UserController extends Controller {
     return {
       success: false,
       message: "Error adding or updating user",
-      data: null,
     };
   }
 }
