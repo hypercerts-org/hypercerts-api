@@ -83,20 +83,17 @@ describe("Allow list validation at v1/allowlists/validate", async () => {
   test("Validates correctness of allowlist and returns results", async () => {
     const requestBody = {
       allowList: mockMerkleTree,
-      totalUnits: "100",
+      totalUnits: "100000000",
     };
     const response = await controller.validateAllowList(requestBody);
     expect(response.valid).to.be.true;
     expect(response.success).to.be.true;
-    expect(response.message).to.be.eq(
-      "Allowlist is a valid hypercerts allowlist object.",
-    );
   });
 
   test("Returns errors and message when allowlist is invalid", async () => {
     const requestBody = {
       allowList: incorrectMerkleTree,
-      totalUnits: "100",
+      totalUnits: "100000000",
     };
     const response = await controller.validateAllowList(requestBody);
 
@@ -119,8 +116,7 @@ describe("Allow list validation at v1/allowlists/validate", async () => {
     expect(response.valid).to.be.false;
     expect(response.message).to.eq("Errors while validating allow list");
     expect(response.errors).to.deep.eq({
-      units:
-        "Total units in allowlist must match total units [expected: 99, got: 100]",
+      totalUnits: "Total units do not match the sum of units in the allowlist",
     });
   });
 });

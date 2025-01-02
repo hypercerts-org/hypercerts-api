@@ -85,22 +85,32 @@ export class AllowListController extends Controller {
   public async validateAllowList(
     @Body() requestBody: ValidateAllowListRequest,
   ): Promise<ValidationResponse> {
-    const result = parseAndValidateMerkleTree(requestBody);
+    try {
+      const result = parseAndValidateMerkleTree(requestBody);
 
-    if (!result.valid || !result.data) {
-      this.setStatus(422);
+      if (!result.valid || !result.data) {
+        this.setStatus(422);
+        return {
+          success: true,
+          valid: false,
+          message: "Errors while validating allow list",
+          errors: result.errors,
+        };
+      }
+
+      this.setStatus(201);
+      return {
+        success: true,
+        valid: true,
+      };
+    } catch (error) {
+      this.setStatus(500);
       return {
         success: false,
         valid: false,
-        message: "Errors while validating allow list",
-        errors: result.errors,
+        message: "Error uploading data",
+        errors: { allowList: "Error uploading data" },
       };
     }
-
-    this.setStatus(201);
-    return {
-      success: true,
-      valid: true,
-    };
   }
 }
