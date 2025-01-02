@@ -10,11 +10,11 @@ import {
   Tags,
 } from "tsoa";
 import type {
-  AddOrCreateBlueprintResponse,
-  ApiResponse,
+  BlueprintResponse,
   BlueprintCreateRequest,
   BlueprintDeleteRequest,
   BlueprintQueueMintRequest,
+  BaseResponse,
 } from "../types/api.js";
 import { z } from "zod";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
@@ -29,14 +29,14 @@ import { waitForTxThenMintBlueprint } from "../utils/waitForTxThenMintBlueprint.
 export class BlueprintController extends Controller {
   @Post()
   @SuccessResponse(201, "Blueprint created successfully")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BlueprintResponse>(422, "Unprocessable content", {
     success: false,
     message: "Validation failed",
     errors: { blueprint: "Invalid blueprint." },
   })
   public async createBlueprint(
     @Body() requestBody: BlueprintCreateRequest,
-  ): Promise<AddOrCreateBlueprintResponse> {
+  ): Promise<BlueprintResponse> {
     const inputSchema = z.object({
       form_values: z.object({
         title: z
@@ -131,7 +131,6 @@ export class BlueprintController extends Controller {
       return {
         success: false,
         message: "Invalid input",
-        data: null,
         errors: JSON.parse(parsedBody.error.toString()),
       };
     }
@@ -212,7 +211,7 @@ export class BlueprintController extends Controller {
   // Delete blueprint method
   @Delete("{blueprintId}")
   @SuccessResponse(200, "Blueprint deleted successfully")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Validation failed",
     errors: { blueprint: "Invalid blueprint." },
@@ -308,7 +307,7 @@ export class BlueprintController extends Controller {
 
   @Post("mint/{blueprintId}")
   @SuccessResponse(201, "Blueprint minted successfully")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Validation failed",
     errors: { blueprint: "Invalid blueprint." },
@@ -316,7 +315,7 @@ export class BlueprintController extends Controller {
   public async mintBlueprint(
     @Path() blueprintId: number,
     @Body() requestBody: BlueprintQueueMintRequest,
-  ): Promise<AddOrCreateBlueprintResponse> {
+  ): Promise<BlueprintResponse> {
     const inputSchema = z.object({
       signature: z.string(),
       chain_id: z.number(),
@@ -331,7 +330,6 @@ export class BlueprintController extends Controller {
       return {
         success: false,
         message: "Invalid input",
-        data: null,
         errors: JSON.parse(parsedBody.error.toString()),
       };
     }

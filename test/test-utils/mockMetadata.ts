@@ -64,4 +64,9 @@ const jsonContent = `{
   }
 }`;
 
-export const mockMetadata = JSON.parse(jsonContent);
+const mockMetadata = JSON.parse(jsonContent);
+
+const incorrectMetadata = JSON.parse(jsonContent);
+incorrectMetadata.hypercert = "";
+
+export { mockMetadata, incorrectMetadata };

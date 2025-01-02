@@ -25,42 +25,16 @@
 				"type": "object",
 				"description": "Construct a type with a set of properties K of type T"
 			},
-			"Error": {
+			"UserResponse": {
 				"properties": {
-					"name": {
-						"type": "string"
+					"success": {
+						"type": "boolean"
 					},
 					"message": {
 						"type": "string"
 					},
-					"stack": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"name",
-					"message"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"ApiResponse__address-string_-or-null_": {
-				"properties": {
 					"errors": {
-						"anyOf": [
-							{
-								"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
-							},
-							{
-								"items": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"type": "array"
-							}
-						]
-					},
-					"message": {
-						"type": "string"
+						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
 					},
 					"data": {
 						"properties": {
@@ -71,50 +45,32 @@
 						"required": [
 							"address"
 						],
-						"type": "object",
-						"nullable": true
-					},
-					"success": {
-						"type": "boolean"
+						"type": "object"
 					}
 				},
 				"required": [
 					"success"
 				],
 				"type": "object",
-				"description": "Interface for a generic API response."
+				"additionalProperties": false
 			},
-			"AddOrUpdateUserResponse": {
-				"$ref": "#/components/schemas/ApiResponse__address-string_-or-null_"
-			},
-			"ApiResponse": {
+			"BaseResponse": {
 				"properties": {
-					"errors": {
-						"anyOf": [
-							{
-								"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
-							},
-							{
-								"items": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"type": "array"
-							}
-						]
+					"success": {
+						"type": "boolean"
 					},
 					"message": {
 						"type": "string"
 					},
-					"data": {},
-					"success": {
-						"type": "boolean"
+					"errors": {
+						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
 					}
 				},
 				"required": [
 					"success"
 				],
 				"type": "object",
-				"description": "Interface for a generic API response."
+				"additionalProperties": false
 			},
 			"EOAUserUpsertRequest": {
 				"properties": {
@@ -202,49 +158,6 @@
 				],
 				"type": "object",
 				"additionalProperties": false
-			},
-			"ApiResponse__cid-string__": {
-				"properties": {
-					"errors": {
-						"anyOf": [
-							{
-								"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
-							},
-							{
-								"items": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"type": "array"
-							}
-						]
-					},
-					"message": {
-						"type": "string"
-					},
-					"data": {
-						"properties": {
-							"cid": {
-								"type": "string"
-							}
-						},
-						"required": [
-							"cid"
-						],
-						"type": "object"
-					},
-					"success": {
-						"type": "boolean"
-					}
-				},
-				"required": [
-					"success"
-				],
-				"type": "object",
-				"description": "Interface for a generic API response."
-			},
-			"StorageResponse": {
-				"$ref": "#/components/schemas/ApiResponse__cid-string__",
-				"description": "Interface for a storage response."
 			},
 			"HypercertClaimdata": {
 				"description": "Properties of an impact claim",
@@ -453,7 +366,6 @@
 				"additionalProperties": false
 			},
 			"StoreMetadataRequest": {
-				"description": "Interface for storing metadata on IPFS.",
 				"properties": {
 					"metadata": {
 						"$ref": "#/components/schemas/HypercertMetadata"
@@ -465,8 +377,36 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"StorageResponse": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					},
+					"errors": {
+						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+					},
+					"data": {
+						"properties": {
+							"cid": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"cid"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"success"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"StoreMetadataWithAllowlistRequest": {
-				"description": "Interface for storing metadata and allow list dump on IPFS.",
 				"properties": {
 					"metadata": {
 						"$ref": "#/components/schemas/HypercertMetadata"
@@ -485,59 +425,30 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"ValidationResult": {
+			"ValidationResponse": {
 				"properties": {
-					"errors": {
-						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
-					},
-					"data": {},
-					"valid": {
+					"success": {
 						"type": "boolean"
-					}
-				},
-				"required": [
-					"valid"
-				],
-				"type": "object",
-				"description": "Interface for a validation response."
-			},
-			"ApiResponse_ValidationResult_": {
-				"properties": {
-					"errors": {
-						"anyOf": [
-							{
-								"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
-							},
-							{
-								"items": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"type": "array"
-							}
-						]
 					},
 					"message": {
 						"type": "string"
 					},
-					"data": {
-						"$ref": "#/components/schemas/ValidationResult"
+					"errors": {
+						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
 					},
-					"success": {
+					"valid": {
 						"type": "boolean"
-					}
+					},
+					"data": {}
 				},
 				"required": [
-					"success"
+					"success",
+					"valid"
 				],
 				"type": "object",
-				"description": "Interface for a generic API response."
-			},
-			"ValidationResponse": {
-				"$ref": "#/components/schemas/ApiResponse_ValidationResult_",
-				"description": "Interface for a validation response."
+				"additionalProperties": false
 			},
 			"ValidateMetadataRequest": {
-				"description": "Interface for validating metadata.",
 				"properties": {
 					"metadata": {
 						"$ref": "#/components/schemas/HypercertMetadata"
@@ -733,23 +644,16 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"ApiResponse__id-string_-or-null_": {
+			"HyperboardResponse": {
 				"properties": {
-					"errors": {
-						"anyOf": [
-							{
-								"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
-							},
-							{
-								"items": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"type": "array"
-							}
-						]
+					"success": {
+						"type": "boolean"
 					},
 					"message": {
 						"type": "string"
+					},
+					"errors": {
+						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
 					},
 					"data": {
 						"properties": {
@@ -760,25 +664,16 @@
 						"required": [
 							"id"
 						],
-						"type": "object",
-						"nullable": true
-					},
-					"success": {
-						"type": "boolean"
+						"type": "object"
 					}
 				},
 				"required": [
 					"success"
 				],
 				"type": "object",
-				"description": "Interface for a generic API response."
-			},
-			"HyperboardCreateResponse": {
-				"$ref": "#/components/schemas/ApiResponse__id-string_-or-null_",
-				"description": "Response for a created hyperboard"
+				"additionalProperties": false
 			},
 			"HyperboardCreateRequest": {
-				"description": "Interface for creating a hyperboard",
 				"properties": {
 					"chainIds": {
 						"items": {
@@ -877,7 +772,6 @@
 				"additionalProperties": false
 			},
 			"HyperboardUpdateRequest": {
-				"description": "Interface for updating a hyperboard",
 				"properties": {
 					"chainIds": {
 						"items": {
@@ -979,23 +873,16 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"ApiResponse__blueprint_id-number_-or-null_": {
+			"BlueprintResponse": {
 				"properties": {
-					"errors": {
-						"anyOf": [
-							{
-								"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
-							},
-							{
-								"items": {
-									"$ref": "#/components/schemas/Error"
-								},
-								"type": "array"
-							}
-						]
+					"success": {
+						"type": "boolean"
 					},
 					"message": {
 						"type": "string"
+					},
+					"errors": {
+						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
 					},
 					"data": {
 						"properties": {
@@ -1007,22 +894,14 @@
 						"required": [
 							"blueprint_id"
 						],
-						"type": "object",
-						"nullable": true
-					},
-					"success": {
-						"type": "boolean"
+						"type": "object"
 					}
 				},
 				"required": [
 					"success"
 				],
 				"type": "object",
-				"description": "Interface for a generic API response."
-			},
-			"AddOrCreateBlueprintResponse": {
-				"$ref": "#/components/schemas/ApiResponse__blueprint_id-number_-or-null_",
-				"description": "Interface for a blueprint add or update request."
+				"additionalProperties": false
 			},
 			"BlueprintCreateRequest": {
 				"properties": {
@@ -1053,23 +932,24 @@
 			},
 			"BlueprintDeleteRequest": {
 				"properties": {
-					"admin_address": {
+					"signature": {
 						"type": "string"
 					},
 					"chain_id": {
 						"type": "number",
 						"format": "double"
 					},
-					"signature": {
+					"admin_address": {
 						"type": "string"
 					}
 				},
 				"required": [
-					"admin_address",
+					"signature",
 					"chain_id",
-					"signature"
+					"admin_address"
 				],
-				"type": "object"
+				"type": "object",
+				"additionalProperties": false
 			},
 			"BlueprintQueueMintRequest": {
 				"properties": {
@@ -1097,7 +977,6 @@
 				"additionalProperties": false
 			},
 			"StoreAllowListRequest": {
-				"description": "Interface for storing an allow list dump on IPFS",
 				"properties": {
 					"allowList": {
 						"type": "string"
@@ -1113,7 +992,6 @@
 				"additionalProperties": false
 			},
 			"ValidateAllowListRequest": {
-				"description": "Interface for validating an allow list dump.",
 				"properties": {
 					"allowList": {
 						"type": "string"
@@ -1149,7 +1027,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/AddOrUpdateUserResponse"
+									"$ref": "#/components/schemas/UserResponse"
 								}
 							}
 						}
@@ -1159,7 +1037,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -1328,7 +1206,85 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/StorageResponse"
+									"anyOf": [
+										{
+											"properties": {
+												"data": {},
+												"errors": {},
+												"message": {
+													"type": "string"
+												},
+												"valid": {
+													"type": "boolean"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"message",
+												"valid",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"errors": {},
+												"message": {},
+												"valid": {},
+												"data": {
+													"properties": {
+														"cid": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"cid"
+													],
+													"type": "object"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"data",
+												"success"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"data": {},
+												"valid": {},
+												"errors": {
+													"properties": {
+														"metadata": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"metadata"
+													],
+													"type": "object"
+												},
+												"message": {
+													"type": "string"
+												},
+												"success": {
+													"type": "boolean"
+												}
+											},
+											"required": [
+												"errors",
+												"message",
+												"success"
+											],
+											"type": "object"
+										}
+									]
 								}
 							}
 						}
@@ -1338,7 +1294,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -1394,7 +1350,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -1415,7 +1371,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -1471,7 +1427,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -1527,7 +1483,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -1784,7 +1740,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -1847,7 +1803,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -1948,7 +1904,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -2037,7 +1993,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -2078,7 +2034,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/HyperboardCreateResponse"
+									"$ref": "#/components/schemas/HyperboardResponse"
 								}
 							}
 						}
@@ -2088,7 +2044,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -2129,7 +2085,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse__id-string_-or-null_"
+									"$ref": "#/components/schemas/HyperboardResponse"
 								}
 							}
 						}
@@ -2139,7 +2095,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -2186,7 +2142,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								}
 							}
 						}
@@ -2196,7 +2152,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -2251,7 +2207,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/AddOrCreateBlueprintResponse"
+									"$ref": "#/components/schemas/BlueprintResponse"
 								}
 							}
 						}
@@ -2261,7 +2217,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BlueprintResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -2409,7 +2365,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -2462,7 +2418,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/AddOrCreateBlueprintResponse"
+									"$ref": "#/components/schemas/BlueprintResponse"
 								}
 							}
 						}
@@ -2472,7 +2428,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/BaseResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -2535,7 +2491,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/StorageResponse"
 								},
 								"examples": {
 									"Example 1": {
@@ -2589,12 +2545,13 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/ValidationResponse"
 								},
 								"examples": {
 									"Example 1": {
 										"value": {
 											"success": false,
+											"valid": false,
 											"message": "Metadata validation failed",
 											"errors": {
 												"allowList": "Invalid allowList. Length is  0"
