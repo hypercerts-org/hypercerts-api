@@ -14,7 +14,7 @@ import {
 import type {
   ApiResponse,
   HyperboardCreateRequest,
-  HyperboardCreateResponse,
+  HyperboardResponse,
   HyperboardUpdateRequest,
 } from "../types/api.js";
 import { z } from "zod";
@@ -43,7 +43,7 @@ export class HyperboardController extends Controller {
   })
   public async createHyperboard(
     @Body() requestBody: HyperboardCreateRequest,
-  ): Promise<HyperboardCreateResponse> {
+  ): Promise<HyperboardResponse> {
     const inputSchema = z
       .object({
         chainIds: z
@@ -175,7 +175,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Invalid input",
-        data: null,
         errors: JSON.parse(parsedBody.error.toString()),
       };
     }
@@ -228,7 +227,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Invalid signature",
-        data: null,
       };
     }
 
@@ -262,7 +260,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Error creating hyperboard",
-        data: null,
       };
     }
 
@@ -355,7 +352,6 @@ export class HyperboardController extends Controller {
         return {
           success: false,
           message: "Error updating collection",
-          data: null,
         };
       }
     }
@@ -430,7 +426,6 @@ export class HyperboardController extends Controller {
         return {
           success: false,
           message: "Error creating collection",
-          data: null,
         };
       }
     }
@@ -453,7 +448,7 @@ export class HyperboardController extends Controller {
   public async updateHyperboard(
     @Path() hyperboardId: string,
     @Body() requestBody: HyperboardUpdateRequest,
-  ): Promise<ApiResponse<{ id: string } | null>> {
+  ): Promise<HyperboardResponse> {
     const inputSchema = z
       .object({
         id: z.string().uuid(),
@@ -590,7 +585,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Invalid input",
-        data: null,
         errors: JSON.parse(parsedBody.error.toString()),
       };
     }
@@ -603,7 +597,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Hyperboard not found",
-        data: null,
       };
     }
 
@@ -657,7 +650,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Invalid signature",
-        data: null,
       };
     }
 
@@ -671,7 +663,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Not authorized to update hyperboard",
-        data: null,
       };
     }
 
@@ -692,7 +683,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Error updating hyperboard",
-        data: null,
       };
     }
 
@@ -794,7 +784,6 @@ export class HyperboardController extends Controller {
         return {
           success: false,
           message: "Error updating collection",
-          data: null,
         };
       }
     }
@@ -867,7 +856,6 @@ export class HyperboardController extends Controller {
         return {
           success: false,
           message: "Error creating collection",
-          data: null,
         };
       }
     }
