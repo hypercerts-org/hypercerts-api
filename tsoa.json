@@ -1,8 +1,6 @@
 {
   "entryFile": "src/index.ts",
-  "controllerPathGlobs": [
-    "src/controllers/*Controller.ts"
-  ],
+  "controllerPathGlobs": ["src/controllers/*Controller.ts"],
   "noImplicitAdditionalProperties": "throw-on-extras",
   "spec": {
     "outputDirectory": "src/__generated__",
@@ -16,6 +14,9 @@
   },
   "routes": {
     "routesDir": "src/__generated__/routes",
-    "esm": true
+    "esm": true,
+    "middleware": {
+      "v1/upload": [{ "name": "upload.array", "args": ["files", 5] }]
+    }
   }
 }

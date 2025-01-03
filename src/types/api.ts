@@ -26,6 +26,24 @@ export interface ValidationResponse extends BaseResponse {
 // Storage-related interfaces
 export interface StorageResponse extends DataResponse<{ cid: string }> {}
 
+export interface UploadResponse extends BaseResponse {
+  data?: {
+    results: Array<{
+      cid: string;
+      fileName: string;
+    }>;
+    failed: Array<{
+      fileName: string;
+      error: string;
+    }>;
+  };
+}
+
+// Data-related interfaces
+export interface StoreDataRequest {
+  data: unknown;
+}
+
 export interface StoreMetadataRequest {
   metadata: HypercertMetadata;
 }
