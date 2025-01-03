@@ -3,7 +3,7 @@ import SafeApiKit, { type SafeApiKitConfig } from "@safe-global/api-kit";
 
 import { SignatureRequestPurpose } from "../../graphql/schemas/typeDefs/signatureRequestTypeDefs.js";
 import { SupabaseDataService } from "../../services/SupabaseDataService.js";
-import { AddOrUpdateUserResponse } from "../../types/api.js";
+import { UserResponse } from "../../types/api.js";
 import { isTypedMessage } from "../../utils/signatures.js";
 
 import type { UserUpsertStrategy } from "./UserUpsertStrategy.js";
@@ -45,7 +45,7 @@ export default class MultisigUpdateStrategy implements UserUpsertStrategy {
   }
 
   // We could check if it's a 1 of 1 and execute right away
-  async execute(): Promise<AddOrUpdateUserResponse> {
+  async execute(): Promise<UserResponse> {
     const { message } = await this.safeApiKit.getMessage(
       this.request.messageHash,
     );
@@ -76,7 +76,6 @@ export default class MultisigUpdateStrategy implements UserUpsertStrategy {
     return {
       success: true,
       message: "Signature request created successfully",
-      data: null,
     };
   }
 }
