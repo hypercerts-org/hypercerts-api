@@ -9,7 +9,7 @@ import {
   Tags,
 } from "tsoa";
 import { StorageService } from "../services/StorageService.js";
-import { parseAndValidateMerkleTree } from "../utils/parseAndValidateMerkleTreeDump.js";
+import { parseAndValidateMerkleTree } from "../lib/allowlists/parseAndValidateMerkleTreeDump.js";
 import type {
   StorageResponse,
   StoreAllowListRequest,
