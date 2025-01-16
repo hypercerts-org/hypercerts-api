@@ -46,7 +46,10 @@ export class BlueprintController extends Controller {
           .max(100, "Max 100 characters"),
         logo: z.string().url("Logo URL is not valid"),
         banner: z.string().url("Banner URL is not valid"),
-        cardImage: z.string().url("Card image could not be generated"),
+        cardImage: z
+          .string()
+          .url("Card image could not be generated")
+          .optional(),
         description: z
           .string()
           .trim()
