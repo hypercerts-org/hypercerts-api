@@ -58,7 +58,6 @@ async function main() {
     message: "Enter your private key",
     required: true,
   });
-  // console.log("privateKey", privateKey);
 
   if (!privateKey) {
     console.error("PRIVATE_KEY is not set");
@@ -139,6 +138,7 @@ async function main() {
       work_scope,
       work_time_from,
       work_time_to,
+      recipient,
     } = record;
     const formValues: FormValues = {
       title,
@@ -164,7 +164,7 @@ async function main() {
 
     const blueprint: BlueprintCreateRequest = {
       form_values: formValues,
-      minter_address: account.address,
+      minter_address: recipient,
       admin_address: account.address,
       signature,
       chain_id: chain.id,
