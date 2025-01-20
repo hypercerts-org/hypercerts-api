@@ -28,18 +28,41 @@ export class UploadController extends Controller {
    *
    * @summary Upload files to IPFS
    * @param files - Array of files to upload (max 5 files, 10MB each)
+   * @param jsonData - Optional JSON string with additional metadata
    * @returns Promise containing upload results with CIDs and any failed uploads
    *
    * @example
-   * Request:
+   * Using curl:
+   * ```bash
+   * curl -X POST http://api.example.com/v1/upload \
+   *   -F "files=@/path/to/file1.txt" \
+   *   -F "files=@/path/to/file2.txt" \
+   *   -F "jsonData={\"key\":\"value\"}"
    * ```
-   * POST /v1/upload
-   * Content-Type: multipart/form-data
    *
-   * files: [File, File, ...]
+   * Using HTML Form:
+   * ```html
+   * <form action="/v1/upload" method="post" enctype="multipart/form-data">
+   *   <input type="file" name="files" multiple>
+   *   <input type="hidden" name="jsonData" value='{"key":"value"}'>
+   *   <button type="submit">Upload</button>
+   * </form>
    * ```
    *
-   * Success Response:
+   * Using Fetch API:
+   * ```javascript
+   * const formData = new FormData();
+   * formData.append('files', fileInput.files[0]);
+   * formData.append('files', fileInput.files[1]);
+   * formData.append('jsonData', JSON.stringify({key: 'value'}));
+   *
+   * fetch('/v1/upload', {
+   *   method: 'POST',
+   *   body: formData
+   * });
+   * ```
+   *
+   * Success Response (201):
    * ```json
    * {
    *   "success": true,
@@ -53,7 +76,7 @@ export class UploadController extends Controller {
    * }
    * ```
    *
-   * Partial Success Response:
+   * Partial Success Response (207):
    * ```json
    * {
    *   "success": false,
@@ -67,6 +90,29 @@ export class UploadController extends Controller {
    *     ]
    *   }
    * }
+   * ```
+   *
+   * No Files Error Response (400):
+   * ```json
+   * {
+   *   "success": false,
+   *   "message": "No files uploaded",
+   *   "errors": {
+   *     "upload": "No files uploaded"
+   *   }
+   * }
+   * ```
+   *
+   * Upload Failed Error Response (500):
+   * ```json
+   * {
+   *   "success": false,
+   *   "message": "Upload failed",
+   *   "errors": {
+   *     "upload": "Failed to upload file"
+   *   }
+   * }
+   * ```
    */
   @Post()
   @SuccessResponse(201, "Upload successful")
