@@ -16,6 +16,24 @@ import {
   UploadFailedError,
 } from "../lib/uploads/errors.js";
 
+// Type definitions and guards at module scope
+type UploadResult = {
+  cid: string;
+  fileName: string;
+};
+
+function isSuccessfulUpload(
+  result: PromiseSettledResult<UploadResult>,
+): result is PromiseFulfilledResult<UploadResult> {
+  return result.status === "fulfilled";
+}
+
+function isFailedUpload(
+  result: PromiseSettledResult<UploadResult>,
+): result is PromiseRejectedResult {
+  return result.status === "rejected";
+}
+
 /**
  * Controller handling file uploads to IPFS storage
  * @class UploadController
@@ -156,28 +174,16 @@ export class UploadController extends Controller {
       );
 
       const successful = uploadResults
-        .filter(
-          (
-            result,
-          ): result is PromiseFulfilledResult<{
-            cid: string;
-            fileName: string;
-          }> => result.status === "fulfilled",
-        )
+        .filter(isSuccessfulUpload)
         .map((result) => result.value);
 
-      const failed = uploadResults
-        .filter(
-          (result): result is PromiseRejectedResult =>
-            result.status === "rejected",
-        )
-        .map((result) => {
-          const error = result.reason as UploadFailedError;
-          return {
-            fileName: error.fileName,
-            error: error.errorDetail,
-          };
-        });
+      const failed = uploadResults.filter(isFailedUpload).map((result) => {
+        const error = result.reason as UploadFailedError;
+        return {
+          fileName: error.fileName,
+          error: error.errorDetail,
+        };
+      });
 
       if (failed.length > 0) {
         const data = {
