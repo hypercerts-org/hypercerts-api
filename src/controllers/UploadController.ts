@@ -14,6 +14,7 @@ import {
   NoFilesUploadedError,
   PartialUploadError,
   UploadFailedError,
+  SingleUploadFailedError,
 } from "../lib/uploads/errors.js";
 
 // Type definitions and guards at module scope
@@ -80,31 +81,37 @@ export class UploadController extends Controller {
    * });
    * ```
    *
-   * Success Response (201):
+   * Full Success Response (201):
    * ```json
    * {
    *   "success": true,
    *   "message": "Upload successful",
+   *   "uploadStatus": "all",
    *   "data": {
    *     "results": [
-   *       { "cid": "Qm...", "fileName": "example.txt" }
+   *       { "cid": "Qm...", "fileName": "example1.txt" },
+   *       { "cid": "Qm...", "fileName": "example2.txt" }
    *     ],
    *     "failed": []
    *   }
    * }
    * ```
    *
-   * Partial Success Response (207):
+   * Multi-Status Response (207):
    * ```json
    * {
    *   "success": false,
    *   "message": "Some uploads failed",
+   *   "uploadStatus": "some",
    *   "data": {
    *     "results": [
    *       { "cid": "Qm...", "fileName": "success.txt" }
    *     ],
    *     "failed": [
-   *       { "fileName": "failed.txt", "error": "Upload failed" }
+   *       {
+   *         "fileName": "failed.txt",
+   *         "error": "File exceeds size limit"
+   *       }
    *     ]
    *   }
    * }
@@ -115,6 +122,7 @@ export class UploadController extends Controller {
    * {
    *   "success": false,
    *   "message": "No files uploaded",
+   *   "uploadStatus": "none",
    *   "errors": {
    *     "upload": "No files uploaded"
    *   }
@@ -164,8 +172,7 @@ export class UploadController extends Controller {
               fileName: file.originalname,
             };
           } catch (error) {
-            throw new UploadFailedError(
-              `Failed to upload file`,
+            throw new SingleUploadFailedError(
               file.originalname,
               (error as Error).message,
             );
@@ -178,7 +185,7 @@ export class UploadController extends Controller {
         .map((result) => result.value);
 
       const failed = uploadResults.filter(isFailedUpload).map((result) => {
-        const error = result.reason as UploadFailedError;
+        const error = result.reason as SingleUploadFailedError;
         return {
           fileName: error.fileName,
           error: error.errorDetail,
@@ -188,18 +195,14 @@ export class UploadController extends Controller {
       if (failed.length > 0) {
         const data = {
           results: successful,
-          failed: failed.map((f) => ({
-            fileName: f.fileName,
-            error: f.error,
-          })),
+          failed: failed,
         };
 
         if (failed.length === uploadResults.length) {
-          throw new UploadFailedError(
-            "All uploads failed",
-            "multiple files",
-            "None of the files could be uploaded",
-          );
+          throw new UploadFailedError("All uploads failed", {
+            results: [],
+            failed: failed, // Preserve all failed upload details
+          });
         }
 
         throw new PartialUploadError("Some uploads failed", data);
@@ -209,6 +212,7 @@ export class UploadController extends Controller {
       return {
         success: true,
         message: "Upload successful",
+        uploadStatus: "all",
         data: {
           results: successful,
           failed: [],
@@ -220,16 +224,51 @@ export class UploadController extends Controller {
         return {
           success: false,
           message: error.message,
-          ...(error.errors && { errors: error.errors }),
-          ...(error instanceof PartialUploadError && { data: error.results }),
+          uploadStatus: error instanceof PartialUploadError ? "some" : "none",
+          errors: error.errors,
+          data:
+            error instanceof PartialUploadError ||
+            error instanceof UploadFailedError
+              ? error.results
+              : {
+                  results: [],
+                  failed: [
+                    {
+                      fileName:
+                        error instanceof SingleUploadFailedError
+                          ? error.fileName
+                          : "unknown",
+                      error:
+                        error instanceof SingleUploadFailedError
+                          ? error.errorDetail
+                          : error.message,
+                    },
+                  ],
+                },
         };
       }
 
-      throw new UploadFailedError(
-        "Upload failed",
-        "unknown file",
-        (error as Error).message,
+      const uploadError = new UploadFailedError(
+        `Upload failed: ${(error as Error).message}`,
+        {
+          results: [],
+          failed: [
+            {
+              fileName: "unknown",
+              error: (error as Error).message,
+            },
+          ],
+        },
       );
+
+      this.setStatus(uploadError.code);
+      return {
+        success: false,
+        message: uploadError.message,
+        uploadStatus: "none",
+        errors: uploadError.errors,
+        data: uploadError.results,
+      };
     }
   }
 }

@@ -28,6 +28,7 @@ describe("File upload at v1/upload", async () => {
     const response = await controller.upload([mockTextFile]);
 
     expect(response.success).to.be.true;
+    expect(response.uploadStatus).to.equal("all");
     expect(response.data).to.not.be.undefined;
     expect(response.data?.results).to.have.lengthOf(1);
     expect(response.data?.results[0]).to.deep.equal({
@@ -51,6 +52,7 @@ describe("File upload at v1/upload", async () => {
     const response = await controller.upload(mockFiles);
 
     expect(response.success).to.be.true;
+    expect(response.uploadStatus).to.equal("all");
     expect(response.data?.results).to.have.lengthOf(2);
     expect(response.data?.results).to.deep.equal([
       { cid: "TEST_CID_1", fileName: "test1.txt" },
@@ -73,6 +75,7 @@ describe("File upload at v1/upload", async () => {
     const response = await controller.upload(mockFiles);
 
     expect(response.success).to.be.false;
+    expect(response.uploadStatus).to.equal("some");
     expect(response.data?.results).to.have.lengthOf(1);
     expect(response.data?.results[0]).to.deep.equal({
       cid: "TEST_CID_1",
@@ -91,6 +94,7 @@ describe("File upload at v1/upload", async () => {
     const response = await controller.upload(undefined);
 
     expect(response.success).to.be.false;
+    expect(response.uploadStatus).to.equal("none");
     expect(response.message).to.equal("No files uploaded");
     expect(response.errors).to.deep.equal({
       upload: "No files uploaded",
@@ -105,12 +109,24 @@ describe("File upload at v1/upload", async () => {
     const response = await controller.upload([mockTextFile]);
 
     expect(response.success).to.be.false;
+    expect(response.uploadStatus).to.equal("none");
     expect(response.data?.results).to.have.lengthOf(0);
     expect(response.data?.failed).to.have.lengthOf(1);
     expect(response.data?.failed[0]).to.deep.equal({
       fileName: "test.txt",
       error: "Storage service unavailable",
     });
+  });
+
+  test("Handles catastrophic failure", async () => {
+    mocks.init.mockRejectedValue(new Error("Service initialization failed"));
+
+    const response = await controller.upload([mockTextFile]);
+
+    expect(response.success).to.be.false;
+    expect(response.uploadStatus).to.equal("none");
+    expect(response.message).to.include("Upload failed");
+    expect(response.errors?.upload).to.include("Service initialization failed");
   });
 
   test("Handles different file types", async () => {
@@ -127,6 +143,7 @@ describe("File upload at v1/upload", async () => {
     const response = await controller.upload(mockFiles);
 
     expect(response.success).to.be.true;
+    expect(response.uploadStatus).to.equal("all");
     expect(response.data?.results).to.have.lengthOf(2);
     expect(response.data?.results).to.deep.equal([
       { cid: "TEST_CID_1", fileName: "doc.txt" },

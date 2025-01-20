@@ -26,7 +26,12 @@ export interface ValidationResponse extends BaseResponse {
 // Storage-related interfaces
 export interface StorageResponse extends DataResponse<{ cid: string }> {}
 
-export interface UploadResponse extends BaseResponse {
+export type UploadStatus = "all" | "some" | "none";
+
+export interface UploadResponse {
+  success: boolean;
+  message: string;
+  uploadStatus: UploadStatus;
   data?: {
     results: Array<{
       cid: string;
@@ -37,6 +42,7 @@ export interface UploadResponse extends BaseResponse {
       error: string;
     }>;
   };
+  errors?: Record<string, string>;
 }
 
 // Data-related interfaces
