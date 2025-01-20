@@ -1,6 +1,6 @@
 import { verifyAuthSignedData } from "../../utils/verifyAuthSignedData.js";
 import { SupabaseDataService } from "../../services/SupabaseDataService.js";
-import type { AddOrUpdateUserResponse } from "../../types/api.js";
+import type { UserResponse } from "../../types/api.js";
 
 import type { EOAUpdateRequest } from "./schemas.js";
 import type { UserUpsertStrategy } from "./UserUpsertStrategy.js";
@@ -16,7 +16,7 @@ export default class EOAUpdateStrategy implements UserUpsertStrategy {
     this.dataService = new SupabaseDataService();
   }
 
-  async execute(): Promise<AddOrUpdateUserResponse> {
+  async execute(): Promise<UserResponse> {
     await this.throwIfInvalidSignature();
     const user = await this.upsertUser();
     return {

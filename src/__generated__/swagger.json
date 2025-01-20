@@ -138,6 +138,69 @@
 					}
 				]
 			},
+			"UploadResponse": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					},
+					"errors": {
+						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+					},
+					"data": {
+						"properties": {
+							"failed": {
+								"items": {
+									"properties": {
+										"error": {
+											"type": "string"
+										},
+										"fileName": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"error",
+										"fileName"
+									],
+									"type": "object"
+								},
+								"type": "array"
+							},
+							"results": {
+								"items": {
+									"properties": {
+										"fileName": {
+											"type": "string"
+										},
+										"cid": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"fileName",
+										"cid"
+									],
+									"type": "object"
+								},
+								"type": "array"
+							}
+						},
+						"required": [
+							"failed",
+							"results"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"success"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"CancelSignatureRequest": {
 				"properties": {
 					"signature": {
@@ -1088,6 +1151,53 @@
 										"type": "multisig",
 										"chain_id": 11155111,
 										"messageHash": "0x1234567890abcdef"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v1/upload": {
+			"post": {
+				"operationId": "Upload",
+				"responses": {
+					"201": {
+						"description": "Upload successful",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/UploadResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Upload one or more files to IPFS storage.",
+				"summary": "Upload files to IPFS",
+				"tags": [
+					"Upload"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": false,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"files": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array",
+										"description": "- Array of files to upload (max 5 files, 10MB each)"
+									},
+									"jsonData": {
+										"type": "string"
 									}
 								}
 							}

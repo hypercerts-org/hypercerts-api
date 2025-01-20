@@ -19,7 +19,7 @@ import type {
 } from "../types/api.js";
 import { validateMetadataAndClaimdata } from "../utils/validateMetadataAndClaimdata.js";
 import { validateRemoteAllowList } from "../utils/validateRemoteAllowList.js";
-import { parseAndValidateMerkleTree } from "../utils/parseAndValidateMerkleTreeDump.js";
+import { parseAndValidateMerkleTree } from "../lib/allowlists/parseAndValidateMerkleTreeDump.js";
 
 @Route("v1/metadata")
 @Tags("Metadata")

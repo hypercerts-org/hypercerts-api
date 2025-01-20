@@ -1,9 +1,10 @@
 import { validateAllowlist } from "@hypercerts-org/sdk";
 import { parseMerkleTree } from "./parseMerkleTree.js";
-import { parseEther } from "viem";
-import { ValidateAllowListRequest } from "../types/api.js";
+import { ValidateAllowListRequest } from "../../types/api.js";
 
-export const parseAndValidateMerkleTree = (request: ValidateAllowListRequest) => {
+export const parseAndValidateMerkleTree = (
+  request: ValidateAllowListRequest,
+) => {
   const { allowList, totalUnits } = request;
   const _merkleTree = parseMerkleTree(allowList);
 
@@ -12,17 +13,20 @@ export const parseAndValidateMerkleTree = (request: ValidateAllowListRequest) =>
       data: _merkleTree,
       valid: false,
       errors: {
-        allowListData: "Data could not be parsed to OpenZeppelin MerkleTree"
-      }
+        allowListData: "Data could not be parsed to OpenZeppelin MerkleTree",
+      },
     };
   }
 
-  const allowListEntries = Array.from(_merkleTree.entries()).map(entry => ({
+  const allowListEntries = Array.from(_merkleTree.entries()).map((entry) => ({
     address: entry[1][0],
-    units: BigInt(entry[1][1])
+    units: BigInt(entry[1][1]),
   }));
 
-  const totalUnitsInEntries = allowListEntries.reduce((acc, entry) => acc + entry.units, BigInt(0));
+  const totalUnitsInEntries = allowListEntries.reduce(
+    (acc, entry) => acc + entry.units,
+    BigInt(0),
+  );
 
   if (totalUnits) {
     if (totalUnitsInEntries !== BigInt(totalUnits)) {
@@ -31,8 +35,8 @@ export const parseAndValidateMerkleTree = (request: ValidateAllowListRequest) =>
         valid: false,
         errors: {
           totalUnits:
-            "Total units do not match the sum of units in the allowlist"
-        }
+            "Total units do not match the sum of units in the allowlist",
+        },
       };
     }
 
@@ -41,8 +45,8 @@ export const parseAndValidateMerkleTree = (request: ValidateAllowListRequest) =>
         data: _merkleTree,
         valid: false,
         errors: {
-          totalUnits: "Total units should amount to 100M (100_000_000) units"
-        }
+          totalUnits: "Total units should amount to 100M (100_000_000) units",
+        },
       };
     }
   }
