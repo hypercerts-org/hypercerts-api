@@ -11,6 +11,7 @@ import { SalesResolver } from "./salesResolver.js";
 import { UserResolver } from "./userResolver.js";
 import { BlueprintResolver } from "./blueprintResolver.js";
 import { SignatureRequestResolver } from "./signatureRequestResolver.js";
+import { CollectionResolver } from "./collectionResolver.js";
 
 export const resolvers = [
   ContractResolver,
@@ -26,4 +27,5 @@ export const resolvers = [
   UserResolver,
   BlueprintResolver,
   SignatureRequestResolver,
+  CollectionResolver,
 ] as const;

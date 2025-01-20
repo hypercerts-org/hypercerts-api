@@ -22,6 +22,7 @@ import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { GetBlueprintArgs } from "../graphql/schemas/args/blueprintArgs.js";
 import { sql } from "kysely";
 import { GetSignatureRequestArgs } from "../graphql/schemas/args/signatureRequestArgs.js";
+import { GetCollectionsArgs } from "../graphql/schemas/args/collectionArgs.js";
 
 @singleton()
 export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase> {
@@ -432,6 +433,79 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       .execute();
   }
 
+  async getCollections(args: GetCollectionsArgs) {
+    const query = this.db
+      .selectFrom("collections")
+      .distinctOn("collections.id")
+      .leftJoin("hypercerts", "hypercerts.collection_id", "collections.id")
+      .leftJoin(
+        "collection_admins",
+        "collection_admins.collection_id",
+        "collections.id",
+      )
+      .leftJoin("users", "users.id", "collection_admins.user_id")
+      .leftJoin(
+        "collection_blueprints",
+        "collection_blueprints.collection_id",
+        "collections.id",
+      )
+      .leftJoin(
+        "blueprints",
+        "blueprints.id",
+        "collection_blueprints.blueprint_id",
+      )
+      .select((eb) => [
+        "collections.id",
+        "collections.name",
+        "collections.description",
+        "collections.chain_ids",
+        "collections.hidden",
+        "collections.created_at",
+        jsonArrayFrom(
+          eb
+            .selectFrom("hypercerts")
+            .select(["hypercert_id", "collection_id"])
+            .whereRef("collection_id", "=", "collections.id"),
+        ).as("hypercerts"),
+        jsonArrayFrom(
+          eb
+            .selectFrom("users")
+            .innerJoin(
+              "collection_admins",
+              "collection_admins.user_id",
+              "users.id",
+            )
+            .select([
+              "users.address",
+              "users.chain_id",
+              "users.display_name",
+              "users.avatar",
+            ])
+            .whereRef("collection_admins.collection_id", "=", "collections.id"),
+        ).as("admins"),
+        jsonArrayFrom(
+          eb
+            .selectFrom("blueprints")
+            .innerJoin(
+              "collection_blueprints",
+              "collection_blueprints.blueprint_id",
+              "blueprints.id",
+            )
+            .selectAll("blueprints")
+            .whereRef(
+              "collection_blueprints.collection_id",
+              "=",
+              "collections.id",
+            ),
+        ).as("blueprints"),
+      ]);
+
+    return {
+      data: await query.execute(),
+      count: this.handleGetCount("collections", args),
+    };
+  }
+
   async getCollectionById(collectionId: string) {
     return this.db
       .selectFrom("collections")
@@ -719,6 +793,8 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
         return this.db.selectFrom("users").selectAll();
       case "signature_requests":
         return this.db.selectFrom("signature_requests").selectAll();
+      case "collections":
+        return this.db.selectFrom("collections").selectAll();
       default:
         throw new Error(`Table ${tableName.toString()} not found`);
     }
@@ -757,6 +833,10 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
           });
       case "users":
         return this.db.selectFrom("users").select((expressionBuilder) => {
+          return expressionBuilder.fn.countAll().as("count");
+        });
+      case "collections":
+        return this.db.selectFrom("collections").select((expressionBuilder) => {
           return expressionBuilder.fn.countAll().as("count");
         });
       default:
