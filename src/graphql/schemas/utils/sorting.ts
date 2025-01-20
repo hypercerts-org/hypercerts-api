@@ -1,5 +1,6 @@
 import { PostgrestTransformBuilder } from "@supabase/postgrest-js";
 
+import { Database as DataDatabase } from "../../../types/supabaseData.js";
 import type { Database as CachingDatabase } from "../../../types/supabaseCaching.js";
 import type { OrderOptions } from "../inputs/orderOptions.js";
 import {
@@ -15,7 +16,7 @@ import { SortOrder } from "../enums/sortEnums.js";
 interface ApplySorting<
   T extends object,
   QueryType extends PostgrestTransformBuilder<
-    CachingDatabase["public"],
+    CachingDatabase["public"] | DataDatabase["public"],
     Record<string, unknown>,
     unknown,
     unknown,
@@ -26,10 +27,16 @@ interface ApplySorting<
   sort?: OrderOptions<T>;
 }
 
+type ColumnOpts = {
+  ascending?: boolean;
+  nullsFirst?: boolean;
+  referencedTable?: string;
+};
+
 export const applySorting = <
   T extends object,
   QueryType extends PostgrestTransformBuilder<
-    CachingDatabase["public"],
+    CachingDatabase["public"] | DataDatabase["public"],
     Record<string, unknown>,
     unknown,
     unknown,
@@ -41,17 +48,18 @@ export const applySorting = <
 }: ApplySorting<T, QueryType>) => {
   if (!sort) return query;
 
-  const sorting: [
-    string,
-    (
-      | { ascending?: boolean; nullsFirst?: boolean; referencedTable?: string }
-      | undefined
-    ),
-  ][] = [];
-  for (const [, value] of Object.entries(sort)) {
+  const sorting: [string, ColumnOpts][] = [];
+  for (const [key, value] of Object.entries(sort.by || {})) {
     if (!value) continue;
 
-    // If the value is an object, recursively apply sorting
+    // Handle direct sorting parameters
+    if (typeof value === "string") {
+      sorting.push([key, { ascending: value !== SortOrder.descending }]);
+      continue;
+    }
+
+    // Handle nested sorting options
+    // FIXME: This is brittle. We should find a way to generalize this
     if (
       value instanceof HypercertSortOptions ||
       value instanceof FractionSortOptions ||
@@ -60,23 +68,13 @@ export const applySorting = <
       value instanceof MetadataSortOptions ||
       value instanceof AttestationSchemaSortOptions
     ) {
-      const nestedSorting: [
-        string,
-        {
-          ascending?: boolean;
-          nullsFirst?: boolean;
-          referencedTable?: string;
-        },
-      ][] = [];
-      for (const [_column, _direction] of Object.entries(value)) {
-        if (!_column || !_direction) continue;
-        // TODO resolve hacky workaround for hypercerts <> claims alias
-        nestedSorting.push([
-          _column,
-          { ascending: _direction !== SortOrder.descending },
+      for (const [column, direction] of Object.entries(value)) {
+        if (!column || !direction) continue;
+        sorting.push([
+          `${key}.${column}`,
+          { ascending: direction !== SortOrder.descending },
         ]);
       }
-      sorting.push(...nestedSorting);
     }
   }
 
