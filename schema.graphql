@@ -13,7 +13,7 @@ type AllowlistRecord {
 
   """The hypercert ID the claimable fraction belongs to"""
   hypercert_id: String
-  id: ID!
+  id: ID
 
   """The leaf of the Merkle tree for the claimable fraction"""
   leaf: String
@@ -83,7 +83,7 @@ type Attestation {
 
   """Hypercert related to the attestation"""
   hypercert: HypercertBaseType
-  id: ID!
+  id: ID
 
   """Block number at which the attestation was last updated"""
   last_update_block_number: EthBigInt
@@ -115,7 +115,7 @@ input AttestationFetchInput {
 type AttestationSchema {
   """Chain ID of the chains where the attestation schema is supported"""
   chain_id: EthBigInt
-  id: ID!
+  id: ID
 
   """List of attestations related to the attestation schema"""
   records: [Attestation!]
@@ -286,7 +286,7 @@ type Collection {
 
   """Description of the collection"""
   description: String!
-  id: ID!
+  id: ID
 
   """Name of the collection"""
   name: String!
@@ -299,7 +299,7 @@ type Contract {
 
   """The address of the contract"""
   contract_address: String
-  id: ID!
+  id: ID
 
   """The block number at which the contract was deployed"""
   start_block: EthBigInt
@@ -341,7 +341,7 @@ type Fraction {
   The ID of the fraction concatenated from the chain ID, contract address, and ID of the hypercert claim
   """
   hypercert_id: ID
-  id: ID!
+  id: ID
 
   """Block number of the last update of the fraction"""
   last_update_block_number: EthBigInt
@@ -482,7 +482,7 @@ type Hyperboard {
 
   """Whether the hyperboard should be rendered as a grayscale image"""
   grayscale_images: Boolean
-  id: ID!
+  id: ID
 
   """Name of the hyperboard"""
   name: String!
@@ -555,7 +555,7 @@ type Hypercert {
   Concatenation of [chainID]-[contractAddress]-[tokenID] to discern hypercerts across chains
   """
   hypercert_id: ID
-  id: ID!
+  id: ID
   last_update_block_number: EthBigInt
   last_update_block_timestamp: EthBigInt
 
@@ -597,7 +597,7 @@ type HypercertBaseType {
   Concatenation of [chainID]-[contractAddress]-[tokenID] to discern hypercerts across chains
   """
   hypercert_id: ID
-  id: ID!
+  id: ID
   last_update_block_number: EthBigInt
   last_update_block_timestamp: EthBigInt
 
@@ -682,7 +682,7 @@ type Metadata {
 
   """References additional information related to the hypercert"""
   external_url: String
-  id: ID!
+  id: ID
 
   """Base64 encoded representation of the image of the hypercert"""
   image: String
@@ -780,7 +780,7 @@ type Order {
   """The hypercert associated with this order"""
   hypercert: HypercertBaseType
   hypercert_id: String!
-  id: ID!
+  id: ID
   invalidated: Boolean!
   itemIds: [String!]!
   orderNonce: String!
@@ -868,7 +868,7 @@ type Sale {
 
   """The ID of the hypercert token referenced in the order"""
   hypercert_id: String
-  id: ID!
+  id: ID
 
   """Token ids of the sold fractions"""
   item_ids: [EthBigInt!]
