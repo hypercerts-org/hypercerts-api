@@ -9,6 +9,12 @@ import {
 } from "tsoa";
 import { StorageService } from "../services/StorageService.js";
 import type { UploadResponse } from "../types/api.js";
+import {
+  FileUploadError,
+  NoFilesUploadedError,
+  PartialUploadError,
+  UploadFailedError,
+} from "../lib/uploads/errors.js";
 
 /**
  * Controller handling file uploads to IPFS storage
@@ -68,9 +74,9 @@ export class UploadController extends Controller {
     @UploadedFiles("files") files?: Express.Multer.File[],
     @FormField() jsonData?: string,
   ): Promise<UploadResponse> {
-    const storage = await StorageService.init();
-
     try {
+      const storage = await StorageService.init();
+
       if (jsonData) {
         console.debug("Got JSON data for future use");
       }
@@ -80,12 +86,7 @@ export class UploadController extends Controller {
       );
 
       if (!files || !blobs) {
-        this.setStatus(400);
-        return {
-          success: false,
-          message: "No files uploaded",
-          errors: { upload: "No files uploaded" },
-        };
+        throw new NoFilesUploadedError();
       }
 
       const uploadResults = await Promise.allSettled(
@@ -99,10 +100,11 @@ export class UploadController extends Controller {
               fileName: file.originalname,
             };
           } catch (error) {
-            throw {
-              fileName: file.originalname,
-              error: (error as Error).message,
-            };
+            throw new UploadFailedError(
+              `Failed to upload file`,
+              file.originalname,
+              (error as Error).message,
+            );
           }
         }),
       );
@@ -123,21 +125,32 @@ export class UploadController extends Controller {
           (result): result is PromiseRejectedResult =>
             result.status === "rejected",
         )
-        .map((result) => result.reason as { fileName: string; error: string });
+        .map((result) => {
+          const error = result.reason as UploadFailedError;
+          return {
+            fileName: error.fileName,
+            error: error.errorDetail,
+          };
+        });
 
       if (failed.length > 0) {
-        this.setStatus(failed.length === uploadResults.length ? 500 : 207);
-        return {
-          success: false,
-          message: "Some uploads failed",
-          data: {
-            results: successful,
-            failed: failed.map((f) => ({
-              fileName: f.fileName,
-              error: f.error,
-            })),
-          },
+        const data = {
+          results: successful,
+          failed: failed.map((f) => ({
+            fileName: f.fileName,
+            error: f.error,
+          })),
         };
+
+        if (failed.length === uploadResults.length) {
+          throw new UploadFailedError(
+            "All uploads failed",
+            "multiple files",
+            "None of the files could be uploaded",
+          );
+        }
+
+        throw new PartialUploadError("Some uploads failed", data);
       }
 
       this.setStatus(201);
@@ -150,12 +163,21 @@ export class UploadController extends Controller {
         },
       };
     } catch (error) {
-      this.setStatus(400);
-      return {
-        success: false,
-        message: "Upload failed",
-        errors: { upload: (error as Error).message },
-      };
+      if (error instanceof FileUploadError) {
+        this.setStatus(error.code);
+        return {
+          success: false,
+          message: error.message,
+          ...(error.errors && { errors: error.errors }),
+          ...(error instanceof PartialUploadError && { data: error.results }),
+        };
+      }
+
+      throw new UploadFailedError(
+        "Upload failed",
+        "unknown file",
+        (error as Error).message,
+      );
     }
   }
 }
