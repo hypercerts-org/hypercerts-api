@@ -6,6 +6,7 @@ import { BasicHypercertWhereArgs } from "../inputs/hypercertsInput.js";
 import type { OrderOptions } from "../inputs/orderOptions.js";
 import type { Attestation } from "../typeDefs/attestationTypeDefs.js";
 import { AttestationSortOptions } from "../inputs/sortOptions.js";
+import { BasicAttestationSchemaWhereInput } from "../inputs/attestationSchemaInput.js";
 
 @InputType()
 class AttestationWhereInput extends BasicAttestationWhereInput {
@@ -13,6 +14,8 @@ class AttestationWhereInput extends BasicAttestationWhereInput {
   hypercerts?: BasicHypercertWhereArgs;
   @Field(() => BasicMetadataWhereInput, { nullable: true })
   metadata?: BasicMetadataWhereInput;
+  @Field(() => BasicAttestationSchemaWhereInput, { nullable: true })
+  supported_schemas?: BasicAttestationSchemaWhereInput;
 }
 
 @InputType()

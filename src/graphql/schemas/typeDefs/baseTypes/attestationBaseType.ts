@@ -8,14 +8,15 @@ import { GraphQLJSON } from "graphql-scalars";
 class AttestationBaseType extends BasicTypeDef {
   @Field(() => ID, {
     nullable: true,
-    description: "ID referencing the supported EAS schema in the database",
-  })
-  supported_schemas_id?: string;
-  @Field(() => ID, {
-    nullable: true,
     description: "Unique identifier for the attestation on EAS",
   })
   uid?: string;
+  @Field({
+    nullable: true,
+    description:
+      "Unique identifier of the EAS schema used to create the attestation",
+  })
+  schema_uid?: string;
 
   @Field(() => EthBigInt, {
     nullable: true,
@@ -53,12 +54,6 @@ class AttestationBaseType extends BasicTypeDef {
     description: "Address of the resolver contract for the attestation",
   })
   resolver?: string;
-  @Field({
-    nullable: true,
-    description:
-      "Unique identifier of the EAS schema used to create the attestation",
-  })
-  schema?: string;
   @Field(() => GraphQLJSON, {
     nullable: true,
     description: "Encoded data of the attestation",

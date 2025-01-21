@@ -1,6 +1,7 @@
 import { Field, ObjectType } from "type-graphql";
 import { AttestationBaseType } from "./baseTypes/attestationBaseType.js";
 import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
+import { AttestationSchemaBaseType } from "./baseTypes/attestationSchemaBaseType.js";
 
 @ObjectType({
   description: "Attestation on the Ethereum Attestation Service",
@@ -8,10 +9,14 @@ import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
 })
 class Attestation extends AttestationBaseType {
   @Field(() => HypercertBaseType, {
-    nullable: true,
     description: "Hypercert related to the attestation",
   })
   hypercert?: HypercertBaseType;
+
+  @Field(() => AttestationSchemaBaseType, {
+    description: "Schema related to the attestation",
+  })
+  supported_schemas?: AttestationSchemaBaseType;
 }
 
 export { Attestation };
