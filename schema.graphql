@@ -82,7 +82,7 @@ type Attestation {
   data: JSON
 
   """Hypercert related to the attestation"""
-  hypercert: HypercertBaseType
+  hypercert: HypercertBaseType!
   id: ID!
 
   """Block number at which the attestation was last updated"""
@@ -98,10 +98,43 @@ type Attestation {
   resolver: String
 
   """Unique identifier of the EAS schema used to create the attestation"""
-  schema: String
+  schema_uid: String
 
-  """ID referencing the supported EAS schema in the database"""
-  supported_schemas_id: ID
+  """Schema related to the attestation"""
+  supported_schemas: AttestationSchemaBaseType!
+
+  """Unique identifier for the attestation on EAS"""
+  uid: ID
+}
+
+type AttestationBaseType {
+  """Address of the creator of the attestation"""
+  attester: String
+
+  """Block number at which the attestation was created"""
+  creation_block_number: EthBigInt
+
+  """Timestamp at which the attestation was created"""
+  creation_block_timestamp: EthBigInt
+
+  """Encoded data of the attestation"""
+  data: JSON
+  id: ID!
+
+  """Block number at which the attestation was last updated"""
+  last_update_block_number: EthBigInt
+
+  """Timestamp at which the attestation was last updated"""
+  last_update_block_timestamp: EthBigInt
+
+  """Address of the recipient of the attestation"""
+  recipient: String
+
+  """Address of the resolver contract for the attestation"""
+  resolver: String
+
+  """Unique identifier of the EAS schema used to create the attestation"""
+  schema_uid: String
 
   """Unique identifier for the attestation on EAS"""
   uid: ID
@@ -114,23 +147,42 @@ input AttestationFetchInput {
 """Supported EAS attestation schemas and their related records"""
 type AttestationSchema {
   """Chain ID of the chains where the attestation schema is supported"""
-  chain_id: EthBigInt
+  chain_id: EthBigInt!
   id: ID!
 
   """List of attestations related to the attestation schema"""
-  records: [Attestation!]
+  records: [AttestationBaseType!]!
 
   """Address of the resolver contract for the attestation schema"""
-  resolver: String
+  resolver: String!
 
   """Whether the attestation schema is revocable"""
-  revocable: Boolean
+  revocable: Boolean!
 
   """String representation of the attestation schema"""
-  schema: String
+  schema: String!
 
   """Unique identifier for the attestation schema"""
-  uid: ID
+  uid: ID!
+}
+
+"""Supported EAS attestation schemas and their related records"""
+type AttestationSchemaBaseType {
+  """Chain ID of the chains where the attestation schema is supported"""
+  chain_id: EthBigInt!
+  id: ID!
+
+  """Address of the resolver contract for the attestation schema"""
+  resolver: String!
+
+  """Whether the attestation schema is revocable"""
+  revocable: Boolean!
+
+  """String representation of the attestation schema"""
+  schema: String!
+
+  """Unique identifier for the attestation schema"""
+  uid: ID!
 }
 
 input AttestationSortOptions {
@@ -152,15 +204,21 @@ input AttestationWhereInput {
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   hypercerts: BasicHypercertWhereArgs
-  id: IdSearchOptions
   last_update_block_number: BigIntSearchOptions
   last_update_block_timestamp: BigIntSearchOptions
   metadata: BasicMetadataWhereInput
   recipient: StringSearchOptions
   resolver: StringSearchOptions
-  schema: StringSearchOptions
-  supported_schemas_id: StringSearchOptions
+  supported_schemas: BasicAttestationSchemaWhereInput
   token_id: StringSearchOptions
+  uid: StringSearchOptions
+}
+
+input BasicAttestationSchemaWhereInput {
+  chain_id: BigIntSearchOptions
+  resolver: StringSearchOptions
+  revocable: BooleanSearchOptions
+  schema: StringSearchOptions
   uid: StringSearchOptions
 }
 
@@ -171,13 +229,10 @@ input BasicAttestationWhereInput {
   contract_address: StringSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
-  id: IdSearchOptions
   last_update_block_number: BigIntSearchOptions
   last_update_block_timestamp: BigIntSearchOptions
   recipient: StringSearchOptions
   resolver: StringSearchOptions
-  schema: StringSearchOptions
-  supported_schemas_id: StringSearchOptions
   token_id: StringSearchOptions
   uid: StringSearchOptions
 }
