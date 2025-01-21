@@ -250,6 +250,7 @@ type Blueprint {
   admins: [User!]!
   created_at: String!
   form_values: JSON!
+  hypercerts: GetHypercertsResponse!
   id: Float!
   minted: Boolean!
   minter_address: String!

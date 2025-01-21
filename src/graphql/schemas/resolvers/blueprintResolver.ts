@@ -1,4 +1,11 @@
-import { Args, ObjectType, Query, Resolver } from "type-graphql";
+import {
+  Args,
+  FieldResolver,
+  ObjectType,
+  Query,
+  Resolver,
+  Root,
+} from "type-graphql";
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
 import { Blueprint } from "../typeDefs/blueprintTypeDefs.js";
 import { GetBlueprintArgs } from "../args/blueprintArgs.js";
@@ -23,11 +30,18 @@ class BlueprintResolver extends BlueprintBaseResolver {
       .groupBy("id")
       .map((blueprints) => {
         const admins = blueprints.map(
-          ({ admin_address, admin_chain_id, avatar, display_name }) => ({
+          ({
+            admin_address,
+            admin_chain_id,
+            avatar,
+            display_name,
+            hypercert_ids,
+          }) => ({
             address: admin_address,
             chain_id: admin_chain_id,
             avatar,
             display_name,
+            hypercert_ids,
           }),
         );
         return {
@@ -40,6 +54,16 @@ class BlueprintResolver extends BlueprintBaseResolver {
       data: formattedData,
       count,
     };
+  }
+
+  @FieldResolver()
+  async hypercerts(@Root() blueprint: Blueprint) {
+    const hypercertIds = blueprint.hypercert_ids;
+    const { data: hypercerts, count } = await this.getHypercerts({
+      where: { hypercert_id: { in: hypercertIds } },
+    });
+
+    return { data: hypercerts, count };
   }
 }
 
