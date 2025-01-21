@@ -26,7 +26,7 @@ export const validateFile = async (
   file: Express.Multer.File,
 ): Promise<void> => {
   // 1. Check file size
-  if (file.size > 10 * 1024 * 1024) {
+  if (file.size > 11 * 1024 * 1024) {
     throw new Error(FileValidationError.SIZE_EXCEEDED);
   }
 
