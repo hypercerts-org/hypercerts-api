@@ -15,7 +15,7 @@ class AttestationWhereInput extends BasicAttestationWhereInput {
   @Field(() => BasicMetadataWhereInput, { nullable: true })
   metadata?: BasicMetadataWhereInput;
   @Field(() => BasicAttestationSchemaWhereInput, { nullable: true })
-  supported_schemas?: BasicAttestationSchemaWhereInput;
+  eas_schema?: BasicAttestationSchemaWhereInput;
 }
 
 @InputType()

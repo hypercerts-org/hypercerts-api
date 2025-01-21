@@ -57,6 +57,8 @@ export const generateFilterValues = (
 
 export const getTablePrefix = (column: string): string => {
   switch (column) {
+    case "eas_schema":
+      return "supported_schemas";
     case "hypercerts":
       return "claims";
     case "contract":

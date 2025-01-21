@@ -258,7 +258,6 @@ export function createBaseResolver<T extends ClassType>(
       try {
         const queries = this.supabaseCachingService.getAttestations(args);
 
-        console.log("GOT QUERY", queries);
         if (single) {
           const res = await queries.data.executeTakeFirst();
           return res ? this.parseAttestation(res) : null;

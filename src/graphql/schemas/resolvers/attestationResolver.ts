@@ -56,7 +56,7 @@ class AttestationResolver extends AttestationBaseResolver {
   }
 
   @FieldResolver()
-  async supported_schemas(@Root() attestation: Attestation) {
+  async eas_schema(@Root() attestation: Attestation) {
     if (!attestation.schema_uid) return;
 
     return await this.getAttestationSchemas(

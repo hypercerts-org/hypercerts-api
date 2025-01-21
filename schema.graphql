@@ -81,6 +81,9 @@ type Attestation {
   """Encoded data of the attestation"""
   data: JSON
 
+  """Schema related to the attestation"""
+  eas_schema: AttestationSchemaBaseType!
+
   """Hypercert related to the attestation"""
   hypercert: HypercertBaseType!
   id: ID!
@@ -99,9 +102,6 @@ type Attestation {
 
   """Unique identifier of the EAS schema used to create the attestation"""
   schema_uid: String
-
-  """Schema related to the attestation"""
-  supported_schemas: AttestationSchemaBaseType!
 
   """Unique identifier for the attestation on EAS"""
   uid: ID
@@ -203,13 +203,13 @@ input AttestationWhereInput {
   contract_address: StringSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
+  eas_schema: BasicAttestationSchemaWhereInput
   hypercerts: BasicHypercertWhereArgs
   last_update_block_number: BigIntSearchOptions
   last_update_block_timestamp: BigIntSearchOptions
   metadata: BasicMetadataWhereInput
   recipient: StringSearchOptions
   resolver: StringSearchOptions
-  supported_schemas: BasicAttestationSchemaWhereInput
   token_id: StringSearchOptions
   uid: StringSearchOptions
 }

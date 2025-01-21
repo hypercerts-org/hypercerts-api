@@ -16,7 +16,7 @@ class Attestation extends AttestationBaseType {
   @Field(() => AttestationSchemaBaseType, {
     description: "Schema related to the attestation",
   })
-  supported_schemas?: AttestationSchemaBaseType;
+  eas_schema?: AttestationSchemaBaseType;
 }
 
 export { Attestation };
