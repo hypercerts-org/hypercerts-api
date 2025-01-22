@@ -1,18 +1,19 @@
-import { type ClassType, Field, Int, Resolver, ObjectType } from "type-graphql";
-import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { container } from "tsyringe";
+import { type ClassType, Field, Int, ObjectType, Resolver } from "type-graphql";
 import { SupabaseCachingService } from "../../../services/SupabaseCachingService.js";
-import { GetMetadataArgs } from "../args/metadataArgs.js";
+import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
+import { GetAllowlistRecordsArgs } from "../args/allowlistRecordArgs.js";
+import { GetAttestationsArgs } from "../args/attestationArgs.js";
+import { GetAttestationSchemasArgs } from "../args/attestationSchemaArgs.js";
+import { GetBlueprintArgs } from "../args/blueprintArgs.js";
 import { GetContractsArgs } from "../args/contractArgs.js";
 import { GetFractionsArgs } from "../args/fractionArgs.js";
-import { GetAllowlistRecordsArgs } from "../args/allowlistRecordArgs.js";
-import { GetAttestationSchemasArgs } from "../args/attestationSchemaArgs.js";
-import { GetAttestationsArgs } from "../args/attestationArgs.js";
 import { GetHypercertsArgs } from "../args/hypercertsArgs.js";
+import { GetMetadataArgs } from "../args/metadataArgs.js";
+import { GetOrdersArgs } from "../args/orderArgs.js";
 import { GetSalesArgs } from "../args/salesArgs.js";
-import { GetUserArgs } from "../args/userArgs.js";
-import { GetBlueprintArgs } from "../args/blueprintArgs.js";
 import { GetSignatureRequestArgs } from "../args/signatureRequestArgs.js";
+import { GetUserArgs } from "../args/userArgs.js";
 
 export function DataResponse<TItem extends object>(
   TItemClass: ClassType<TItem>,
@@ -256,6 +257,7 @@ export function createBaseResolver<T extends ClassType>(
 
       try {
         const queries = this.supabaseCachingService.getAttestations(args);
+
         if (single) {
           const res = await queries.data.executeTakeFirst();
           return res ? this.parseAttestation(res) : null;

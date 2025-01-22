@@ -80,13 +80,24 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"union","subSchemas":[{"ref":"EOAUserUpsertRequest"},{"ref":"MultisigUserUpsertRequest"}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UploadStatus": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["all"]},{"dataType":"enum","enums":["some"]},{"dataType":"enum","enums":["none"]}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Record_string.string_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"string"},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UploadResponse": {
         "dataType": "refObject",
         "properties": {
             "success": {"dataType":"boolean","required":true},
-            "message": {"dataType":"string"},
-            "errors": {"ref":"Record_string.string-or-string-Array_"},
+            "message": {"dataType":"string","required":true},
+            "uploadStatus": {"ref":"UploadStatus","required":true},
             "data": {"dataType":"nestedObjectLiteral","nestedProperties":{"failed":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"error":{"dataType":"string","required":true},"fileName":{"dataType":"string","required":true}}},"required":true},"results":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"fileName":{"dataType":"string","required":true},"cid":{"dataType":"string","required":true}}},"required":true}}},
+            "errors": {"ref":"Record_string.string_"},
         },
         "additionalProperties": false,
     },

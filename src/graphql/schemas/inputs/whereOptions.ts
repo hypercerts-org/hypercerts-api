@@ -11,6 +11,8 @@ import type { BasicFractionWhereInput } from "./fractionInput.js";
 import type { BasicMetadataWhereInput } from "./metadataInput.js";
 import type { BasicHypercertWhereArgs } from "./hypercertsInput.js";
 import type { BasicSignatureRequestWhereInput } from "./signatureRequestInput.js";
+import { BasicAttestationWhereInput } from "./attestationInput.js";
+import { BasicAttestationSchemaWhereInput } from "./attestationSchemaInput.js";
 
 export type WhereOptions<T extends object> = {
   [P in keyof T]:
@@ -25,5 +27,7 @@ export type WhereOptions<T extends object> = {
     | BasicContractWhereInput
     | BasicFractionWhereInput
     | BasicSignatureRequestWhereInput
+    | BasicAttestationWhereInput
+    | BasicAttestationSchemaWhereInput
     | null;
 };
