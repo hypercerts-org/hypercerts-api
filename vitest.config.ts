@@ -11,10 +11,10 @@ export default defineConfig({
       // If you want a coverage reports even if your tests are failing, include the reportOnFailure option
       reportOnFailure: true,
       thresholds: {
-        lines: 20,
-        branches: 63,
-        functions: 52,
-        statements: 20,
+        lines: 26,
+        branches: 73,
+        functions: 64,
+        statements: 26,
       },
       include: ["src/**/*.ts"],
       exclude: [

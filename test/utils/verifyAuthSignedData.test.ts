@@ -3,21 +3,23 @@ import { verifyAuthSignedData } from "../../src/utils/verifyAuthSignedData.js";
 
 const mockVerifyTypedData = vi.hoisted(() => vi.fn());
 
-vi.mock("../../src/utils/getRpcUrl.js", () => ({
-  getEvmClient: vi.fn().mockReturnValue({
-    verifyTypedData: mockVerifyTypedData,
-    account: undefined,
-    batch: undefined,
-    cacheTime: 0,
-    chain: undefined,
-    key: "mock",
-    name: "Mock Client",
-    pollingInterval: 0,
-    request: vi.fn(),
-    transport: { type: "mock" },
-    type: "publicClient",
-    uid: "mock-client",
-  }),
+vi.mock("../../src/client/evmClient.js", () => ({
+  EvmClientFactory: {
+    createViemClient: vi.fn().mockReturnValue({
+      verifyTypedData: mockVerifyTypedData,
+      account: undefined,
+      batch: undefined,
+      cacheTime: 0,
+      chain: undefined,
+      key: "mock",
+      name: "Mock Client",
+      pollingInterval: 0,
+      request: vi.fn(),
+      transport: { type: "mock" },
+      type: "publicClient",
+      uid: "mock-client",
+    }),
+  },
 }));
 
 describe("verifyAuthSignedData", () => {
@@ -34,7 +36,7 @@ describe("verifyAuthSignedData", () => {
       types: { Test: [{ name: "test", type: "string" }] },
       signature: "0xsignature",
       primaryType: "Test",
-      requiredChainId: 1,
+      requiredChainId: 11155111,
     });
 
     expect(result).toBe(true);
@@ -47,7 +49,7 @@ describe("verifyAuthSignedData", () => {
       domain: {
         name: "Hypercerts",
         version: "1",
-        chainId: 1,
+        chainId: 11155111,
       },
     });
   });
@@ -61,7 +63,7 @@ describe("verifyAuthSignedData", () => {
       types: { Test: [{ name: "test", type: "string" }] },
       signature: "0xsignature",
       primaryType: "Test",
-      requiredChainId: 1,
+      requiredChainId: 11155111,
     });
 
     expect(result).toBe(false);
