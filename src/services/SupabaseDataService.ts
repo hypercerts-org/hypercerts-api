@@ -1,28 +1,26 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database as DataDatabase } from "../types/supabaseData.js";
-import { supabaseData } from "../client/supabase.js";
-import { GetHyperboardsArgs } from "../graphql/schemas/args/hyperboardArgs.js";
-import { applyFilters } from "../graphql/schemas/utils/filters.js";
-import { applySorting } from "../graphql/schemas/utils/sorting.js";
-import { applyPagination } from "../graphql/schemas/utils/pagination.js";
-import { GetOrdersArgs } from "../graphql/schemas/args/orderArgs.js";
 import {
   HypercertExchangeClient,
   OrderValidatorCode,
 } from "@hypercerts-org/marketplace-sdk";
-import { ethers } from "ethers";
-import { getRpcUrl } from "../utils/getRpcUrl.js";
-import { singleton } from "tsyringe";
-import { GetUserArgs } from "../graphql/schemas/args/userArgs.js";
-import type { DataDatabase as KyselyDataDatabase } from "../types/kyselySupabaseData.js";
-import { BaseArgs } from "../graphql/schemas/args/baseArgs.js";
-import { kyselyData } from "../client/kysely.js";
-import { BaseSupabaseService } from "./BaseSupabaseService.js";
-import { jsonArrayFrom } from "kysely/helpers/postgres";
-import { GetBlueprintArgs } from "../graphql/schemas/args/blueprintArgs.js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { sql } from "kysely";
+import { jsonArrayFrom } from "kysely/helpers/postgres";
+import { singleton } from "tsyringe";
+import { kyselyData } from "../client/kysely.js";
+import { supabaseData } from "../client/supabase.js";
+import { BaseArgs } from "../graphql/schemas/args/baseArgs.js";
+import { GetBlueprintArgs } from "../graphql/schemas/args/blueprintArgs.js";
+import { GetHyperboardsArgs } from "../graphql/schemas/args/hyperboardArgs.js";
+import { GetOrdersArgs } from "../graphql/schemas/args/orderArgs.js";
 import { GetSignatureRequestArgs } from "../graphql/schemas/args/signatureRequestArgs.js";
 import { GetCollectionsArgs } from "../graphql/schemas/args/collectionArgs.js";
+import { GetUserArgs } from "../graphql/schemas/args/userArgs.js";
+import { applyFilters } from "../graphql/schemas/utils/filters.js";
+import { applyPagination } from "../graphql/schemas/utils/pagination.js";
+import { applySorting } from "../graphql/schemas/utils/sorting.js";
+import type { DataDatabase as KyselyDataDatabase } from "../types/kyselySupabaseData.js";
+import type { Database as DataDatabase } from "../types/supabaseData.js";
+import { BaseSupabaseService } from "./BaseSupabaseService.js";
 
 @singleton()
 export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase> {
@@ -278,7 +276,7 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       const hec = new HypercertExchangeClient(
         chainId,
         // @ts-expect-error Typing issue with provider
-        new ethers.JsonRpcProvider(getRpcUrl(chainId)),
+        EvmClientFactory.createEthersClient(chainId),
       );
       const validationResults = await hec.checkOrdersValidity(matchingOrders);
 
