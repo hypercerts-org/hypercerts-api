@@ -147,19 +147,19 @@ export class UploadController extends Controller {
     @FormField() jsonData?: string,
   ): Promise<UploadResponse> {
     try {
+      if (!files?.length) {
+        throw new NoFilesUploadedError();
+      }
+
       const storage = await StorageService.init();
 
       if (jsonData) {
         console.debug("Got JSON data for future use");
       }
 
-      const blobs = files?.map(
+      const blobs = files.map(
         (file) => new Blob([file.buffer], { type: file.mimetype }),
       );
-
-      if (!files || !blobs) {
-        throw new NoFilesUploadedError();
-      }
 
       const uploadResults = await Promise.allSettled(
         files.map(async (file, index) => {

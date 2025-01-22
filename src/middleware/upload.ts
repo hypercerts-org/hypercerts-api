@@ -25,8 +25,13 @@ export const validateFile = async (
   req: Request,
   file: Express.Multer.File,
 ): Promise<void> => {
+  // Check if buffer exists
+  if (!file.buffer) {
+    throw new Error(FileValidationError.INVALID_TYPE);
+  }
+
   // 1. Check file size
-  if (file.size > 10 * 1024 * 1024) {
+  if (file.size > 11 * 1024 * 1024) {
     throw new Error(FileValidationError.SIZE_EXCEEDED);
   }
 
@@ -47,7 +52,7 @@ export const validateFile = async (
 // Configure multer with validation
 export const upload = multer({
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB
+    fileSize: 11 * 1024 * 1024, // 11MB
     files: 5,
   },
   storage: multer.memoryStorage(),
