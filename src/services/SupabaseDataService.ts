@@ -1,27 +1,26 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database as DataDatabase } from "../types/supabaseData.js";
-import { supabaseData } from "../client/supabase.js";
-import { GetHyperboardsArgs } from "../graphql/schemas/args/hyperboardArgs.js";
-import { applyFilters } from "../graphql/schemas/utils/filters.js";
-import { applySorting } from "../graphql/schemas/utils/sorting.js";
-import { applyPagination } from "../graphql/schemas/utils/pagination.js";
-import { GetOrdersArgs } from "../graphql/schemas/args/orderArgs.js";
 import {
   HypercertExchangeClient,
   OrderValidatorCode,
 } from "@hypercerts-org/marketplace-sdk";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { ethers } from "ethers";
-import { getRpcUrl } from "../utils/getRpcUrl.js";
-import { singleton } from "tsyringe";
-import { GetUserArgs } from "../graphql/schemas/args/userArgs.js";
-import type { DataDatabase as KyselyDataDatabase } from "../types/kyselySupabaseData.js";
-import { BaseArgs } from "../graphql/schemas/args/baseArgs.js";
-import { kyselyData } from "../client/kysely.js";
-import { BaseSupabaseService } from "./BaseSupabaseService.js";
-import { jsonArrayFrom } from "kysely/helpers/postgres";
-import { GetBlueprintArgs } from "../graphql/schemas/args/blueprintArgs.js";
 import { sql } from "kysely";
+import { jsonArrayFrom } from "kysely/helpers/postgres";
+import { singleton } from "tsyringe";
+import { kyselyData } from "../client/kysely.js";
+import { supabaseData } from "../client/supabase.js";
+import { GetBlueprintArgs } from "../graphql/schemas/args/blueprintArgs.js";
+import { GetHyperboardsArgs } from "../graphql/schemas/args/hyperboardArgs.js";
+import { GetOrdersArgs } from "../graphql/schemas/args/orderArgs.js";
 import { GetSignatureRequestArgs } from "../graphql/schemas/args/signatureRequestArgs.js";
+import { GetUserArgs } from "../graphql/schemas/args/userArgs.js";
+import { applyFilters } from "../graphql/schemas/utils/filters.js";
+import { applyPagination } from "../graphql/schemas/utils/pagination.js";
+import { applySorting } from "../graphql/schemas/utils/sorting.js";
+import type { DataDatabase as KyselyDataDatabase } from "../types/kyselySupabaseData.js";
+import type { Database as DataDatabase } from "../types/supabaseData.js";
+import { getRpcUrl } from "../utils/getRpcUrl.js";
+import { BaseSupabaseService } from "./BaseSupabaseService.js";
 
 @singleton()
 export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase> {
@@ -700,67 +699,5 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       data: this.handleGetData("signature_requests", args),
       count: this.handleGetCount("signature_requests", args),
     };
-  }
-
-  getDataQuery<
-    DB extends KyselyDataDatabase,
-    T extends keyof DB & string,
-    A extends object,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  >(tableName: T, args: BaseArgs<A>) {
-    switch (tableName) {
-      case "blueprints_with_admins":
-      case "blueprints":
-        return this.db.selectFrom("blueprints_with_admins").selectAll();
-      case "orders":
-      case "marketplace_orders":
-        return this.db.selectFrom("marketplace_orders").selectAll();
-      case "users":
-        return this.db.selectFrom("users").selectAll();
-      case "signature_requests":
-        return this.db.selectFrom("signature_requests").selectAll();
-      default:
-        throw new Error(`Table ${tableName.toString()} not found`);
-    }
-  }
-
-  getCountQuery<
-    DB extends KyselyDataDatabase,
-    T extends keyof DB & string,
-    A extends object,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  >(tableName: T, args: BaseArgs<A>) {
-    switch (tableName) {
-      case "blueprints_with_admins":
-      case "blueprints":
-        return this.db
-          .selectFrom("blueprints_with_admins")
-          .select((expressionBuilder) => {
-            return expressionBuilder.fn.countAll().as("count");
-          });
-      case "hyperboards":
-        return this.db.selectFrom("hyperboards").select((expressionBuilder) => {
-          return expressionBuilder.fn.countAll().as("count");
-        });
-      case "orders":
-      case "marketplace_orders":
-        return this.db
-          .selectFrom("marketplace_orders")
-          .select((expressionBuilder) => {
-            return expressionBuilder.fn.countAll().as("count");
-          });
-      case "signature_requests":
-        return this.db
-          .selectFrom("signature_requests")
-          .select((expressionBuilder) => {
-            return expressionBuilder.fn.countAll().as("count");
-          });
-      case "users":
-        return this.db.selectFrom("users").select((expressionBuilder) => {
-          return expressionBuilder.fn.countAll().as("count");
-        });
-      default:
-        throw new Error(`Table ${tableName.toString()} not found`);
-    }
   }
 }

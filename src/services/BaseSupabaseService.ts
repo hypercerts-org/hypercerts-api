@@ -2,32 +2,40 @@ import { expressionBuilder, Kysely, SqlBool } from "kysely";
 import { BaseArgs } from "../graphql/schemas/args/baseArgs.js";
 import { SortOrder } from "../graphql/schemas/enums/sortEnums.js";
 import { buildWhereCondition } from "../graphql/schemas/utils/filters-kysely.js";
+import { CachingDatabase } from "../types/kyselySupabaseCaching.js";
+import { DataDatabase } from "../types/kyselySupabaseData.js";
+import { QueryStrategyFactory } from "./database/QueryBuilder.js";
 
-export abstract class BaseSupabaseService<DB> {
-  protected db: Kysely<DB>;
+export abstract class BaseSupabaseService<
+  DB extends CachingDatabase | DataDatabase,
+> {
+  protected constructor(protected db: Kysely<DB>) {}
 
-  protected constructor(db: Kysely<DB>) {
-    this.db = db;
+  protected getDataQuery<T extends keyof DB>(
+    tableName: T,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    args: BaseArgs<any>,
+  ) {
+    const strategy = QueryStrategyFactory.getStrategy<T, DB>(tableName);
+    return strategy.buildDataQuery(this.db, args);
   }
 
-  abstract getDataQuery<T extends keyof DB & string, A extends object>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  protected getCountQuery<T extends keyof DB, A extends BaseArgs<any>>(
     tableName: T,
-    args: BaseArgs<A>, // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ): any;
-
-  abstract getCountQuery<T extends keyof DB & string, A extends object>(
-    tableName: T,
-    args: BaseArgs<A>, // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ): any;
-
-  handleGetData<T extends keyof DB & string, A extends object>(
-    tableName: T,
-    args: BaseArgs<A> & {
-      first?: number;
-      offset?: number;
-    },
+    args: A,
   ) {
+    const strategy = QueryStrategyFactory.getStrategy<T, DB>(tableName);
+    return strategy.buildCountQuery(this.db, args);
+  }
+
+  protected handleGetData<
+    T extends keyof DB,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    TRecord extends Record<string, any>,
+  >(tableName: T, args: BaseArgs<TRecord>) {
     let query = this.getDataQuery(tableName, args);
+
     const { where, first, offset, sort } = args;
     const eb = expressionBuilder(query);
 
@@ -45,13 +53,11 @@ export abstract class BaseSupabaseService<DB> {
     return query;
   }
 
-  handleGetCount<T extends keyof DB & string, A extends object>(
-    tableName: T,
-    args: BaseArgs<A> & {
-      first?: number;
-      offset?: number;
-    },
-  ) {
+  protected handleGetCount<
+    T extends keyof DB,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    TRecord extends Record<string, any>,
+  >(tableName: T, args: BaseArgs<TRecord>) {
     let query = this.getCountQuery(tableName, args);
 
     const { where } = args;
@@ -64,7 +70,8 @@ export abstract class BaseSupabaseService<DB> {
     return query;
   }
 
-  private applyWhereConditions<T extends string>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private applyWhereConditions<T extends keyof DB>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     query: any,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,7 +82,7 @@ export abstract class BaseSupabaseService<DB> {
   ) {
     const conditions = Object.entries(where)
       .map(([column, value]) =>
-        buildWhereCondition(column, value, tableName, eb),
+        buildWhereCondition(column, value, String(tableName), eb),
       )
       .filter(Boolean);
 
