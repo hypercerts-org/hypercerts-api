@@ -6,7 +6,7 @@ import {
 import { PublicClient, createPublicClient, fallback } from "viem";
 import { ChainFactory } from "./chainFactory.js";
 import { RpcClientFactory } from "./rpcClientFactory.js";
-import { Eip1193Provider, JsonRpcProvider } from "ethers";
+import { JsonRpcProvider } from "ethers";
 
 interface RpcProvider {
   getUrl(chainId: number): string | undefined;
@@ -93,12 +93,6 @@ export class EvmClientFactory {
     return RpcClientFactory.createEthersJsonRpcProvider(chainId, url);
   }
 
-  static createEip1193Client(chainId: number): Eip1193Provider {
-    const url = EvmClientFactory.getFirstAvailableUrl(chainId);
-    if (!url) throw new Error(`No RPC URL available for chain ${chainId}`);
-    return RpcClientFactory.createEip1193Provider(chainId, url);
-  }
-
   static getAllAvailableUrls(chainId: number): string[] {
     return EvmClientFactory.providers
       .map((provider) => provider.getUrl(chainId))
@@ -109,6 +103,16 @@ export class EvmClientFactory {
     const url = EvmClientFactory.getFirstAvailableUrl(chainId);
     if (!url) throw new Error(`No RPC URL available for chain ${chainId}`);
     return url;
+  }
+
+  static getPublicRpcUrl(chainId: number): string {
+    const chain = ChainFactory.getChain(chainId);
+    if (!chain.rpcUrls.public.http[0]) {
+      throw new Error(
+        `(viem) No public RPC URL available for chain ${chainId}`,
+      );
+    }
+    return chain.rpcUrls.public.http[0];
   }
 
   // Keep this for backward compatibility

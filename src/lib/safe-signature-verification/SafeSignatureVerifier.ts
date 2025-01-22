@@ -1,23 +1,17 @@
 import Safe from "@safe-global/protocol-kit";
 import { getAddress, hashTypedData, type HashTypedDataParameters } from "viem";
 
-import { Eip1193Provider } from "ethers";
 import { EvmClientFactory } from "../../client/evmClient.js";
 
 export default abstract class SafeSignatureVerifier {
   protected chainId: number;
   protected safeAddress: `0x${string}`;
-  protected provider: Eip1193Provider;
+  protected rpcUrl: string;
 
   constructor(chainId: number, safeAddress: `0x${string}`) {
-    const rpcUrl = EvmClientFactory.getFirstAvailableUrl(chainId);
-
-    if (!rpcUrl) {
-      throw new Error(`Unsupported chain ID: ${chainId}`);
-    }
     this.chainId = chainId;
     this.safeAddress = getAddress(safeAddress);
-    this.provider = EvmClientFactory.createEip1193Client(chainId);
+    this.rpcUrl = EvmClientFactory.getPublicRpcUrl(chainId);
   }
 
   hashTypedData() {
@@ -38,7 +32,7 @@ export default abstract class SafeSignatureVerifier {
 
   async verify(signature: string): Promise<boolean> {
     const safe = await Safe.default.init({
-      provider: this.provider,
+      provider: this.rpcUrl,
       safeAddress: this.safeAddress,
     });
 
