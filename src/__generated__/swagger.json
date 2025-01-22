@@ -138,6 +138,22 @@
 					}
 				]
 			},
+			"UploadStatus": {
+				"type": "string",
+				"enum": [
+					"all",
+					"some",
+					"none"
+				]
+			},
+			"Record_string.string_": {
+				"properties": {},
+				"additionalProperties": {
+					"type": "string"
+				},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
 			"UploadResponse": {
 				"properties": {
 					"success": {
@@ -146,8 +162,8 @@
 					"message": {
 						"type": "string"
 					},
-					"errors": {
-						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+					"uploadStatus": {
+						"$ref": "#/components/schemas/UploadStatus"
 					},
 					"data": {
 						"properties": {
@@ -193,10 +209,15 @@
 							"results"
 						],
 						"type": "object"
+					},
+					"errors": {
+						"$ref": "#/components/schemas/Record_string.string_"
 					}
 				},
 				"required": [
-					"success"
+					"success",
+					"message",
+					"uploadStatus"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1197,7 +1218,8 @@
 										"description": "- Array of files to upload (max 5 files, 10MB each)"
 									},
 									"jsonData": {
-										"type": "string"
+										"type": "string",
+										"description": "- Optional JSON string with additional metadata"
 									}
 								}
 							}

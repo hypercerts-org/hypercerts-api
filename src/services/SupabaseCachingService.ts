@@ -99,7 +99,16 @@ export class SupabaseCachingService extends BaseSupabaseService<CachingDatabase>
           )
           .$if(args.where?.metadata, (qb) =>
             qb.innerJoin("metadata", "metadata.uri", "claims.uri"),
+          )
+          .$if(args.where?.eas_schema, (qb) =>
+            qb.innerJoin(
+              "supported_schemas",
+              "supported_schemas.id",
+              "attestations.supported_schemas_id",
+            ),
           );
+      case "eas_schema":
+      case "supported_schemas":
       case "attestation_schema":
         return this.db.selectFrom("supported_schemas").selectAll();
       case "hypercerts":
@@ -164,9 +173,18 @@ export class SupabaseCachingService extends BaseSupabaseService<CachingDatabase>
           .$if(args.where?.metadata, (qb) =>
             qb.innerJoin("metadata", "metadata.uri", "claims.uri"),
           )
+          .$if(args.where?.eas_schema, (qb) =>
+            qb.innerJoin(
+              "supported_schemas",
+              "supported_schemas.id",
+              "attestations.supported_schemas_id",
+            ),
+          )
           .select((expressionBuilder) => {
             return expressionBuilder.fn.countAll().as("count");
           });
+      case "eas_schema":
+      case "supported_schemas":
       case "attestation_schema":
         return this.db
           .selectFrom("supported_schemas")

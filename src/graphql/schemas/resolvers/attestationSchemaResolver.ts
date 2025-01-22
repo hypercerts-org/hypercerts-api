@@ -11,7 +11,9 @@ import { GetAttestationSchemasArgs } from "../args/attestationSchemaArgs.js";
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
 
 @ObjectType()
-class GetAttestationsSchemaResponse extends DataResponse(AttestationSchema) {}
+export default class GetAttestationsSchemaResponse extends DataResponse(
+  AttestationSchema,
+) {}
 
 const AttestationSchemaBaseResolver = createBaseResolver("attestationSchema");
 
