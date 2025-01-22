@@ -2,16 +2,16 @@ import { Buffer } from "buffer";
 import { Readable } from "node:stream";
 
 export const createMockFile = (
-  content: string = "test content",
-  filename: string = "test.txt",
-  mimetype: string = "text/plain",
+  content: string | Buffer,
+  filename: string,
+  mimetype = "text/plain",
 ): Express.Multer.File => ({
-  buffer: Buffer.from(content),
-  mimetype,
+  buffer: Buffer.isBuffer(content) ? content : Buffer.from(content),
   originalname: filename,
+  mimetype,
+  size: Buffer.isBuffer(content) ? content.length : Buffer.byteLength(content),
   fieldname: "files",
   encoding: "7bit",
-  size: Buffer.from(content).length,
   stream: null as unknown as Readable,
   destination: "",
   filename: filename,

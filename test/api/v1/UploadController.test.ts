@@ -1,7 +1,8 @@
-import { describe, test, vi } from "vitest";
 import { expect } from "chai";
+import { describe, test, vi } from "vitest";
 import { mock } from "vitest-mock-extended";
 import { UploadController } from "../../../src/controllers/UploadController.js";
+import { SingleUploadFailedError } from "../../../src/lib/uploads/errors.js";
 import { StorageService } from "../../../src/services/StorageService.js";
 import { createMockFile, mockTextFile } from "../../test-utils/mockFile.js";
 
@@ -149,5 +150,50 @@ describe("File upload at v1/upload", async () => {
       { cid: "TEST_CID_1", fileName: "doc.txt" },
       { cid: "TEST_CID_2", fileName: "page.html" },
     ]);
+  });
+
+  test("Handles empty file array", async () => {
+    mocks.init.mockResolvedValue(mockStorage);
+
+    const response = await controller.upload([]);
+
+    expect(response.success).to.be.false;
+    expect(response.uploadStatus).to.equal("none");
+    expect(response.message).to.equal("No files uploaded");
+  });
+
+  test("Handles file size validation", async () => {
+    mocks.init.mockResolvedValue(mockStorage);
+    mockStorage.uploadFile.mockRejectedValue(
+      new SingleUploadFailedError("large.txt", "Failed to upload large.txt"),
+    );
+
+    const largeFile = createMockFile(
+      Buffer.alloc(12 * 1024 * 1024),
+      "large.txt",
+      "text/plain",
+    );
+
+    const response = await controller.upload([largeFile]);
+
+    expect(response.success).to.be.false;
+    expect(response.uploadStatus).to.equal("none");
+    expect(response.data?.failed[0]).to.deep.equal({
+      fileName: "large.txt",
+      error: "Failed to upload large.txt",
+    });
+  });
+
+  test("Processes optional JSON metadata", async () => {
+    mocks.init.mockResolvedValue(mockStorage);
+    mockStorage.uploadFile.mockResolvedValue({ cid: "TEST_CID" });
+
+    const response = await controller.upload(
+      [mockTextFile],
+      JSON.stringify({ key: "value" }),
+    );
+
+    expect(response.success).to.be.true;
+    expect(response.data?.results[0].cid).to.equal("TEST_CID");
   });
 });
