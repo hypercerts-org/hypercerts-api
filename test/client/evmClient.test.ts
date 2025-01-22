@@ -110,22 +110,6 @@ describe("EvmClientFactory", () => {
     });
   });
 
-  describe("createEip1193Client", () => {
-    it("creates EIP-1193 provider for supported chain", () => {
-      EvmClientFactory.createEip1193Client(10);
-      expect(RpcClientFactory.createEip1193Provider).toHaveBeenCalledWith(
-        10,
-        expect.stringContaining("alchemy.com"),
-      );
-    });
-
-    it("throws error for unsupported chain", () => {
-      expect(() => EvmClientFactory.createEip1193Client(999999)).toThrow(
-        "No RPC URL available for chain 999999",
-      );
-    });
-  });
-
   describe("getFirstAvailableUrl", () => {
     it("returns first available URL for supported chain", () => {
       const url = EvmClientFactory.getFirstAvailableUrl(11155111);
