@@ -70,22 +70,24 @@ async function main() {
     default: path.join(__dirname, "blueprint_batch_mint.csv"),
   });
 
-  const chains = [
+  const testnetChains = [
     sepolia,
     arbitrumSepolia,
     baseSepolia,
     filecoinCalibration,
-    optimism,
-    celo,
-    base,
-    arbitrum,
   ];
+
+  const prodChains = [optimism, celo, base, arbitrum];
+
+  const allChains = [...testnetChains, ...prodChains];
+
   const chainId = await select({
     message: "Select chain",
-    choices: [...chains.map((c) => ({ name: c.name, value: c.id }))],
+    choices: [...allChains.map((c) => ({ name: c.name, value: c.id }))],
   });
 
-  const chain = chains.find((c) => c.id === chainId);
+  const chain = allChains.find((c) => c.id === chainId);
+  const isTestnet = testnetChains.some((c) => c.id === chainId);
 
   if (!chain) {
     console.error("Chain not found");
@@ -119,12 +121,10 @@ async function main() {
     },
   });
 
-  console.log("signature", signature);
-
   // const TESTNET_API_URL = "http://localhost:4000/v1";
   const TESTNET_API_URL = "https://staging-api.hypercerts.org/v1";
   const PROD_API_URL = "https://api.hypercerts.org/v1";
-  const ENDPOINT = chain.testnet ? TESTNET_API_URL : PROD_API_URL;
+  const ENDPOINT = isTestnet ? TESTNET_API_URL : PROD_API_URL;
 
   for (const record of records) {
     const {
