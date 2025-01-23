@@ -23,6 +23,7 @@ export default defineConfig({
         "**/types.ts",
         "src/__generated__/**/*",
         "src/graphql/**/*",
+        "src/services/**/*",
         "src/types/**/*",
         "src/abis/**/*",
         "./lib/**/*",
