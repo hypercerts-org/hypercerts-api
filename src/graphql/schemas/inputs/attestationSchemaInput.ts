@@ -1,19 +1,16 @@
 import { Field, InputType } from "type-graphql";
-import type { WhereOptions } from "./whereOptions.js";
+import type { AttestationSchema } from "../typeDefs/attestationSchemaTypeDefs.js";
 import {
-  BooleanSearchOptions,
-  IdSearchOptions,
   BigIntSearchOptions,
+  BooleanSearchOptions,
   StringSearchOptions,
 } from "./searchOptions.js";
-import type { AttestationSchema } from "../typeDefs/attestationSchemaTypeDefs.js";
+import type { WhereOptions } from "./whereOptions.js";
 
 @InputType()
 export class BasicAttestationSchemaWhereInput
   implements WhereOptions<AttestationSchema>
 {
-  @Field(() => IdSearchOptions, { nullable: true })
-  id?: IdSearchOptions | null;
   @Field(() => StringSearchOptions, { nullable: true })
   uid?: StringSearchOptions | null;
   @Field(() => BigIntSearchOptions, { nullable: true })

@@ -1,8 +1,10 @@
 import { getFromIPFS } from "@hypercerts-org/sdk";
-import { tryParseMerkleTree } from "./isParsableToMerkleTree.js";
+import { tryParseMerkleTree } from "../lib/allowlists/isParsableToMerkleTree.js";
 import { ValidationResult } from "../types/api.js";
 
-export const validateRemoteAllowList = async (uri: string): Promise<ValidationResult<unknown>> => {
+export const validateRemoteAllowList = async (
+  uri: string,
+): Promise<ValidationResult<unknown>> => {
   try {
     const allowList = await getFromIPFS(uri, 30000);
 
@@ -10,22 +12,22 @@ export const validateRemoteAllowList = async (uri: string): Promise<ValidationRe
       return {
         valid: false,
         errors: {
-          message: "Allow list data not found or not of expected type"
-        }
+          message: "Allow list data not found or not of expected type",
+        },
       };
     }
 
     if (tryParseMerkleTree(allowList)) {
       return {
         valid: true,
-        data: allowList
+        data: allowList,
       };
     } else {
       return {
         valid: false,
         errors: {
-          message: `Allow list at ${uri} should be a valid openzeppelin merkle tree`
-        }
+          message: `Allow list at ${uri} should be a valid openzeppelin merkle tree`,
+        },
       };
     }
   } catch (e) {
@@ -34,11 +36,8 @@ export const validateRemoteAllowList = async (uri: string): Promise<ValidationRe
     return {
       valid: false,
       errors: {
-        message: error.message
-      }
+        message: error.message,
+      },
     };
-
   }
-
-
 };

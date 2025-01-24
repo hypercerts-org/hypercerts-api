@@ -5,6 +5,10 @@ import { TsoaRoute, fetchMiddlewares, ExpressTemplateService } from '@tsoa/runti
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { UserController } from './../../controllers/UserController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { UploadController } from './../../controllers/UploadController.js';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { SignatureRequestController } from './../../controllers/SignatureRequestController.js';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MetadataController } from './../../controllers/MetadataController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MarketplaceController } from './../../controllers/MarketplaceController.js';
@@ -15,6 +19,8 @@ import { BlueprintController } from './../../controllers/BlueprintController.js'
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AllowListController } from './../../controllers/AllowListController.js';
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
+import multer from 'multer';
+const upload = multer({"limits":{"fileSize":8388608}});
 
 
 
@@ -26,50 +32,84 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"array","array":{"dataType":"string"}}]},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Error": {
+    "UserResponse": {
         "dataType": "refObject",
         "properties": {
-            "name": {"dataType":"string","required":true},
-            "message": {"dataType":"string","required":true},
-            "stack": {"dataType":"string"},
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string"},
+            "errors": {"ref":"Record_string.string-or-string-Array_"},
+            "data": {"dataType":"nestedObjectLiteral","nestedProperties":{"address":{"dataType":"string","required":true}}},
         },
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ApiResponse__address-string_-or-null_": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string"},"data":{"dataType":"union","subSchemas":[{"dataType":"nestedObjectLiteral","nestedProperties":{"address":{"dataType":"string","required":true}}},{"dataType":"enum","enums":[null]}]},"success":{"dataType":"boolean","required":true}},"validators":{}},
+    "BaseResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string"},
+            "errors": {"ref":"Record_string.string-or-string-Array_"},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "AddOrUpdateUserResponse": {
-        "dataType": "refAlias",
-        "type": {"ref":"ApiResponse__address-string_-or-null_","validators":{}},
+    "EOAUserUpsertRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "chain_id": {"dataType":"double","required":true},
+            "type": {"dataType":"enum","enums":["eoa"],"required":true},
+            "display_name": {"dataType":"string"},
+            "avatar": {"dataType":"string"},
+            "signature": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ApiResponse": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string"},"data":{"dataType":"void"},"success":{"dataType":"boolean","required":true}},"validators":{}},
+    "MultisigUserUpsertRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "chain_id": {"dataType":"double","required":true},
+            "type": {"dataType":"enum","enums":["multisig"],"required":true},
+            "messageHash": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "AddOrUpdateUserRequest": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"ref":"EOAUserUpsertRequest"},{"ref":"MultisigUserUpsertRequest"}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UploadStatus": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["all"]},{"dataType":"enum","enums":["some"]},{"dataType":"enum","enums":["none"]}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Record_string.string_": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"string"},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UploadResponse": {
         "dataType": "refObject",
         "properties": {
-            "display_name": {"dataType":"string","required":true},
-            "avatar": {"dataType":"string","required":true},
-            "signature": {"dataType":"string","required":true},
-            "chain_id": {"dataType":"double","required":true},
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string","required":true},
+            "uploadStatus": {"ref":"UploadStatus","required":true},
+            "data": {"dataType":"nestedObjectLiteral","nestedProperties":{"failed":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"error":{"dataType":"string","required":true},"fileName":{"dataType":"string","required":true}}},"required":true},"results":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"fileName":{"dataType":"string","required":true},"cid":{"dataType":"string","required":true}}},"required":true}}},
+            "errors": {"ref":"Record_string.string_"},
         },
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ApiResponse__cid-string__": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string"},"data":{"dataType":"nestedObjectLiteral","nestedProperties":{"cid":{"dataType":"string","required":true}}},"success":{"dataType":"boolean","required":true}},"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "StorageResponse": {
-        "dataType": "refAlias",
-        "type": {"ref":"ApiResponse__cid-string__","validators":{}},
+    "CancelSignatureRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "signature": {"dataType":"string","required":true},
+            "owner_address": {"dataType":"string","required":true},
+            "chain_id": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "HypercertClaimdata": {
@@ -109,6 +149,17 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "StorageResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string"},
+            "errors": {"ref":"Record_string.string-or-string-Array_"},
+            "data": {"dataType":"nestedObjectLiteral","nestedProperties":{"cid":{"dataType":"string","required":true}}},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "StoreMetadataWithAllowlistRequest": {
         "dataType": "refObject",
         "properties": {
@@ -119,19 +170,16 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ValidationResult": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"ref":"Record_string.string-or-string-Array_"},"data":{"dataType":"void"},"valid":{"dataType":"boolean","required":true}},"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ApiResponse_ValidationResult_": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string"},"data":{"ref":"ValidationResult"},"success":{"dataType":"boolean","required":true}},"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ValidationResponse": {
-        "dataType": "refAlias",
-        "type": {"ref":"ApiResponse_ValidationResult_","validators":{}},
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string"},
+            "errors": {"ref":"Record_string.string-or-string-Array_"},
+            "valid": {"dataType":"boolean","required":true},
+            "data": {"dataType":"any"},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ValidateMetadataRequest": {
@@ -199,14 +247,15 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ApiResponse__id-string_-or-null_": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string"},"data":{"dataType":"union","subSchemas":[{"dataType":"nestedObjectLiteral","nestedProperties":{"id":{"dataType":"string","required":true}}},{"dataType":"enum","enums":[null]}]},"success":{"dataType":"boolean","required":true}},"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "HyperboardCreateResponse": {
-        "dataType": "refAlias",
-        "type": {"ref":"ApiResponse__id-string_-or-null_","validators":{}},
+    "HyperboardResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string"},
+            "errors": {"ref":"Record_string.string-or-string-Array_"},
+            "data": {"dataType":"nestedObjectLiteral","nestedProperties":{"id":{"dataType":"string","required":true}}},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "HyperboardCreateRequest": {
@@ -238,14 +287,15 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ApiResponse__blueprint_id-number_-or-null_": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"errors":{"dataType":"union","subSchemas":[{"ref":"Record_string.string-or-string-Array_"},{"dataType":"array","array":{"dataType":"refObject","ref":"Error"}}]},"message":{"dataType":"string"},"data":{"dataType":"union","subSchemas":[{"dataType":"nestedObjectLiteral","nestedProperties":{"blueprint_id":{"dataType":"double","required":true}}},{"dataType":"enum","enums":[null]}]},"success":{"dataType":"boolean","required":true}},"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "AddOrCreateBlueprintResponse": {
-        "dataType": "refAlias",
-        "type": {"ref":"ApiResponse__blueprint_id-number_-or-null_","validators":{}},
+    "BlueprintResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string"},
+            "errors": {"ref":"Record_string.string-or-string-Array_"},
+            "data": {"dataType":"nestedObjectLiteral","nestedProperties":{"blueprint_id":{"dataType":"double","required":true}}},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "BlueprintCreateRequest": {
@@ -261,8 +311,13 @@ const models: TsoaRoute.Models = {
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "BlueprintDeleteRequest": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"admin_address":{"dataType":"string","required":true},"chain_id":{"dataType":"double","required":true},"signature":{"dataType":"string","required":true}},"validators":{}},
+        "dataType": "refObject",
+        "properties": {
+            "signature": {"dataType":"string","required":true},
+            "chain_id": {"dataType":"double","required":true},
+            "admin_address": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "BlueprintQueueMintRequest": {
@@ -329,6 +384,99 @@ export function RegisterRoutes(app: Router) {
                 next,
                 validatedArgs,
                 successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/upload',
+            upload.array('files'),
+            ...(fetchMiddlewares<RequestHandler>(UploadController)),
+            ...(fetchMiddlewares<RequestHandler>(UploadController.prototype.upload)),
+
+            async function UploadController_upload(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    files: {"in":"formData","name":"files","dataType":"array","array":{"dataType":"file"}},
+                    jsonData: {"in":"formData","name":"jsonData","dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new UploadController();
+
+              await templateService.apiHandler({
+                methodName: 'upload',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/signature-requests/:safe_address-:message_hash/cancel',
+            ...(fetchMiddlewares<RequestHandler>(SignatureRequestController)),
+            ...(fetchMiddlewares<RequestHandler>(SignatureRequestController.prototype.cancelSignatureRequest)),
+
+            async function SignatureRequestController_cancelSignatureRequest(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+                    safe_address: {"in":"path","name":"safe_address","required":true,"dataType":"string"},
+                    message_hash: {"in":"path","name":"message_hash","required":true,"dataType":"string"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CancelSignatureRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new SignatureRequestController();
+
+              await templateService.apiHandler({
+                methodName: 'cancelSignatureRequest',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/v1/signature-requests/process',
+            ...(fetchMiddlewares<RequestHandler>(SignatureRequestController)),
+            ...(fetchMiddlewares<RequestHandler>(SignatureRequestController.prototype.processSignatureRequests)),
+
+            async function SignatureRequestController_processSignatureRequests(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new SignatureRequestController();
+
+              await templateService.apiHandler({
+                methodName: 'processSignatureRequests',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
               });
             } catch (err) {
                 return next(err);

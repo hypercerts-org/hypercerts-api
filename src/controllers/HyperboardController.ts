@@ -12,9 +12,9 @@ import {
   Patch,
 } from "tsoa";
 import type {
-  ApiResponse,
+  BaseResponse,
   HyperboardCreateRequest,
-  HyperboardCreateResponse,
+  HyperboardResponse,
   HyperboardUpdateRequest,
 } from "../types/api.js";
 import { z } from "zod";
@@ -37,13 +37,13 @@ export class HyperboardController extends Controller {
    */
   @Post()
   @SuccessResponse(201, "Data uploaded successfully", "application/json")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Errors while validating hyperboard",
   })
   public async createHyperboard(
     @Body() requestBody: HyperboardCreateRequest,
-  ): Promise<HyperboardCreateResponse> {
+  ): Promise<HyperboardResponse> {
     const inputSchema = z
       .object({
         chainIds: z
@@ -175,7 +175,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Invalid input",
-        data: null,
         errors: JSON.parse(parsedBody.error.toString()),
       };
     }
@@ -228,7 +227,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Invalid signature",
-        data: null,
       };
     }
 
@@ -262,7 +260,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Error creating hyperboard",
-        data: null,
       };
     }
 
@@ -355,7 +352,6 @@ export class HyperboardController extends Controller {
         return {
           success: false,
           message: "Error updating collection",
-          data: null,
         };
       }
     }
@@ -430,7 +426,6 @@ export class HyperboardController extends Controller {
         return {
           success: false,
           message: "Error creating collection",
-          data: null,
         };
       }
     }
@@ -446,14 +441,14 @@ export class HyperboardController extends Controller {
 
   @Patch("{hyperboardId}")
   @SuccessResponse(204, "Hyperboard updated successfully")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Errors while updating hyperboard",
   })
   public async updateHyperboard(
     @Path() hyperboardId: string,
     @Body() requestBody: HyperboardUpdateRequest,
-  ): Promise<ApiResponse<{ id: string } | null>> {
+  ): Promise<HyperboardResponse> {
     const inputSchema = z
       .object({
         id: z.string().uuid(),
@@ -590,7 +585,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Invalid input",
-        data: null,
         errors: JSON.parse(parsedBody.error.toString()),
       };
     }
@@ -603,7 +597,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Hyperboard not found",
-        data: null,
       };
     }
 
@@ -657,7 +650,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Invalid signature",
-        data: null,
       };
     }
 
@@ -671,7 +663,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Not authorized to update hyperboard",
-        data: null,
       };
     }
 
@@ -692,7 +683,6 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Error updating hyperboard",
-        data: null,
       };
     }
 
@@ -794,7 +784,6 @@ export class HyperboardController extends Controller {
         return {
           success: false,
           message: "Error updating collection",
-          data: null,
         };
       }
     }
@@ -867,7 +856,6 @@ export class HyperboardController extends Controller {
         return {
           success: false,
           message: "Error creating collection",
-          data: null,
         };
       }
     }
@@ -883,7 +871,7 @@ export class HyperboardController extends Controller {
 
   @Delete("{hyperboardId}")
   @SuccessResponse(204, "Hyperboard deleted successfully")
-  @Response<ApiResponse>(422, "Unprocessable content", {
+  @Response<BaseResponse>(422, "Unprocessable content", {
     success: false,
     message: "Errors while deleting hyperboard",
   })
@@ -891,7 +879,7 @@ export class HyperboardController extends Controller {
     @Path() hyperboardId: string,
     @Query() adminAddress: string,
     @Query() signature: string,
-  ): Promise<ApiResponse> {
+  ): Promise<BaseResponse> {
     const inputSchema = z.object({
       adminAddress: z.string(),
       signature: z.string(),
