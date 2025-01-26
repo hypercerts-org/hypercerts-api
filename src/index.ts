@@ -44,6 +44,11 @@ app.use(yoga.graphqlEndpoint, yoga);
 
 app.use("/spec", swaggerUi.serve, swaggerUi.setup(swaggerJson));
 
+app.get("/swagger.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerJson);
+});
+
 RegisterRoutes(app);
 
 // The error handler must be registered before any other error middleware and after all controllers
