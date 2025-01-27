@@ -21,8 +21,8 @@ importers:
         specifier: 0.3.37
         version: 0.3.37(@nomicfoundation/hardhat-ethers@3.0.6(ethers@6.12.2)(hardhat@2.22.17(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)))(@types/node@20.10.6)(encoding@0.1.13)(ethers@6.12.2)(graphql@16.8.1)(rollup@4.12.0)(svelte@4.2.18)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)
       '@hypercerts-org/sdk':
-        specifier: 2.5.0-beta.2
-        version: 2.5.0-beta.2(graphql@16.8.1)(rollup@4.12.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)
+        specifier: 2.5.0-beta.3
+        version: 2.5.0-beta.3(graphql@16.8.1)(rollup@4.12.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)
       '@ipld/car':
         specifier: ^5.2.5
         version: 5.2.5
@@ -1511,8 +1511,8 @@ packages:
   '@hypercerts-org/sdk@2.3.0':
     resolution: {integrity: sha512-9J6LtV23F3/NiUQHAY8QKSpxIhyDP92rvH9E0aj5Eq2KIEefRJ0l1XltpwLXDh3yswh1HORrGMbK5blswdlVew==}
 
-  '@hypercerts-org/sdk@2.5.0-beta.2':
-    resolution: {integrity: sha512-VEae3JCUrvs/XHxsmMsjsieGImm/ArxDoD3yHZnzmKsHJra8TDSfspzOlDlL2ASd3cz5PluF2hTbVkIOuG3V0Q==}
+  '@hypercerts-org/sdk@2.5.0-beta.3':
+    resolution: {integrity: sha512-ZZfriRsJ+vN9L8u4+MJtgTF2+m9Noe5q5ldVXOSb5zlasj7ognTSstKilfkAKJUb/ZSeFl/jIQWafhkWnWi0WQ==}
 
   '@inquirer/checkbox@2.3.5':
     resolution: {integrity: sha512-3V0OSykTkE/38GG1DhxRGLBmqefgzRg2EK5A375zz+XEvIWfAHcac31e+zlBDPypRHxhmXc/Oh6v9eOPbH3nAg==}
@@ -9931,7 +9931,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@hypercerts-org/sdk@2.5.0-beta.2(graphql@16.8.1)(rollup@4.12.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)':
+  '@hypercerts-org/sdk@2.5.0-beta.3(graphql@16.8.1)(rollup@4.12.0)(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)':
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.8.1)
       '@hypercerts-org/contracts': 2.0.0-alpha.12(ts-node@10.9.2(@swc/core@1.4.15)(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)
