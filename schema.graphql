@@ -942,6 +942,7 @@ type Sale {
 
   """The address of the token accepted for this order"""
   currency: String!
+  currency_amount: EthBigInt!
 
   """The hypercert associated with this order"""
   hypercert: HypercertBaseType

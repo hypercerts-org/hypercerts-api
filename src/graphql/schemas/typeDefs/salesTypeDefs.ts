@@ -55,6 +55,9 @@ class Sale extends BasicTypeDef {
     description: "The hypercert associated with this order",
   })
   hypercert?: HypercertBaseType;
+
+  @Field(() => EthBigInt)
+  currency_amount?: bigint | number | string;
 }
 
 export { Sale };
