@@ -1,5 +1,6 @@
 import SafeApiKit from "@safe-global/api-kit";
 
+import { SafeApiStrategyFactory } from "../lib/safe/SafeApiKitStrategy.js";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { ISafeApiCommand } from "../types/safe-signatures.js";
 
@@ -15,7 +16,8 @@ export abstract class SafeApiCommand implements ISafeApiCommand {
     this.messageHash = messageHash;
     this.chainId = chainId;
     this.dataService = new SupabaseDataService();
-    this.safeApiKit = new SafeApiKit.default({ chainId: BigInt(chainId) });
+    this.safeApiKit =
+      SafeApiStrategyFactory.getStrategy(chainId).createInstance();
   }
 
   abstract execute(): Promise<void>;
