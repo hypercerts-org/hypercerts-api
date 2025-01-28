@@ -11,6 +11,7 @@ import { Sale } from "../typeDefs/salesTypeDefs.js";
 import { Hyperboard } from "../typeDefs/hyperboardTypeDefs.js";
 import { Blueprint } from "../typeDefs/blueprintTypeDefs.js";
 import { SignatureRequest } from "../typeDefs/signatureRequestTypeDefs.js";
+import { Collection } from "../typeDefs/collectionTypeDefs.js";
 
 export type SortOptions<T extends object> = {
   [P in keyof T]: SortOrder | null;
@@ -237,4 +238,14 @@ export class SignatureRequestSortOptions
 
   @Field(() => SortOrder, { nullable: true })
   purpose?: SortOrder;
+}
+
+@InputType()
+export class CollectionSortOptions implements SortOptions<Collection> {
+  @Field(() => SortOrder, { nullable: true })
+  name?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  created_at?: SortOrder;
+  @Field(() => SortOrder, { nullable: true })
+  description?: SortOrder;
 }
