@@ -5,7 +5,7 @@ import {
   USER_UPDATE_MESSAGE_SCHEMA,
 } from "../lib/users/schemas.js";
 import { isTypedMessage } from "../utils/signatures.js";
-import UserUpsertSignatureVerifier from "../lib/safe-signature-verification/UserUpsertSignatureVerifier.js";
+import UserUpsertSignatureVerifier from "../lib/safe/signature-verification/UserUpsertSignatureVerifier.js";
 import { Database } from "../types/supabaseData.js";
 
 import { SafeApiCommand } from "./SafeApiCommand.js";

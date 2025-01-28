@@ -1,4 +1,4 @@
-import { MultisigUserUpdateMessage } from "../users/schemas.js";
+import { MultisigUserUpdateMessage } from "../../users/schemas.js";
 
 import SafeSignatureVerifier from "./SafeSignatureVerifier.js";
 
