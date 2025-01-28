@@ -3,6 +3,8 @@ import { getAddress, hashTypedData, type HashTypedDataParameters } from "viem";
 
 import { EvmClientFactory } from "../../client/evmClient.js";
 
+import { RpcStrategyFactory } from "./safe-rpc-urls.js";
+
 export default abstract class SafeSignatureVerifier {
   protected chainId: number;
   protected safeAddress: `0x${string}`;
@@ -11,7 +13,10 @@ export default abstract class SafeSignatureVerifier {
   constructor(chainId: number, safeAddress: `0x${string}`) {
     this.chainId = chainId;
     this.safeAddress = getAddress(safeAddress);
-    this.rpcUrl = EvmClientFactory.getPublicRpcUrl(chainId);
+    this.rpcUrl = RpcStrategyFactory.getStrategy(
+      chainId,
+      EvmClientFactory,
+    ).getUrl(chainId);
   }
 
   hashTypedData() {

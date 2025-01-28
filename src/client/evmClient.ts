@@ -107,12 +107,10 @@ export class EvmClientFactory {
 
   static getPublicRpcUrl(chainId: number): string {
     const chain = ChainFactory.getChain(chainId);
-    if (!chain.rpcUrls.public.http[0]) {
-      throw new Error(
-        `(viem) No public RPC URL available for chain ${chainId}`,
-      );
+    if (!chain.rpcUrls?.default?.http?.[0]) {
+      throw new Error(`No public RPC URL available for chain ${chainId}`);
     }
-    return chain.rpcUrls.public.http[0];
+    return chain.rpcUrls.default.http[0];
   }
 
   // Keep this for backward compatibility
