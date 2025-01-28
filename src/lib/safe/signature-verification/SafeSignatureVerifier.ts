@@ -1,9 +1,9 @@
 import Safe from "@safe-global/protocol-kit";
 import { getAddress, hashTypedData, type HashTypedDataParameters } from "viem";
 
-import { EvmClientFactory } from "../../client/evmClient.js";
+import { EvmClientFactory } from "../../../client/evmClient.js";
 
-import { RpcStrategyFactory } from "./safe-rpc-urls.js";
+import { RpcStrategyFactory } from "../safe-rpc-urls.js";
 
 export default abstract class SafeSignatureVerifier {
   protected chainId: number;
