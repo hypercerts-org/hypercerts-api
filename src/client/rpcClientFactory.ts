@@ -2,7 +2,6 @@ import { http, Transport } from "viem";
 import { CustomEthersJsonRpcProvider } from "../lib/rpcProviders/customEthersJsonRpcProvider.js";
 import { filecoinApiKey } from "../utils/constants.js";
 import { ChainFactory } from "./chainFactory.js";
-import { CustomEip1193Provider } from "../lib/rpcProviders/customEthers1193RpcProvider.js";
 
 interface RpcConfig {
   url: string;
@@ -68,14 +67,6 @@ export class RpcClientFactory {
       url: config.url,
       config: { headers: config.headers },
       network,
-    });
-  }
-
-  static createEip1193Provider(chainId: number, url: string) {
-    const config = RpcConfigFactory.getConfig(chainId, url);
-    return new CustomEip1193Provider({
-      url: config.url,
-      config: { headers: config.headers },
     });
   }
 }
