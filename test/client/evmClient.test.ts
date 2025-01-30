@@ -20,7 +20,6 @@ vi.mock("@/client/rpcClientFactory", () => ({
       timeout: 20_000,
     }),
     createEthersJsonRpcProvider: vi.fn(),
-    createEip1193Provider: vi.fn(),
   },
 }));
 

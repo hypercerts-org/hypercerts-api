@@ -1,7 +1,6 @@
 import { http } from "viem";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { RpcClientFactory } from "../../src/client/rpcClientFactory.js";
-import { CustomEip1193Provider } from "../../src/lib/rpcProviders/customEthers1193RpcProvider.js";
 import { CustomEthersJsonRpcProvider } from "../../src/lib/rpcProviders/customEthersJsonRpcProvider.js";
 
 const mockFetch = vi.fn();
@@ -81,24 +80,6 @@ describe("RpcClientFactory", () => {
       );
 
       expect(provider).toBeInstanceOf(CustomEthersJsonRpcProvider);
-      // Additional checks for headers could be added if we expose them
-    });
-  });
-
-  describe("createEip1193Provider", () => {
-    it("creates provider without headers", () => {
-      const provider = RpcClientFactory.createEip1193Provider(
-        testChainId,
-        testUrl,
-      );
-
-      expect(provider).toBeInstanceOf(CustomEip1193Provider);
-    });
-
-    it("creates provider with headers for Filecoin chains", () => {
-      const provider = RpcClientFactory.createEip1193Provider(314, testUrl);
-
-      expect(provider).toBeInstanceOf(CustomEip1193Provider);
       // Additional checks for headers could be added if we expose them
     });
   });
