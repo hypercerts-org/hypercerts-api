@@ -333,6 +333,7 @@ input BooleanSearchOptions {
 """Collection of hypercerts for reference and display purposes"""
 type Collection {
   admins: [User!]!
+  blueprints: [Blueprint!]
 
   """Chain ID of the collection"""
   chain_ids: [EthBigInt!]
@@ -342,10 +343,27 @@ type Collection {
 
   """Description of the collection"""
   description: String!
+  hypercerts: [Hypercert!]
   id: ID!
 
   """Name of the collection"""
   name: String!
+}
+
+input CollectionFetchInput {
+  by: CollectionSortOptions
+}
+
+input CollectionSortOptions {
+  created_at: SortOrder
+  description: SortOrder
+  name: SortOrder
+}
+
+input CollectionWhereInput {
+  description: StringSearchOptions
+  id: IdSearchOptions
+  name: StringSearchOptions
 }
 
 """Pointer to a contract deployed on a chain"""
@@ -467,6 +485,11 @@ type GetAttestationsSchemaResponse {
 type GetBlueprintResponse {
   count: Int
   data: [Blueprint!]
+}
+
+type GetCollectionsResponse {
+  count: Int
+  data: [Collection!]
 }
 
 """Pointer to a contract deployed on a chain"""
@@ -889,6 +912,7 @@ type Query {
   attestationSchemas(first: Int, offset: Int): GetAttestationsSchemaResponse!
   attestations(first: Int, offset: Int, sort: AttestationFetchInput, where: AttestationWhereInput): GetAttestationsResponse!
   blueprints(first: Int, offset: Int, sort: BlueprintFetchInput, where: BlueprintWhereInput): GetBlueprintResponse!
+  collections(first: Int, offset: Int, sort: CollectionFetchInput, where: CollectionWhereInput): GetCollectionsResponse!
   contracts(first: Int, offset: Int, sort: ContractFetchInput, where: ContractWhereInput): GetContractsResponse!
   fractions(first: Int, offset: Int, sort: FractionFetchInput, where: FractionWhereInput): GetFractionsResponse!
   hyperboards(first: Int, offset: Int, sort: HyperboardFetchInput, where: HyperboardWhereInput): GetHyperboardsResponse!
@@ -918,6 +942,7 @@ type Sale {
 
   """The address of the token accepted for this order"""
   currency: String!
+  currency_amount: EthBigInt!
 
   """The hypercert associated with this order"""
   hypercert: HypercertBaseType

@@ -243,7 +243,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"HypercertClaimdata": {
+			"HypercertClaimdata_36_1": {
 				"description": "Properties of an impact claim",
 				"properties": {
 					"impact_scope": {
@@ -424,21 +424,51 @@
 					},
 					"properties": {
 						"items": {
-							"properties": {
-								"value": {
-									"type": "string"
+							"anyOf": [
+								{
+									"properties": {
+										"value": {
+											"type": "string"
+										},
+										"trait_type": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"value",
+										"trait_type"
+									],
+									"type": "object"
 								},
-								"trait_type": {
-									"type": "string"
+								{
+									"properties": {
+										"name": {
+											"type": "string"
+										},
+										"src": {
+											"type": "string"
+										},
+										"type": {
+											"type": "string"
+										},
+										"trait_type": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"name",
+										"src",
+										"type",
+										"trait_type"
+									],
+									"type": "object"
 								}
-							},
-							"additionalProperties": {},
-							"type": "object"
+							]
 						},
 						"type": "array"
 					},
 					"hypercert": {
-						"$ref": "#/components/schemas/HypercertClaimdata"
+						"$ref": "#/components/schemas/HypercertClaimdata_36_1"
 					}
 				},
 				"required": [

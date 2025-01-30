@@ -85,7 +85,7 @@ export abstract class BaseSupabaseService<DB> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private applySorting(query: any, sortBy: any) {
+  applySorting(query: any, sortBy: any) {
     for (const [column, direction] of Object.entries(sortBy)) {
       if (!column || !direction) continue;
       const dir: "asc" | "desc" =

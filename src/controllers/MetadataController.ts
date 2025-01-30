@@ -131,7 +131,7 @@ export class MetadataController extends Controller {
         };
       }
 
-      if (allowList) {
+      if (metadataValidationResult.data.allowList) {
         this.setStatus(409);
         return {
           success: false,

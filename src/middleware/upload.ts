@@ -11,6 +11,7 @@ const ALLOWED_MIMES = new Set([
   "application/pdf",
   "text/plain",
   "application/json",
+  "application/geo+json",
 ]);
 
 // File validation error types

@@ -3,6 +3,7 @@ import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
 import { User } from "./userTypeDefs.js";
 import { GraphQLBigInt } from "graphql-scalars";
+import { Collection } from "./collectionTypeDefs.js";
 
 @ObjectType({
   description: "Hyperboard of hypercerts for reference and display purposes",
@@ -46,26 +47,6 @@ class SectionResponseType {
 
   @Field()
   count?: number;
-}
-
-@ObjectType({
-  description: "Collection of hypercerts for reference and display purposes",
-})
-class Collection extends BasicTypeDef {
-  @Field({ description: "Creation timestamp of the collection" })
-  created_at?: string;
-  @Field({ description: "Name of the collection" })
-  name?: string;
-  @Field({ description: "Description of the collection" })
-  description?: string;
-  @Field(() => [EthBigInt], {
-    nullable: true,
-    description: "Chain ID of the collection",
-  })
-  chain_ids?: (bigint | number | string)[];
-
-  @Field(() => [User])
-  admins?: User[];
 }
 
 @ObjectType({

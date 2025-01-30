@@ -2,7 +2,7 @@ import "./instrument.js";
 import express, { type Express } from "express";
 import "reflect-metadata";
 import cors from "cors";
-import { assertExists } from "./utils/assertExists.js";
+import { getRequiredEnvVar } from "./utils/envVars.js";
 import { yoga } from "./client/graphql.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerJson from "./__generated__/swagger.json" assert { type: "json" };
@@ -21,7 +21,7 @@ BigInt.prototype.fromJSON = function () {
   return BigInt(this.toString());
 };
 
-const PORT = assertExists(process.env.PORT, "PORT");
+const PORT = getRequiredEnvVar("PORT");
 
 const app: Express = express();
 
