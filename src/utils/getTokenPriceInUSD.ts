@@ -4,15 +4,15 @@ import {
   Currency,
 } from "@hypercerts-org/marketplace-sdk";
 import { formatUnits, getAddress } from "viem";
-import { getEvmClient } from "./getRpcUrl.js";
 import { AggregatorV3Abi } from "../abis/AggregatorV3Abi.js";
 import { LRUCache } from "lru-cache";
+import { EvmClientFactory } from "./evmClient.js";
 
 export const getTokenPriceInUSD = async (
   chainId: ChainId,
   tokenAddress: string,
 ) => {
-  const client = getEvmClient(chainId);
+  const client = EvmClientFactory.createClient(chainId);
 
   // The address of the contract which will provide the price of ETH
   const feedAddress = tokenAddressToFeedAddress(chainId, tokenAddress);

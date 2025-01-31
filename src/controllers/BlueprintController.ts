@@ -21,8 +21,8 @@ import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { verifyAuthSignedData } from "../utils/verifyAuthSignedData.js";
 import { isAddress } from "viem";
 import { Json } from "../types/supabaseData.js";
-import { getEvmClient } from "../utils/getRpcUrl.js";
 import { waitForTxThenMintBlueprint } from "../utils/waitForTxThenMintBlueprint.js";
+import { EvmClientFactory } from "../utils/evmClient.js";
 
 @Route("v1/blueprints")
 @Tags("Blueprints")
@@ -367,7 +367,7 @@ export class BlueprintController extends Controller {
       };
     }
 
-    const client = getEvmClient(chain_id);
+    const client = EvmClientFactory.createClient(chain_id);
     const transaction = await client.getTransaction({
       hash: tx_hash as `0x${string}`,
     });

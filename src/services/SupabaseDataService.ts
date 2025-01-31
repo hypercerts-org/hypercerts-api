@@ -11,7 +11,6 @@ import {
   OrderValidatorCode,
 } from "@hypercerts-org/marketplace-sdk";
 import { ethers } from "ethers";
-import { getRpcUrl } from "../utils/getRpcUrl.js";
 import { singleton } from "tsyringe";
 import { GetUserArgs } from "../graphql/schemas/args/userArgs.js";
 import type { DataDatabase as KyselyDataDatabase } from "../types/kyselySupabaseData.js";
@@ -23,6 +22,7 @@ import { GetBlueprintArgs } from "../graphql/schemas/args/blueprintArgs.js";
 import { sql } from "kysely";
 import { GetSignatureRequestArgs } from "../graphql/schemas/args/signatureRequestArgs.js";
 import { GetCollectionsArgs } from "../graphql/schemas/args/collectionArgs.js";
+import { EvmClientFactory } from "../utils/evmClient.js";
 
 @singleton()
 export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase> {
@@ -278,7 +278,9 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       const hec = new HypercertExchangeClient(
         chainId,
         // @ts-expect-error Typing issue with provider
-        new ethers.JsonRpcProvider(getRpcUrl(chainId)),
+        new ethers.JsonRpcProvider(
+          EvmClientFactory.getFirstAvailableUrl(chainId),
+        ),
       );
       const validationResults = await hec.checkOrdersValidity(matchingOrders);
 

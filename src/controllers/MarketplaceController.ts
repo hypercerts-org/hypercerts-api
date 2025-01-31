@@ -19,10 +19,10 @@ import { z } from "zod";
 import { isAddress, verifyMessage } from "viem";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import { getFractionsById } from "../utils/getFractionsById.js";
-import { getRpcUrl } from "../utils/getRpcUrl.js";
 import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
 import { getHypercertTokenId } from "../utils/tokenIds.js";
 import { BaseResponse } from "../types/api.js";
+import { EvmClientFactory } from "../utils/evmClient.js";
 
 export interface CreateOrderRequest {
   signature: string;
@@ -148,7 +148,9 @@ export class MarketplaceController extends Controller {
     const hec = new HypercertExchangeClient(
       chainId,
       // @ts-expect-error Typing issue with provider
-      new ethers.JsonRpcProvider(getRpcUrl(chainId)),
+      new ethers.JsonRpcProvider(
+        EvmClientFactory.getFirstAvailableUrl(chainId),
+      ),
     );
     const typedData = hec.getTypedDataDomain();
 

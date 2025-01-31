@@ -1,7 +1,6 @@
 import { getAddress, hashTypedData, type HashTypedDataParameters } from "viem";
 import Safe from "@safe-global/protocol-kit";
-
-import { getRpcUrl } from "../../utils/getRpcUrl.js";
+import { EvmClientFactory } from "../../utils/evmClient.js";
 
 export default abstract class SafeSignatureVerifier {
   protected chainId: number;
@@ -9,7 +8,7 @@ export default abstract class SafeSignatureVerifier {
   protected rpcUrl: string;
 
   constructor(chainId: number, safeAddress: `0x${string}`) {
-    const rpcUrl = getRpcUrl(chainId);
+    const rpcUrl = EvmClientFactory.getFirstAvailableUrl(chainId);
 
     if (!rpcUrl) {
       throw new Error(`Unsupported chain ID: ${chainId}`);
