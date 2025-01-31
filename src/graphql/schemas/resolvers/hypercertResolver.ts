@@ -80,7 +80,6 @@ class HypercertResolver extends HypercertBaseResolver {
 
   @FieldResolver()
   async orders(@Root() hypercert: Hypercert) {
-    console.log(hypercert.hypercert_id);
     if (!hypercert.id || !hypercert.hypercert_id) {
       return;
     }
@@ -175,9 +174,10 @@ class HypercertResolver extends HypercertBaseResolver {
         count: ordersCount || 0,
       };
     } catch (e) {
-      throw new Error(
+      console.error(
         `[HypercertResolver::orders] Error fetching orders for ${hypercert.hypercert_id}: ${(e as Error).toString()}`,
       );
+      return defaultValue;
     }
   }
 
