@@ -1,9 +1,9 @@
-import Safe from "@safe-global/protocol-kit";
 import { getAddress, hashTypedData, type HashTypedDataParameters } from "viem";
 
 import { EvmClientFactory } from "../../../client/evmClient.js";
 
 import { RpcStrategyFactory } from "../safe-rpc-urls.js";
+import { SignatureVerifierStrategyFactory } from "./SignatureVerifierStrategy.js";
 
 export default abstract class SafeSignatureVerifier {
   protected chainId: number;
@@ -35,13 +35,10 @@ export default abstract class SafeSignatureVerifier {
 
   abstract buildTypedData(): Omit<HashTypedDataParameters, "domain">;
 
-  async verify(signature: string): Promise<boolean> {
-    const safe = await Safe.default.init({
-      provider: this.rpcUrl,
-      safeAddress: this.safeAddress,
-    });
-
-    const protocolKit = await safe.connect({});
-    return protocolKit.isValidSignature(this.hashTypedData(), signature);
+  async verify(signature: `0x${string}`): Promise<boolean> {
+    return SignatureVerifierStrategyFactory.getStrategy(
+      this.chainId,
+      this.hashTypedData(),
+    ).verify(signature, this.rpcUrl, this.safeAddress);
   }
 }
