@@ -3,7 +3,7 @@ import {
   HypercertExchangeClient,
   utils,
 } from "@hypercerts-org/marketplace-sdk";
-import { ethers, verifyTypedData } from "ethers";
+import { verifyTypedData } from "ethers";
 import {
   Body,
   Controller,
@@ -17,12 +17,12 @@ import {
 import { z } from "zod";
 
 import { isAddress, verifyMessage } from "viem";
+import { EvmClientFactory } from "../client/evmClient.js";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
+import { BaseResponse } from "../types/api.js";
 import { getFractionsById } from "../utils/getFractionsById.js";
-import { getRpcUrl } from "../utils/getRpcUrl.js";
 import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
 import { getHypercertTokenId } from "../utils/tokenIds.js";
-import { BaseResponse } from "../types/api.js";
 
 export interface CreateOrderRequest {
   signature: string;
@@ -148,7 +148,7 @@ export class MarketplaceController extends Controller {
     const hec = new HypercertExchangeClient(
       chainId,
       // @ts-expect-error Typing issue with provider
-      new ethers.JsonRpcProvider(getRpcUrl(chainId)),
+      EvmClientFactory.createEthersClient(chainId),
     );
     const typedData = hec.getTypedDataDomain();
 
@@ -435,15 +435,16 @@ export class MarketplaceController extends Controller {
     const { orderId, signature } = parsedQuery.data;
 
     const supabase = new SupabaseDataService();
-    const orders = await supabase.getOrders({
+    const { data } = supabase.getOrders({
       where: {
         id: {
           eq: orderId,
         },
       },
     });
+    const order = await data.executeTakeFirst();
 
-    if (!orders.data?.length) {
+    if (!order) {
       this.setStatus(404);
       return {
         success: false,
@@ -452,7 +453,7 @@ export class MarketplaceController extends Controller {
       };
     }
 
-    const signerAddress = orders.data[0].signer;
+    const signerAddress = order.signer;
 
     const signatureCorrect = await verifyMessage({
       message: `Delete listing ${orderId}`,

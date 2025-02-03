@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import Verifier from "../../src/lib/safe-signature-verification/UserUpsertSignatureVerifier.js";
+import Verifier from "../../src/lib/safe/signature-verification/UserUpsertSignatureVerifier.js";
 
 // Mock the entire getRpcUrl module
 vi.mock("../../src/utils/getRpcUrl.js", () => ({
@@ -84,25 +84,6 @@ describe("hashTypedMessage", () => {
       },
     );
     expect(verifier.hashTypedData()).toBeDefined();
-  });
-
-  it("should throw with invalid chain ID", () => {
-    expect(() => {
-      const verifier = new Verifier(
-        1,
-        "0x379756bB61A632Cd3C5C5Ce4F3768f4815feaCda",
-        {
-          metadata: {
-            timestamp: 1732812295136,
-          },
-          user: {
-            displayName: "test name",
-            avatar: "",
-          },
-        },
-      );
-      verifier.hashTypedData();
-    }).toThrow("Unsupported chain ID: 1");
   });
 
   it("should handle empty strings", () => {

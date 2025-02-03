@@ -1,13 +1,13 @@
-import { getEvmClient } from "./getRpcUrl.js";
-import { generateHypercertIdFromReceipt } from "./generateHypercertIdFromReceipt.js";
+import { EvmClientFactory } from "../client/evmClient.js";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
+import { generateHypercertIdFromReceipt } from "./generateHypercertIdFromReceipt.js";
 
 export const waitForTxThenMintBlueprint = async (
   tx_hash: string,
   chain_id: number,
   blueprintId: number,
 ) => {
-  const client = getEvmClient(chain_id);
+  const client = EvmClientFactory.createViemClient(chain_id);
 
   const receipt = await client.waitForTransactionReceipt({
     hash: tx_hash as `0x${string}`,

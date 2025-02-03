@@ -13,7 +13,8 @@ export function getCommand(request: SignatureRequest): ISafeApiCommand {
       return new UserUpsertCommand(
         request.safe_address,
         request.message_hash,
-        request.chain_id,
+        // The type is lying. It's a string.
+        Number(request.chain_id),
       );
     default:
       console.warn("Unrecognized purpose:", request.purpose);

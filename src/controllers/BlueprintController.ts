@@ -9,19 +9,19 @@ import {
   SuccessResponse,
   Tags,
 } from "tsoa";
+import { isAddress } from "viem";
+import { z } from "zod";
+import { EvmClientFactory } from "../client/evmClient.js";
+import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import type {
-  BlueprintResponse,
+  BaseResponse,
   BlueprintCreateRequest,
   BlueprintDeleteRequest,
   BlueprintQueueMintRequest,
-  BaseResponse,
+  BlueprintResponse,
 } from "../types/api.js";
-import { z } from "zod";
-import { SupabaseDataService } from "../services/SupabaseDataService.js";
-import { verifyAuthSignedData } from "../utils/verifyAuthSignedData.js";
-import { isAddress } from "viem";
 import { Json } from "../types/supabaseData.js";
-import { getEvmClient } from "../utils/getRpcUrl.js";
+import { verifyAuthSignedData } from "../utils/verifyAuthSignedData.js";
 import { waitForTxThenMintBlueprint } from "../utils/waitForTxThenMintBlueprint.js";
 
 @Route("v1/blueprints")
@@ -367,7 +367,7 @@ export class BlueprintController extends Controller {
       };
     }
 
-    const client = getEvmClient(chain_id);
+    const client = EvmClientFactory.createViemClient(chain_id);
     const transaction = await client.getTransaction({
       hash: tx_hash as `0x${string}`,
     });

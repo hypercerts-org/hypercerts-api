@@ -1,5 +1,5 @@
 import { VerifyTypedDataParameters } from "viem";
-import { getEvmClient } from "./getRpcUrl.js";
+import { EvmClientFactory } from "../client/evmClient.js";
 
 export const verifyAuthSignedData = async ({
   requiredChainId,
@@ -8,7 +8,7 @@ export const verifyAuthSignedData = async ({
   VerifyTypedDataParameters,
   "address" | "message" | "types" | "signature" | "primaryType"
 > & { requiredChainId: number }) => {
-  const client = getEvmClient(requiredChainId);
+  const client = EvmClientFactory.createViemClient(requiredChainId);
   try {
     return await client.verifyTypedData({
       ...args,
