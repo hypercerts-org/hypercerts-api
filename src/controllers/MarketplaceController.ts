@@ -435,15 +435,16 @@ export class MarketplaceController extends Controller {
     const { orderId, signature } = parsedQuery.data;
 
     const supabase = new SupabaseDataService();
-    const orders = await supabase.getOrders({
+    const { data } = supabase.getOrders({
       where: {
         id: {
           eq: orderId,
         },
       },
     });
+    const order = await data.executeTakeFirst();
 
-    if (!orders.data?.length) {
+    if (!order) {
       this.setStatus(404);
       return {
         success: false,
@@ -452,7 +453,7 @@ export class MarketplaceController extends Controller {
       };
     }
 
-    const signerAddress = orders.data[0].signer;
+    const signerAddress = order.signer;
 
     const signatureCorrect = await verifyMessage({
       message: `Delete listing ${orderId}`,
