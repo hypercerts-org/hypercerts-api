@@ -10,6 +10,7 @@ import {
   base,
   baseSepolia,
   celo,
+  filecoin,
   filecoinCalibration,
   optimism,
   sepolia,
@@ -78,8 +79,7 @@ async function main() {
     filecoinCalibration,
   ];
 
-  const prodChains = [optimism, celo, base, arbitrum];
-
+  const prodChains = [optimism, celo, base, arbitrum, filecoin];
   const allChains = [...testnetChains, ...prodChains];
 
   const chainId = await select({
