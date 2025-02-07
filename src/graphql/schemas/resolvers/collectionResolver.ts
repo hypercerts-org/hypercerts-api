@@ -25,12 +25,7 @@ class CollectionResolver extends CollectionBaseResolver {
   @Query(() => GetCollectionsResponse)
   async collections(@Args() args: GetCollectionsArgs) {
     try {
-      const res = await this.supabaseDataService.getCollections(args);
-
-      return {
-        data: res.data,
-        count: res.count,
-      };
+      return this.getCollections(args);
     } catch (e) {
       console.error("[CollectionResolver::collections] Error:", e);
       throw new Error(`Error fetching collections: ${(e as Error).message}`);

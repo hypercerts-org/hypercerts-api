@@ -431,24 +431,9 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       .execute();
   }
 
-  async getCollections(args: GetCollectionsArgs) {
-    let query = this.db
-      .selectFrom("collections")
-      .select([
-        "collections.id",
-        "collections.name",
-        "collections.description",
-        "collections.chain_ids",
-        "collections.hidden",
-        "collections.created_at",
-      ]);
-
-    if (args.sort?.by) {
-      query = this.applySorting(query, args.sort.by);
-    }
-
+  getCollections(args: GetCollectionsArgs) {
     return {
-      data: await query.execute(),
+      data: this.handleGetData("collections", args),
       count: this.handleGetCount("collections", args),
     };
   }
