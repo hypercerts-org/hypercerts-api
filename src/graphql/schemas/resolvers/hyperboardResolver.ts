@@ -41,10 +41,12 @@ class HyperboardResolver extends HyperboardBaseResolver {
           where: { hypercert_id: { in: hypercertIds } },
         }).then((res) => res.data),
       ]);
-
-      const metadata = await this.getMetadata({
-        where: { hypercerts: { hypercert_id: { in: hypercertIds } } },
-      })
+      const metadata = await this.getMetadata(
+        {
+          where: { hypercerts: { hypercert_id: { in: hypercertIds } } },
+        },
+        { select: ["name", "uri"] },
+      )
         .then((res) => res.data)
         .then((res) =>
           res.map((metadata) => {
@@ -58,7 +60,6 @@ class HyperboardResolver extends HyperboardBaseResolver {
           }),
         )
         .then((res) => res.map((metadata) => _.omit(metadata, "image")));
-
       // Get a deduplicated list of all owners
       const ownerAddresses = _.uniq([
         ...fractions.map((x) => x?.owner_address),
@@ -72,7 +73,6 @@ class HyperboardResolver extends HyperboardBaseResolver {
             ) || [],
         ) || []),
       ]).filter((x) => !!x) as string[];
-
       const users = await this.getUsers({
         where: { address: { in: ownerAddresses } },
       }).then((res) => res.data);
@@ -129,7 +129,6 @@ class HyperboardResolver extends HyperboardBaseResolver {
             },
           };
         }) || [];
-
       return {
         data: hyperboardWithSections,
         count: count ? count : data?.length,

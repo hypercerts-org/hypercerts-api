@@ -56,9 +56,23 @@ export class SupabaseCachingService extends BaseSupabaseService<CachingDatabase>
     };
   }
 
-  getMetadata(args: GetMetadataArgs) {
+  getMetadata(
+    args: GetMetadataArgs,
+    select?: (keyof CachingDatabase["metadata"])[],
+  ) {
+    let data = this.db
+      .selectFrom("metadata")
+      .selectAll()
+      .$if(args.where?.hypercerts, (qb) =>
+        qb.innerJoin("claims", "claims.uri", "metadata.uri"),
+      );
+
+    if (select) {
+      data = data.clearSelect().select(select.map((s) => `metadata.${s}`));
+    }
+
     return {
-      data: this.handleGetData("metadata", args),
+      data,
       count: this.handleGetCount("metadata", args),
     };
   }

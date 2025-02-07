@@ -14,6 +14,7 @@ import { GetOrdersArgs } from "../args/orderArgs.js";
 import { GetSalesArgs } from "../args/salesArgs.js";
 import { GetSignatureRequestArgs } from "../args/signatureRequestArgs.js";
 import { GetUserArgs } from "../args/userArgs.js";
+import { CachingDatabase } from "../../../types/kyselySupabaseCaching.js";
 
 export function DataResponse<TItem extends object>(
   TItemClass: ClassType<TItem>,
@@ -38,13 +39,19 @@ export function createBaseResolver<T extends ClassType>(
     readonly supabaseCachingService = container.resolve(SupabaseCachingService);
     readonly supabaseDataService = container.resolve(SupabaseDataService);
 
-    getMetadata(args: GetMetadataArgs, single: boolean = false) {
+    getMetadata(
+      args: GetMetadataArgs,
+      {
+        single = false,
+        select,
+      }: { single?: boolean; select?: (keyof CachingDatabase["metadata"])[] },
+    ) {
       console.debug(
         `[${entityFieldName}Resolver::getMetadata] Fetching metadata`,
       );
 
       try {
-        const queries = this.supabaseCachingService.getMetadata(args);
+        const queries = this.supabaseCachingService.getMetadata(args, select);
         if (single) {
           return queries.data.executeTakeFirst();
         }
