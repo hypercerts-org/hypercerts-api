@@ -1,17 +1,25 @@
 import { describe, it, expect, vi } from "vitest";
 import Verifier from "../../src/lib/safe/signature-verification/UserUpsertSignatureVerifier.js";
 
-// Mock the entire getRpcUrl module
-vi.mock("../../src/utils/getRpcUrl.js", () => ({
-  getRpcUrl: vi.fn().mockImplementation((chainId: number) => {
-    if (chainId === 1) {
-      throw new Error("Unsupported chain ID: 1");
-    }
-    return "mock-rpc-url";
-  }),
-  getEvmClient: vi.fn().mockReturnValue({
-    verifyMessage: vi.fn().mockResolvedValue(true),
-  }),
+// Fix the import paths and mock implementations
+vi.mock("../../src/client/evmClient.js", () => ({
+  EvmClientFactory: {
+    create: vi.fn().mockReturnValue({
+      verifyMessage: vi.fn().mockResolvedValue(true),
+    }),
+    getAllAvailableUrls: vi
+      .fn()
+      .mockReturnValue(["mock-rpc-url-1", "mock-rpc-url-2"]),
+    getPublicRpcUrl: vi.fn().mockReturnValue("mock-public-rpc-url"),
+  },
+}));
+
+vi.mock("../../src/lib/safe/safe-rpc-urls.js", () => ({
+  RpcStrategyFactory: {
+    getStrategy: vi.fn().mockReturnValue({
+      getUrl: vi.fn().mockReturnValue("mock-rpc-url"),
+    }),
+  },
 }));
 
 // Testing hashing of typed data via UserUpsertSignatureVerifier
