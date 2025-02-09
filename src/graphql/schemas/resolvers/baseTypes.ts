@@ -14,6 +14,7 @@ import { GetOrdersArgs } from "../args/orderArgs.js";
 import { GetSalesArgs } from "../args/salesArgs.js";
 import { GetSignatureRequestArgs } from "../args/signatureRequestArgs.js";
 import { GetUserArgs } from "../args/userArgs.js";
+import { GetCollectionsArgs } from "../args/collectionArgs.js";
 
 export function DataResponse<TItem extends object>(
   TItemClass: ClassType<TItem>,
@@ -402,6 +403,35 @@ export function createBaseResolver<T extends ClassType>(
         const error = e as Error;
         throw new Error(
           `[${entityFieldName}Resolver::getSignatureRequests] Error fetching signature requests: ${error.message}`,
+        );
+      }
+    }
+
+    getCollections(args: GetCollectionsArgs, single: boolean = false) {
+      console.debug(
+        `[${entityFieldName}Resolver::getCollections] Fetching collections`,
+      );
+
+      try {
+        const queries = this.supabaseDataService.getCollections(args);
+        if (single) {
+          return queries.data.executeTakeFirst();
+        }
+
+        return this.supabaseDataService.db
+          .transaction()
+          .execute(async (transaction) => {
+            const dataRes = await transaction.executeQuery(queries.data);
+            const countRes = await transaction.executeQuery(queries.count);
+            return {
+              data: dataRes.rows,
+              count: countRes.rows[0].count,
+            };
+          });
+      } catch (e) {
+        const error = e as Error;
+        throw new Error(
+          `[${entityFieldName}Resolver::getCollections] Error fetching collections: ${error.message}`,
         );
       }
     }
