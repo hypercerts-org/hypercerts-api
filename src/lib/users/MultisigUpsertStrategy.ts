@@ -1,10 +1,11 @@
 import { z } from "zod";
-import SafeApiKit, { type SafeApiKitConfig } from "@safe-global/api-kit";
+import SafeApiKit from "@safe-global/api-kit";
 
 import { SignatureRequestPurpose } from "../../graphql/schemas/typeDefs/signatureRequestTypeDefs.js";
 import { SupabaseDataService } from "../../services/SupabaseDataService.js";
 import { UserResponse } from "../../types/api.js";
 import { isTypedMessage } from "../../utils/signatures.js";
+import { SafeApiStrategyFactory } from "../safe/SafeApiKitStrategy.js";
 
 import type { UserUpsertStrategy } from "./UserUpsertStrategy.js";
 import type { MultisigUpdateRequest } from "./schemas.js";
@@ -30,17 +31,16 @@ export default class MultisigUpdateStrategy implements UserUpsertStrategy {
   private readonly dataService: SupabaseDataService;
   // Safe SDKs only support CommonJS, so TS interprets `SafeApiKit` as a namespace.
   // https://docs.safe.global/sdk/overview
-  // Hence the explicit `default` here and on the instantiation further down.
+  // Hence the explicit `default` here.
   private readonly safeApiKit: SafeApiKit.default;
 
   constructor(
     private readonly address: string,
     private readonly request: MultisigUpdateRequest,
   ) {
-    const config: SafeApiKitConfig = {
-      chainId: BigInt(request.chain_id),
-    };
-    this.safeApiKit = new SafeApiKit.default(config);
+    this.safeApiKit = SafeApiStrategyFactory.getStrategy(
+      this.request.chain_id,
+    ).createInstance();
     this.dataService = new SupabaseDataService();
   }
 

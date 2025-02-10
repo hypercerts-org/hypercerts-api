@@ -8,7 +8,7 @@ export class FilecoinMainnetStrategy implements SafeApiKitStrategy {
   createInstance(): SafeApiKit.default {
     return new SafeApiKit.default({
       chainId: BigInt(314),
-      txServiceUrl: "https://transaction.safe.filecoin.io/",
+      txServiceUrl: "https://transaction.safe.filecoin.io/api",
     });
   }
 }
@@ -17,7 +17,7 @@ export class FilecoinTestnetStrategy implements SafeApiKitStrategy {
   createInstance(): SafeApiKit.default {
     return new SafeApiKit.default({
       chainId: BigInt(314159),
-      txServiceUrl: "https://transaction-testnet.safe.filecoin.io/",
+      txServiceUrl: "https://transaction-testnet.safe.filecoin.io/api",
     });
   }
 }
