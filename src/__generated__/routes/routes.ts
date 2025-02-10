@@ -112,7 +112,7 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "HypercertClaimdata_36_1": {
+    "HypercertClaimdata": {
         "dataType": "refObject",
         "properties": {
             "impact_scope": {"dataType":"nestedObjectLiteral","nestedProperties":{"display_value":{"dataType":"string"},"excludes":{"dataType":"array","array":{"dataType":"string"}},"value":{"dataType":"array","array":{"dataType":"string"}},"name":{"dataType":"string"}},"additionalProperties":{"dataType":"any"},"required":true},
@@ -136,7 +136,7 @@ const models: TsoaRoute.Models = {
             "ref": {"dataType":"string"},
             "allowList": {"dataType":"string"},
             "properties": {"dataType":"array","array":{"dataType":"union","subSchemas":[{"dataType":"nestedObjectLiteral","nestedProperties":{"value":{"dataType":"string","required":true},"trait_type":{"dataType":"string","required":true}}},{"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string","required":true},"src":{"dataType":"string","required":true},"type":{"dataType":"string","required":true},"trait_type":{"dataType":"string","required":true}}}]}},
-            "hypercert": {"ref":"HypercertClaimdata_36_1"},
+            "hypercert": {"ref":"HypercertClaimdata"},
         },
         "additionalProperties": false,
     },
