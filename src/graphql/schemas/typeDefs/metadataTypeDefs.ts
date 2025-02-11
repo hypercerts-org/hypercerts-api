@@ -14,11 +14,6 @@ class Metadata extends BasicTypeDef {
   name?: string;
   @Field({ nullable: true, description: "Description of the hypercert" })
   description?: string;
-  @Field({
-    nullable: true,
-    description: "Base64 encoded representation of the image of the hypercert",
-  })
-  image?: string;
   @Field({ nullable: true, description: "URI of the hypercert metadata" })
   uri?: string;
   @Field({

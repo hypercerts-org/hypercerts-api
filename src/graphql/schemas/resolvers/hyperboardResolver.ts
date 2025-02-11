@@ -42,7 +42,7 @@ class HyperboardResolver extends HyperboardBaseResolver {
         }).then((res) => res.data),
       ]);
 
-      const metadata = await this.getMetadata({
+      const metadata = await this.getMetadataWithoutImage({
         where: { hypercerts: { hypercert_id: { in: hypercertIds } } },
       })
         .then((res) => res.data)

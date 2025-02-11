@@ -39,13 +39,14 @@ export function createBaseResolver<T extends ClassType>(
     readonly supabaseCachingService = container.resolve(SupabaseCachingService);
     readonly supabaseDataService = container.resolve(SupabaseDataService);
 
-    getMetadata(args: GetMetadataArgs, single: boolean = false) {
+    getMetadataWithoutImage(args: GetMetadataArgs, single: boolean = false) {
       console.debug(
         `[${entityFieldName}Resolver::getMetadata] Fetching metadata`,
       );
 
       try {
-        const queries = this.supabaseCachingService.getMetadata(args);
+        const queries =
+          this.supabaseCachingService.getMetadataWithoutImage(args);
         if (single) {
           return queries.data.executeTakeFirst();
         }

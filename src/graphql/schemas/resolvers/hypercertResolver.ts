@@ -38,7 +38,7 @@ class HypercertResolver extends HypercertBaseResolver {
       return;
     }
 
-    return await this.getMetadata(
+    return await this.getMetadataWithoutImage(
       { where: { uri: { eq: hypercert.uri } } },
       true,
     );
