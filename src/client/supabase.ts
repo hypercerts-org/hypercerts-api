@@ -27,7 +27,7 @@ export const supabaseData = createClient<DataDatabaseTypes>(
 const handleChangeClaims = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.log(payload);
+  console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([{ typename: "Hypercert" }]);
@@ -44,7 +44,7 @@ const handleChangeClaims = (
 const handleChangeFractions = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.log(payload);
+  console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([{ typename: "Fraction" }]);
@@ -61,7 +61,7 @@ const handleChangeFractions = (
 const handleChangeMetadata = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.log(payload);
+  console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([{ typename: "Metadata", id: payload.new.id }]);
@@ -78,7 +78,7 @@ const handleChangeMetadata = (
 const handleChangeSales = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.log(payload);
+  console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([{ typename: "Sale" }]);
@@ -95,13 +95,22 @@ const handleChangeSales = (
 const handleChangeAllowlistRecords = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.log(payload);
+  console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
-      cache.invalidate([{ typename: "AllowlistRecord" }]);
+      cache.invalidate([
+        {
+          typename: "AllowlistRecord",
+        },
+      ]);
       break;
     case "UPDATE":
-      cache.invalidate([{ typename: "AllowlistRecord", id: payload.new.id }]);
+      cache.invalidate([
+        {
+          typename: "AllowlistRecord",
+          id: payload.new.id,
+        },
+      ]);
       break;
     default:
       break;
@@ -112,7 +121,7 @@ const handleChangeAllowlistRecords = (
 const handleChangeAttestations = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.log(payload);
+  console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([{ typename: "Attestation" }]);
@@ -129,7 +138,7 @@ const handleChangeAttestations = (
 const handleChangeUsers = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.log(payload);
+  console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([{ typename: "User" }]);
@@ -146,7 +155,7 @@ const handleChangeUsers = (
 const handleChangeBlueprints = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.log(payload);
+  console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([{ typename: "Blueprint" }]);
@@ -166,7 +175,7 @@ const handleChangeBlueprints = (
 const handleChangeHyperboards = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.log(payload);
+  console.debug(payload);
   switch (payload.eventType) {
     case "UPDATE":
     case "DELETE":
@@ -192,7 +201,8 @@ const handleChangeHyperboards = (
 const handleChangeOrders = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.log(payload);
+  console.debug(payload);
+
   switch (payload.eventType) {
     case "INSERT":
     case "UPDATE":
@@ -208,6 +218,8 @@ const handleChangeOrders = (
 const handleChangeSignatureRequests = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
+  console.debug(payload);
+
   switch (payload.eventType) {
     case "INSERT":
     case "UPDATE":
@@ -272,6 +284,15 @@ supabaseCaching
       event: "*",
       schema: "public",
       table: "allow_list_data",
+    },
+    (payload) => handleChangeAllowlistRecords(payload),
+  )
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "hypercert_allow_list_records",
     },
     (payload) => handleChangeAllowlistRecords(payload),
   )
