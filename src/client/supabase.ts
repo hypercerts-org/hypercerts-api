@@ -98,10 +98,17 @@ const handleChangeAllowlistRecords = (
   console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
+      cache.invalidate([
+        {
+          typename: "AllowlistRecord",
+        },
+      ]);
+      break;
     case "UPDATE":
       cache.invalidate([
         {
           typename: "AllowlistRecord",
+          id: payload.new.id,
         },
       ]);
       break;
@@ -115,7 +122,6 @@ const handleChangeAttestations = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
   console.debug(payload);
-  payload;
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([{ typename: "Attestation" }]);
