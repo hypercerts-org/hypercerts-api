@@ -8,12 +8,10 @@ import { jsonArrayFrom } from "kysely/helpers/postgres";
 import { singleton } from "tsyringe";
 import { kyselyData } from "../client/kysely.js";
 import { supabaseData } from "../client/supabase.js";
-import { BaseArgs } from "../graphql/schemas/args/baseArgs.js";
 import { GetBlueprintArgs } from "../graphql/schemas/args/blueprintArgs.js";
 import { GetHyperboardsArgs } from "../graphql/schemas/args/hyperboardArgs.js";
 import { GetOrdersArgs } from "../graphql/schemas/args/orderArgs.js";
 import { GetSignatureRequestArgs } from "../graphql/schemas/args/signatureRequestArgs.js";
-import { GetCollectionsArgs } from "../graphql/schemas/args/collectionArgs.js";
 import { GetUserArgs } from "../graphql/schemas/args/userArgs.js";
 import { applyFilters } from "../graphql/schemas/utils/filters.js";
 import { applyPagination } from "../graphql/schemas/utils/pagination.js";
@@ -431,63 +429,6 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       .execute();
   }
 
-  async getCollections(args: GetCollectionsArgs) {
-    let query = this.db
-      .selectFrom("collections")
-      .select([
-        "collections.id",
-        "collections.name",
-        "collections.description",
-        "collections.chain_ids",
-        "collections.hidden",
-        "collections.created_at",
-      ]);
-
-    if (args.sort?.by) {
-      query = this.applySorting(query, args.sort.by);
-    }
-
-    return {
-      data: await query.execute(),
-      count: this.handleGetCount("collections", args),
-    };
-  }
-
-  async getCollectionHypercerts(collectionId: string) {
-    return this.db
-      .selectFrom("hypercerts")
-      .select(["hypercert_id", "collection_id"])
-      .where("collection_id", "=", collectionId)
-      .execute();
-  }
-
-  async getCollectionAdmins(collectionId: string) {
-    return this.db
-      .selectFrom("users")
-      .innerJoin("collection_admins", "collection_admins.user_id", "users.id")
-      .select([
-        "users.address",
-        "users.chain_id",
-        "users.display_name",
-        "users.avatar",
-      ])
-      .where("collection_admins.collection_id", "=", collectionId)
-      .execute();
-  }
-
-  async getCollectionBlueprints(collectionId: string) {
-    return this.db
-      .selectFrom("blueprints")
-      .innerJoin(
-        "collection_blueprints",
-        "collection_blueprints.blueprint_id",
-        "blueprints.id",
-      )
-      .selectAll("blueprints")
-      .where("collection_blueprints.collection_id", "=", collectionId)
-      .execute();
-  }
-
   async getCollectionById(collectionId: string) {
     return this.db
       .selectFrom("collections")
@@ -756,73 +697,5 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       data: this.handleGetData("signature_requests", args),
       count: this.handleGetCount("signature_requests", args),
     };
-  }
-
-  getDataQuery<
-    DB extends KyselyDataDatabase,
-    T extends keyof DB & string,
-    A extends object,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  >(tableName: T, args: BaseArgs<A>) {
-    switch (tableName) {
-      case "blueprints_with_admins":
-      case "blueprints":
-        return this.db.selectFrom("blueprints_with_admins").selectAll();
-      case "orders":
-      case "marketplace_orders":
-        return this.db.selectFrom("marketplace_orders").selectAll();
-      case "users":
-        return this.db.selectFrom("users").selectAll();
-      case "signature_requests":
-        return this.db.selectFrom("signature_requests").selectAll();
-      case "collections":
-        return this.db.selectFrom("collections").selectAll();
-      default:
-        throw new Error(`Table ${tableName.toString()} not found`);
-    }
-  }
-
-  getCountQuery<
-    DB extends KyselyDataDatabase,
-    T extends keyof DB & string,
-    A extends object,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  >(tableName: T, args: BaseArgs<A>) {
-    switch (tableName) {
-      case "blueprints_with_admins":
-      case "blueprints":
-        return this.db
-          .selectFrom("blueprints_with_admins")
-          .select((expressionBuilder) => {
-            return expressionBuilder.fn.countAll().as("count");
-          });
-      case "hyperboards":
-        return this.db.selectFrom("hyperboards").select((expressionBuilder) => {
-          return expressionBuilder.fn.countAll().as("count");
-        });
-      case "orders":
-      case "marketplace_orders":
-        return this.db
-          .selectFrom("marketplace_orders")
-          .select((expressionBuilder) => {
-            return expressionBuilder.fn.countAll().as("count");
-          });
-      case "signature_requests":
-        return this.db
-          .selectFrom("signature_requests")
-          .select((expressionBuilder) => {
-            return expressionBuilder.fn.countAll().as("count");
-          });
-      case "users":
-        return this.db.selectFrom("users").select((expressionBuilder) => {
-          return expressionBuilder.fn.countAll().as("count");
-        });
-      case "collections":
-        return this.db.selectFrom("collections").select((expressionBuilder) => {
-          return expressionBuilder.fn.countAll().as("count");
-        });
-      default:
-        throw new Error(`Table ${tableName.toString()} not found`);
-    }
   }
 }
