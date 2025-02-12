@@ -138,43 +138,25 @@ export class SupabaseCachingService extends BaseSupabaseService<CachingDatabase>
       case "fractions_view":
         return this.db.selectFrom("fractions_view").selectAll();
       case "metadata":
-        // Skip the image column
-        // 1.	id
-        // 2.	name
-        // 3.	description
-        // 4.	image
-        // 5.	external_url
-        // 6.	work_scope
-        // 7.	work_timeframe_from
-        // 8.	work_timeframe_to
-        // 9.	impact_scope
-        // 10.	impact_timeframe_from
-        // 11.	impact_timeframe_to
-        // 12.	contributors
-        // 13.	rights
-        // 14.	uri
-        // 15.	properties
-        // 16.	allow_list_uri
-        // 17.	parsed
         return this.db
           .selectFrom("metadata")
           .select([
-            "id",
-            "name",
-            "description",
-            "external_url",
-            "work_scope",
-            "work_timeframe_from",
-            "work_timeframe_to",
-            "impact_scope",
-            "impact_timeframe_from",
-            "impact_timeframe_to",
-            "contributors",
-            "rights",
-            "uri",
-            "properties",
-            "allow_list_uri",
-            "parsed",
+            "metadata.id",
+            "metadata.name",
+            "metadata.description",
+            "metadata.external_url",
+            "metadata.work_scope",
+            "metadata.work_timeframe_from",
+            "metadata.work_timeframe_to",
+            "metadata.impact_scope",
+            "metadata.impact_timeframe_from",
+            "metadata.impact_timeframe_to",
+            "metadata.contributors",
+            "metadata.rights",
+            "metadata.uri",
+            "metadata.properties",
+            "metadata.allow_list_uri",
+            "metadata.parsed",
           ])
           .$if(args.where?.hypercerts, (qb) =>
             qb.innerJoin("claims", "claims.uri", "metadata.uri"),
