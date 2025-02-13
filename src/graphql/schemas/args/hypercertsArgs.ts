@@ -1,41 +1,64 @@
-import { ArgsType, InputType, Field } from "type-graphql";
-import { BasicContractWhereInput } from "../inputs/contractInput.js";
-import { BasicMetadataWhereInput } from "../inputs/metadataInput.js";
-import { BasicAttestationWhereInput } from "../inputs/attestationInput.js";
-import { BasicFractionWhereInput } from "../inputs/fractionInput.js";
-import { withPagination } from "./baseArgs.js";
+import { Attestation } from "../typeDefs/attestationTypeDefs.js";
+import { Contract } from "../typeDefs/contractTypeDefs.js";
+import { Fraction } from "../typeDefs/fractionTypeDefs.js";
 import { Hypercert } from "../typeDefs/hypercertTypeDefs.js";
-import type { OrderOptions } from "../inputs/orderOptions.js";
-import { HypercertSortOptions } from "../inputs/sortOptions.js";
-import { BasicHypercertWhereArgs } from "../inputs/hypercertsInput.js";
+import { Metadata } from "../typeDefs/metadataTypeDefs.js";
+import { createEntityArgs } from "./argGenerator.js";
+import { BaseQueryArgs } from "./baseArgs.js";
+import { WhereFieldDefinitions } from "./whereFieldDefinitions.js";
 
-@InputType({
-  description: "Arguments for filtering hypercerts",
-})
-export class HypercertsWhereArgs extends BasicHypercertWhereArgs {
-  @Field(() => BasicContractWhereInput, { nullable: true })
-  contract?: BasicContractWhereInput;
-  @Field(() => BasicMetadataWhereInput, { nullable: true })
-  metadata?: BasicMetadataWhereInput;
-  @Field(() => BasicAttestationWhereInput, { nullable: true })
-  attestations?: BasicAttestationWhereInput;
-  @Field(() => BasicFractionWhereInput, { nullable: true })
-  fractions?: BasicFractionWhereInput;
-}
+const {
+  SortArgs: HypercertSortArgs,
+  EntitySortOptions: HypercertSortOptions,
+  WhereArgs: HypercertWhereArgs,
+} = createEntityArgs<Hypercert>("Hypercert", {
+  id: "id",
+  creation_block_timestamp: "bigint",
+  creation_block_number: "bigint",
+  last_update_block_number: "bigint",
+  last_update_block_timestamp: "bigint",
+  token_id: "bigint",
+  creator_address: "string",
+  uri: "string",
+  hypercert_id: "string",
+  attestations_count: "number",
+  sales_count: "number",
+  contracts_id: "id",
+  units: "bigint",
+  contract: {
+    type: "id",
+    references: {
+      entity: Contract,
+      fields: WhereFieldDefinitions.Contract.fields,
+    },
+  },
+  metadata: {
+    type: "id",
+    references: {
+      entity: Metadata,
+      fields: WhereFieldDefinitions.Metadata.fields,
+    },
+  },
+  attestations: {
+    type: "id",
+    references: {
+      entity: Attestation,
+      fields: WhereFieldDefinitions.Attestation.fields,
+    },
+  },
+  fractions: {
+    type: "id",
+    references: {
+      entity: Fraction,
+      fields: WhereFieldDefinitions.Fraction.fields,
+    },
+  },
+});
 
-@InputType()
-export class HypercertFetchInput implements OrderOptions<Hypercert> {
-  @Field(() => HypercertSortOptions, { nullable: true })
-  by?: HypercertSortOptions;
-}
+export const GetHypercertsArgs = BaseQueryArgs(
+  HypercertWhereArgs,
+  HypercertSortArgs,
+);
+export type GetHypercertsArgs = InstanceType<typeof GetHypercertsArgs>;
 
-@ArgsType()
-class HypercertArgs {
-  @Field(() => HypercertsWhereArgs, { nullable: true })
-  where?: HypercertsWhereArgs;
-  @Field(() => HypercertFetchInput, { nullable: true })
-  sort?: HypercertFetchInput;
-}
-
-@ArgsType()
-export class GetHypercertsArgs extends withPagination(HypercertArgs) {}
+export { HypercertSortArgs, HypercertSortOptions, HypercertWhereArgs };

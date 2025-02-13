@@ -8,7 +8,7 @@ import {
 } from "type-graphql";
 
 import { SignatureRequest } from "../typeDefs/signatureRequestTypeDefs.js";
-import { GetSignatureRequestArgs } from "../args/signatureRequestArgs.js";
+import { GetSignatureRequestsArgs } from "../args/signatureRequestArgs.js";
 
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
 
@@ -20,7 +20,7 @@ const SignatureRequestBaseResolver = createBaseResolver("signatureRequest");
 @Resolver(() => SignatureRequest)
 class SignatureRequestResolver extends SignatureRequestBaseResolver {
   @Query(() => GetSignatureRequestResponse)
-  async signatureRequests(@Args() args: GetSignatureRequestArgs) {
+  async signatureRequests(@Args() args: GetSignatureRequestsArgs) {
     return await this.getSignatureRequests(args);
   }
 

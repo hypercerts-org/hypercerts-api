@@ -18,34 +18,6 @@ export type SortOptions<T extends object> = {
 };
 
 @InputType()
-export class HypercertSortOptions implements SortOptions<Hypercert> {
-  @Field(() => SortOrder, { nullable: true })
-  hypercert_id?: SortOrder;
-  @Field(() => SortOrder, { nullable: true })
-  creation_block_timestamp?: SortOrder;
-  @Field(() => SortOrder, { nullable: true })
-  creation_block_number?: SortOrder;
-  @Field(() => SortOrder, { nullable: true })
-  last_update_block_number?: SortOrder;
-  @Field(() => SortOrder, { nullable: true })
-  last_update_block_timestamp?: SortOrder;
-  @Field(() => SortOrder, { nullable: true })
-  token_id?: SortOrder;
-  @Field(() => SortOrder, { nullable: true })
-  units?: SortOrder;
-  @Field(() => SortOrder, { nullable: true })
-  owner_address?: SortOrder;
-  @Field(() => SortOrder, { nullable: true })
-  last_block_update_timestamp?: SortOrder;
-  @Field(() => SortOrder, { nullable: true })
-  uri?: SortOrder;
-  @Field(() => SortOrder, { nullable: true })
-  attestations_count?: SortOrder;
-  @Field(() => SortOrder, { nullable: true })
-  sales_count?: SortOrder;
-}
-
-@InputType()
 export class ContractSortOptions implements SortOptions<Contract> {
   @Field(() => SortOrder, { nullable: true })
   contract_id?: SortOrder;

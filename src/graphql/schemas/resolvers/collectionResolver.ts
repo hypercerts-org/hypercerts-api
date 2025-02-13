@@ -13,7 +13,7 @@ import { Blueprint } from "../typeDefs/blueprintTypeDefs.js";
 import { User } from "../typeDefs/userTypeDefs.js";
 
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
-import GetHypercertsResponse from "./hypercertResolver.js";
+import { GetHypercertsResponse } from "./hypercertResolver.js";
 
 @ObjectType()
 class GetCollectionsResponse extends DataResponse(Collection) {}

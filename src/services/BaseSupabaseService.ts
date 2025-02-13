@@ -1,5 +1,5 @@
 import { expressionBuilder, Kysely, SqlBool } from "kysely";
-import { BaseArgs } from "../graphql/schemas/args/baseArgs.js";
+import { BaseQueryArgs } from "../graphql/schemas/args/baseArgs.js";
 import { SortOrder } from "../graphql/schemas/enums/sortEnums.js";
 import { buildWhereCondition } from "../graphql/schemas/utils/filters-kysely.js";
 import { CachingDatabase } from "../types/kyselySupabaseCaching.js";
@@ -14,7 +14,7 @@ export abstract class BaseSupabaseService<
   protected getDataQuery<T extends keyof DB>(
     tableName: T,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    args: BaseArgs<any>,
+    args: BaseQueryArgs,
   ) {
     const strategy = QueryStrategyFactory.getStrategy<T, DB>(tableName);
     return strategy.buildDataQuery(this.db, args);

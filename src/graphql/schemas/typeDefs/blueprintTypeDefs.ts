@@ -1,7 +1,7 @@
 import { Field, ObjectType } from "type-graphql";
 import { GraphQLJSON } from "graphql-scalars";
 import { User } from "./userTypeDefs.js";
-import GetHypercertsResponse from "../resolvers/hypercertResolver.js";
+import { GetHypercertsResponse } from "../resolvers/hypercertResolver.js";
 
 @ObjectType()
 class Blueprint {
