@@ -1,24 +1,33 @@
-import { Field, ArgsType, ClassType, Int } from "type-graphql";
-import { WhereOptions } from "../inputs/whereOptions.js";
-import { OrderOptions } from "../inputs/orderOptions.js";
+import { ArgsType, ClassType, Field, Int } from "type-graphql";
+import { SortOptions } from "../inputs/sortOptions.js";
 
-// TODO BaseArgs is never used. Create a builder function that returns a class with pagination and takes specific where and sort instances
-export type BaseArgs<T extends object> = {
-  where?: WhereOptions<T>;
-  sort?: OrderOptions<T>;
+export interface PaginationArgs {
   first?: number;
   offset?: number;
-};
+}
 
-export function withPagination<TItem extends ClassType>(TItemClass: TItem) {
+export function BaseQueryArgs<
+  TEntity extends object,
+  TWhereInput extends object,
+  TSortInput extends SortOptions<TEntity>,
+>(
+  WhereInputClass: ClassType<TWhereInput>,
+  SortInputClass: ClassType<TSortInput>,
+) {
   @ArgsType()
-  class withPaginationClass extends TItemClass {
+  abstract class BaseQueryArgsClass {
     @Field(() => Int, { nullable: true })
     first?: number;
 
     @Field(() => Int, { nullable: true })
     offset?: number;
+
+    @Field(() => WhereInputClass, { nullable: true })
+    where?: TWhereInput;
+
+    @Field(() => SortInputClass, { nullable: true })
+    sort?: TSortInput;
   }
 
-  return withPaginationClass;
+  return BaseQueryArgsClass;
 }

@@ -1,30 +1,60 @@
-import { ArgsType, InputType, Field } from "type-graphql";
-import { BasicFractionWhereInput } from "../inputs/fractionInput.js";
-import { withPagination } from "./baseArgs.js";
-import { BasicHypercertWhereArgs } from "../inputs/hypercertsInput.js";
-import type { OrderOptions } from "../inputs/orderOptions.js";
 import { Fraction } from "../typeDefs/fractionTypeDefs.js";
-import { FractionSortOptions } from "../inputs/sortOptions.js";
+import { Metadata } from "../typeDefs/metadataTypeDefs.js";
+import { createEntityArgs } from "./argGenerator.js";
+import { BaseQueryArgs } from "./baseArgs.js";
+import { WhereFieldDefinitions } from "./whereFieldDefinitions.js";
 
-@InputType()
-export class FractionWhereInput extends BasicFractionWhereInput {
-  @Field(() => BasicHypercertWhereArgs, { nullable: true })
-  hypercerts?: BasicHypercertWhereArgs;
-}
+// @InputType()
+// export class FractionWhereInput extends BasicFractionWhereInput {
+//   @Field(() => BasicHypercertWhereArgs, { nullable: true })
+//   hypercerts?: BasicHypercertWhereArgs;
+// }
 
-@InputType()
-export class FractionFetchInput implements OrderOptions<Fraction> {
-  @Field(() => FractionSortOptions, { nullable: true })
-  by?: FractionSortOptions;
-}
+// @InputType()
+// export class FractionFetchInput implements OrderOptions<Fraction> {
+//   @Field(() => FractionSortOptions, { nullable: true })
+//   by?: FractionSortOptions;
+// }
 
-@ArgsType()
-export class FractionArgs {
-  @Field(() => FractionWhereInput, { nullable: true })
-  where?: FractionWhereInput;
-  @Field(() => FractionFetchInput, { nullable: true })
-  sort?: FractionFetchInput;
-}
+// @ArgsType()
+// export class FractionArgs {
+//   @Field(() => FractionWhereInput, { nullable: true })
+//   where?: FractionWhereInput;
+//   @Field(() => FractionFetchInput, { nullable: true })
+//   sort?: FractionFetchInput;
+// }
 
-@ArgsType()
-export class GetFractionsArgs extends withPagination(FractionArgs) {}
+// @ArgsType()
+// export class GetFractionsArgs extends withPagination(FractionArgs) {}
+
+const {
+  WhereArgs: FractionWhereArgs,
+  EntitySortOptions: FractionSortOptions,
+  SortArgs: FractionSortArgs,
+} = createEntityArgs<Fraction>("Fraction", {
+  id: "id",
+  creation_block_timestamp: "bigint",
+  creation_block_number: "bigint",
+  last_update_block_number: "bigint",
+  last_update_block_timestamp: "bigint",
+  owner_address: "string",
+  units: "bigint",
+  hypercert_id: "string",
+  fraction_id: "string",
+  token_id: "bigint",
+  metadata: {
+    type: "id",
+    references: {
+      entity: Metadata,
+      fields: WhereFieldDefinitions.Metadata.fields,
+    },
+  },
+});
+
+export const GetFractionsArgs = BaseQueryArgs(
+  FractionWhereArgs,
+  FractionSortArgs,
+);
+export type GetFractionsArgs = InstanceType<typeof GetFractionsArgs>;
+
+export { FractionSortArgs, FractionSortOptions, FractionWhereArgs };

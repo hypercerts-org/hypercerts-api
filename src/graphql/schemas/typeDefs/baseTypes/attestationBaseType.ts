@@ -4,6 +4,7 @@ import { EthBigInt } from "../../../scalars/ethBigInt.js";
 import type { Json } from "../../../../types/supabaseCaching.js";
 import { GraphQLJSON } from "graphql-scalars";
 
+// TODO: Add chain ID, contract address, token ID to the attestation
 @ObjectType()
 class AttestationBaseType extends BasicTypeDef {
   @Field(() => ID, {

@@ -1,3 +1,6 @@
+import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
+import _ from "lodash";
+import "reflect-metadata";
 import {
   Args,
   FieldResolver,
@@ -6,22 +9,19 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { Hypercert } from "../typeDefs/hypercertTypeDefs.js";
-import { GetHypercertsArgs } from "../args/hypercertsArgs.js";
-import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
-import _ from "lodash";
+import { Database } from "../../../types/supabaseData.js";
+import { addPriceInUsdToOrder } from "../../../utils/addPriceInUSDToOrder.js";
 import { getCheapestOrder } from "../../../utils/getCheapestOrder.js";
 import { getMaxUnitsForSaleInOrders } from "../../../utils/getMaxUnitsForSaleInOrders.js";
-import { addPriceInUsdToOrder } from "../../../utils/addPriceInUSDToOrder.js";
-import { Database } from "../../../types/supabaseData.js";
+import { GetHypercertsArgs } from "../args/hypercertsArgs.js";
+import { Hypercert } from "../typeDefs/hypercertTypeDefs.js";
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
-import "reflect-metadata";
 
 @ObjectType({
   description:
     "Hypercert with metadata, contract, orders, sales and fraction information",
 })
-export default class GetHypercertsResponse extends DataResponse(Hypercert) {}
+export class GetHypercertsResponse extends DataResponse(Hypercert) {}
 
 const HypercertBaseResolver = createBaseResolver("hypercert");
 

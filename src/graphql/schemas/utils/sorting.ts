@@ -2,16 +2,14 @@ import { PostgrestTransformBuilder } from "@supabase/postgrest-js";
 
 import { Database as DataDatabase } from "../../../types/supabaseData.js";
 import type { Database as CachingDatabase } from "../../../types/supabaseCaching.js";
-import type { OrderOptions } from "../inputs/orderOptions.js";
-import {
-  AttestationSchemaSortOptions,
-  AttestationSortOptions,
-  ContractSortOptions,
-  FractionSortOptions,
-  HypercertSortOptions,
-  MetadataSortOptions,
-} from "../inputs/sortOptions.js";
 import { SortOrder } from "../enums/sortEnums.js";
+import { HypercertSortOptions } from "../args/hypercertsArgs.js";
+import { OrderOptions } from "../inputs/orderOptions.js";
+import { FractionSortOptions } from "../args/fractionArgs.js";
+import { ContractSortOptions } from "../args/contractArgs.js";
+import { AttestationSortOptions } from "../args/attestationArgs.js";
+import { AttestationSchemaSortOptions } from "../args/attestationSchemaArgs.js";
+import { MetadataSortOptions } from "../args/metadataArgs.js";
 
 interface ApplySorting<
   T extends object,

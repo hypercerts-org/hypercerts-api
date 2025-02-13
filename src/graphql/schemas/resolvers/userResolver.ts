@@ -8,7 +8,7 @@ import {
 } from "type-graphql";
 
 import { User } from "../typeDefs/userTypeDefs.js";
-import { GetUserArgs } from "../args/userArgs.js";
+import { GetUsersArgs } from "../args/userArgs.js";
 import { SignatureRequest } from "../typeDefs/signatureRequestTypeDefs.js";
 
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
@@ -21,7 +21,7 @@ const UserBaseResolver = createBaseResolver("user");
 @Resolver(() => User)
 class UserResolver extends UserBaseResolver {
   @Query(() => GetUsersResponse)
-  async users(@Args() args: GetUserArgs) {
+  async users(@Args() args: GetUsersArgs) {
     return this.getUsers(args);
   }
 

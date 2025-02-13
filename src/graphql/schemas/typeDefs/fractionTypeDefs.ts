@@ -10,6 +10,7 @@ import GetSalesResponse from "../resolvers/salesResolver.js";
   simpleResolvers: true,
 })
 class Fraction extends BasicTypeDef {
+  token_id?: bigint;
   claims_id?: string;
 
   @Field({

@@ -5,16 +5,15 @@ import { SupabaseDataService } from "../../../services/SupabaseDataService.js";
 import { GetAllowlistRecordsArgs } from "../args/allowlistRecordArgs.js";
 import { GetAttestationsArgs } from "../args/attestationArgs.js";
 import { GetAttestationSchemasArgs } from "../args/attestationSchemaArgs.js";
-import { GetBlueprintArgs } from "../args/blueprintArgs.js";
+import { GetBlueprintsArgs } from "../args/blueprintArgs.js";
 import { GetContractsArgs } from "../args/contractArgs.js";
 import { GetFractionsArgs } from "../args/fractionArgs.js";
 import { GetHypercertsArgs } from "../args/hypercertsArgs.js";
 import { GetMetadataArgs } from "../args/metadataArgs.js";
 import { GetOrdersArgs } from "../args/orderArgs.js";
 import { GetSalesArgs } from "../args/salesArgs.js";
-import { GetSignatureRequestArgs } from "../args/signatureRequestArgs.js";
-import { GetUserArgs } from "../args/userArgs.js";
-import { GetCollectionsArgs } from "../args/collectionArgs.js";
+import { GetSignatureRequestsArgs } from "../args/signatureRequestArgs.js";
+import { GetUsersArgs } from "../args/userArgs.js";
 
 export function DataResponse<TItem extends object>(
   TItemClass: ClassType<TItem>,
@@ -69,7 +68,7 @@ export function createBaseResolver<T extends ClassType>(
       }
     }
 
-    getBlueprints(args: GetBlueprintArgs, single: boolean = false) {
+    getBlueprints(args: GetBlueprintsArgs, single: boolean = false) {
       console.debug(
         `[${entityFieldName}Resolver::getBlueprints] Fetching blueprints`,
       );
@@ -310,7 +309,7 @@ export function createBaseResolver<T extends ClassType>(
       }
     }
 
-    getUsers(args: GetUserArgs, single: boolean = false) {
+    getUsers(args: GetUsersArgs, single: boolean = false) {
       console.debug(`[${entityFieldName}Resolver::getUsers] Fetching users`);
 
       try {
@@ -377,7 +376,7 @@ export function createBaseResolver<T extends ClassType>(
     }
 
     getSignatureRequests(
-      args: GetSignatureRequestArgs,
+      args: GetSignatureRequestsArgs,
       single: boolean = false,
     ) {
       console.debug(

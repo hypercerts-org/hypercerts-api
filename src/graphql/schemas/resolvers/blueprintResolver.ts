@@ -8,7 +8,7 @@ import {
 } from "type-graphql";
 import { createBaseResolver, DataResponse } from "./baseTypes.js";
 import { Blueprint } from "../typeDefs/blueprintTypeDefs.js";
-import { GetBlueprintArgs } from "../args/blueprintArgs.js";
+import { GetBlueprintsArgs } from "../args/blueprintArgs.js";
 import _ from "lodash";
 import { DataDatabase } from "../../../types/kyselySupabaseData.js";
 
@@ -20,7 +20,7 @@ const BlueprintBaseResolver = createBaseResolver("blueprint");
 @Resolver(() => Blueprint)
 class BlueprintResolver extends BlueprintBaseResolver {
   @Query(() => GetBlueprintResponse)
-  async blueprints(@Args() args: GetBlueprintArgs) {
+  async blueprints(@Args() args: GetBlueprintsArgs) {
     const { data, count } = await this.getBlueprints(args);
 
     // Deduplicate by blueprint id

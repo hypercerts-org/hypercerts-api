@@ -37,7 +37,7 @@ type AllowlistRecord {
   user_address: String
 }
 
-input AllowlistRecordFetchInput {
+input AllowlistRecordSortArgs {
   by: AllowlistRecordSortOptions
 }
 
@@ -54,14 +54,14 @@ input AllowlistRecordSortOptions {
   user_address: SortOrder
 }
 
-input AllowlistRecordWhereInput {
+input AllowlistRecordWhereArgs {
   claimed: BooleanSearchOptions
-  entry: BigIntSearchOptions
+  entry: NumberSearchOptions
   hypercert_id: StringSearchOptions
   leaf: StringSearchOptions
   proof: StringArraySearchOptions
   root: StringSearchOptions
-  token_id: BigIntSearchOptions
+  token_id: StringSearchOptions
   total_units: BigIntSearchOptions
   units: BigIntSearchOptions
   user_address: StringSearchOptions
@@ -93,6 +93,9 @@ type Attestation {
 
   """Timestamp at which the attestation was last updated"""
   last_update_block_timestamp: EthBigInt
+
+  """Metadata related to the attestation"""
+  metadata: Metadata!
 
   """Address of the recipient of the attestation"""
   recipient: String
@@ -140,10 +143,6 @@ type AttestationBaseType {
   uid: ID
 }
 
-input AttestationFetchInput {
-  by: AttestationSortOptions
-}
-
 """Supported EAS attestation schemas and their related records"""
 type AttestationSchema {
   """Chain ID of the chains where the attestation schema is supported"""
@@ -185,107 +184,52 @@ type AttestationSchemaBaseType {
   uid: ID!
 }
 
+input AttestationSchemaSortArgs {
+  by: AttestationSchemaSortOptions
+}
+
+input AttestationSchemaSortOptions {
+  description: SortOrder
+  name: SortOrder
+  uid: SortOrder
+}
+
+input AttestationSchemaWhereArgs {
+  description: StringSearchOptions
+  name: StringSearchOptions
+  uid: StringSearchOptions
+}
+
+input AttestationSortArgs {
+  by: AttestationSortOptions
+}
+
 input AttestationSortOptions {
-  attestation_uid: SortOrder
-  attester_address: SortOrder
+  attester: SortOrder
   creation_block_number: SortOrder
   creation_block_timestamp: SortOrder
+  eas_schema: SortOrder
+  hypercert: SortOrder
   last_update_block_number: SortOrder
   last_update_block_timestamp: SortOrder
-  recipient_address: SortOrder
-  schema: SortOrder
+  recipient: SortOrder
+  resolver: SortOrder
+  schema_uid: SortOrder
+  uid: SortOrder
 }
 
-input AttestationWhereInput {
-  attestation: StringSearchOptions
+input AttestationWhereArgs {
   attester: StringSearchOptions
-  chain_id: BigIntSearchOptions
-  contract_address: StringSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
-  eas_schema: BasicAttestationSchemaWhereInput
-  hypercerts: BasicHypercertWhereArgs
-  last_update_block_number: BigIntSearchOptions
-  last_update_block_timestamp: BigIntSearchOptions
-  metadata: BasicMetadataWhereInput
-  recipient: StringSearchOptions
-  resolver: StringSearchOptions
-  token_id: StringSearchOptions
-  uid: StringSearchOptions
-}
-
-input BasicAttestationSchemaWhereInput {
-  chain_id: BigIntSearchOptions
-  resolver: StringSearchOptions
-  revocable: BooleanSearchOptions
-  schema: StringSearchOptions
-  uid: StringSearchOptions
-}
-
-input BasicAttestationWhereInput {
-  attestation: StringSearchOptions
-  attester: StringSearchOptions
-  chain_id: BigIntSearchOptions
-  contract_address: StringSearchOptions
-  creation_block_number: BigIntSearchOptions
-  creation_block_timestamp: BigIntSearchOptions
+  eas_schema: AttestationSchemaWhereArgs = {}
+  hypercert: HypercertBaseTypeWhereArgs = {}
   last_update_block_number: BigIntSearchOptions
   last_update_block_timestamp: BigIntSearchOptions
   recipient: StringSearchOptions
   resolver: StringSearchOptions
-  token_id: StringSearchOptions
-  uid: StringSearchOptions
-}
-
-input BasicContractWhereInput {
-  chain_id: BigIntSearchOptions
-  contract_address: StringSearchOptions
-  id: IdSearchOptions
-}
-
-input BasicFractionWhereInput {
-  creation_block_number: BigIntSearchOptions
-  creation_block_timestamp: BigIntSearchOptions
-  fraction_id: StringSearchOptions
-  hypercert_id: StringSearchOptions
-  id: IdSearchOptions
-  last_update_block_number: BigIntSearchOptions
-  last_update_block_timestamp: BigIntSearchOptions
-  owner_address: StringSearchOptions
-  token_id: BigIntSearchOptions
-  units: BigIntSearchOptions
-}
-
-input BasicHypercertWhereArgs {
-  """Count of attestations referencing this hypercert"""
-  attestations_count: NumberSearchOptions
-  creation_block_number: BigIntSearchOptions
-  creation_block_timestamp: BigIntSearchOptions
-  creator_address: StringSearchOptions
-  hypercert_id: StringSearchOptions
-  id: IdSearchOptions
-  last_update_block_number: BigIntSearchOptions
-  last_update_block_timestamp: BigIntSearchOptions
-  sales_count: NumberSearchOptions
-  token_id: BigIntSearchOptions
-  uri: StringSearchOptions
-}
-
-input BasicMetadataWhereInput {
-  contributors: StringArraySearchOptions
-  creation_block_timestamp: BigIntSearchOptions
-  description: StringSearchOptions
-  id: IdSearchOptions
-  impact_scope: StringArraySearchOptions
-  impact_timeframe_from: BigIntSearchOptions
-  impact_timeframe_to: BigIntSearchOptions
-  last_block_update_timestamp: BigIntSearchOptions
-  name: StringSearchOptions
-  rights: StringArraySearchOptions
-  uri: StringSearchOptions
-  work_scope: StringArraySearchOptions
-  work_timeframe_from: BigIntSearchOptions
-  work_timeframe_to: BigIntSearchOptions
+  schema_uid: StringSearchOptions
+  uid: IdSearchOptions
 }
 
 """
@@ -311,17 +255,24 @@ type Blueprint {
   minter_address: String!
 }
 
-input BlueprintFetchInput {
+input BlueprintSortArgs {
   by: BlueprintSortOptions
 }
 
 input BlueprintSortOptions {
+  admins: SortOrder
   created_at: SortOrder
+  hypercerts: SortOrder
+  id: SortOrder
+  minted: SortOrder
+  minter_address: SortOrder
 }
 
-input BlueprintWhereInput {
-  admin_address: StringSearchOptions
-  id: NumberSearchOptions
+input BlueprintWhereArgs {
+  admins: UserWhereArgs = {}
+  created_at: StringSearchOptions
+  hypercerts: HypercertWhereArgs = {attestations: {eas_schema: {}, hypercert: {}}, contract: {}, fractions: {metadata: {}}, metadata: {}}
+  id: IdSearchOptions
   minted: BooleanSearchOptions
   minter_address: StringSearchOptions
 }
@@ -350,18 +301,26 @@ type Collection {
   name: String!
 }
 
-input CollectionFetchInput {
+input CollectionSortArgs {
   by: CollectionSortOptions
 }
 
 input CollectionSortOptions {
+  admins: SortOrder
+  blueprints: SortOrder
   created_at: SortOrder
   description: SortOrder
+  hypercerts: SortOrder
+  id: SortOrder
   name: SortOrder
 }
 
-input CollectionWhereInput {
+input CollectionWhereArgs {
+  admins: UserWhereArgs = {}
+  blueprints: BlueprintWhereArgs = {admins: {}, hypercerts: {attestations: {eas_schema: {}, hypercert: {}}, contract: {}, fractions: {metadata: {}}, metadata: {}}}
+  created_at: StringSearchOptions
   description: StringSearchOptions
+  hypercerts: HypercertWhereArgs = {attestations: {eas_schema: {}, hypercert: {}}, contract: {}, fractions: {metadata: {}}, metadata: {}}
   id: IdSearchOptions
   name: StringSearchOptions
 }
@@ -379,20 +338,18 @@ type Contract {
   start_block: EthBigInt
 }
 
-input ContractFetchInput {
+input ContractSortArgs {
   by: ContractSortOptions
 }
 
 input ContractSortOptions {
   chain_id: SortOrder
   contract_address: SortOrder
-  contract_id: SortOrder
 }
 
-input ContractWhereInput {
-  chain_id: BigIntSearchOptions
+input ContractWhereArgs {
+  chain_id: NumberSearchOptions
   contract_address: StringSearchOptions
-  id: IdSearchOptions
 }
 
 """Handles uint256 bigint values stored in DB"""
@@ -439,29 +396,33 @@ type Fraction {
   units: EthBigInt
 }
 
-input FractionFetchInput {
+input FractionSortArgs {
   by: FractionSortOptions
 }
 
 input FractionSortOptions {
   creation_block_number: SortOrder
   creation_block_timestamp: SortOrder
+  fraction_id: SortOrder
+  hypercert_id: SortOrder
+  id: SortOrder
   last_update_block_number: SortOrder
   last_update_block_timestamp: SortOrder
+  metadata: SortOrder
   owner_address: SortOrder
   token_id: SortOrder
   units: SortOrder
 }
 
-input FractionWhereInput {
+input FractionWhereArgs {
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   fraction_id: StringSearchOptions
   hypercert_id: StringSearchOptions
-  hypercerts: BasicHypercertWhereArgs
   id: IdSearchOptions
   last_update_block_number: BigIntSearchOptions
   last_update_block_timestamp: BigIntSearchOptions
+  metadata: MetadataWhereArgs = {}
   owner_address: StringSearchOptions
   token_id: BigIntSearchOptions
   units: BigIntSearchOptions
@@ -572,10 +533,6 @@ type Hyperboard {
   tile_border_color: String
 }
 
-input HyperboardFetchInput {
-  by: HyperboardSortOptions
-}
-
 type HyperboardOwner {
   """The address of the user"""
   address: String!
@@ -594,16 +551,18 @@ type HyperboardOwner {
   signature_requests: [SignatureRequest!]
 }
 
-input HyperboardSortOptions {
-  admin_id: SortOrder
-  chainId: SortOrder
-  name: SortOrder
+input HyperboardSortArgs {
+  by: HyperboardSortOptions
 }
 
-input HyperboardWhereInput {
-  admin_id: StringSearchOptions
-  chain_id: BigIntSearchOptions
-  id: IdSearchOptions
+input HyperboardSortOptions {
+  admins: SortOrder
+  chain_ids: SortOrder
+}
+
+input HyperboardWhereArgs {
+  admins: UserWhereArgs = {}
+  chain_ids: NumberArraySearchOptions
 }
 
 """
@@ -680,9 +639,6 @@ type HypercertBaseType {
   last_update_block_number: EthBigInt
   last_update_block_timestamp: EthBigInt
 
-  """The metadata for the hypercert as referenced by the uri"""
-  metadata: Metadata
-
   """Count of sales of fractions that belong to this hypercert"""
   sales_count: Int
 
@@ -696,43 +652,62 @@ type HypercertBaseType {
   uri: String
 }
 
-input HypercertFetchInput {
+input HypercertBaseTypeWhereArgs {
+  attestations_count: NumberSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
+  creator_address: StringSearchOptions
+  hypercert_id: StringSearchOptions
+  id: StringSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
+  sales_count: NumberSearchOptions
+  token_id: BigIntSearchOptions
+  units: BigIntSearchOptions
+  uri: StringSearchOptions
+}
+
+input HypercertSortArgs {
   by: HypercertSortOptions
 }
 
 input HypercertSortOptions {
+  attestations: SortOrder
   attestations_count: SortOrder
+  contract: SortOrder
+  contracts_id: SortOrder
   creation_block_number: SortOrder
   creation_block_timestamp: SortOrder
+  creator_address: SortOrder
+  fractions: SortOrder
   hypercert_id: SortOrder
-  last_block_update_timestamp: SortOrder
+  id: SortOrder
   last_update_block_number: SortOrder
   last_update_block_timestamp: SortOrder
-  owner_address: SortOrder
+  metadata: SortOrder
   sales_count: SortOrder
   token_id: SortOrder
   units: SortOrder
   uri: SortOrder
 }
 
-"""Arguments for filtering hypercerts"""
-input HypercertsWhereArgs {
-  attestations: BasicAttestationWhereInput
-
-  """Count of attestations referencing this hypercert"""
+input HypercertWhereArgs {
+  attestations: AttestationWhereArgs = {eas_schema: {}, hypercert: {}}
   attestations_count: NumberSearchOptions
-  contract: BasicContractWhereInput
+  contract: ContractWhereArgs = {}
+  contracts_id: IdSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   creator_address: StringSearchOptions
-  fractions: BasicFractionWhereInput
+  fractions: FractionWhereArgs = {metadata: {}}
   hypercert_id: StringSearchOptions
   id: IdSearchOptions
   last_update_block_number: BigIntSearchOptions
   last_update_block_timestamp: BigIntSearchOptions
-  metadata: BasicMetadataWhereInput
+  metadata: MetadataWhereArgs = {}
   sales_count: NumberSearchOptions
   token_id: BigIntSearchOptions
+  units: BigIntSearchOptions
   uri: StringSearchOptions
 }
 
@@ -797,29 +772,32 @@ type Metadata {
   work_timeframe_to: EthBigInt
 }
 
-input MetadataFetchInput {
+input MetadataSortArgs {
   by: MetadataSortOptions
 }
 
 input MetadataSortOptions {
-  allow_list_uri: SortOrder
+  contributors: SortOrder
+  creation_block_timestamp: SortOrder
   description: SortOrder
-  external_url: SortOrder
-  metadata_id: SortOrder
+  impact_scope: SortOrder
+  impact_timeframe_from: SortOrder
+  impact_timeframe_to: SortOrder
   name: SortOrder
+  rights: SortOrder
   uri: SortOrder
+  work_scope: SortOrder
+  work_timeframe_from: SortOrder
+  work_timeframe_to: SortOrder
 }
 
-input MetadataWhereInput {
+input MetadataWhereArgs {
   contributors: StringArraySearchOptions
   creation_block_timestamp: BigIntSearchOptions
   description: StringSearchOptions
-  hypercerts: BasicHypercertWhereArgs
-  id: IdSearchOptions
   impact_scope: StringArraySearchOptions
   impact_timeframe_from: BigIntSearchOptions
   impact_timeframe_to: BigIntSearchOptions
-  last_block_update_timestamp: BigIntSearchOptions
   name: StringSearchOptions
   rights: StringArraySearchOptions
   uri: StringSearchOptions
@@ -875,7 +853,7 @@ type Order {
   validator_codes: [String!]
 }
 
-input OrderFetchInput {
+input OrderSortArgs {
   by: OrderSortOptions
 }
 
@@ -888,40 +866,56 @@ input OrderSortOptions {
   currency: SortOrder
   endTime: SortOrder
   globalNonce: SortOrder
+  hypercert: SortOrder
   hypercert_id: SortOrder
   invalidated: SortOrder
+  itemIds: SortOrder
   orderNonce: SortOrder
   price: SortOrder
   quoteType: SortOrder
   signer: SortOrder
   startTime: SortOrder
   strategyId: SortOrder
+  subsetNonce: SortOrder
 }
 
-input OrderWhereInput {
+input OrderWhereArgs {
+  amounts: NumberArraySearchOptions
   chainId: BigIntSearchOptions
+  collection: StringSearchOptions
+  collectionType: NumberSearchOptions
+  createdAt: StringSearchOptions
   currency: StringSearchOptions
+  endTime: NumberSearchOptions
+  globalNonce: StringSearchOptions
+  hypercert: HypercertBaseTypeWhereArgs = {}
   hypercert_id: StringSearchOptions
-  id: IdSearchOptions
   invalidated: BooleanSearchOptions
+  itemIds: StringArraySearchOptions
+  orderNonce: StringSearchOptions
+  price: StringSearchOptions
+  quoteType: NumberSearchOptions
   signer: StringSearchOptions
+  startTime: NumberSearchOptions
+  strategyId: NumberSearchOptions
+  subsetNonce: NumberSearchOptions
 }
 
 type Query {
-  allowlistRecords(first: Int, offset: Int, sort: AllowlistRecordFetchInput, where: AllowlistRecordWhereInput): GetAllowlistRecordResponse!
-  attestationSchemas(first: Int, offset: Int): GetAttestationsSchemaResponse!
-  attestations(first: Int, offset: Int, sort: AttestationFetchInput, where: AttestationWhereInput): GetAttestationsResponse!
-  blueprints(first: Int, offset: Int, sort: BlueprintFetchInput, where: BlueprintWhereInput): GetBlueprintResponse!
-  collections(first: Int, offset: Int, sort: CollectionFetchInput, where: CollectionWhereInput): GetCollectionsResponse!
-  contracts(first: Int, offset: Int, sort: ContractFetchInput, where: ContractWhereInput): GetContractsResponse!
-  fractions(first: Int, offset: Int, sort: FractionFetchInput, where: FractionWhereInput): GetFractionsResponse!
-  hyperboards(first: Int, offset: Int, sort: HyperboardFetchInput, where: HyperboardWhereInput): GetHyperboardsResponse!
-  hypercerts(first: Int, offset: Int, sort: HypercertFetchInput, where: HypercertsWhereArgs): GetHypercertsResponse!
-  metadata(first: Int, offset: Int, sort: MetadataFetchInput, where: MetadataWhereInput): GetMetadataResponse!
-  orders(first: Int, offset: Int, sort: OrderFetchInput, where: OrderWhereInput): GetOrdersResponse!
-  sales(first: Int, offset: Int, sort: SaleFetchInput, where: SaleWhereInput): GetSalesResponse!
-  signatureRequests(first: Int, offset: Int, sort: SignatureRequestFetchInput, where: SignatureRequestWhereInput): GetSignatureRequestResponse!
-  users(first: Int, offset: Int, where: UserWhereInput): GetUsersResponse!
+  allowlistRecords(first: Int, offset: Int, sort: AllowlistRecordSortArgs, where: AllowlistRecordWhereArgs): GetAllowlistRecordResponse!
+  attestationSchemas(first: Int, offset: Int, sort: AttestationSchemaSortArgs, where: AttestationSchemaWhereArgs): GetAttestationsSchemaResponse!
+  attestations(first: Int, offset: Int, sort: AttestationSortArgs, where: AttestationWhereArgs): GetAttestationsResponse!
+  blueprints(first: Int, offset: Int, sort: BlueprintSortArgs, where: BlueprintWhereArgs): GetBlueprintResponse!
+  collections(first: Int, offset: Int, sort: CollectionSortArgs, where: CollectionWhereArgs): GetCollectionsResponse!
+  contracts(first: Int, offset: Int, sort: ContractSortArgs, where: ContractWhereArgs): GetContractsResponse!
+  fractions(first: Int, offset: Int, sort: FractionSortArgs, where: FractionWhereArgs): GetFractionsResponse!
+  hyperboards(first: Int, offset: Int, sort: HyperboardSortArgs, where: HyperboardWhereArgs): GetHyperboardsResponse!
+  hypercerts(first: Int, offset: Int, sort: HypercertSortArgs, where: HypercertWhereArgs): GetHypercertsResponse!
+  metadata(first: Int, offset: Int, sort: MetadataSortArgs, where: MetadataWhereArgs): GetMetadataResponse!
+  orders(first: Int, offset: Int, sort: OrderSortArgs, where: OrderWhereArgs): GetOrdersResponse!
+  sales(first: Int, offset: Int, sort: SaleSortArgs, where: SaleWhereArgs): GetSalesResponse!
+  signatureRequests(first: Int, offset: Int, sort: SignatureRequestSortArgs, where: SignatureRequestWhereArgs): GetSignatureRequestResponse!
+  users(first: Int, offset: Int, sort: UserSortArgs, where: UserWhereArgs): GetUsersResponse!
 }
 
 type Sale {
@@ -964,7 +958,7 @@ type Sale {
   transaction_hash: String!
 }
 
-input SaleFetchInput {
+input SaleSortArgs {
   by: SaleSortOptions
 }
 
@@ -972,27 +966,30 @@ input SaleSortOptions {
   amounts: SortOrder
   buyer: SortOrder
   collection: SortOrder
-  creationBlockNumber: SortOrder
-  creationBlockTimestamp: SortOrder
+  creation_block_number: SortOrder
+  creation_block_timestamp: SortOrder
   currency: SortOrder
-  hypercertId: SortOrder
+  hypercert: SortOrder
+  hypercert_id: SortOrder
+  item_ids: SortOrder
   seller: SortOrder
-  strategyId: SortOrder
-  transactionHash: SortOrder
+  strategy_id: SortOrder
+  transaction_hash: SortOrder
 }
 
-input SaleWhereInput {
+input SaleWhereArgs {
   amounts: NumberArraySearchOptions
   buyer: StringSearchOptions
   collection: StringSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   currency: StringSearchOptions
+  hypercert: HypercertBaseTypeWhereArgs = {}
   hypercert_id: StringSearchOptions
   item_ids: StringArraySearchOptions
   seller: StringSearchOptions
-  strategy_id: BigIntSearchOptions
-  transaction_hash: IdSearchOptions
+  strategy_id: NumberSearchOptions
+  transaction_hash: StringSearchOptions
 }
 
 """Section representing a collection within a hyperboard"""
@@ -1066,22 +1063,18 @@ type SignatureRequest {
   timestamp: EthBigInt!
 }
 
-input SignatureRequestFetchInput {
-  by: SignatureRequestSortOptions
-}
-
 """Purpose of the signature request"""
 enum SignatureRequestPurpose {
   UPDATE_USER_DATA
 }
 
-input SignatureRequestPurposeSearchOptions {
-  eq: SignatureRequestPurpose
+input SignatureRequestSortArgs {
+  by: SignatureRequestSortOptions
 }
 
 input SignatureRequestSortOptions {
+  chain_id: SortOrder
   message_hash: SortOrder
-  purpose: SortOrder
   safe_address: SortOrder
   timestamp: SortOrder
 }
@@ -1093,16 +1086,10 @@ enum SignatureRequestStatus {
   PENDING
 }
 
-input SignatureRequestStatusSearchOptions {
-  eq: SignatureRequestStatus
-}
-
-input SignatureRequestWhereInput {
+input SignatureRequestWhereArgs {
   chain_id: BigIntSearchOptions
   message_hash: StringSearchOptions
-  purpose: SignatureRequestPurposeSearchOptions
   safe_address: StringSearchOptions
-  status: SignatureRequestStatusSearchOptions
   timestamp: BigIntSearchOptions
 }
 
@@ -1150,7 +1137,18 @@ type User {
   signature_requests: [SignatureRequest!]
 }
 
-input UserWhereInput {
+input UserSortArgs {
+  by: UserSortOptions
+}
+
+input UserSortOptions {
+  address: SortOrder
+  chain_id: SortOrder
+  display_name: SortOrder
+}
+
+input UserWhereArgs {
   address: StringSearchOptions
-  chain_id: BigIntSearchOptions
+  chain_id: NumberSearchOptions
+  display_name: StringSearchOptions
 }

@@ -1,13 +1,13 @@
 import { Field, ObjectType } from "type-graphql";
 import GetAttestationsResponse from "../resolvers/attestationResolver.js";
 import GetFractionsResponse from "../resolvers/fractionResolver.js";
-import { Contract } from "./contractTypeDefs.js";
 import GetOrdersResponse from "../resolvers/orderResolver.js";
 import GetSalesResponse from "../resolvers/salesResolver.js";
 import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
-import { Metadata } from "./metadataTypeDefs.js";
 import { Order } from "./orderTypeDefs.js";
 import { GraphQLBigInt } from "graphql-scalars";
+import { Contract } from "./contractTypeDefs.js";
+import { Metadata } from "./metadataTypeDefs.js";
 
 @ObjectType()
 class GetOrdersForHypercertResponse extends GetOrdersResponse {
@@ -25,6 +25,12 @@ class GetOrdersForHypercertResponse extends GetOrdersResponse {
 })
 class Hypercert extends HypercertBaseType {
   // Resolved fields
+  @Field(() => Metadata, {
+    nullable: true,
+    description: "The metadata for the hypercert as referenced by the uri",
+  })
+  metadata?: Metadata;
+
   @Field(() => Contract, {
     nullable: true,
     description: "The contract that the hypercert is associated with",
@@ -55,12 +61,6 @@ class Hypercert extends HypercertBaseType {
     description: "Sales related to this hypercert",
   })
   sales?: GetSalesResponse;
-
-  @Field(() => Metadata, {
-    nullable: true,
-    description: "The metadata for the hypercert as referenced by the uri",
-  })
-  declare metadata?: Metadata;
 }
 
 export { Hypercert };
