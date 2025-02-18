@@ -64,12 +64,45 @@ class GlifProvider implements RpcProvider {
   }
 }
 
+class AnkrProvider implements RpcProvider {
+  getUrl(chainId: number): string | undefined {
+    const urls: Record<number, string> = {
+      314: "https://rpc.ankr.com/filecoin",
+      314159: "https://rpc.ankr.com/filecoin_testnet",
+    };
+    return urls[chainId];
+  }
+}
+
+class ChainUpProvider implements RpcProvider {
+  getUrl(chainId: number): string | undefined {
+    const urls: Record<number, string> = {
+      314: "https://filecoin.chainup.net/rpc/v1",
+      314159: "https://filecoin-calibration.chainup.net/rpc/v1",
+    };
+    return urls[chainId];
+  }
+}
+
+class LavaProvider implements RpcProvider {
+  getUrl(chainId: number): string | undefined {
+    const urls: Record<number, string> = {
+      314: "https://filecoin.lava.build",
+      314159: "https://filecoin-testnet.lava.build",
+    };
+    return urls[chainId];
+  }
+}
+
 export class EvmClientFactory {
   private static readonly providers: RpcProvider[] = [
     new AlchemyProvider(),
     new InfuraProvider(),
     new DrpcProvider(),
     new GlifProvider(),
+    new AnkrProvider(),
+    new ChainUpProvider(),
+    new LavaProvider(),
   ];
 
   static createViemClient(chainId: number): PublicClient {
