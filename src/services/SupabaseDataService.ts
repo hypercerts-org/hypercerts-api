@@ -283,13 +283,11 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
 
       // Determine which orders to update in DB, and update them
       ordersToUpdate.push(
-        ...validationResults
-          .filter((x) => !x.valid)
-          .map(({ validatorCodes, id }) => ({
-            id,
-            invalidated: true,
-            validator_codes: validatorCodes,
-          })),
+        ...validationResults.map(({ validatorCodes, id, valid }) => ({
+          id,
+          invalidated: !valid,
+          validator_codes: validatorCodes,
+        })),
       );
     }
     console.log("[marketplace-api] Invalidating orders", ordersToUpdate);
