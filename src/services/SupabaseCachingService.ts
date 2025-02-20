@@ -131,7 +131,7 @@ export class SupabaseCachingService extends BaseSupabaseService<CachingDatabase>
           .$if(args.where?.contract, (qb) =>
             qb.innerJoin("contracts", "contracts.id", "claims.contracts_id"),
           )
-          .selectAll(); // Select all columns from the claims table
+          .selectAll("claims"); // Select all columns from the claims table
       case "contracts":
         return this.db.selectFrom("contracts").selectAll();
       case "fractions":
