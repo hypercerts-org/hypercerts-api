@@ -21,6 +21,7 @@ import { applySorting } from "../graphql/schemas/utils/sorting.js";
 import type { DataDatabase as KyselyDataDatabase } from "../types/kyselySupabaseData.js";
 import type { Database as DataDatabase } from "../types/supabaseData.js";
 import { BaseSupabaseService } from "./BaseSupabaseService.js";
+import { EvmClientFactory } from "../client/evmClient.js";
 
 @singleton()
 export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase> {
