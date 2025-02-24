@@ -27,6 +27,7 @@ export default defineConfig({
         "src/types/**/*",
         "src/abis/**/*",
         "./lib/**/*",
+        "src/cron/**/*",
       ],
     },
   },
