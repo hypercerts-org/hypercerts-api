@@ -1,9 +1,18 @@
 import cron from "node-cron";
-import { ACCEPTED_ERROR_CODES } from "@hypercerts-org/marketplace-sdk";
+import { OrderValidatorCode } from "@hypercerts-org/marketplace-sdk";
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
 import _ from "lodash";
 import { kyselyData } from "../client/kysely.js";
 import { sql } from "kysely";
+
+/**
+ * These error codes are considered temporary and should be
+ * rechecked periodically so that they can be marked as valid again.
+ */
+export const TEMPORARILY_INVALID_ERROR_CODES = [
+  OrderValidatorCode.ORDER_EXPECTED_TO_BE_VALID,
+  OrderValidatorCode.TOO_EARLY_TO_EXECUTE_ORDER,
+];
 
 export default class OrderInvalidationCronjob {
   private static instance: OrderInvalidationCronjob;
@@ -45,7 +54,7 @@ export default class OrderInvalidationCronjob {
             "validator_codes",
             "<@",
             // @ts-expect-error Typing issue with sql arrays
-            sql`ARRAY[${sql.join(ACCEPTED_ERROR_CODES)}]::int4[]`,
+            sql`ARRAY[${sql.join(TEMPORARILY_INVALID_ERROR_CODES)}]::int4[]`,
           ),
         ]),
       )
