@@ -7,15 +7,15 @@ import {
   Tags,
   UploadedFiles,
 } from "tsoa";
-import { StorageService } from "../services/StorageService.js";
-import type { UploadResponse } from "../types/api.js";
 import {
   FileUploadError,
   NoFilesUploadedError,
   PartialUploadError,
-  UploadFailedError,
   SingleUploadFailedError,
+  UploadFailedError,
 } from "../lib/uploads/errors.js";
+import { StorageService } from "../services/StorageService.js";
+import type { UploadResponse } from "../types/api.js";
 
 // Type definitions and guards at module scope
 type UploadResult = {

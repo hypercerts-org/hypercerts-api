@@ -1,49 +1,41 @@
-import {
-  Args,
-  ObjectType,
-  Query,
-  Resolver,
-  FieldResolver,
-  Root,
-} from "type-graphql";
+import { Args, FieldResolver, Query, Resolver, Root } from "type-graphql";
 
-import { User } from "../typeDefs/userTypeDefs.js";
 import { GetUsersArgs } from "../args/userArgs.js";
 import { SignatureRequest } from "../typeDefs/signatureRequestTypeDefs.js";
+import GetUsersResponse, { User } from "../typeDefs/userTypeDefs.js";
 
-import { createBaseResolver, DataResponse } from "./baseTypes.js";
+import { inject, injectable } from "tsyringe";
+import { SignatureRequestsService } from "../../../services/database/entities/SignatureRequestsEntityService.js";
+import { UsersService } from "../../../services/database/entities/UsersEntityService.js";
 
-@ObjectType()
-export default class GetUsersResponse extends DataResponse(User) {}
-
-const UserBaseResolver = createBaseResolver("user");
-
+@injectable()
 @Resolver(() => User)
-class UserResolver extends UserBaseResolver {
+class UserResolver {
+  constructor(
+    @inject(UsersService)
+    private usersService: UsersService,
+    @inject(SignatureRequestsService)
+    private signatureRequestsService: SignatureRequestsService,
+  ) {}
+
   @Query(() => GetUsersResponse)
   async users(@Args() args: GetUsersArgs) {
-    return this.getUsers(args);
+    return await this.usersService.getUsers(args);
   }
 
   @FieldResolver(() => [SignatureRequest])
   async signature_requests(@Root() user: User) {
     if (!user.address) {
-      return [];
+      return null;
     }
 
-    try {
-      const queryResult = await this.getSignatureRequests({
-        where: {
-          safe_address: {
-            eq: user.address,
-          },
+    return await this.signatureRequestsService.getSignatureRequests({
+      where: {
+        safe_address: {
+          eq: user.address,
         },
-      });
-      return queryResult.data || [];
-    } catch (error) {
-      console.error("Error fetching signature requests:", error);
-      return [];
-    }
+      },
+    });
   }
 }
 

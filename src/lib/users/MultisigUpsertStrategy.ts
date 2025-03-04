@@ -1,14 +1,14 @@
-import { z } from "zod";
 import SafeApiKit, { type SafeApiKitConfig } from "@safe-global/api-kit";
+import { z } from "zod";
 
 import { SignatureRequestPurpose } from "../../graphql/schemas/typeDefs/signatureRequestTypeDefs.js";
-import { SupabaseDataService } from "../../services/SupabaseDataService.js";
 import { UserResponse } from "../../types/api.js";
 import { isTypedMessage } from "../../utils/signatures.js";
 
+import { SignatureRequestsService } from "../../services/database/entities/SignatureRequestsEntityService.js";
 import type { UserUpsertStrategy } from "./UserUpsertStrategy.js";
-import type { MultisigUpdateRequest } from "./schemas.js";
 import { UserUpsertError } from "./errors.js";
+import type { MultisigUpdateRequest } from "./schemas.js";
 
 const MESSAGE_SCHEMA = z.object({
   metadata: z.object({
@@ -26,8 +26,7 @@ const MESSAGE_SCHEMA = z.object({
   }),
 });
 
-export default class MultisigUpdateStrategy implements UserUpsertStrategy {
-  private readonly dataService: SupabaseDataService;
+export default class MultisigUpsertStrategy implements UserUpsertStrategy {
   // Safe SDKs only support CommonJS, so TS interprets `SafeApiKit` as a namespace.
   // https://docs.safe.global/sdk/overview
   // Hence the explicit `default` here and on the instantiation further down.
@@ -36,12 +35,12 @@ export default class MultisigUpdateStrategy implements UserUpsertStrategy {
   constructor(
     private readonly address: string,
     private readonly request: MultisigUpdateRequest,
+    private readonly signatureRequestsService: SignatureRequestsService,
   ) {
     const config: SafeApiKitConfig = {
       chainId: BigInt(request.chain_id),
     };
     this.safeApiKit = new SafeApiKit.default(config);
-    this.dataService = new SupabaseDataService();
   }
 
   // We could check if it's a 1 of 1 and execute right away
@@ -64,7 +63,7 @@ export default class MultisigUpdateStrategy implements UserUpsertStrategy {
       );
     }
     console.log("Creating signature request for", parseResult);
-    await this.dataService.addSignatureRequest({
+    await this.signatureRequestsService.addSignatureRequest({
       chain_id: this.request.chain_id,
       safe_address: this.address,
       message_hash: this.request.messageHash,

@@ -19,7 +19,7 @@ describe("processCollectionToSection", async () => {
     hypercerts: [],
     blueprints: [],
     users: [],
-    hypercert_metadata: [],
+    hyperboardHypercertMetadata: [],
     collection,
   };
   const user1: DataDatabase["public"]["Tables"]["users"]["Row"] = {
@@ -144,7 +144,7 @@ describe("processCollectionToSection", async () => {
       hypercerts: [
         { ...hypercert1, units: allowlistEntry1.units + allowlistEntry2.units },
       ],
-      hypercert_metadata: [hypercertMetadata1],
+      hyperboardHypercertMetadata: [hypercertMetadata1],
       allowlistEntries: [allowlistEntry1, allowlistEntry2],
     });
 
@@ -165,7 +165,7 @@ describe("processCollectionToSection", async () => {
     const section = processCollectionToSection({
       ...emptyArgs,
       hypercerts: [hypercert1],
-      hypercert_metadata: [hypercertMetadata1],
+      hyperboardHypercertMetadata: [hypercertMetadata1],
       allowlistEntries: [
         allowlistEntry1,
         { ...allowlistEntry2, claimed: true },
@@ -180,7 +180,7 @@ describe("processCollectionToSection", async () => {
     const { owners } = processCollectionToSection({
       ...emptyArgs,
       hypercerts: [hypercert1],
-      hypercert_metadata: [hypercertMetadata1],
+      hyperboardHypercertMetadata: [hypercertMetadata1],
       allowlistEntries: [allowlistEntry1],
       users: [user1],
     });
@@ -197,7 +197,7 @@ describe("processCollectionToSection", async () => {
     const { owners } = processCollectionToSection({
       ...emptyArgs,
       hypercerts: [hypercert1, { ...hypercert2, units: 157 }],
-      hypercert_metadata: [hypercertMetadata1, hypercertMetadata2],
+      hyperboardHypercertMetadata: [hypercertMetadata1, hypercertMetadata2],
       users: [user1, user2],
       fractions: [
         {

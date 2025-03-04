@@ -1,12 +1,11 @@
 import { Field, ObjectType } from "type-graphql";
-import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
-
+import { DataResponse } from "../../../lib/graphql/DataResponse.js";
 @ObjectType({
   description: "Records of allow list entries for claimable fractions",
   simpleResolvers: true,
 })
-class AllowlistRecord extends BasicTypeDef {
+export class AllowlistRecord {
   @Field({
     nullable: true,
     description: "The hypercert ID the claimable fraction belongs to",
@@ -61,4 +60,5 @@ class AllowlistRecord extends BasicTypeDef {
   root?: string;
 }
 
-export { AllowlistRecord };
+@ObjectType()
+export class GetAllowlistRecordResponse extends DataResponse(AllowlistRecord) {}

@@ -1,20 +1,17 @@
 import { verifyAuthSignedData } from "../../utils/verifyAuthSignedData.js";
-import { SupabaseDataService } from "../../services/SupabaseDataService.js";
 import type { UserResponse } from "../../types/api.js";
 
 import type { EOAUpdateRequest } from "./schemas.js";
 import type { UserUpsertStrategy } from "./UserUpsertStrategy.js";
 import { UserUpsertError } from "./errors.js";
+import { UsersService } from "../../services/database/entities/UsersEntityService.js";
 
-export default class EOAUpdateStrategy implements UserUpsertStrategy {
-  private readonly dataService: SupabaseDataService;
-
+export default class EOAUpsertStrategy implements UserUpsertStrategy {
   constructor(
     private readonly address: string,
     private readonly request: EOAUpdateRequest,
-  ) {
-    this.dataService = new SupabaseDataService();
-  }
+    private readonly usersService: UsersService,
+  ) {}
 
   async execute(): Promise<UserResponse> {
     await this.throwIfInvalidSignature();
@@ -28,7 +25,7 @@ export default class EOAUpdateStrategy implements UserUpsertStrategy {
 
   private async upsertUser(): Promise<{ address: string }> {
     try {
-      const users = await this.dataService.upsertUsers([
+      const users = await this.usersService.upsertUsers([
         {
           address: this.address,
           display_name: this.request.display_name,

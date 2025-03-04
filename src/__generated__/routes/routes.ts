@@ -18,6 +18,8 @@ import { HyperboardController } from './../../controllers/HyperboardController.j
 import { BlueprintController } from './../../controllers/BlueprintController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AllowListController } from './../../controllers/AllowListController.js';
+import { iocContainer } from './../../lib/tsoa/iocContainer.js';
+import type { IocContainer, IocContainerFactory } from '@tsoa/runtime';
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
 import multer from 'multer';
 const upload = multer({"limits":{"fileSize":8388608}});
@@ -112,7 +114,7 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "HypercertClaimdata_36_1": {
+    "HypercertClaimdata": {
         "dataType": "refObject",
         "properties": {
             "impact_scope": {"dataType":"nestedObjectLiteral","nestedProperties":{"display_value":{"dataType":"string"},"excludes":{"dataType":"array","array":{"dataType":"string"}},"value":{"dataType":"array","array":{"dataType":"string"}},"name":{"dataType":"string"}},"additionalProperties":{"dataType":"any"},"required":true},
@@ -136,7 +138,7 @@ const models: TsoaRoute.Models = {
             "ref": {"dataType":"string"},
             "allowList": {"dataType":"string"},
             "properties": {"dataType":"array","array":{"dataType":"union","subSchemas":[{"dataType":"nestedObjectLiteral","nestedProperties":{"value":{"dataType":"string","required":true},"trait_type":{"dataType":"string","required":true}}},{"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string","required":true},"src":{"dataType":"string","required":true},"type":{"dataType":"string","required":true},"trait_type":{"dataType":"string","required":true}}}]}},
-            "hypercert": {"ref":"HypercertClaimdata_36_1"},
+            "hypercert": {"ref":"HypercertClaimdata"},
         },
         "additionalProperties": false,
     },
@@ -195,14 +197,14 @@ const models: TsoaRoute.Models = {
         "enums": [0,101,111,112,113,201,211,212,213,301,311,312,321,322,401,402,411,412,413,414,415,421,422,501,502,503,601,611,612,621,622,623,631,632,633,634,701,702,801,802,901,902],
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Pick__additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.Exclude_keyof_additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.id-or-createdAt-or-invalidated-or-validator_codes__": {
+    "Pick_Order.Exclude_keyofOrder.createdAt-or-id-or-invalidated-or-validator_codes__": {
         "dataType": "refAlias",
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Omit__additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.id-or-createdAt-or-invalidated-or-validator_codes_": {
+    "Omit_Order.createdAt-or-id-or-invalidated-or-validator_codes_": {
         "dataType": "refAlias",
-        "type": {"ref":"Pick__additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.Exclude_keyof_additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.id-or-createdAt-or-invalidated-or-validator_codes__","validators":{}},
+        "type": {"ref":"Pick_Order.Exclude_keyofOrder.createdAt-or-id-or-invalidated-or-validator_codes__","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateOrderRequest": {
@@ -375,7 +377,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new UserController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<UserController>(UserController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'addOrUpdateUser',
@@ -407,7 +414,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new UploadController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<UploadController>(UploadController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'upload',
@@ -439,7 +451,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new SignatureRequestController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<SignatureRequestController>(SignatureRequestController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'cancelSignatureRequest',
@@ -468,7 +485,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new SignatureRequestController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<SignatureRequestController>(SignatureRequestController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'processSignatureRequests',
@@ -498,7 +520,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new MetadataController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<MetadataController>(MetadataController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'storeMetadata',
@@ -528,7 +555,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new MetadataController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<MetadataController>(MetadataController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'storeMetadataWithAllowlist',
@@ -558,7 +590,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new MetadataController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<MetadataController>(MetadataController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'validateMetadata',
@@ -588,7 +625,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new MetadataController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<MetadataController>(MetadataController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'validateMetadataWithAllowlist',
@@ -618,7 +660,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new MarketplaceController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<MarketplaceController>(MarketplaceController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'storeOrder',
@@ -648,7 +695,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new MarketplaceController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<MarketplaceController>(MarketplaceController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'updateOrderNonce',
@@ -678,7 +730,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new MarketplaceController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<MarketplaceController>(MarketplaceController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'validateOrder',
@@ -708,7 +765,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new MarketplaceController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<MarketplaceController>(MarketplaceController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'deleteOrder',
@@ -738,7 +800,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new HyperboardController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<HyperboardController>(HyperboardController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'createHyperboard',
@@ -769,7 +836,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new HyperboardController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<HyperboardController>(HyperboardController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'updateHyperboard',
@@ -801,7 +873,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new HyperboardController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<HyperboardController>(HyperboardController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'deleteHyperboard',
@@ -831,7 +908,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new BlueprintController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<BlueprintController>(BlueprintController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'createBlueprint',
@@ -862,7 +944,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new BlueprintController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<BlueprintController>(BlueprintController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'deleteBlueprint',
@@ -893,7 +980,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new BlueprintController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<BlueprintController>(BlueprintController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'mintBlueprint',
@@ -923,7 +1015,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new AllowListController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<AllowListController>(AllowListController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'storeAllowList',
@@ -953,7 +1050,12 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const controller = new AllowListController();
+                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+
+                const controller: any = await container.get<AllowListController>(AllowListController);
+                if (typeof controller['setStatus'] === 'function') {
+                controller.setStatus(undefined);
+                }
 
               await templateService.apiHandler({
                 methodName: 'validateAllowList',

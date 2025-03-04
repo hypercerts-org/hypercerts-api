@@ -12,13 +12,11 @@
     "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
     "isolatedModules": true,
-//    "verbatimModuleSyntax": true,
+    //    "verbatimModuleSyntax": true,
     "useDefineForClassFields": true,
     "incremental": true,
     "outDir": "./dist",
-    "rootDirs": [
-      "src"
-    ],
+    "rootDirs": ["src"],
     "plugins": [
       {
         "name": "@0no-co/graphqlsp",
@@ -30,11 +28,10 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
-    "src/**/*.json"
+    "src/**/*.json",
+    "test/lib/graphql/typeRegistry.test.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ],
+  "exclude": ["node_modules"],
   "ts-node": {
     "swc": true
   }

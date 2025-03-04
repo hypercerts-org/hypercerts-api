@@ -1,18 +1,37 @@
-import { Args, ObjectType, Query, Resolver } from "type-graphql";
-import { Metadata } from "../typeDefs/metadataTypeDefs.js";
+import { inject, injectable } from "tsyringe";
+import { Args, FieldResolver, Query, Resolver, Root } from "type-graphql";
+import { MetadataService } from "../../../services/database/entities/MetadataEntityService.js";
 import { GetMetadataArgs } from "../args/metadataArgs.js";
-import { createBaseResolver, DataResponse } from "./baseTypes.js";
+import { GetMetadataResponse, Metadata } from "../typeDefs/metadataTypeDefs.js";
+import { CachingKyselyService } from "../../../client/kysely.js";
 
-@ObjectType()
-export class GetMetadataResponse extends DataResponse(Metadata) {}
-
-const MetadataBaseResolver = createBaseResolver("metadata");
-
+@injectable()
 @Resolver(() => Metadata)
-class MetadataResolver extends MetadataBaseResolver {
+class MetadataResolver {
+  constructor(
+    @inject(MetadataService)
+    private metadataService: MetadataService,
+    @inject(CachingKyselyService)
+    private cachingKyselyService: CachingKyselyService,
+  ) {}
+
   @Query(() => GetMetadataResponse)
   async metadata(@Args() args: GetMetadataArgs) {
-    return await this.getMetadata(args);
+    return await this.metadataService.getMetadata(args);
+  }
+
+  @FieldResolver(() => String)
+  async image(@Root() metadata: Metadata) {
+    if (!metadata.uri) {
+      return null;
+    }
+
+    return await this.cachingKyselyService
+      .getConnection()
+      .selectFrom("metadata")
+      .where("uri", "=", metadata.uri)
+      .select("image")
+      .executeTakeFirst();
   }
 }
 

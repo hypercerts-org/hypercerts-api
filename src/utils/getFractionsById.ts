@@ -14,6 +14,7 @@ const fractionsByIdQuery = graphql(`
   }
 `);
 
+//TODO: replace with service method as this is the API service calling the graph service
 export const getFractionsById = async (fractionId: string) => {
   const { data, error } = await urqlClient
     .query(fractionsByIdQuery, {

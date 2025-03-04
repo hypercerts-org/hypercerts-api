@@ -1,15 +1,17 @@
-import { Field, ObjectType } from "type-graphql";
-import GetAttestationsResponse from "../resolvers/attestationResolver.js";
-import GetFractionsResponse from "../resolvers/fractionResolver.js";
-import GetOrdersResponse from "../resolvers/orderResolver.js";
-import GetSalesResponse from "../resolvers/salesResolver.js";
-import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
-import { Order } from "./orderTypeDefs.js";
 import { GraphQLBigInt } from "graphql-scalars";
+import { Field, ObjectType } from "type-graphql";
+import { DataResponse } from "../../../lib/graphql/DataResponse.js";
+import { GetAttestationsResponse } from "./attestationTypeDefs.js";
+import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
 import { Contract } from "./contractTypeDefs.js";
 import { Metadata } from "./metadataTypeDefs.js";
-
-@ObjectType()
+import { GetOrdersResponse, Order } from "./orderTypeDefs.js";
+import { GetSalesResponse } from "./salesTypeDefs.js";
+import { GetFractionsResponse } from "./fractionTypeDefs.js";
+@ObjectType({
+  description:
+    "Hypercert with metadata, contract, orders, sales and fraction information",
+})
 class GetOrdersForHypercertResponse extends GetOrdersResponse {
   @Field(() => Order, { nullable: true })
   cheapestOrder?: Order;
@@ -23,7 +25,7 @@ class GetOrdersForHypercertResponse extends GetOrdersResponse {
     "Hypercert with metadata, contract, orders, sales and fraction information",
   simpleResolvers: true,
 })
-class Hypercert extends HypercertBaseType {
+export class Hypercert extends HypercertBaseType {
   // Resolved fields
   @Field(() => Metadata, {
     nullable: true,
@@ -63,4 +65,14 @@ class Hypercert extends HypercertBaseType {
   sales?: GetSalesResponse;
 }
 
-export { Hypercert };
+@ObjectType({
+  description:
+    "Hypercert with metadata, contract, orders, sales and fraction information",
+})
+export class GetHypercertsResponse extends DataResponse(Hypercert) {}
+
+@ObjectType({
+  description:
+    "Hypercert without metadata, contract, orders, sales and fraction information",
+})
+export class HypercertsResponse extends DataResponse(HypercertBaseType) {}

@@ -1,6 +1,6 @@
 import {
-  addressesByNetwork,
   HypercertExchangeClient,
+  Order,
   utils,
 } from "@hypercerts-org/marketplace-sdk";
 import { verifyTypedData } from "ethers";
@@ -16,11 +16,12 @@ import {
 } from "tsoa";
 import { z } from "zod";
 
+import { inject, injectable } from "tsyringe";
 import { isAddress, verifyMessage } from "viem";
 import { EvmClientFactory } from "../client/evmClient.js";
-import { SupabaseDataService } from "../services/SupabaseDataService.js";
+import { FractionService } from "../services/database/entities/FractionEntityService.js";
+import { MarketplaceOrdersService } from "../services/database/entities/MarketplaceOrdersEntityService.js";
 import { BaseResponse } from "../types/api.js";
-import { getFractionsById } from "../utils/getFractionsById.js";
 import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
 import { getHypercertTokenId } from "../utils/tokenIds.js";
 
@@ -54,9 +55,19 @@ interface ValidateOrderRequest {
   chainId: number;
 }
 
+@injectable()
 @Route("v1/marketplace")
 @Tags("Marketplace")
 export class MarketplaceController extends Controller {
+  constructor(
+    @inject(MarketplaceOrdersService)
+    private ordersService: MarketplaceOrdersService,
+    @inject(FractionService)
+    private fractionService: FractionService,
+  ) {
+    super();
+  }
+
   /**
    * Submits a new order for validation and storage on the database.
    *
@@ -147,7 +158,7 @@ export class MarketplaceController extends Controller {
 
     const hec = new HypercertExchangeClient(
       chainId,
-      // @ts-expect-error Typing issue with provider
+      // @ts-expect-error Typing issue with chainId
       EvmClientFactory.createEthersClient(chainId),
     );
     const typedData = hec.getTypedDataDomain();
@@ -168,8 +179,9 @@ export class MarketplaceController extends Controller {
       };
     }
 
+    // TODO: fix type error
     const [validationResult] = await hec.checkOrdersValidity([
-      { ...makerOrder, signature, chainId },
+      parsedBody.data as Order,
     ]);
     if (!validationResult.valid) {
       this.setStatus(401);
@@ -185,7 +197,13 @@ export class MarketplaceController extends Controller {
     );
 
     const fractions = await Promise.all(
-      tokenIds.map((fractionId) => getFractionsById(fractionId)),
+      tokenIds.map((fractionId) =>
+        this.fractionService.getFraction({
+          where: {
+            fraction_id: { eq: fractionId },
+          },
+        }),
+      ),
     );
 
     // Check if all fractions exist
@@ -229,18 +247,17 @@ export class MarketplaceController extends Controller {
       };
       console.log("[marketplace-api] Inserting order entity", insertEntity);
 
-      const supabaseService = new SupabaseDataService();
-      const result = await supabaseService.storeOrder(insertEntity);
+      const result = await this.ordersService.storeOrder(insertEntity);
 
       this.setStatus(200);
       return {
         message: "Added to database",
         success: true,
-        data: result.data
+        data: result
           ? {
-              ...result.data,
-              itemIds: result.data.itemIds as string[],
-              amounts: result.data.amounts as number[],
+              ...result,
+              itemIds: result.itemIds as string[],
+              amounts: result.amounts as number[],
               status: "VALID",
               hash: "0x",
             }
@@ -297,32 +314,17 @@ export class MarketplaceController extends Controller {
     const { address, chainId } = parsedQuery.data;
     const lowerCaseAddress = address.toLowerCase();
 
-    const supabase = new SupabaseDataService();
-    const { data: currentNonce, error: currentNonceError } =
-      await supabase.getNonce(lowerCaseAddress, chainId);
+    const nonce = await this.ordersService.getNonce({
+      address: lowerCaseAddress,
+      chain_id: chainId,
+    });
 
-    if (currentNonceError) {
-      this.setStatus(500);
-      return {
-        success: false,
-        message: currentNonceError.message,
-        data: null,
-      };
-    }
+    if (!nonce) {
+      const newNonce = await this.ordersService.createNonce({
+        address: lowerCaseAddress,
+        chain_id: chainId,
+      });
 
-    if (!currentNonce) {
-      const { data: newNonce, error } = await supabase.createNonce(
-        lowerCaseAddress,
-        chainId,
-      );
-      if (error) {
-        this.setStatus(500);
-        return {
-          success: false,
-          message: error.message,
-          data: null,
-        };
-      }
       this.setStatus(200);
       return {
         success: true,
@@ -331,21 +333,11 @@ export class MarketplaceController extends Controller {
       };
     }
 
-    const { data: updatedNonce, error: updatedNonceError } =
-      await supabase.updateNonce(
-        lowerCaseAddress,
-        chainId,
-        currentNonce.nonce_counter + 1,
-      );
-
-    if (updatedNonceError) {
-      this.setStatus(500);
-      return {
-        success: false,
-        message: updatedNonceError.message,
-        data: null,
-      };
-    }
+    const updatedNonce = await this.ordersService.updateNonce({
+      address: lowerCaseAddress,
+      chain_id: chainId,
+      nonce_counter: nonce.nonce_counter + 1,
+    });
 
     this.setStatus(200);
     return {
@@ -380,13 +372,12 @@ export class MarketplaceController extends Controller {
     }
 
     const { tokenIds, chainId } = parsedQuery.data;
-    const supabase = new SupabaseDataService();
 
     try {
-      const ordersToUpdate = await supabase.validateOrdersByTokenIds({
+      const ordersToUpdate = await this.ordersService.validateOrdersByTokenIds(
         tokenIds,
         chainId,
-      });
+      );
       this.setStatus(200);
       return {
         success: true,
@@ -434,15 +425,13 @@ export class MarketplaceController extends Controller {
 
     const { orderId, signature } = parsedQuery.data;
 
-    const supabase = new SupabaseDataService();
-    const { data } = supabase.getOrders({
+    const order = await this.ordersService.getOrder({
       where: {
         id: {
           eq: orderId,
         },
       },
     });
-    const order = await data.executeTakeFirst();
 
     if (!order) {
       this.setStatus(404);
@@ -471,7 +460,7 @@ export class MarketplaceController extends Controller {
     }
 
     try {
-      await supabase.deleteOrder(orderId);
+      await this.ordersService.deleteOrder(orderId);
       this.setStatus(200);
       return {
         success: true,
