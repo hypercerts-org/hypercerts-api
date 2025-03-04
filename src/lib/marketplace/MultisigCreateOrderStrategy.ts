@@ -19,7 +19,9 @@ import {
   SafeCreateOrderMessage,
 } from "./schemas.js";
 import * as Errors from "./errors.js";
-
+import { injectable, inject } from "tsyringe";
+import { MarketplaceOrdersService } from "../../services/database/entities/MarketplaceOrdersEntityService.js";
+import { SignatureRequestsService } from "../../services/database/entities/SignatureRequestsEntityService.js";
 type ValidatableOrder = Omit<
   Order,
   "createdAt" | "invalidated" | "validator_codes"
@@ -27,14 +29,26 @@ type ValidatableOrder = Omit<
 
 type OrderDetails = SafeCreateOrderMessage["message"];
 
+@injectable()
 export default class MultisigCreateOrderStrategy extends MarketplaceStrategy {
-  private readonly safeApiKit: SafeApiKit.default;
+  private safeApiKit!: SafeApiKit.default;
+  private request!: MultisigCreateOrderRequest;
 
-  constructor(private readonly request: MultisigCreateOrderRequest) {
+  constructor(
+    @inject(MarketplaceOrdersService)
+    private readonly marketplaceOrdersService: MarketplaceOrdersService,
+    @inject(SignatureRequestsService)
+    private readonly signatureRequestsService: SignatureRequestsService,
+  ) {
     super();
+  }
+
+  initialize(request: MultisigCreateOrderRequest): this {
     this.safeApiKit = SafeApiStrategyFactory.getStrategy(
       request.chainId,
     ).createInstance();
+    this.request = request;
+    return this;
   }
 
   async executeCreate(): Promise<DataResponse<unknown>> {
@@ -48,10 +62,13 @@ export default class MultisigCreateOrderStrategy extends MarketplaceStrategy {
     }
 
     // Check if signature request already exists
-    const existingRequest = await this.dataService.getSignatureRequest(
-      safeAddress,
-      messageHash,
-    );
+    const existingRequest =
+      await this.signatureRequestsService.getSignatureRequest({
+        where: {
+          safe_address: { eq: safeAddress },
+          message_hash: { eq: messageHash },
+        },
+      });
 
     if (existingRequest) {
       return this.returnSuccess("Signature request already exists", {
@@ -182,7 +199,7 @@ export default class MultisigCreateOrderStrategy extends MarketplaceStrategy {
       amounts: orderDetails.amounts.map((amount) => amount.toString()),
     };
 
-    await this.dataService.addSignatureRequest({
+    await this.signatureRequestsService.addSignatureRequest({
       chain_id: this.request.chainId,
       safe_address: safeAddress,
       message_hash: messageHash,

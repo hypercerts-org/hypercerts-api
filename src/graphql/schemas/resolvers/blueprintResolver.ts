@@ -1,69 +1,43 @@
+import { Args, FieldResolver, Query, Resolver, Root } from "type-graphql";
 import {
-  Args,
-  FieldResolver,
-  ObjectType,
-  Query,
-  Resolver,
-  Root,
-} from "type-graphql";
-import { createBaseResolver, DataResponse } from "./baseTypes.js";
-import { Blueprint } from "../typeDefs/blueprintTypeDefs.js";
+  Blueprint,
+  GetBlueprintsResponse,
+} from "../typeDefs/blueprintTypeDefs.js";
 import { GetBlueprintsArgs } from "../args/blueprintArgs.js";
-import _ from "lodash";
-import { DataDatabase } from "../../../types/kyselySupabaseData.js";
+import { inject, injectable } from "tsyringe";
+import { BlueprintsService } from "../../../services/database/entities/BlueprintsEntityService.js";
+import { HypercertsService } from "../../../services/database/entities/HypercertsEntityService.js";
 
-@ObjectType()
-export class GetBlueprintResponse extends DataResponse(Blueprint) {}
-
-const BlueprintBaseResolver = createBaseResolver("blueprint");
-
+@injectable()
 @Resolver(() => Blueprint)
-class BlueprintResolver extends BlueprintBaseResolver {
-  @Query(() => GetBlueprintResponse)
+class BlueprintResolver {
+  constructor(
+    @inject(BlueprintsService)
+    private blueprintsService: BlueprintsService,
+    @inject(HypercertsService)
+    private hypercertsService: HypercertsService,
+  ) {}
+
+  @Query(() => GetBlueprintsResponse)
   async blueprints(@Args() args: GetBlueprintsArgs) {
-    const { data, count } = await this.getBlueprints(args);
+    return await this.blueprintsService.getBlueprints(args);
+  }
 
-    // Deduplicate by blueprint id
-    const formattedData = _.chain(
-      data as DataDatabase["blueprints_with_admins"][],
-    )
-      .groupBy("id")
-      .map((blueprints) => {
-        const admins = blueprints.map(
-          ({
-            admin_address,
-            admin_chain_id,
-            avatar,
-            display_name,
-            hypercert_ids,
-          }) => ({
-            address: admin_address,
-            chain_id: admin_chain_id,
-            avatar,
-            display_name,
-            hypercert_ids,
-          }),
-        );
-        return {
-          ...blueprints[0],
-          admins,
-        };
-      });
+  @FieldResolver()
+  async admins(@Root() blueprint: Blueprint) {
+    if (!blueprint.id) {
+      console.error("[BlueprintResolver::admins] Blueprint ID is undefined");
+      return [];
+    }
 
-    return {
-      data: formattedData,
-      count,
-    };
+    return await this.blueprintsService.getBlueprintAdmins(blueprint.id);
   }
 
   @FieldResolver()
   async hypercerts(@Root() blueprint: Blueprint) {
-    const hypercertIds = blueprint.hypercert_ids;
-    const { data: hypercerts, count } = await this.getHypercerts({
-      where: { hypercert_id: { in: hypercertIds } },
+    return await this.hypercertsService.getHypercerts({
+      where: { hypercert_id: { in: blueprint.hypercert_ids } },
     });
-
-    return { data: hypercerts, count };
   }
 }
 

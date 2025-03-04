@@ -4,8 +4,9 @@ import { EthBigInt } from "../../scalars/ethBigInt.js";
 
 import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { User } from "./userTypeDefs.js";
-import { Hypercert } from "./hypercertTypeDefs.js";
+import { HypercertsResponse } from "./hypercertTypeDefs.js";
 import { Blueprint } from "./blueprintTypeDefs.js";
+import { DataResponse } from "../../../lib/graphql/DataResponse.js";
 
 @ObjectType({
   description: "Collection of hypercerts for reference and display purposes",
@@ -26,9 +27,14 @@ export class Collection extends BasicTypeDef {
   @Field(() => [User])
   admins?: User[];
 
-  @Field(() => [Hypercert], { nullable: true })
-  hypercerts?: Hypercert[];
+  @Field(() => HypercertsResponse, { nullable: true })
+  hypercerts?: HypercertsResponse;
 
   @Field(() => [Blueprint], { nullable: true })
   blueprints?: Blueprint[];
 }
+
+@ObjectType({
+  description: "Collection of hypercerts for reference and display purposes",
+})
+export class GetCollectionsResponse extends DataResponse(Collection) {}

@@ -1,17 +1,18 @@
 import {
   Body,
   Controller,
-  Post,
   Path,
+  Post,
   Response,
   Route,
   SuccessResponse,
   Tags,
 } from "tsoa";
 
-import { SupabaseDataService } from "../services/SupabaseDataService.js";
-import { verifyAuthSignedData } from "../utils/verifyAuthSignedData.js";
+import { inject, injectable } from "tsyringe";
+import { SignatureRequestsService } from "../services/database/entities/SignatureRequestsEntityService.js";
 import SignatureRequestProcessor from "../services/SignatureRequestProcessor.js";
+import { verifyAuthSignedData } from "../utils/verifyAuthSignedData.js";
 
 interface CancelSignatureRequest {
   signature: string;
@@ -19,14 +20,15 @@ interface CancelSignatureRequest {
   chain_id: number;
 }
 
+@injectable()
 @Route("v1/signature-requests")
 @Tags("SignatureRequests")
 export class SignatureRequestController extends Controller {
-  private readonly dataService: SupabaseDataService;
-
-  constructor() {
+  constructor(
+    @inject(SignatureRequestsService)
+    private signatureRequestsService: SignatureRequestsService,
+  ) {
     super();
-    this.dataService = new SupabaseDataService();
   }
 
   @Post("{safe_address}-{message_hash}/cancel")
@@ -44,10 +46,13 @@ export class SignatureRequestController extends Controller {
       return this.errorResponse("Unauthorized", 401);
     }
 
-    const signatureRequest = await this.dataService.getSignatureRequest(
-      safe_address,
-      message_hash,
-    );
+    const signatureRequest =
+      await this.signatureRequestsService.getSignatureRequest({
+        where: {
+          safe_address: { eq: safe_address },
+          message_hash: { eq: message_hash },
+        },
+      });
     if (!signatureRequest) {
       return this.errorResponse("Signature request not found", 404);
     }
@@ -62,7 +67,7 @@ export class SignatureRequestController extends Controller {
         return this.successResponse("Signature request canceled successfully");
 
       case "pending":
-        await this.dataService.updateSignatureRequestStatus(
+        await this.signatureRequestsService.updateSignatureRequestStatus(
           safe_address,
           message_hash,
           "canceled",

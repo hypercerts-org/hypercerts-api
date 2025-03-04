@@ -1,31 +1,19 @@
-import { User } from "../typeDefs/userTypeDefs.js";
-import { createEntityArgs } from "./argGenerator.js";
-import { BaseQueryArgs } from "./baseArgs.js";
+import { ArgsType } from "type-graphql";
+import { BaseQueryArgs } from "../../../lib/graphql/BaseQueryArgs.js";
+import { createEntityArgs } from "../../../lib/graphql/createEntityArgs.js";
 
-// @InputType()
-// export class UserWhereInput extends BasicUserWhereInput {}
+const { WhereInput: UserWhereInput, SortOptions: UserSortOptions } =
+  createEntityArgs("User", {
+    address: "string",
+    display_name: "string",
+    avatar: "string",
+    chain_id: "bigint",
+  });
 
-// @ArgsType()
-// class UserArgs {
-//   @Field(() => UserWhereInput, { nullable: true })
-//   where?: UserWhereInput;
-// }
+@ArgsType()
+export class GetUsersArgs extends BaseQueryArgs(
+  UserWhereInput,
+  UserSortOptions,
+) {}
 
-// @ArgsType()
-// export class GetUserArgs extends withPagination(UserArgs) {}
-
-const {
-  WhereArgs: UserWhereArgs,
-  EntitySortOptions: UserSortOptions,
-  SortArgs: UserSortArgs,
-} = createEntityArgs<User>("User", {
-  address: "string",
-  display_name: "string",
-  avatar: "string",
-  chain_id: "bigint",
-});
-
-export const GetUsersArgs = BaseQueryArgs(UserWhereArgs, UserSortArgs);
-export type GetUsersArgs = InstanceType<typeof GetUsersArgs>;
-
-export { UserSortArgs, UserSortOptions, UserWhereArgs };
+export { UserSortOptions, UserWhereInput };

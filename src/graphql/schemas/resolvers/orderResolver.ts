@@ -1,32 +1,34 @@
-import {
-  Args,
-  FieldResolver,
-  ObjectType,
-  Query,
-  Resolver,
-  Root,
-} from "type-graphql";
-import { Order } from "../typeDefs/orderTypeDefs.js";
-import { GetOrdersArgs } from "../args/orderArgs.js";
-import { getHypercertTokenId } from "../../../utils/tokenIds.js";
-import { getAddress } from "viem";
-import { addPriceInUsdToOrder } from "../../../utils/addPriceInUSDToOrder.js";
 import _ from "lodash";
-import { createBaseResolver, DataResponse } from "./baseTypes.js";
+import { inject, injectable } from "tsyringe";
+import { Args, FieldResolver, Query, Resolver, Root } from "type-graphql";
+import { getAddress } from "viem";
+import { HypercertsService } from "../../../services/database/entities/HypercertsEntityService.js";
+import { MarketplaceOrdersService } from "../../../services/database/entities/MarketplaceOrdersEntityService.js";
+import { MetadataService } from "../../../services/database/entities/MetadataEntityService.js";
+import { Database } from "../../../types/supabaseData.js";
+import { addPriceInUsdToOrder } from "../../../utils/addPriceInUSDToOrder.js";
+import { getHypercertTokenId } from "../../../utils/tokenIds.js";
+import { GetOrdersArgs } from "../args/orderArgs.js";
+import { GetOrdersResponse, Order } from "../typeDefs/orderTypeDefs.js";
 
-@ObjectType()
-export default class GetOrdersResponse extends DataResponse(Order) {}
-
-const OrderBaseResolver = createBaseResolver("order");
-
+@injectable()
 @Resolver(() => Order)
-class OrderResolver extends OrderBaseResolver {
-  @Query(() => GetOrdersResponse)
-  async orders(@Args() args: GetOrdersArgs, single: boolean = false) {
-    try {
-      const ordersRes = await this.getOrders(args, single);
+class OrderResolver {
+  constructor(
+    @inject(MarketplaceOrdersService)
+    private marketplaceOrdersService: MarketplaceOrdersService,
+    @inject(HypercertsService)
+    private hypercertService: HypercertsService,
+    @inject(MetadataService)
+    private metadataService: MetadataService,
+  ) {}
 
-      if (!ordersRes) {
+  @Query(() => GetOrdersResponse)
+  async orders(@Args() args: GetOrdersArgs) {
+    try {
+      const ordersRes = await this.marketplaceOrdersService.getOrders(args);
+
+      if (!ordersRes || !ordersRes.data || !ordersRes.count) {
         return {
           data: [],
           count: 0,
@@ -35,44 +37,51 @@ class OrderResolver extends OrderBaseResolver {
 
       const { data, count } = ordersRes;
 
-      const allHypercertIds = _.uniq(data.map((order) => order.hypercert_id));
-      // TODO: Update this once array filters are available
-      const allHypercerts = await Promise.all(
-        allHypercertIds.map(async (hypercertId) => {
-          return await this.getHypercerts(
-            {
-              where: {
-                hypercert_id: {
-                  eq: hypercertId,
-                },
-              },
-            },
-            true,
-          );
-        }),
-      ).then((res) =>
-        _.keyBy(
-          res.filter((hypercert) => !!hypercert),
-          (hypercert) => hypercert?.hypercert_id?.toLowerCase(),
+      // Get unique hypercert IDs and convert to lowercase once
+      const allHypercertIds = _.uniq(
+        data.map((order) =>
+          (order.hypercert_id as unknown as string)?.toLowerCase(),
         ),
       );
 
+      // Fetch hypercerts in parallel with any other async operations
+      const { data: hypercertsData } =
+        await this.hypercertService.getHypercerts({
+          where: {
+            hypercert_id: { in: allHypercertIds },
+          },
+        });
+
+      // Create lookup map with lowercase keys
+      const hypercerts = new Map(
+        hypercertsData.map((h) => [
+          (h.hypercert_id as unknown as string)?.toLowerCase(),
+          h,
+        ]),
+      );
+
+      // Process orders in parallel since addPriceInUsdToOrder is async
       const ordersWithPrices = await Promise.all(
         data.map(async (order) => {
-          const hypercert = allHypercerts[order.hypercert_id.toLowerCase()];
+          const hypercert = hypercerts.get(
+            (order.hypercert_id as unknown as string)?.toLowerCase(),
+          );
           if (!hypercert?.units) {
             console.warn(
-              `[OrderResolver::orders] No hypercert found for hypercert_id: ${order.hypercert_id}`,
+              `[OrderResolver::orders] No hypercert unitsfound for hypercert_id: ${order.hypercert_id}`,
             );
             return order;
           }
-          return addPriceInUsdToOrder(order, hypercert.units as bigint);
+          return addPriceInUsdToOrder(
+            order as unknown as Database["public"]["Tables"]["marketplace_orders"]["Row"],
+            hypercert.units as unknown as bigint,
+          );
         }),
       );
 
       return {
         data: ordersWithPrices,
-        count: count ? count : ordersWithPrices?.length,
+        count: count ?? ordersWithPrices.length,
       };
     } catch (e) {
       throw new Error(
@@ -96,29 +105,21 @@ class OrderResolver extends OrderBaseResolver {
 
     const hypercertId = getHypercertTokenId(BigInt(tokenId));
     const formattedHypercertId = `${chainId}-${getAddress(collectionId)}-${hypercertId.toString()}`;
-    const hypercert = await this.getHypercerts(
-      {
-        where: {
-          hypercert_id: {
-            eq: formattedHypercertId,
-          },
-        },
-      },
-      true,
-    );
 
-    const metadata = await this.getMetadataWithoutImage(
-      {
+    const [hypercert, metadata] = await Promise.all([
+      this.hypercertService.getHypercert({
+        where: {
+          hypercert_id: { eq: formattedHypercertId },
+        },
+      }),
+      this.metadataService.getMetadataSingle({
         where: {
           hypercerts: {
-            hypercert_id: {
-              eq: formattedHypercertId,
-            },
+            hypercert_id: { eq: formattedHypercertId },
           },
         },
-      },
-      true,
-    );
+      }),
+    ]);
 
     return {
       ...hypercert,

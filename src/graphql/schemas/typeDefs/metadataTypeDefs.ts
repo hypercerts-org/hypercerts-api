@@ -1,15 +1,15 @@
+import { GraphQLJSON } from "graphql-scalars";
 import { Field, ObjectType } from "type-graphql";
 import type { Json } from "../../../types/supabaseData.js";
-import { GraphQLJSON } from "graphql-scalars";
-import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
+import { DataResponse } from "../../../lib/graphql/DataResponse.js";
+import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 
 @ObjectType({
   description:
     "Metadata related to the hypercert describing work, impact, timeframes and other relevant information",
-  simpleResolvers: true,
 })
-class Metadata extends BasicTypeDef {
+export class Metadata extends BasicTypeDef {
   @Field({ nullable: true, description: "Name of the hypercert" })
   name?: string;
   @Field({ nullable: true, description: "Description of the hypercert" })
@@ -73,4 +73,5 @@ class Metadata extends BasicTypeDef {
   work_timeframe_to?: bigint | number;
 }
 
-export { Metadata };
+@ObjectType()
+export class GetMetadataResponse extends DataResponse(Metadata) {}

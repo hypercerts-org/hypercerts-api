@@ -1,60 +1,25 @@
-import { Blueprint } from "../typeDefs/blueprintTypeDefs.js";
-import { Hypercert } from "../typeDefs/hypercertTypeDefs.js";
-import { User } from "../typeDefs/userTypeDefs.js";
-import { createEntityArgs } from "./argGenerator.js";
-import { BaseQueryArgs } from "./baseArgs.js";
-import { WhereFieldDefinitions } from "./whereFieldDefinitions.js";
+import { EntityTypeDefs } from "../typeDefs/typeDefs.js";
+import { createEntityArgs } from "../../../lib/graphql/createEntityArgs.js";
+import { BaseQueryArgs } from "../../../lib/graphql/BaseQueryArgs.js";
+import { WhereFieldDefinitions } from "../../../lib/graphql/whereFieldDefinitions.js";
+import { ArgsType } from "type-graphql";
 
-// @InputType()
-// export class BlueprintWhereInput extends BasicBlueprintWhereInput {}
-
-// @InputType()
-// export class BlueprintFetchInput implements OrderOptions<Blueprint> {
-//   @Field(() => BlueprintSortOptions, { nullable: true })
-//   by?: BlueprintSortOptions;
-// }
-
-// @ArgsType()
-// export class BlueprintArgs {
-//   @Field(() => BlueprintWhereInput, { nullable: true })
-//   where?: BlueprintWhereInput;
-//   @Field(() => BlueprintFetchInput, { nullable: true })
-//   sort?: BlueprintFetchInput;
-// }
-
-// @ArgsType()
-// export class GetBlueprintArgs extends withPagination(BlueprintArgs) {}
-
-const {
-  WhereArgs: BlueprintWhereArgs,
-  EntitySortOptions: BlueprintSortOptions,
-  SortArgs: BlueprintSortArgs,
-} = createEntityArgs<Blueprint>("Blueprint", {
-  id: "id",
-  created_at: "string",
-  minter_address: "string",
-  minted: "boolean",
-  admins: {
-    type: "id",
-    references: {
-      entity: User,
-      fields: WhereFieldDefinitions.User.fields,
+const { WhereInput: BlueprintWhereInput, SortOptions: BlueprintSortOptions } =
+  createEntityArgs("Blueprint", {
+    ...WhereFieldDefinitions.Blueprint.fields,
+    admins: {
+      type: "id",
+      references: {
+        entity: EntityTypeDefs.User,
+        fields: WhereFieldDefinitions.User.fields,
+      },
     },
-  },
-  hypercerts: {
-    type: "id",
-    references: {
-      entity: Hypercert,
-      fields: WhereFieldDefinitions.Hypercert.fields,
-    },
-  },
-});
+  });
 
-export const GetBlueprintsArgs = BaseQueryArgs(
-  BlueprintWhereArgs,
-  BlueprintSortArgs,
-);
+@ArgsType()
+export class GetBlueprintsArgs extends BaseQueryArgs(
+  BlueprintWhereInput,
+  BlueprintSortOptions,
+) {}
 
-export type GetBlueprintsArgs = InstanceType<typeof GetBlueprintsArgs>;
-
-export { BlueprintSortArgs, BlueprintSortOptions, BlueprintWhereArgs };
+export { BlueprintSortOptions, BlueprintWhereInput };

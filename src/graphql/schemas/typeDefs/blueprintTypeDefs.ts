@@ -1,10 +1,13 @@
-import { Field, ObjectType } from "type-graphql";
 import { GraphQLJSON } from "graphql-scalars";
+import { Field, ObjectType } from "type-graphql";
+import { DataResponse } from "../../../lib/graphql/DataResponse.js";
+import { HypercertsResponse } from "./hypercertTypeDefs.js";
 import { User } from "./userTypeDefs.js";
-import { GetHypercertsResponse } from "../resolvers/hypercertResolver.js";
 
-@ObjectType()
-class Blueprint {
+@ObjectType({
+  description: "Blueprint for hypercert creation",
+})
+export class Blueprint {
   @Field()
   id?: number;
 
@@ -23,11 +26,14 @@ class Blueprint {
   @Field(() => [User])
   admins?: User[];
 
-  @Field(() => GetHypercertsResponse)
-  hypercerts?: GetHypercertsResponse;
+  @Field(() => HypercertsResponse)
+  hypercerts?: HypercertsResponse;
 
   // Internal field, not queryable
   hypercert_ids?: string[];
 }
 
-export { Blueprint };
+@ObjectType({
+  description: "Blueprints for hypercert creation",
+})
+export class GetBlueprintsResponse extends DataResponse(Blueprint) {}

@@ -1,69 +1,39 @@
-import { Collection } from "../typeDefs/collectionTypeDefs.js";
+import { EntityTypeDefs } from "../typeDefs/typeDefs.js";
+import { createEntityArgs } from "../../../lib/graphql/createEntityArgs.js";
+import { BaseQueryArgs } from "../../../lib/graphql/BaseQueryArgs.js";
+import { WhereFieldDefinitions } from "../../../lib/graphql/whereFieldDefinitions.js";
+import { ArgsType } from "type-graphql";
 
-import { Blueprint } from "../typeDefs/blueprintTypeDefs.js";
-import { Hypercert } from "../typeDefs/hypercertTypeDefs.js";
-import { User } from "../typeDefs/userTypeDefs.js";
-import { createEntityArgs } from "./argGenerator.js";
-import { BaseQueryArgs } from "./baseArgs.js";
-import { WhereFieldDefinitions } from "./whereFieldDefinitions.js";
-
-// @InputType()
-// export class CollectionWhereInput extends BasicCollectionWhereInput {}
-
-// @InputType()
-// export class CollectionFetchInput implements OrderOptions<Collection> {
-//   @Field(() => CollectionSortOptions, { nullable: true })
-//   by?: CollectionSortOptions;
-// }
-
-// @ArgsType()
-// export class CollectionArgs {
-//   @Field(() => CollectionWhereInput, { nullable: true })
-//   where?: CollectionWhereInput;
-//   @Field(() => CollectionFetchInput, { nullable: true })
-//   sort?: CollectionFetchInput;
-// }
-
-// @ArgsType()
-// export class GetCollectionsArgs extends withPagination(CollectionArgs) {}
-
-const {
-  WhereArgs: CollectionWhereArgs,
-  EntitySortOptions: CollectionSortOptions,
-  SortArgs: CollectionSortArgs,
-} = createEntityArgs<Collection>("Collection", {
-  id: "id",
-  name: "string",
-  description: "string",
-  created_at: "string",
-  admins: {
-    type: "id",
-    references: {
-      entity: User,
-      fields: WhereFieldDefinitions.User.fields,
+const { WhereInput: CollectionWhereInput, SortOptions: CollectionSortOptions } =
+  createEntityArgs("Collection", {
+    ...WhereFieldDefinitions.Collection.fields,
+    admins: {
+      type: "id",
+      references: {
+        entity: EntityTypeDefs.User,
+        fields: WhereFieldDefinitions.User.fields,
+      },
     },
-  },
-  hypercerts: {
-    type: "id",
-    references: {
-      entity: Hypercert,
-      fields: WhereFieldDefinitions.Hypercert.fields,
+    hypercerts: {
+      type: "id",
+      references: {
+        entity: EntityTypeDefs.Hypercert,
+        fields: WhereFieldDefinitions.Hypercert.fields,
+      },
     },
-  },
-  blueprints: {
-    type: "id",
-    references: {
-      entity: Blueprint,
-      fields: WhereFieldDefinitions.Blueprint.fields,
+    blueprints: {
+      type: "id",
+      references: {
+        entity: EntityTypeDefs.Blueprint,
+        fields: WhereFieldDefinitions.Blueprint.fields,
+      },
     },
-  },
-});
+  });
 
-export const GetCollectionsArgs = BaseQueryArgs(
-  CollectionWhereArgs,
-  CollectionSortArgs,
-);
+@ArgsType()
+export class GetCollectionsArgs extends BaseQueryArgs(
+  CollectionWhereInput,
+  CollectionSortOptions,
+) {}
 
-export type GetCollectionsArgs = InstanceType<typeof GetCollectionsArgs>;
-
-export { CollectionSortArgs, CollectionSortOptions, CollectionWhereArgs };
+export { CollectionSortOptions, CollectionWhereInput };

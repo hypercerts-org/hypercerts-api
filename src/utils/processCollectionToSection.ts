@@ -1,30 +1,40 @@
-import { Database as DataDatabase } from "../types/supabaseData.js";
-import { Database as CachingDatabase } from "../types/supabaseCaching.js";
 import { parseUnits } from "viem";
 import _ from "lodash";
 import { calculateBigIntPercentage } from "./calculateBigIntPercentage.js";
+import { Section } from "../graphql/schemas/typeDefs/hyperboardTypeDefs.js";
+import { DataDatabase } from "../types/kyselySupabaseData.js";
+import { CachingDatabase } from "../types/kyselySupabaseCaching.js";
+import { Selectable } from "kysely";
+
+interface ProcessCollectionToSectionArgs {
+  collection: Selectable<DataDatabase["collections"]>;
+  hyperboardHypercertMetadata: Selectable<
+    DataDatabase["hyperboard_hypercert_metadata"]
+  >[];
+  blueprints: Selectable<DataDatabase["blueprints"]>[];
+  blueprintMetadata: Selectable<
+    DataDatabase["hyperboard_blueprint_metadata"]
+  >[];
+  fractions: Selectable<CachingDatabase["fractions_view"]>[];
+  allowlistEntries: Selectable<
+    CachingDatabase["claimable_fractions_with_proofs"]
+  >[];
+  hypercerts: (Selectable<CachingDatabase["claims"]> & {
+    name: string;
+  })[];
+  users: Selectable<DataDatabase["users"]>[];
+}
 
 export const processCollectionToSection = ({
   blueprintMetadata,
-  hypercert_metadata,
+  hyperboardHypercertMetadata,
   blueprints,
   fractions,
   allowlistEntries,
   collection,
   hypercerts,
   users,
-}: {
-  collection: DataDatabase["public"]["Tables"]["collections"]["Row"];
-  hypercert_metadata: DataDatabase["public"]["Tables"]["hyperboard_hypercert_metadata"]["Row"][];
-  blueprints: DataDatabase["public"]["Tables"]["blueprints"]["Row"][];
-  blueprintMetadata: DataDatabase["public"]["Tables"]["hyperboard_blueprint_metadata"]["Row"][];
-  fractions: CachingDatabase["public"]["Views"]["fractions_view"]["Row"][];
-  allowlistEntries: CachingDatabase["public"]["Views"]["claimable_fractions_with_proofs"]["Row"][];
-  hypercerts: (CachingDatabase["public"]["Tables"]["claims"]["Row"] & {
-    name: string;
-  })[];
-  users: DataDatabase["public"]["Tables"]["users"]["Row"][];
-}) => {
+}: ProcessCollectionToSectionArgs): Section => {
   const NUMBER_OF_UNITS_IN_HYPERCERT = parseUnits("1", 8);
   // Calculate the total number of units in all claims and blueprints combined
   const totalUnitsInBlueprints =
@@ -36,7 +46,7 @@ export const processCollectionToSection = ({
   const totalUnits = totalUnitsInClaims + totalUnitsInBlueprints;
 
   const totalOfAllDisplaySizes = [
-    ...hypercert_metadata,
+    ...hyperboardHypercertMetadata,
     ...blueprintMetadata,
   ].reduce((acc, curr) => acc + BigInt(curr?.display_size || 0), 0n);
   // Calculate the amount of surface per display size unit
@@ -45,7 +55,7 @@ export const processCollectionToSection = ({
 
   const hypercertsByHypercertId = _.keyBy(hypercerts, "hypercert_id");
   const hypercertMetadataByHypercertId = _.keyBy(
-    hypercert_metadata,
+    hyperboardHypercertMetadata,
     "hypercert_id",
   );
   const fractionsByHypercertId = _.groupBy(fractions, "hypercert_id");
@@ -56,20 +66,20 @@ export const processCollectionToSection = ({
 
       if (!hypercert) {
         throw new Error(
-          `[HyperboardResolver::processRegistryForDisplay] Hypercert not found for ${hypercertId}`,
+          `[HyperboardResolver::processCollectionToSection] Hypercert not found for ${hypercertId}`,
         );
       }
 
       if (!metadata) {
         console.log(hypercertId, hypercertMetadataByHypercertId);
         throw new Error(
-          `[HyperboardResolver::processRegistryForDisplay] Metadata not found for ${hypercertId}`,
+          `[HyperboardResolver::processCollectionToSection] Metadata not found for ${hypercertId}`,
         );
       }
 
       if (!metadata.display_size) {
         throw new Error(
-          `[HyperboardResolver::processRegistryForDisplay] Metadata display size not found for ${hypercertId}`,
+          `[HyperboardResolver::processCollectionToSection] Metadata display size not found for ${hypercertId}`,
         );
       }
 
@@ -105,7 +115,7 @@ export const processCollectionToSection = ({
     .map((entry) => {
       if (!entry.hypercert_id) {
         throw new Error(
-          `[HyperboardResolver::processRegistryForDisplay] Allowlist entry does not have a hypercert_id`,
+          `[HyperboardResolver::processCollectionToSection] Allowlist entry does not have a hypercert_id`,
         );
       }
       // Calculate the number of units per display unit
@@ -113,13 +123,13 @@ export const processCollectionToSection = ({
 
       if (!hypercert) {
         throw new Error(
-          `[HyperboardResolver::processRegistryForDisplay] Hypercert not found for ${entry.hypercert_id}`,
+          `[HyperboardResolver::processCollectionToSection] Hypercert not found for ${entry.hypercert_id}`,
         );
       }
 
       if (!hypercert.units) {
         throw new Error(
-          `[HyperboardResolver::processRegistryForDisplay] Hypercert does not have units`,
+          `[HyperboardResolver::processCollectionToSection] Hypercert does not have units`,
         );
       }
 
@@ -143,7 +153,7 @@ export const processCollectionToSection = ({
 
     if (!blueprintMeta) {
       throw new Error(
-        `[HyperboardResolver::processRegistryForDisplay] Blueprint metadata not found for ${blueprint.id}`,
+        `[HyperboardResolver::processCollectionToSection] Blueprint metadata not found for ${blueprint.id}`,
       );
     }
 
@@ -169,7 +179,7 @@ export const processCollectionToSection = ({
   const fractionsWithDisplayData = fractionsResults.map((fraction) => {
     if (!fraction.owner) {
       throw new Error(
-        `[HyperboardResolver::processRegistryForDisplay] Fraction does not have an owner address`,
+        `[HyperboardResolver::processCollectionToSection] Fraction does not have an owner address`,
       );
     }
     return {
@@ -189,7 +199,7 @@ export const processCollectionToSection = ({
   ].map((fraction) => {
     if (!fraction.owner) {
       throw new Error(
-        `[HyperboardResolver::processRegistryForDisplay] Fraction does not have an owner`,
+        `[HyperboardResolver::processCollectionToSection] Fraction does not have an owner`,
       );
     }
     return {
@@ -224,13 +234,13 @@ export const processCollectionToSection = ({
 
         if (!hypercert) {
           throw new Error(
-            `[HyperboardResolver::processRegistryForDisplay] Hypercert not found for ${id}`,
+            `[HyperboardResolver::processCollectionToSection] Hypercert not found for ${id}`,
           );
         }
 
         if (!hypercert?.units) {
           throw new Error(
-            `[HyperboardResolver::processRegistryForDisplay] Hypercert not found for ${id}`,
+            `[HyperboardResolver::processCollectionToSection] Hypercert not found for ${id}`,
           );
         }
 
@@ -238,7 +248,7 @@ export const processCollectionToSection = ({
 
         if (!hypercert?.name) {
           throw new Error(
-            `[HyperboardResolver::processRegistryForDisplay] Hypercert name not found for ${id}`,
+            `[HyperboardResolver::processCollectionToSection] Hypercert name not found for ${id}`,
           );
         }
 
@@ -247,7 +257,7 @@ export const processCollectionToSection = ({
 
       if (!unitsForHypercert) {
         throw new Error(
-          `[HyperboardResolver::processRegistryForDisplay] Units not found for ${id}`,
+          `[HyperboardResolver::processCollectionToSection] Units not found for ${id}`,
         );
       }
 
@@ -267,8 +277,9 @@ export const processCollectionToSection = ({
           return {
             percentage,
             chain_id: fractionsPerOwner[0].displayData.chain_id,
-            avatar: fractionsPerOwner[0].displayData.avatar,
-            display_name: fractionsPerOwner[0].displayData.display_name,
+            avatar: fractionsPerOwner[0].displayData.avatar || undefined,
+            display_name:
+              fractionsPerOwner[0].displayData.display_name || undefined,
             address: fractionsPerOwner[0].displayData.address,
             units: totalUnitsForOwner,
           };
@@ -282,7 +293,7 @@ export const processCollectionToSection = ({
       const display_size = displayMetadata?.display_size;
       if (!display_size) {
         throw new Error(
-          `[HyperboardResolver::processRegistryForDisplay] Display size not found for ${id} while processing section ${collection.id}`,
+          `[HyperboardResolver::processCollectionToSection] Display size not found for ${id} while processing section ${collection.id}`,
         );
       }
 
@@ -310,7 +321,7 @@ export const processCollectionToSection = ({
       const display_size = metadata?.display_size;
       if (display_size === null) {
         throw new Error(
-          `[HyperboardResolver::processRegistryForDisplay] Display size not found for ${entry.id} while processing section ${collection.id}`,
+          `[HyperboardResolver::processCollectionToSection] Display size not found for ${entry.id} while processing section ${collection.id}`,
         );
       }
       return entry.owners.map((owner) => ({
@@ -324,8 +335,8 @@ export const processCollectionToSection = ({
         owners.reduce((acc, curr) => acc + curr.percentage, 0) /
         Number(totalOfAllDisplaySizes);
       return {
-        avatar: owners[0].avatar,
-        display_name: owners[0].display_name,
+        avatar: owners[0].avatar || undefined,
+        display_name: owners[0].display_name || undefined,
         address: owners[0].address,
         chain_id: owners[0].chain_id,
         percentage_owned,

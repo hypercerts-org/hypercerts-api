@@ -264,6 +264,11 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"Record_string.string-or-string-Array_": {
+				"properties": {},
+				"type": "object",
+				"description": "Construct a type with a set of properties K of type T"
+			},
 			"HypercertClaimdata": {
 				"description": "Properties of an impact claim",
 				"properties": {
@@ -844,56 +849,6 @@
 				],
 				"type": "object",
 				"additionalProperties": false
-			},
-			"OrderValidatorCode": {
-				"description": "Error errors returned by the order validator contract",
-				"enum": [
-					0,
-					101,
-					111,
-					112,
-					113,
-					201,
-					211,
-					212,
-					213,
-					301,
-					311,
-					312,
-					321,
-					322,
-					401,
-					402,
-					411,
-					412,
-					413,
-					414,
-					415,
-					421,
-					422,
-					501,
-					502,
-					503,
-					601,
-					611,
-					612,
-					621,
-					622,
-					623,
-					631,
-					632,
-					633,
-					634,
-					641,
-					642,
-					701,
-					702,
-					801,
-					802,
-					901,
-					902
-				],
-				"type": "number"
 			},
 			"ValidateOrderRequest": {
 				"properties": {
@@ -1570,7 +1525,9 @@
 										{
 											"properties": {
 												"data": {},
-												"errors": {},
+												"errors": {
+													"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+												},
 												"message": {
 													"type": "string"
 												},
@@ -2104,23 +2061,10 @@
 												"nonce_counter": {
 													"type": "number",
 													"format": "double"
-												},
-												"created_at": {
-													"type": "string"
-												},
-												"chain_id": {
-													"type": "number",
-													"format": "double"
-												},
-												"address": {
-													"type": "string"
 												}
 											},
 											"required": [
-												"nonce_counter",
-												"created_at",
-												"chain_id",
-												"address"
+												"nonce_counter"
 											],
 											"type": "object"
 										},
@@ -2193,7 +2137,8 @@
 												"properties": {
 													"validator_codes": {
 														"items": {
-															"$ref": "#/components/schemas/OrderValidatorCode"
+															"type": "number",
+															"format": "double"
 														},
 														"type": "array"
 													},
@@ -2202,13 +2147,79 @@
 													},
 													"id": {
 														"type": "string"
+													},
+													"hypercert_id": {
+														"type": "string"
+													},
+													"createdAt": {
+														"type": "string"
+													},
+													"additionalParameters": {
+														"type": "string"
+													},
+													"amounts": {
+														"items": {
+															"type": "number",
+															"format": "double"
+														},
+														"type": "array"
+													},
+													"itemIds": {
+														"items": {
+															"type": "string"
+														},
+														"type": "array"
+													},
+													"price": {
+														"type": "string"
+													},
+													"endTime": {
+														"type": "number",
+														"format": "double"
+													},
+													"startTime": {
+														"type": "number",
+														"format": "double"
+													},
+													"signer": {
+														"type": "string"
+													},
+													"currency": {
+														"type": "string"
+													},
+													"collection": {
+														"type": "string"
+													},
+													"collectionType": {
+														"type": "number",
+														"format": "double"
+													},
+													"strategyId": {
+														"type": "number",
+														"format": "double"
+													},
+													"orderNonce": {
+														"type": "string"
+													},
+													"subsetNonce": {
+														"type": "number",
+														"format": "double"
+													},
+													"globalNonce": {
+														"type": "string"
+													},
+													"quoteType": {
+														"type": "number",
+														"format": "double"
+													},
+													"chainId": {
+														"type": "number",
+														"format": "double"
+													},
+													"signature": {
+														"type": "string"
 													}
 												},
-												"required": [
-													"validator_codes",
-													"invalidated",
-													"id"
-												],
 												"type": "object"
 											},
 											"type": "array"

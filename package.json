@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon",
-    "build": "rimraf dist && tsoa spec-and-routes && swc src --out-dir dist --copy-files",
+    "build": "rimraf dist && tsoa spec-and-routes && tsc && swc src --out-dir dist --copy-files",
     "start": "node -r dotenv/config dist/src/index.js",
     "integration": "concurrently -c \"green,blue\" --names \"CACHE,DATA\"  \"pnpm --dir ./lib/hypercerts-indexer run dev\" \"pnpm run dev\"",
     "supabase:reset:all": "concurrently -c \"blue,green\" --names \"DATA,CACHE\" \"npm run supabase:reset:data\" \"npm run supabase:reset:cache\"",
@@ -123,6 +123,7 @@
     "multiformats": "^13.0.0",
     "node-mocks-http": "^1.14.1",
     "nodemon": "^3.0.3",
+    "pg-mem": "^3.0.5",
     "prettier": "3.3.2",
     "rimraf": "^5.0.5",
     "sinon": "^17.0.1",

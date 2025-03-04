@@ -1,10 +1,13 @@
 import { Field, ObjectType } from "type-graphql";
-import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
+import { DataResponse } from "../../../lib/graphql/DataResponse.js";
+import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
 
-@ObjectType()
-class Order extends BasicTypeDef {
+@ObjectType({
+  description: "Marketplace order for a hypercert",
+})
+export class Order extends BasicTypeDef {
   @Field()
   hypercert_id?: string;
   @Field()
@@ -60,4 +63,5 @@ class Order extends BasicTypeDef {
   hypercert?: HypercertBaseType;
 }
 
-export { Order };
+@ObjectType()
+export class GetOrdersResponse extends DataResponse(Order) {}

@@ -1,25 +1,22 @@
-import {
-  Args,
-  FieldResolver,
-  ObjectType,
-  Query,
-  Resolver,
-  Root,
-} from "type-graphql";
-import { Sale } from "../typeDefs/salesTypeDefs.js";
+import { inject, injectable } from "tsyringe";
+import { Args, FieldResolver, Query, Resolver, Root } from "type-graphql";
+import { HypercertsService } from "../../../services/database/entities/HypercertsEntityService.js";
+import { SalesService } from "../../../services/database/entities/SalesEntityService.js";
 import { GetSalesArgs } from "../args/salesArgs.js";
-import { createBaseResolver, DataResponse } from "./baseTypes.js";
-
-@ObjectType()
-export default class GetSalesResponse extends DataResponse(Sale) {}
-
-const SalesBaseResolver = createBaseResolver("sales");
-
+import { Sale, GetSalesResponse } from "../typeDefs/salesTypeDefs.js";
+@injectable()
 @Resolver(() => Sale)
-class SalesResolver extends SalesBaseResolver {
+class SalesResolver {
+  constructor(
+    @inject(SalesService)
+    private salesService: SalesService,
+    @inject(HypercertsService)
+    private hypercertsService: HypercertsService,
+  ) {}
+
   @Query(() => GetSalesResponse)
   async sales(@Args() args: GetSalesArgs) {
-    return await this.getSales(args);
+    return await this.salesService.getSales(args);
   }
 
   @FieldResolver({ nullable: true })
@@ -29,49 +26,13 @@ class SalesResolver extends SalesBaseResolver {
       return null;
     }
 
-    const hypercertId = sale.hypercert_id;
-    const hypercert = await this.getHypercerts(
-      {
-        where: {
-          hypercert_id: {
-            eq: hypercertId,
-          },
+    return await this.hypercertsService.getHypercert({
+      where: {
+        hypercert_id: {
+          eq: sale.hypercert_id,
         },
       },
-      true,
-    );
-
-    if (!hypercert) {
-      console.warn(
-        `[SalesResolver::hypercert] No hypercert found for hypercertId: ${hypercertId}`,
-      );
-      return null;
-    }
-
-    const metadata = await this.getMetadataWithoutImage(
-      {
-        where: {
-          hypercerts: {
-            hypercert_id: {
-              eq: hypercertId,
-            },
-          },
-        },
-      },
-      true,
-    );
-
-    if (!metadata) {
-      console.warn(
-        `[SalesResolver::hypercert] No metadata found for hypercert: ${hypercertId}`,
-      );
-      return null;
-    }
-
-    return {
-      ...hypercert,
-      metadata: metadata || null,
-    };
+    });
   }
 }
 

@@ -1,10 +1,11 @@
 import { Field, ObjectType } from "type-graphql";
-import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
+import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
+import { DataResponse } from "../../../lib/graphql/DataResponse.js";
 
 @ObjectType()
-class Sale extends BasicTypeDef {
+export class Sale extends BasicTypeDef {
   @Field({ description: "The address of the buyer" })
   buyer?: string;
   @Field({ description: "The address of the seller" })
@@ -60,4 +61,5 @@ class Sale extends BasicTypeDef {
   currency_amount?: bigint | number | string;
 }
 
-export { Sale };
+@ObjectType()
+export class GetSalesResponse extends DataResponse(Sale) {}

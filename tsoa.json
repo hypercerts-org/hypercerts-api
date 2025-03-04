@@ -17,6 +17,10 @@
     "esm": true,
     "middleware": {
       "v1/upload": [{ "name": "upload.array", "args": ["files", 5] }]
-    }
+    },
+    "iocModule": "src/lib/tsoa/iocContainer.ts",
+    "useNamedParameters": true,
+    "useMethodParameters": true,
+    "ioc": "tsyringe"
   }
 }

@@ -8,23 +8,36 @@ import {
   SuccessResponse,
   Tags,
 } from "tsoa";
-import { z } from "zod";
 import { isAddress, verifyMessage } from "viem";
+import { z } from "zod";
 
-import { SupabaseDataService } from "../services/SupabaseDataService.js";
+import { isControllerError } from "../lib/errors/controller.js";
+import { createMarketplaceStrategy } from "../lib/marketplace/MarketplaceStrategyFactory.js";
+import { parseCreateOrderRequest } from "../lib/marketplace/request-parser.js";
 import type {
   BaseResponse,
   CreateOrderRequest,
   UpdateOrderNonceRequest,
   ValidateOrderRequest,
 } from "../types/api.js";
-import { parseCreateOrderRequest } from "../lib/marketplace/request-parser.js";
-import { isControllerError } from "../lib/errors/controller.js";
-import { createMarketplaceStrategy } from "../lib/marketplace/MarketplaceStrategyFactory.js";
 
+import { inject, injectable } from "tsyringe";
+import { FractionService } from "../services/database/entities/FractionEntityService.js";
+import { MarketplaceOrdersService } from "../services/database/entities/MarketplaceOrdersEntityService.js";
+
+@injectable()
 @Route("v1/marketplace")
 @Tags("Marketplace")
 export class MarketplaceController extends Controller {
+  constructor(
+    @inject(MarketplaceOrdersService)
+    private ordersService: MarketplaceOrdersService,
+    @inject(FractionService)
+    private fractionService: FractionService,
+  ) {
+    super();
+  }
+
   /**
    * Submits a new order for validation and storage on the database.
    *
@@ -143,32 +156,17 @@ export class MarketplaceController extends Controller {
     const { address, chainId } = parsedQuery.data;
     const lowerCaseAddress = address.toLowerCase();
 
-    const supabase = new SupabaseDataService();
-    const { data: currentNonce, error: currentNonceError } =
-      await supabase.getNonce(lowerCaseAddress, chainId);
+    const nonce = await this.ordersService.getNonce({
+      address: lowerCaseAddress,
+      chain_id: chainId,
+    });
 
-    if (currentNonceError) {
-      this.setStatus(500);
-      return {
-        success: false,
-        message: currentNonceError.message,
-        data: null,
-      };
-    }
+    if (!nonce) {
+      const newNonce = await this.ordersService.createNonce({
+        address: lowerCaseAddress,
+        chain_id: chainId,
+      });
 
-    if (!currentNonce) {
-      const { data: newNonce, error } = await supabase.createNonce(
-        lowerCaseAddress,
-        chainId,
-      );
-      if (error) {
-        this.setStatus(500);
-        return {
-          success: false,
-          message: error.message,
-          data: null,
-        };
-      }
       this.setStatus(200);
       return {
         success: true,
@@ -177,21 +175,11 @@ export class MarketplaceController extends Controller {
       };
     }
 
-    const { data: updatedNonce, error: updatedNonceError } =
-      await supabase.updateNonce(
-        lowerCaseAddress,
-        chainId,
-        currentNonce.nonce_counter + 1,
-      );
-
-    if (updatedNonceError) {
-      this.setStatus(500);
-      return {
-        success: false,
-        message: updatedNonceError.message,
-        data: null,
-      };
-    }
+    const updatedNonce = await this.ordersService.updateNonce({
+      address: lowerCaseAddress,
+      chain_id: chainId,
+      nonce_counter: nonce.nonce_counter + 1,
+    });
 
     this.setStatus(200);
     return {
@@ -226,13 +214,12 @@ export class MarketplaceController extends Controller {
     }
 
     const { tokenIds, chainId } = parsedQuery.data;
-    const supabase = new SupabaseDataService();
 
     try {
-      const ordersToUpdate = await supabase.validateOrdersByTokenIds({
+      const ordersToUpdate = await this.ordersService.validateOrdersByTokenIds(
         tokenIds,
         chainId,
-      });
+      );
       this.setStatus(200);
       return {
         success: true,
@@ -280,15 +267,13 @@ export class MarketplaceController extends Controller {
 
     const { orderId, signature } = parsedQuery.data;
 
-    const supabase = new SupabaseDataService();
-    const { data } = supabase.getOrders({
+    const order = await this.ordersService.getOrder({
       where: {
         id: {
           eq: orderId,
         },
       },
     });
-    const order = await data.executeTakeFirst();
 
     if (!order) {
       this.setStatus(404);
@@ -317,7 +302,7 @@ export class MarketplaceController extends Controller {
     }
 
     try {
-      await supabase.deleteOrder(orderId);
+      await this.ordersService.deleteOrder(orderId);
       this.setStatus(200);
       return {
         success: true,

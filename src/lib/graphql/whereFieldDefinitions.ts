@@ -1,0 +1,144 @@
+// TODO: key values can be keyof EntityTypeDefs
+export const WhereFieldDefinitions = {
+  Attestation: {
+    fields: {
+      uid: "string",
+      creation_block_timestamp: "bigint",
+      creation_block_number: "bigint",
+      last_update_block_number: "bigint",
+      last_update_block_timestamp: "bigint",
+      attester: "string",
+      recipient: "string",
+      resolver: "string",
+      supported_schemas_id: "string",
+    },
+  },
+  AttestationSchema: {
+    fields: {
+      chain_id: "number",
+      uid: "string",
+      resolver: "string",
+      revocable: "boolean",
+    },
+  },
+  Blueprint: {
+    fields: {
+      id: "string",
+      created_at: "string",
+      minter_address: "string",
+      minted: "boolean",
+    },
+  },
+  Collection: {
+    fields: {
+      id: "string",
+      name: "string",
+      description: "string",
+      created_at: "string",
+    },
+  },
+  Contract: {
+    fields: {
+      id: "string",
+      address: "string",
+      chain_id: "number",
+    },
+  },
+  Fraction: {
+    fields: {
+      creation_block_timestamp: "bigint",
+      creation_block_number: "bigint",
+      last_update_block_number: "bigint",
+      last_update_block_timestamp: "bigint",
+      owner_address: "string",
+      units: "bigint",
+      hypercert_id: "string",
+      fraction_id: "string",
+      token_id: "bigint",
+    },
+  },
+  Hypercert: {
+    fields: {
+      id: "string",
+      hypercert_id: "string",
+      creator_address: "string",
+      token_id: "bigint",
+      units: "bigint",
+      creation_block_timestamp: "bigint",
+      last_update_block_timestamp: "bigint",
+      last_update_block_number: "bigint",
+      creation_block_number: "bigint",
+      sales_count: "number",
+      attestations_count: "number",
+      uri: "string",
+    },
+  },
+  Hyperboard: {
+    fields: {
+      chain_ids: "numberArray",
+    },
+  },
+  Metadata: {
+    fields: {
+      name: "string",
+      description: "string",
+      uri: "string",
+      allow_list_uri: "string",
+      contributors: "stringArray",
+      external_url: "string",
+      impact_scope: "stringArray",
+      rights: "stringArray",
+      work_scope: "stringArray",
+      work_timeframe_from: "bigint",
+      work_timeframe_to: "bigint",
+      impact_timeframe_from: "bigint",
+      impact_timeframe_to: "bigint",
+    },
+  },
+  Order: {
+    fields: {
+      hypercert_id: "string",
+      createdAt: "string",
+      quoteType: "number",
+      globalNonce: "string",
+      orderNonce: "string",
+      strategyId: "number",
+      collectionType: "number",
+      collection: "string",
+      currency: "string",
+      signer: "string",
+      startTime: "number",
+      endTime: "number",
+      price: "string",
+      chainId: "bigint",
+      subsetNonce: "number",
+      itemIds: "stringArray",
+      amounts: "numberArray",
+      invalidated: "boolean",
+    },
+  },
+  Sale: {
+    fields: {
+      buyer: "string",
+      seller: "string",
+      strategy_id: "number",
+      currency: "string",
+      collection: "string",
+      item_ids: "stringArray",
+      hypercert_id: "string",
+      amounts: "numberArray",
+      transaction_hash: "string",
+      creation_block_number: "bigint",
+      creation_block_timestamp: "bigint",
+    },
+  },
+  User: {
+    fields: {
+      address: "string",
+      display_name: "string",
+      chain_id: "number",
+    },
+  },
+} as const;
+
+export type WhereFieldDefinition = typeof WhereFieldDefinitions;

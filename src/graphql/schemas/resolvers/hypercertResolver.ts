@@ -1,68 +1,88 @@
 import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
 import _ from "lodash";
 import "reflect-metadata";
+import { inject, injectable } from "tsyringe";
+import { Args, FieldResolver, Query, Resolver, Root } from "type-graphql";
+import { AttestationService } from "../../../services/database/entities/AttestationEntityService.js";
+import { ContractService } from "../../../services/database/entities/ContractEntityService.js";
+import { FractionService } from "../../../services/database/entities/FractionEntityService.js";
+import { HypercertsService } from "../../../services/database/entities/HypercertsEntityService.js";
 import {
-  Args,
-  FieldResolver,
-  ObjectType,
-  Query,
-  Resolver,
-  Root,
-} from "type-graphql";
+  MarketplaceOrderSelect,
+  MarketplaceOrdersService,
+} from "../../../services/database/entities/MarketplaceOrdersEntityService.js";
+import { MetadataService } from "../../../services/database/entities/MetadataEntityService.js";
+import { SalesService } from "../../../services/database/entities/SalesEntityService.js";
 import { Database } from "../../../types/supabaseData.js";
 import { addPriceInUsdToOrder } from "../../../utils/addPriceInUSDToOrder.js";
 import { getCheapestOrder } from "../../../utils/getCheapestOrder.js";
 import { getMaxUnitsForSaleInOrders } from "../../../utils/getMaxUnitsForSaleInOrders.js";
 import { GetHypercertsArgs } from "../args/hypercertsArgs.js";
-import { Hypercert } from "../typeDefs/hypercertTypeDefs.js";
-import { createBaseResolver, DataResponse } from "./baseTypes.js";
+import {
+  GetHypercertsResponse,
+  Hypercert,
+} from "../typeDefs/hypercertTypeDefs.js";
 
-@ObjectType({
-  description:
-    "Hypercert with metadata, contract, orders, sales and fraction information",
-})
-export class GetHypercertsResponse extends DataResponse(Hypercert) {}
-
-const HypercertBaseResolver = createBaseResolver("hypercert");
-
+@injectable()
 @Resolver(() => Hypercert)
-class HypercertResolver extends HypercertBaseResolver {
+class HypercertResolver {
+  constructor(
+    @inject(HypercertsService)
+    private hypercertsService: HypercertsService,
+    @inject(MetadataService)
+    private metadataService: MetadataService,
+    @inject(ContractService)
+    private contractService: ContractService,
+    @inject(AttestationService)
+    private attestationService: AttestationService,
+    @inject(FractionService)
+    private fractionService: FractionService,
+    @inject(SalesService)
+    private salesService: SalesService,
+    @inject(MarketplaceOrdersService)
+    private marketplaceOrdersService: MarketplaceOrdersService,
+  ) {}
+
   @Query(() => GetHypercertsResponse)
   async hypercerts(@Args() args: GetHypercertsArgs) {
-    return await this.getHypercerts(args);
+    return await this.hypercertsService.getHypercerts(args);
   }
 
   @FieldResolver({ nullable: true })
   async metadata(@Root() hypercert: Hypercert) {
     if (!hypercert.uri) {
-      return;
+      console.warn(
+        `[HypercertResolver::metadata] No uri found for hypercert ${hypercert.id}`,
+      );
+      return null;
     }
 
-    return await this.getMetadataWithoutImage(
-      { where: { uri: { eq: hypercert.uri } } },
-      true,
-    );
+    return await this.metadataService.getMetadataSingle({
+      where: { uri: { eq: hypercert.uri } },
+    });
   }
 
   @FieldResolver()
   async contract(@Root() hypercert: Hypercert) {
     if (!hypercert.contracts_id) {
-      return;
+      console.warn(
+        `[HypercertResolver::contract] No contract id found for hypercert ${hypercert.id}`,
+      );
+      return null;
     }
 
-    return await this.getContracts(
-      { where: { id: { eq: hypercert.contracts_id } } },
-      true,
-    );
+    return await this.contractService.getContract({
+      where: { id: { eq: hypercert.contracts_id } },
+    });
   }
 
   @FieldResolver()
   async attestations(@Root() hypercert: Hypercert) {
     if (!hypercert.id) {
-      return;
+      return null;
     }
 
-    return await this.getAttestations({
+    return await this.attestationService.getAttestations({
       where: { hypercerts: { id: { eq: hypercert.id } } },
     });
   }
@@ -70,10 +90,10 @@ class HypercertResolver extends HypercertBaseResolver {
   @FieldResolver()
   async fractions(@Root() hypercert: Hypercert) {
     if (!hypercert.hypercert_id) {
-      return;
+      return null;
     }
 
-    return await this.getFractions({
+    return await this.fractionService.getFractions({
       where: { hypercert_id: { eq: hypercert.hypercert_id } },
     });
   }
@@ -81,7 +101,7 @@ class HypercertResolver extends HypercertBaseResolver {
   @FieldResolver()
   async orders(@Root() hypercert: Hypercert) {
     if (!hypercert.id || !hypercert.hypercert_id) {
-      return;
+      return null;
     }
 
     const defaultValue = {
@@ -91,56 +111,68 @@ class HypercertResolver extends HypercertBaseResolver {
     };
 
     try {
-      const { data: fractionsRes } = await this.getFractions({
-        where: { hypercert_id: { eq: hypercert.hypercert_id } },
-      });
+      const [{ data: fractions }, orders] = await Promise.all([
+        this.fractionService.getFractions({
+          where: { hypercert_id: { eq: hypercert.hypercert_id } },
+        }),
+        this.marketplaceOrdersService.getOrders({
+          where: {
+            hypercert_id: { eq: hypercert.hypercert_id },
+            invalidated: { eq: false },
+          },
+        }),
+      ]);
 
-      if (!fractionsRes) {
+      if (!fractions || !orders?.data) {
         console.warn(
-          `[HypercertResolver::orders] Error fetching fractions for ${hypercert.hypercert_id}`,
-          fractionsRes,
-        );
-        return defaultValue;
-      }
-
-      const orders = await this.getOrders({
-        where: { hypercert_id: { eq: hypercert.hypercert_id } },
-      });
-
-      if (!orders) {
-        console.warn(
-          `[HypercertResolver::orders] Error fetching orders for ${hypercert.hypercert_id}`,
-          orders,
+          `[HypercertResolver::orders] Error fetching data for ${hypercert.hypercert_id}`,
         );
         return defaultValue;
       }
 
       const { data: ordersData, count: ordersCount } = orders;
 
-      const ordersByFraction = _.groupBy(ordersData, (order) =>
-        order.itemIds[0].toString(),
+      const ordersByFraction = _.groupBy(
+        ordersData,
+        (order) => (order.itemIds as unknown as string[])[0],
       );
 
       const { chainId, contractAddress } = parseClaimOrFractionId(
         hypercert.hypercert_id,
       );
 
-      const ordersWithPrices: (Database["public"]["Tables"]["marketplace_orders"]["Row"] & {
-        priceInUSD: string;
-        pricePerPercentInUSD: string;
-      })[] = [];
+      // const ordersWithPrices: (Database["public"]["Tables"]["marketplace_orders"]["Row"] & {
+      //   priceInUSD: string;
+      //   pricePerPercentInUSD: string;
+      // })[] = [];
 
-      const activeOrders = ordersData.filter((order) => !order.invalidated);
-      const activeOrdersByFraction = _.groupBy(activeOrders, (order) =>
-        order.itemIds[0].toString(),
+      // const ordersByFraction = _.groupBy(
+      //   ordersData,
+      //   (order) => (order.itemIds as unknown as string[])[0],
+      // );
+
+      // Process all orders with prices in parallel
+      const ordersWithPrices = await Promise.all(
+        ordersData.map(async (order) => {
+          const orderWithPrice = await addPriceInUsdToOrder(
+            order as unknown as Database["public"]["Tables"]["marketplace_orders"]["Row"],
+            hypercert.units as bigint,
+          );
+          return {
+            ...orderWithPrice,
+            pricePerPercentInUSD:
+              orderWithPrice.pricePerPercentInUSD.toString(),
+          };
+        }),
       );
+
       // For each fraction, find all orders and find the max units for sale for that fraction
       const totalUnitsForSale = (
         await Promise.all(
-          Object.keys(activeOrdersByFraction).map(async (tokenId) => {
+          Object.entries(ordersByFraction).map(async ([tokenId, orders]) => {
             const fractionId = `${chainId}-${contractAddress}-${tokenId}`;
-            const fraction = fractionsRes.find(
-              (fraction) => fraction.fraction_id === fractionId,
+            const fraction = fractions.find(
+              (f) => (f.fraction_id as unknown as string) === fractionId,
             );
 
             if (!fraction) {
@@ -150,16 +182,9 @@ class HypercertResolver extends HypercertBaseResolver {
               return BigInt(0);
             }
 
-            const ordersPerFraction = ordersByFraction[tokenId];
-            const ordersWithPricesForChain = await Promise.all(
-              ordersPerFraction.map(async (order) => {
-                return addPriceInUsdToOrder(order, hypercert.units as bigint);
-              }),
-            );
-            ordersWithPrices.push(...ordersWithPricesForChain);
             return getMaxUnitsForSaleInOrders(
-              ordersPerFraction,
-              BigInt(fraction.units),
+              orders as MarketplaceOrderSelect[],
+              BigInt(fraction.units as unknown as bigint),
             );
           }),
         )
@@ -184,10 +209,13 @@ class HypercertResolver extends HypercertBaseResolver {
   @FieldResolver()
   async sales(@Root() hypercert: Hypercert) {
     if (!hypercert.hypercert_id) {
+      console.warn(
+        `[HypercertResolver::sales] No hypercert id found for ${hypercert.id}`,
+      );
       return null;
     }
 
-    return await this.getSales({
+    return await this.salesService.getSales({
       where: { hypercert_id: { eq: hypercert.hypercert_id } },
     });
   }

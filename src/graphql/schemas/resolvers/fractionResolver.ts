@@ -1,26 +1,33 @@
+import { Args, FieldResolver, Query, Resolver, Root } from "type-graphql";
 import {
-  Args,
-  FieldResolver,
-  ObjectType,
-  Query,
-  Resolver,
-  Root,
-} from "type-graphql";
-import { Fraction } from "../typeDefs/fractionTypeDefs.js";
+  Fraction,
+  GetFractionsResponse,
+} from "../typeDefs/fractionTypeDefs.js";
 import { GetFractionsArgs } from "../args/fractionArgs.js";
 import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
-import { createBaseResolver, DataResponse } from "./baseTypes.js";
+import { inject, injectable } from "tsyringe";
+import { FractionService } from "../../../services/database/entities/FractionEntityService.js";
+import { MetadataService } from "../../../services/database/entities/MetadataEntityService.js";
+import { SalesService } from "../../../services/database/entities/SalesEntityService.js";
+import { MarketplaceOrdersService } from "../../../services/database/entities/MarketplaceOrdersEntityService.js";
 
-@ObjectType({ description: "Fraction of an hypercert" })
-export default class GetFractionsResponse extends DataResponse(Fraction) {}
-
-const FractionBaseResolver = createBaseResolver("fraction");
-
+@injectable()
 @Resolver(() => Fraction)
-class FractionResolver extends FractionBaseResolver {
+class FractionResolver {
+  constructor(
+    @inject(FractionService)
+    private fractionsService: FractionService,
+    @inject(MetadataService)
+    private metadataService: MetadataService,
+    @inject(SalesService)
+    private salesService: SalesService,
+    @inject(MarketplaceOrdersService)
+    private marketplaceOrdersService: MarketplaceOrdersService,
+  ) {}
+
   @Query(() => GetFractionsResponse)
   async fractions(@Args() args: GetFractionsArgs) {
-    return await this.getFractions(args);
+    return await this.fractionsService.getFractions(args);
   }
 
   @FieldResolver()
@@ -29,12 +36,9 @@ class FractionResolver extends FractionBaseResolver {
       return;
     }
 
-    return await this.getMetadataWithoutImage(
-      {
-        where: { hypercerts: { id: { eq: fraction.claims_id } } },
-      },
-      true,
-    );
+    return await this.metadataService.getMetadataSingle({
+      where: { hypercerts: { id: { eq: fraction.claims_id } } },
+    });
   }
 
   @FieldResolver()
@@ -53,29 +57,13 @@ class FractionResolver extends FractionBaseResolver {
     }
 
     try {
-      const res = await this.supabaseDataService.getOrdersForFraction(
-        id.toString(),
-      );
-
-      if (!res) {
-        console.warn(
-          `[FractionResolver::orders] Error fetching orders for fraction ${fraction.id}: `,
-          res,
-        );
-        return { data: [] };
-      }
-
-      const { data, error, count } = res;
-
-      if (error) {
-        console.warn(
-          `[FractionResolver::orders] Error fetching orders for fraction ${fraction.id}: `,
-          error,
-        );
-        return { data: [] };
-      }
-
-      return { data: data || [], count: count || 0 };
+      return this.marketplaceOrdersService.getOrders({
+        where: {
+          itemIds: {
+            arrayContains: [id.toString()],
+          },
+        },
+      });
     } catch (e) {
       const error = e as Error;
       throw new Error(
@@ -100,27 +88,13 @@ class FractionResolver extends FractionBaseResolver {
     }
 
     try {
-      const res = await this.supabaseCachingService.getSalesForTokenIds([id]);
-
-      if (!res) {
-        console.warn(
-          `[FractionResolver::sales] Error fetching sales for fraction ${fraction.id}: `,
-          res,
-        );
-        return { data: [] };
-      }
-
-      const { data, error, count } = res;
-
-      if (error) {
-        console.warn(
-          `[FractionResolver::sales] Error fetching sales for fraction ${fraction.id}: `,
-          error,
-        );
-        return { data: [] };
-      }
-
-      return { data: data || [], count: count || 0 };
+      return this.salesService.getSales({
+        where: {
+          token_id: {
+            arrayContains: [id.toString()],
+          },
+        },
+      });
     } catch (e) {
       const error = e as Error;
       throw new Error(

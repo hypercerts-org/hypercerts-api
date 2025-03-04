@@ -1,27 +1,25 @@
-import {
-  Args,
-  ObjectType,
-  Query,
-  Resolver,
-  FieldResolver,
-  Root,
-} from "type-graphql";
+import { Args, FieldResolver, Query, Resolver, Root } from "type-graphql";
 
-import { SignatureRequest } from "../typeDefs/signatureRequestTypeDefs.js";
 import { GetSignatureRequestsArgs } from "../args/signatureRequestArgs.js";
+import {
+  GetSignatureRequestResponse,
+  SignatureRequest,
+} from "../typeDefs/signatureRequestTypeDefs.js";
 
-import { createBaseResolver, DataResponse } from "./baseTypes.js";
+import { inject, injectable } from "tsyringe";
+import { SignatureRequestsService } from "../../../services/database/entities/SignatureRequestsEntityService.js";
 
-@ObjectType()
-class GetSignatureRequestResponse extends DataResponse(SignatureRequest) {}
-
-const SignatureRequestBaseResolver = createBaseResolver("signatureRequest");
-
+@injectable()
 @Resolver(() => SignatureRequest)
-class SignatureRequestResolver extends SignatureRequestBaseResolver {
+export class SignatureRequestResolver {
+  constructor(
+    @inject(SignatureRequestsService)
+    private signatureRequestsService: SignatureRequestsService,
+  ) {}
+
   @Query(() => GetSignatureRequestResponse)
   async signatureRequests(@Args() args: GetSignatureRequestsArgs) {
-    return await this.getSignatureRequests(args);
+    return await this.signatureRequestsService.getSignatureRequests(args);
   }
 
   @FieldResolver(() => String)
@@ -31,5 +29,3 @@ class SignatureRequestResolver extends SignatureRequestBaseResolver {
       : signatureRequest.message || "could not parse message";
   }
 }
-
-export { SignatureRequestResolver };

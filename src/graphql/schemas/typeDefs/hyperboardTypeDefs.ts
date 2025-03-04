@@ -1,14 +1,15 @@
 import { Field, ObjectType } from "type-graphql";
 import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
-import { User } from "./userTypeDefs.js";
+import GetUsersResponse, { User } from "./userTypeDefs.js";
 import { GraphQLBigInt } from "graphql-scalars";
 import { Collection } from "./collectionTypeDefs.js";
+import { DataResponse } from "../../../lib/graphql/DataResponse.js";
 
 @ObjectType({
   description: "Hyperboard of hypercerts for reference and display purposes",
 })
-class Hyperboard extends BasicTypeDef {
+export class Hyperboard extends BasicTypeDef {
   @Field({ description: "Name of the hyperboard" })
   name?: string;
   @Field(() => [EthBigInt], {
@@ -30,10 +31,10 @@ class Hyperboard extends BasicTypeDef {
   })
   tile_border_color?: string;
 
-  @Field(() => [User])
-  admins?: User[];
+  @Field(() => GetUsersResponse)
+  admins?: GetUsersResponse;
 
-  @Field(() => SectionResponseType)
+  @Field(() => [SectionResponseType])
   sections?: SectionResponseType[];
 
   @Field(() => [HyperboardOwner])
@@ -41,7 +42,7 @@ class Hyperboard extends BasicTypeDef {
 }
 
 @ObjectType({})
-class SectionResponseType {
+export class SectionResponseType {
   @Field(() => [Section])
   data?: Section[];
 
@@ -101,4 +102,5 @@ class SectionEntryOwner extends User {
   units?: bigint | number | string;
 }
 
-export { Hyperboard };
+@ObjectType()
+export class GetHyperboardsResponse extends DataResponse(Hyperboard) {}
