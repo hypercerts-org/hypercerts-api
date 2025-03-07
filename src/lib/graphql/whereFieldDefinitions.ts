@@ -2,6 +2,7 @@
 export const WhereFieldDefinitions = {
   Attestation: {
     fields: {
+      id: "string",
       uid: "string",
       creation_block_timestamp: "bigint",
       creation_block_number: "bigint",
@@ -15,6 +16,7 @@ export const WhereFieldDefinitions = {
   },
   AttestationSchema: {
     fields: {
+      id: "string",
       chain_id: "number",
       uid: "string",
       resolver: "string",
@@ -46,6 +48,7 @@ export const WhereFieldDefinitions = {
   },
   Fraction: {
     fields: {
+      id: "string",
       creation_block_timestamp: "bigint",
       creation_block_number: "bigint",
       last_update_block_number: "bigint",
@@ -75,11 +78,13 @@ export const WhereFieldDefinitions = {
   },
   Hyperboard: {
     fields: {
+      id: "string",
       chain_ids: "numberArray",
     },
   },
   Metadata: {
     fields: {
+      id: "string",
       name: "string",
       description: "string",
       uri: "string",
@@ -97,6 +102,7 @@ export const WhereFieldDefinitions = {
   },
   Order: {
     fields: {
+      id: "string",
       hypercert_id: "string",
       createdAt: "string",
       quoteType: "number",
@@ -119,6 +125,7 @@ export const WhereFieldDefinitions = {
   },
   Sale: {
     fields: {
+      id: "string",
       buyer: "string",
       seller: "string",
       strategy_id: "number",
@@ -134,6 +141,7 @@ export const WhereFieldDefinitions = {
   },
   User: {
     fields: {
+      id: "string",
       address: "string",
       display_name: "string",
       chain_id: "number",

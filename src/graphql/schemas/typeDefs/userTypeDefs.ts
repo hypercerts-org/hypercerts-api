@@ -2,9 +2,10 @@ import { Field, ObjectType } from "type-graphql";
 import { DataResponse } from "../../../lib/graphql/DataResponse.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
 import { GetSignatureRequestResponse } from "./signatureRequestTypeDefs.js";
+import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 
 @ObjectType()
-export class User {
+export class User extends BasicTypeDef {
   @Field({ description: "The address of the user" })
   address?: string;
 
