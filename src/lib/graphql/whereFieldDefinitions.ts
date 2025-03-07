@@ -25,7 +25,7 @@ export const WhereFieldDefinitions = {
   },
   Blueprint: {
     fields: {
-      id: "string",
+      id: "number",
       created_at: "string",
       minter_address: "string",
       minted: "boolean",
