@@ -10,6 +10,7 @@ const {
   message_hash: "string",
   timestamp: "bigint",
   chain_id: "bigint",
+  status: "enum",
 });
 
 @ArgsType()
