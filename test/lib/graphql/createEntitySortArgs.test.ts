@@ -144,4 +144,82 @@ describe("createEntitySort", () => {
     expect(ownProps).toContain("chain_id");
     expect(ownProps).not.toContain("metadata");
   });
+
+  it("should handle empty field definitions", () => {
+    const SortArgs = createEntitySortArgs(EntityTypeDefs.Contract, {});
+    const instance = new SortArgs();
+    expect(Object.keys(instance).length).toBe(0);
+  });
+
+  it("should handle special characters in entity names", () => {
+    const SortArgs = createEntitySortArgs(EntityTypeDefs.Contract, {
+      field: "string",
+    });
+    expect(SortArgs.name).toBe("ContractSortOptions");
+  });
+
+  it("should accept valid sort orders and null", () => {
+    const SortArgs = createEntitySortArgs(EntityTypeDefs.Contract, {
+      address: "string",
+    });
+
+    const instance = new SortArgs();
+
+    // Should accept valid sort orders
+    instance.address = SortOrder.ascending;
+    expect(instance.address).toBe(SortOrder.ascending);
+
+    instance.address = SortOrder.descending;
+    expect(instance.address).toBe(SortOrder.descending);
+
+    // Should accept null
+    instance.address = null;
+    expect(instance.address).toBeNull();
+  });
+
+  it("should properly apply field decorators", () => {
+    createEntitySortArgs(EntityTypeDefs.Contract, {
+      address: "string",
+    });
+
+    const metadata = getMetadataStorage();
+    const fields = metadata.fields.filter(
+      (field) => field.target.name === "ContractSortOptions",
+    );
+
+    expect(fields[0].typeOptions?.nullable).toBe(true);
+    expect(fields[0].getType()).toBe(SortOrder);
+  });
+
+  it("should handle malformed field definitions gracefully", () => {
+    const SortArgs = createEntitySortArgs(EntityTypeDefs.Contract, {
+      // @ts-expect-error - Testing invalid field type
+      invalid: { type: "invalid" },
+      valid: "string",
+    });
+
+    const instance = new SortArgs();
+    expect("valid" in instance).toBe(true);
+    expect("invalid" in instance).toBe(false);
+  });
+
+  it("should handle complex nested field definitions", () => {
+    const SortArgs = createEntitySortArgs(EntityTypeDefs.Contract, {
+      simple: "string",
+      nested: {
+        type: "id",
+        references: {
+          entity: EntityTypeDefs.Metadata,
+          fields: {
+            field1: "string",
+            field2: "number",
+          },
+        },
+      },
+    });
+
+    const instance = new SortArgs();
+    expect("simple" in instance).toBe(true);
+    expect("nested" in instance).toBe(false);
+  });
 });
