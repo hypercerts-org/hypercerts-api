@@ -43,15 +43,6 @@ export class AttestationsQueryStrategy extends QueryStrategy<
           ),
         );
       })
-      .$if(!isWhereEmpty(args.where?.metadata), (qb) => {
-        return qb.where(({ exists, selectFrom }) =>
-          exists(
-            selectFrom("claims")
-              .whereRef("claims.id", "=", "attestations.claims_id")
-              .innerJoin("metadata", "metadata.uri", "claims.uri"),
-          ),
-        );
-      })
       .selectAll();
   }
 
@@ -83,15 +74,6 @@ export class AttestationsQueryStrategy extends QueryStrategy<
               "=",
               "attestations.claims_id",
             ),
-          ),
-        );
-      })
-      .$if(!isWhereEmpty(args.where?.metadata), (qb) => {
-        return qb.where(({ exists, selectFrom }) =>
-          exists(
-            selectFrom("claims")
-              .whereRef("claims.id", "=", "attestations.claims_id")
-              .innerJoin("metadata", "metadata.uri", "claims.uri"),
           ),
         );
       })
