@@ -1,6 +1,7 @@
 import { expressionBuilder, SelectQueryBuilder, Selectable } from "kysely";
 import { SupportedDatabases } from "../../../services/database/strategies/QueryStrategy.js";
 import { BaseQueryArgsType } from "../../graphql/BaseQueryArgs.js";
+import { SortOrder } from "../../../graphql/schemas/enums/sortEnums.js";
 import {
   buildWhereCondition,
   FilterValue,
@@ -17,7 +18,10 @@ export function applyWhere<
   DB extends SupportedDatabases,
   T extends keyof DB & string,
   // TODO: cleaner typing than object, object. We'd need to have a general where input type
-  Args extends BaseQueryArgsType<object, object>,
+  Args extends BaseQueryArgsType<
+    object,
+    Record<string, SortOrder | null | undefined>
+  >,
 >(
   tableName: T,
   query: SelectQueryBuilder<DB, T, Selectable<DB[T]>>,
