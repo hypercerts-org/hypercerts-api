@@ -90,7 +90,7 @@ class FractionResolver {
     try {
       return this.salesService.getSales({
         where: {
-          token_id: {
+          item_ids: {
             arrayContains: [id.toString()],
           },
         },
