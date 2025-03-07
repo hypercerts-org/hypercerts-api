@@ -6,6 +6,7 @@ import {
   NumberSearchOptions,
   StringArraySearchOptions,
   StringSearchOptions,
+  SignatureRequestStatusSearchOptions,
 } from "../graphql/schemas/inputs/searchOptions.js";
 
 export type SearchOptionType = {
@@ -16,6 +17,7 @@ export type SearchOptionType = {
   boolean: typeof BooleanSearchOptions;
   stringArray: typeof StringArraySearchOptions;
   numberArray: typeof NumberArraySearchOptions;
+  enum: typeof SignatureRequestStatusSearchOptions;
 };
 
 export const SearchOptionMap = {
@@ -26,4 +28,5 @@ export const SearchOptionMap = {
   boolean: BooleanSearchOptions,
   stringArray: StringArraySearchOptions,
   numberArray: NumberArraySearchOptions,
+  enum: SignatureRequestStatusSearchOptions,
 } as const;
