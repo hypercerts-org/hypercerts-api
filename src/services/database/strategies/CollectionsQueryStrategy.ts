@@ -1,9 +1,8 @@
 import { Kysely } from "kysely";
 import { GetCollectionsArgs } from "../../../graphql/schemas/args/collectionArgs.js";
-import { GetContractsArgs } from "../../../graphql/schemas/args/contractArgs.js";
+import { isWhereEmpty } from "../../../lib/strategies/isWhereEmpty.js";
 import { DataDatabase } from "../../../types/kyselySupabaseData.js";
 import { QueryStrategy } from "./QueryStrategy.js";
-import { isWhereEmpty } from "../../../lib/strategies/isWhereEmpty.js";
 
 /**
  * Strategy for querying collections
@@ -15,7 +14,7 @@ export class CollectionsQueryStrategy extends QueryStrategy<
 > {
   protected readonly tableName = "collections" as const;
 
-  buildDataQuery(db: Kysely<DataDatabase>, args?: GetContractsArgs) {
+  buildDataQuery(db: Kysely<DataDatabase>, args?: GetCollectionsArgs) {
     if (!args) {
       return db.selectFrom(this.tableName).selectAll();
     }
@@ -46,7 +45,7 @@ export class CollectionsQueryStrategy extends QueryStrategy<
       .selectAll(this.tableName);
   }
 
-  buildCountQuery(db: Kysely<DataDatabase>, args?: GetContractsArgs) {
+  buildCountQuery(db: Kysely<DataDatabase>, args?: GetCollectionsArgs) {
     if (!args) {
       return db.selectFrom(this.tableName).select((eb) => {
         return eb.fn.countAll().as("count");
