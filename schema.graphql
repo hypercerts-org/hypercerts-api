@@ -3,36 +3,58 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-"""Records of allow list entries for claimable fractions"""
+"""
+Records of allow list entries for claimable fractions
+"""
 type AllowlistRecord {
-  """Whether the fraction has been claimed"""
+  """
+  Whether the fraction has been claimed
+  """
   claimed: Boolean
 
-  """The entry index of the Merkle tree for the claimable fraction"""
+  """
+  The entry index of the Merkle tree for the claimable fraction
+  """
   entry: Float
 
-  """The hypercert ID the claimable fraction belongs to"""
+  """
+  The hypercert ID the claimable fraction belongs to
+  """
   hypercert_id: String
 
-  """The leaf of the Merkle tree for the claimable fraction"""
+  """
+  The leaf of the Merkle tree for the claimable fraction
+  """
   leaf: String
 
-  """The proof for the claimable fraction"""
+  """
+  The proof for the claimable fraction
+  """
   proof: [String!]
 
-  """The root of the allow list Merkle tree"""
+  """
+  The root of the allow list Merkle tree
+  """
   root: String
 
-  """The token ID of the hypercert the claimable fraction belongs to"""
+  """
+  The token ID of the hypercert the claimable fraction belongs to
+  """
   token_id: EthBigInt
 
-  """The total number of units held by the hypercert"""
+  """
+  The total number of units held by the hypercert
+  """
   total_units: EthBigInt
 
-  """The number of units of the claimable fraction"""
+  """
+  The number of units of the claimable fraction
+  """
   units: EthBigInt
 
-  """The address of the user who can claim the fraction"""
+  """
+  The address of the user who can claim the fraction
+  """
   user_address: String
 }
 
@@ -62,43 +84,69 @@ input AllowlistRecordWhereInput {
   user_address: StringSearchOptions
 }
 
-"""Attestation on the Ethereum Attestation Service"""
+"""
+Attestation on the Ethereum Attestation Service
+"""
 type Attestation {
-  """Address of the creator of the attestation"""
+  """
+  Address of the creator of the attestation
+  """
   attester: String
 
-  """Block number at which the attestation was created"""
+  """
+  Block number at which the attestation was created
+  """
   creation_block_number: EthBigInt
 
-  """Timestamp at which the attestation was created"""
+  """
+  Timestamp at which the attestation was created
+  """
   creation_block_timestamp: EthBigInt
 
-  """Encoded data of the attestation"""
+  """
+  Encoded data of the attestation
+  """
   data: JSON
 
-  """Schema related to the attestation"""
+  """
+  Schema related to the attestation
+  """
   eas_schema: AttestationSchemaBaseType!
 
-  """Hypercert related to the attestation"""
+  """
+  Hypercert related to the attestation
+  """
   hypercert: HypercertBaseType!
   id: ID
 
-  """Block number at which the attestation was last updated"""
+  """
+  Block number at which the attestation was last updated
+  """
   last_update_block_number: EthBigInt
 
-  """Timestamp at which the attestation was last updated"""
+  """
+  Timestamp at which the attestation was last updated
+  """
   last_update_block_timestamp: EthBigInt
 
-  """Metadata related to the attestation"""
+  """
+  Metadata related to the attestation
+  """
   metadata: Metadata!
 
-  """Address of the recipient of the attestation"""
+  """
+  Address of the recipient of the attestation
+  """
   recipient: String
 
-  """Unique identifier of the EAS schema used to create the attestation"""
+  """
+  Unique identifier of the EAS schema used to create the attestation
+  """
   schema_uid: String
 
-  """Unique identifier for the attestation on EAS"""
+  """
+  Unique identifier for the attestation on EAS
+  """
   uid: ID
 }
 
@@ -124,25 +172,39 @@ input AttestationHypercertWhereInput {
   uri: StringSearchOptions
 }
 
-"""Supported EAS attestation schemas and their related records"""
+"""
+Supported EAS attestation schemas and their related records
+"""
 type AttestationSchema {
-  """List of attestations related to the attestation schema"""
+  """
+  List of attestations related to the attestation schema
+  """
   attestations: GetAttestationsResponse!
 
-  """Chain ID of the chains where the attestation schema is supported"""
+  """
+  Chain ID of the chains where the attestation schema is supported
+  """
   chain_id: EthBigInt!
   id: ID
 
-  """Address of the resolver contract for the attestation schema"""
+  """
+  Address of the resolver contract for the attestation schema
+  """
   resolver: String!
 
-  """Whether the attestation schema is revocable"""
+  """
+  Whether the attestation schema is revocable
+  """
   revocable: Boolean!
 
-  """String representation of the attestation schema"""
+  """
+  String representation of the attestation schema
+  """
   schema: String!
 
-  """Unique identifier for the attestation schema"""
+  """
+  Unique identifier for the attestation schema
+  """
   uid: ID!
 }
 
@@ -158,22 +220,34 @@ input AttestationSchemaAttestationWhereInput {
   uid: StringSearchOptions
 }
 
-"""Supported EAS attestation schemas and their related records"""
+"""
+Supported EAS attestation schemas and their related records
+"""
 type AttestationSchemaBaseType {
-  """Chain ID of the chains where the attestation schema is supported"""
+  """
+  Chain ID of the chains where the attestation schema is supported
+  """
   chain_id: EthBigInt!
   id: ID
 
-  """Address of the resolver contract for the attestation schema"""
+  """
+  Address of the resolver contract for the attestation schema
+  """
   resolver: String!
 
-  """Whether the attestation schema is revocable"""
+  """
+  Whether the attestation schema is revocable
+  """
   revocable: Boolean!
 
-  """String representation of the attestation schema"""
+  """
+  String representation of the attestation schema
+  """
   schema: String!
 
-  """Unique identifier for the attestation schema"""
+  """
+  Unique identifier for the attestation schema
+  """
   uid: ID!
 }
 
@@ -231,7 +305,9 @@ input BigIntSearchOptions {
   lte: BigInt
 }
 
-"""Blueprint for hypercert creation"""
+"""
+Blueprint for hypercert creation
+"""
 type Blueprint {
   admins: [User!]!
   created_at: String!
@@ -267,23 +343,33 @@ input BooleanSearchOptions {
   eq: Boolean
 }
 
-"""Collection of hypercerts for reference and display purposes"""
+"""
+Collection of hypercerts for reference and display purposes
+"""
 type Collection {
   admins: [User!]!
   blueprints: [Blueprint!]
 
-  """Chain ID of the collection"""
+  """
+  Chain ID of the collection
+  """
   chain_ids: [EthBigInt!]
 
-  """Creation timestamp of the collection"""
+  """
+  Creation timestamp of the collection
+  """
   created_at: String!
 
-  """Description of the collection"""
+  """
+  Description of the collection
+  """
   description: String!
   hypercerts: HypercertsResponse
   id: ID
 
-  """Name of the collection"""
+  """
+  Name of the collection
+  """
   name: String!
 }
 
@@ -332,16 +418,24 @@ input CollectionWhereInput {
   name: StringSearchOptions
 }
 
-"""Pointer to a contract deployed on a chain"""
+"""
+Pointer to a contract deployed on a chain
+"""
 type Contract {
-  """The ID of the chain on which the contract is deployed"""
+  """
+  The ID of the chain on which the contract is deployed
+  """
   chain_id: EthBigInt
 
-  """The address of the contract"""
+  """
+  The address of the contract
+  """
   contract_address: String
   id: ID
 
-  """The block number at which the contract was deployed"""
+  """
+  The block number at which the contract was deployed
+  """
   start_block: EthBigInt
 }
 
@@ -357,18 +451,28 @@ input ContractWhereInput {
   id: StringSearchOptions
 }
 
-"""Handles uint256 bigint values stored in DB"""
+"""
+Handles uint256 bigint values stored in DB
+"""
 scalar EthBigInt
 
-"""Fraction of an hypercert"""
+"""
+Fraction of an hypercert
+"""
 type Fraction {
-  """The ID of the claims"""
+  """
+  The ID of the claims
+  """
   claims_id: String
 
-  """Block number of the creation of the fraction"""
+  """
+  Block number of the creation of the fraction
+  """
   creation_block_number: EthBigInt
 
-  """Timestamp of the block of the creation of the fraction"""
+  """
+  Timestamp of the block of the creation of the fraction
+  """
   creation_block_timestamp: EthBigInt
 
   """
@@ -382,28 +486,44 @@ type Fraction {
   hypercert_id: ID
   id: ID
 
-  """Block number of the last update of the fraction"""
+  """
+  Block number of the last update of the fraction
+  """
   last_update_block_number: EthBigInt
 
-  """Timestamp of the block of the last update of the fraction"""
+  """
+  Timestamp of the block of the last update of the fraction
+  """
   last_update_block_timestamp: EthBigInt
 
-  """The metadata for the fraction"""
+  """
+  The metadata for the fraction
+  """
   metadata: Metadata
 
-  """Marketplace orders related to this fraction"""
+  """
+  Marketplace orders related to this fraction
+  """
   orders: GetOrdersResponse
 
-  """Address of the owner of the fractions"""
+  """
+  Address of the owner of the fractions
+  """
   owner_address: String
 
-  """Sales related to this fraction"""
+  """
+  Sales related to this fraction
+  """
   sales: GetSalesResponse
 
-  """The token ID of the fraction"""
+  """
+  The token ID of the fraction
+  """
   token_id: EthBigInt
 
-  """Units held by the fraction"""
+  """
+  Units held by the fraction
+  """
   units: EthBigInt
 }
 
@@ -463,13 +583,17 @@ type GetAttestationsSchemaResponse {
   data: [AttestationSchema!]
 }
 
-"""Blueprints for hypercert creation"""
+"""
+Blueprints for hypercert creation
+"""
 type GetBlueprintsResponse {
   count: Int
   data: [Blueprint!]
 }
 
-"""Collection of hypercerts for reference and display purposes"""
+"""
+Collection of hypercerts for reference and display purposes
+"""
 type GetCollectionsResponse {
   count: Int
   data: [Collection!]
@@ -533,44 +657,66 @@ type GetUsersResponse {
   data: [User!]
 }
 
-"""Hyperboard of hypercerts for reference and display purposes"""
+"""
+Hyperboard of hypercerts for reference and display purposes
+"""
 type Hyperboard {
   admins: GetUsersResponse!
 
-  """Background image of the hyperboard"""
+  """
+  Background image of the hyperboard
+  """
   background_image: String
 
-  """Chain ID of the hyperboard"""
+  """
+  Chain ID of the hyperboard
+  """
   chain_ids: [EthBigInt!]
 
-  """Whether the hyperboard should be rendered as a grayscale image"""
+  """
+  Whether the hyperboard should be rendered as a grayscale image
+  """
   grayscale_images: Boolean
   id: ID
 
-  """Name of the hyperboard"""
+  """
+  Name of the hyperboard
+  """
   name: String!
   owners: [HyperboardOwner!]!
   sections: [SectionResponseType!]!
 
-  """Color of the borders of the hyperboard"""
+  """
+  Color of the borders of the hyperboard
+  """
   tile_border_color: String
 }
 
 type HyperboardOwner {
-  """The address of the user"""
+  """
+  The address of the user
+  """
   address: String!
 
-  """The avatar of the user"""
+  """
+  The avatar of the user
+  """
   avatar: String
 
-  """The chain ID of the user"""
+  """
+  The chain ID of the user
+  """
   chain_id: EthBigInt
 
-  """The display name of the user"""
+  """
+  The display name of the user
+  """
   display_name: String
   percentage_owned: Float!
 
-  """Pending signature requests for the user"""
+  """
+  Pending signature requests for the user
+  """
   signature_requests: GetSignatureRequestResponse
 }
 
@@ -593,24 +739,36 @@ input HyperboardWhereInput {
 Hypercert with metadata, contract, orders, sales and fraction information
 """
 type Hypercert {
-  """Attestations for the hypercert or parts of its data"""
+  """
+  Attestations for the hypercert or parts of its data
+  """
   attestations: GetAttestationsResponse
 
-  """Count of attestations referencing this hypercert"""
+  """
+  Count of attestations referencing this hypercert
+  """
   attestations_count: Int
 
-  """The contract that the hypercert is associated with"""
+  """
+  The contract that the hypercert is associated with
+  """
   contract: Contract
 
-  """The UUID of the contract as stored in the database"""
+  """
+  The UUID of the contract as stored in the database
+  """
   contracts_id: ID
   creation_block_number: EthBigInt
   creation_block_timestamp: EthBigInt
 
-  """The address of the creator of the hypercert"""
+  """
+  The address of the creator of the hypercert
+  """
   creator_address: String
 
-  """Transferable fractions representing partial ownership of the hypercert"""
+  """
+  Transferable fractions representing partial ownership of the hypercert
+  """
   fractions: GetFractionsResponse
 
   """
@@ -621,25 +779,39 @@ type Hypercert {
   last_update_block_number: EthBigInt
   last_update_block_timestamp: EthBigInt
 
-  """The metadata for the hypercert as referenced by the uri"""
+  """
+  The metadata for the hypercert as referenced by the uri
+  """
   metadata: Metadata
 
-  """Marketplace orders related to this hypercert"""
+  """
+  Marketplace orders related to this hypercert
+  """
   orders: GetOrdersForHypercertResponse
 
-  """Sales related to this hypercert"""
+  """
+  Sales related to this hypercert
+  """
   sales: GetSalesResponse
 
-  """Count of sales of fractions that belong to this hypercert"""
+  """
+  Count of sales of fractions that belong to this hypercert
+  """
   sales_count: Int
 
-  """The token ID of the hypercert"""
+  """
+  The token ID of the hypercert
+  """
   token_id: EthBigInt
 
-  """The total units held by the hypercert"""
+  """
+  The total units held by the hypercert
+  """
   units: EthBigInt
 
-  """References the metadata for this claim"""
+  """
+  References the metadata for this claim
+  """
   uri: String
 }
 
@@ -656,15 +828,21 @@ input HypercertAttestationWhereInput {
 }
 
 type HypercertBaseType {
-  """Count of attestations referencing this hypercert"""
+  """
+  Count of attestations referencing this hypercert
+  """
   attestations_count: Int
 
-  """The UUID of the contract as stored in the database"""
+  """
+  The UUID of the contract as stored in the database
+  """
   contracts_id: ID
   creation_block_number: EthBigInt
   creation_block_timestamp: EthBigInt
 
-  """The address of the creator of the hypercert"""
+  """
+  The address of the creator of the hypercert
+  """
   creator_address: String
 
   """
@@ -675,16 +853,24 @@ type HypercertBaseType {
   last_update_block_number: EthBigInt
   last_update_block_timestamp: EthBigInt
 
-  """Count of sales of fractions that belong to this hypercert"""
+  """
+  Count of sales of fractions that belong to this hypercert
+  """
   sales_count: Int
 
-  """The token ID of the hypercert"""
+  """
+  The token ID of the hypercert
+  """
   token_id: EthBigInt
 
-  """The total units held by the hypercert"""
+  """
+  The total units held by the hypercert
+  """
   units: EthBigInt
 
-  """References the metadata for this claim"""
+  """
+  References the metadata for this claim
+  """
   uri: String
 }
 
@@ -767,56 +953,89 @@ type HypercertsResponse {
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
-scalar JSON @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+scalar JSON
+  @specifiedBy(
+    url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf"
+  )
 
 """
 Metadata related to the hypercert describing work, impact, timeframes and other relevant information
 """
 type Metadata {
-  """URI of the allow list for the hypercert"""
+  """
+  URI of the allow list for the hypercert
+  """
   allow_list_uri: String
 
-  """Contributors to the work and impact of the hypercert"""
+  """
+  Contributors to the work and impact of the hypercert
+  """
   contributors: [String!]
 
-  """Description of the hypercert"""
+  """
+  Description of the hypercert
+  """
   description: String
 
-  """References additional information related to the hypercert"""
+  """
+  References additional information related to the hypercert
+  """
   external_url: String
   id: ID
 
-  """Base64 encoded representation of the image of the hypercert"""
+  """
+  Base64 encoded representation of the image of the hypercert
+  """
   image: String
 
-  """Impact scope of the hypercert"""
+  """
+  Impact scope of the hypercert
+  """
   impact_scope: [String!]
 
-  """Timestamp of the start of the impact (in seconds)"""
+  """
+  Timestamp of the start of the impact (in seconds)
+  """
   impact_timeframe_from: EthBigInt
 
-  """Timestamp of the end of the impact (in seconds)"""
+  """
+  Timestamp of the end of the impact (in seconds)
+  """
   impact_timeframe_to: EthBigInt
 
-  """Name of the hypercert"""
+  """
+  Name of the hypercert
+  """
   name: String
 
-  """Properties of the hypercert"""
+  """
+  Properties of the hypercert
+  """
   properties: JSON
 
-  """Rights of the hypercert"""
+  """
+  Rights of the hypercert
+  """
   rights: [String!]
 
-  """URI of the hypercert metadata"""
+  """
+  URI of the hypercert metadata
+  """
   uri: String
 
-  """Work scope of the hypercert"""
+  """
+  Work scope of the hypercert
+  """
   work_scope: [String!]
 
-  """Timestamp of the start of the work (in seconds)"""
+  """
+  Timestamp of the start of the work (in seconds)
+  """
   work_timeframe_from: EthBigInt
 
-  """Timestamp of the end of the work (in seconds)"""
+  """
+  Timestamp of the end of the work (in seconds)
+  """
   work_timeframe_to: EthBigInt
 }
 
@@ -853,10 +1072,14 @@ input MetadataWhereInput {
 }
 
 input NumberArraySearchOptions {
-  """Array of numbers"""
+  """
+  Array of numbers
+  """
   arrayContains: [BigInt!]
 
-  """Array of numbers"""
+  """
+  Array of numbers
+  """
   arrayOverlaps: [BigInt!]
 }
 
@@ -869,7 +1092,9 @@ input NumberSearchOptions {
   lte: Int
 }
 
-"""Marketplace order for a hypercert"""
+"""
+Marketplace order for a hypercert
+"""
 type Order {
   additionalParameters: String!
   amounts: [Float!]!
@@ -881,7 +1106,9 @@ type Order {
   endTime: Float!
   globalNonce: String!
 
-  """The hypercert associated with this order"""
+  """
+  The hypercert associated with this order
+  """
   hypercert: HypercertBaseType
   hypercert_id: String!
   id: ID
@@ -959,59 +1186,153 @@ input OrderWhereInput {
 }
 
 type Query {
-  allowlistRecords(first: Int, offset: Int, sortBy: AllowlistRecordSortOptions, where: AllowlistRecordWhereInput): GetAllowlistRecordResponse!
-  attestationSchemas(first: Int, offset: Int, sortBy: AttestationSchemaSortOptions, where: AttestationSchemaWhereInput): GetAttestationsSchemaResponse!
-  attestations(first: Int, offset: Int, sortBy: AttestationSortOptions, where: AttestationWhereInput): GetAttestationsResponse!
-  blueprints(first: Int, offset: Int, sortBy: BlueprintSortOptions, where: BlueprintWhereInput): GetBlueprintsResponse!
-  collections(first: Int, offset: Int, sortBy: CollectionSortOptions, where: CollectionWhereInput): GetCollectionsResponse!
-  contracts(first: Int, offset: Int, sortBy: ContractSortOptions, where: ContractWhereInput): GetContractsResponse!
-  fractions(first: Int, offset: Int, sortBy: FractionSortOptions, where: FractionWhereInput): GetFractionsResponse!
-  hyperboards(first: Int, offset: Int, sortBy: HyperboardSortOptions, where: HyperboardWhereInput): GetHyperboardsResponse!
-  hypercerts(first: Int, offset: Int, sortBy: HypercertSortOptions, where: HypercertWhereInput): GetHypercertsResponse!
-  metadata(first: Int, offset: Int, sortBy: MetadataSortOptions, where: MetadataWhereInput): GetMetadataResponse!
-  orders(first: Int, offset: Int, sortBy: OrderSortOptions, where: OrderWhereInput): GetOrdersResponse!
-  sales(first: Int, offset: Int, sortBy: SaleSortOptions, where: SaleWhereInput): GetSalesResponse!
-  signatureRequests(first: Int, offset: Int, sortBy: SignatureRequestSortOptions, where: SignatureRequestWhereInput): GetSignatureRequestResponse!
-  users(first: Int, offset: Int, sortBy: UserSortOptions, where: UserWhereInput): GetUsersResponse!
+  allowlistRecords(
+    first: Int
+    offset: Int
+    sortBy: AllowlistRecordSortOptions
+    where: AllowlistRecordWhereInput
+  ): GetAllowlistRecordResponse!
+  attestationSchemas(
+    first: Int
+    offset: Int
+    sortBy: AttestationSchemaSortOptions
+    where: AttestationSchemaWhereInput
+  ): GetAttestationsSchemaResponse!
+  attestations(
+    first: Int
+    offset: Int
+    sortBy: AttestationSortOptions
+    where: AttestationWhereInput
+  ): GetAttestationsResponse!
+  blueprints(
+    first: Int
+    offset: Int
+    sortBy: BlueprintSortOptions
+    where: BlueprintWhereInput
+  ): GetBlueprintsResponse!
+  collections(
+    first: Int
+    offset: Int
+    sortBy: CollectionSortOptions
+    where: CollectionWhereInput
+  ): GetCollectionsResponse!
+  contracts(
+    first: Int
+    offset: Int
+    sortBy: ContractSortOptions
+    where: ContractWhereInput
+  ): GetContractsResponse!
+  fractions(
+    first: Int
+    offset: Int
+    sortBy: FractionSortOptions
+    where: FractionWhereInput
+  ): GetFractionsResponse!
+  hyperboards(
+    first: Int
+    offset: Int
+    sortBy: HyperboardSortOptions
+    where: HyperboardWhereInput
+  ): GetHyperboardsResponse!
+  hypercerts(
+    first: Int
+    offset: Int
+    sortBy: HypercertSortOptions
+    where: HypercertWhereInput
+  ): GetHypercertsResponse!
+  metadata(
+    first: Int
+    offset: Int
+    sortBy: MetadataSortOptions
+    where: MetadataWhereInput
+  ): GetMetadataResponse!
+  orders(
+    first: Int
+    offset: Int
+    sortBy: OrderSortOptions
+    where: OrderWhereInput
+  ): GetOrdersResponse!
+  sales(
+    first: Int
+    offset: Int
+    sortBy: SaleSortOptions
+    where: SaleWhereInput
+  ): GetSalesResponse!
+  signatureRequests(
+    first: Int
+    offset: Int
+    sortBy: SignatureRequestSortOptions
+    where: SignatureRequestWhereInput
+  ): GetSignatureRequestResponse!
+  users(
+    first: Int
+    offset: Int
+    sortBy: UserSortOptions
+    where: UserWhereInput
+  ): GetUsersResponse!
 }
 
 type Sale {
-  """Number of units sold for each fraction"""
+  """
+  Number of units sold for each fraction
+  """
   amounts: [EthBigInt!]
 
-  """The address of the buyer"""
+  """
+  The address of the buyer
+  """
   buyer: String!
 
-  """The address of the contract minting the tradable fractions"""
+  """
+  The address of the contract minting the tradable fractions
+  """
   collection: String!
 
-  """The block number of the transaction creating the sale"""
+  """
+  The block number of the transaction creating the sale
+  """
   creation_block_number: EthBigInt
 
-  """The timestamp of the block creating the sale"""
+  """
+  The timestamp of the block creating the sale
+  """
   creation_block_timestamp: EthBigInt
 
-  """The address of the token accepted for this order"""
+  """
+  The address of the token accepted for this order
+  """
   currency: String!
   currency_amount: EthBigInt!
 
-  """The hypercert associated with this order"""
+  """
+  The hypercert associated with this order
+  """
   hypercert: HypercertBaseType
 
-  """The ID of the hypercert token referenced in the order"""
+  """
+  The ID of the hypercert token referenced in the order
+  """
   hypercert_id: String
   id: ID
 
-  """Token ids of the sold fractions"""
+  """
+  Token ids of the sold fractions
+  """
   item_ids: [EthBigInt!]
 
-  """The address of the seller"""
+  """
+  The address of the seller
+  """
   seller: String!
 
-  """The ID of the strategy registered with the exchange contracts"""
+  """
+  The ID of the strategy registered with the exchange contracts
+  """
   strategy_id: EthBigInt
 
-  """The transactions hash of the sale"""
+  """
+  The transactions hash of the sale
+  """
   transaction_hash: String!
 }
 
@@ -1059,7 +1380,9 @@ input SaleWhereInput {
   transaction_hash: StringSearchOptions
 }
 
-"""Section representing a collection within a hyperboard"""
+"""
+Section representing a collection within a hyperboard
+"""
 type Section {
   collection: Collection!
   entries: [SectionEntry!]!
@@ -1067,15 +1390,21 @@ type Section {
   owners: [HyperboardOwner!]!
 }
 
-"""Entry representing a hypercert or blueprint within a section"""
+"""
+Entry representing a hypercert or blueprint within a section
+"""
 type SectionEntry {
   display_size: Float!
 
-  """ID of the hypercert or blueprint"""
+  """
+  ID of the hypercert or blueprint
+  """
   id: String!
   is_blueprint: Boolean!
 
-  """Name of the hypercert or blueprint"""
+  """
+  Name of the hypercert or blueprint
+  """
   name: String
   owners: [SectionEntryOwner!]!
   percentage_of_section: Float!
@@ -1083,20 +1412,30 @@ type SectionEntry {
 }
 
 type SectionEntryOwner {
-  """The address of the user"""
+  """
+  The address of the user
+  """
   address: String!
 
-  """The avatar of the user"""
+  """
+  The avatar of the user
+  """
   avatar: String
 
-  """The chain ID of the user"""
+  """
+  The chain ID of the user
+  """
   chain_id: EthBigInt
 
-  """The display name of the user"""
+  """
+  The display name of the user
+  """
   display_name: String
   percentage: Float!
 
-  """Pending signature requests for the user"""
+  """
+  Pending signature requests for the user
+  """
   signature_requests: GetSignatureRequestResponse
   units: BigInt
 }
@@ -1106,31 +1445,49 @@ type SectionResponseType {
   data: [Section!]!
 }
 
-"""Pending signature request for a user"""
+"""
+Pending signature request for a user
+"""
 type SignatureRequest {
-  """The chain ID of the signature request"""
+  """
+  The chain ID of the signature request
+  """
   chain_id: EthBigInt!
 
-  """The message data in JSON format"""
+  """
+  The message data in JSON format
+  """
   message: String!
 
-  """The hash of the Safe message (not the message to be signed)"""
+  """
+  The hash of the Safe message (not the message to be signed)
+  """
   message_hash: String!
 
-  """The purpose of the signature request"""
+  """
+  The purpose of the signature request
+  """
   purpose: SignatureRequestPurpose!
 
-  """The safe address of the user who needs to sign"""
+  """
+  The safe address of the user who needs to sign
+  """
   safe_address: String!
 
-  """The status of the signature request"""
+  """
+  The status of the signature request
+  """
   status: SignatureRequestStatus!
 
-  """Timestamp of when the signature request was created"""
+  """
+  Timestamp of when the signature request was created
+  """
   timestamp: EthBigInt!
 }
 
-"""Purpose of the signature request"""
+"""
+Purpose of the signature request
+"""
 enum SignatureRequestPurpose {
   UPDATE_USER_DATA
 }
@@ -1142,7 +1499,9 @@ input SignatureRequestSortOptions {
   timestamp: SortOrder = null
 }
 
-"""Status of the signature request"""
+"""
+Status of the signature request
+"""
 enum SignatureRequestStatus {
   CANCELED
   EXECUTED
@@ -1156,20 +1515,30 @@ input SignatureRequestWhereInput {
   timestamp: BigIntSearchOptions
 }
 
-"""The direction to sort the query results"""
+"""
+The direction to sort the query results
+"""
 enum SortOrder {
-  """Ascending order"""
+  """
+  Ascending order
+  """
   ascending
 
-  """Descending order"""
+  """
+  Descending order
+  """
   descending
 }
 
 input StringArraySearchOptions {
-  """Array of strings"""
+  """
+  Array of strings
+  """
   arrayContains: [String!]
 
-  """Array of strings"""
+  """
+  Array of strings
+  """
   arrayOverlaps: [String!]
 }
 
@@ -1182,19 +1551,29 @@ input StringSearchOptions {
 }
 
 type User {
-  """The address of the user"""
+  """
+  The address of the user
+  """
   address: String!
 
-  """The avatar of the user"""
+  """
+  The avatar of the user
+  """
   avatar: String
 
-  """The chain ID of the user"""
+  """
+  The chain ID of the user
+  """
   chain_id: EthBigInt
 
-  """The display name of the user"""
+  """
+  The display name of the user
+  """
   display_name: String
 
-  """Pending signature requests for the user"""
+  """
+  Pending signature requests for the user
+  """
   signature_requests: GetSignatureRequestResponse
 }
 

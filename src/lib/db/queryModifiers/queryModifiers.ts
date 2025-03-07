@@ -43,8 +43,8 @@ export function createStandardQueryModifier<
   Args extends BaseQueryArgsType<
     // TODO better type definition than object
     object,
-    { [K in keyof DB[T]]?: SortOrder | null }
-  > & { sortBy: { [K in keyof DB[T]]?: SortOrder | null } },
+    { [K in keyof DB[T]]?: SortOrder | null | undefined }
+  >,
 >(tableName: T) {
   return composeQueryModifiers<DB, T, Args>(
     (query, args) => applyWhere<DB, T, Args>(tableName, query, args),

@@ -11,7 +11,9 @@ import { SupportedDatabases } from "../../../services/database/strategies/QueryS
 export function applySort<
   DB extends SupportedDatabases,
   T extends keyof DB & string,
-  Args extends { sortBy: { [K in keyof DB[T]]?: SortOrder | null } },
+  Args extends {
+    sortBy?: { [K in keyof DB[T]]?: SortOrder | null | undefined };
+  },
 >(
   query: SelectQueryBuilder<DB, T, Selectable<DB[T]>>,
   args: Args,
