@@ -61,8 +61,8 @@ export class CollectionService {
     const collectionBlueprintIds =
       await this.getCollectionBlueprintIds(collectionId);
 
-    const blueprintIds = collectionBlueprintIds.map((blueprint) =>
-      Number(blueprint.blueprint_id),
+    const blueprintIds = collectionBlueprintIds.map(
+      (blueprint) => blueprint.blueprint_id,
     );
 
     return this.blueprintsService.getBlueprints({
