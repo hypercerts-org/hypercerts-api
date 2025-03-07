@@ -212,7 +212,7 @@ class HyperboardResolver {
       ...fractions.map((x) => x?.owner_address),
       ...allowlistEntries.flatMap((x) => x?.user_address),
       ...blueprints.map((blueprint) => blueprint.minter_address),
-    ]).filter((x) => !!x);
+    ]).filter((x): x is string => !!x);
 
     return this.usersService
       .getUsers({
