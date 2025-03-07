@@ -1,12 +1,13 @@
 import { ArgsType, ClassType, Field, Int } from "type-graphql";
+import { SortOrder } from "../../graphql/schemas/enums/sortEnums.js";
 import { EntityTypeDefs } from "../../graphql/schemas/typeDefs/typeDefs.js";
 import { EntityFields } from "./createEntityArgs.js";
-import type { SortByArgsType, SortOptions } from "./createEntitySortArgs.js";
+import type { SortByArgsType } from "./createEntitySortArgs.js";
 import type { WhereArgsType } from "./createEntityWhereArgs.js";
 
 export type BaseQueryArgsType<
   TWhereInput extends object,
-  TSortOptions extends SortOptions<EntityFields>,
+  TSortOptions extends Record<string, SortOrder | null | undefined>,
 > = {
   first?: number;
   offset?: number;

@@ -5,7 +5,6 @@ import {
   createStandardQueryModifier,
   QueryModifier,
 } from "../../../lib/db/queryModifiers/queryModifiers.js";
-import { BaseQueryArgsType } from "../../../lib/graphql/BaseQueryArgs.js";
 import { QueryStrategyFactory } from "../../../services/database/strategies/QueryBuilder.js";
 import {
   QueryStrategy,
@@ -20,10 +19,12 @@ export interface EntityService<TEntity, TArgs> {
 export function createEntityService<
   DB extends SupportedDatabases,
   T extends keyof DB & string,
-  Args extends BaseQueryArgsType<
-    Record<string, unknown>,
-    { [K in keyof DB[T]]?: SortOrder | null }
-  > & { sortBy: { [K in keyof DB[T]]?: SortOrder | null } },
+  Args extends {
+    first?: number;
+    offset?: number;
+    where?: Record<string, unknown>;
+    sortBy?: { [K in keyof DB[T]]?: SortOrder | null };
+  },
 >(
   tableName: T,
   ServiceName: string,
