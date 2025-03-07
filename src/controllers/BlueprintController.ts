@@ -251,7 +251,7 @@ export class BlueprintController extends Controller {
 
     const blueprint = await this.blueprintsService.getBlueprint({
       where: {
-        id: { eq: blueprintId },
+        id: { eq: blueprintId.toString() },
       },
     });
 
