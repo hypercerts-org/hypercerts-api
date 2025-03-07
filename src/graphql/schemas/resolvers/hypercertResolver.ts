@@ -83,7 +83,7 @@ class HypercertResolver {
     }
 
     return await this.attestationService.getAttestations({
-      where: { hypercerts: { id: { eq: hypercert.id } } },
+      where: { hypercert: { id: { eq: hypercert.id } } },
     });
   }
 

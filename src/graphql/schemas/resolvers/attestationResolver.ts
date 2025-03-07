@@ -74,7 +74,7 @@ class AttestationResolver {
     );
 
     return await this.metadataService.getMetadataSingle({
-      where: { hypercert: { hypercert_id: { eq: attested_hypercert_id } } },
+      where: { hypercerts: { hypercert_id: { eq: attested_hypercert_id } } },
     });
   }
 

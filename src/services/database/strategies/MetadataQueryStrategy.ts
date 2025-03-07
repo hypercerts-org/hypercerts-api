@@ -45,7 +45,7 @@ export class MetadataQueryStrategy extends QueryStrategy<
 
     return db
       .selectFrom(this.tableName)
-      .$if(!isWhereEmpty(args.where?.claims), (qb) =>
+      .$if(!isWhereEmpty(args.where?.hypercerts), (qb) =>
         qb.innerJoin("claims", "claims.uri", "metadata.uri"),
       )
       .select(supportedColumns);
@@ -60,7 +60,7 @@ export class MetadataQueryStrategy extends QueryStrategy<
 
     return db
       .selectFrom(this.tableName)
-      .$if(!isWhereEmpty(args.where?.claims), (qb) =>
+      .$if(!isWhereEmpty(args.where?.hypercerts), (qb) =>
         qb.innerJoin("claims", "claims.uri", "metadata.uri"),
       )
       .select((eb) => {
