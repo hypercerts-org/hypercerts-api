@@ -48,7 +48,7 @@ export class UsersService {
     return _user;
   }
 
-  async upsertUsers(users: Insertable<DataDatabase["users"]>[]) {
+  async upsertUsers(users: UserInsert[]) {
     return this.dbService
       .getConnection()
       .insertInto("users")

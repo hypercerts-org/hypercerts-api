@@ -1,13 +1,11 @@
 import { ArgsType } from "type-graphql";
 import { BaseQueryArgs } from "../../../lib/graphql/BaseQueryArgs.js";
 import { createEntityArgs } from "../../../lib/graphql/createEntityArgs.js";
+import { WhereFieldDefinitions } from "../../../lib/graphql/whereFieldDefinitions.js";
 
 const { WhereInput: UserWhereInput, SortOptions: UserSortOptions } =
   createEntityArgs("User", {
-    address: "string",
-    display_name: "string",
-    avatar: "string",
-    chain_id: "bigint",
+    ...WhereFieldDefinitions.User.fields,
   });
 
 @ArgsType()
