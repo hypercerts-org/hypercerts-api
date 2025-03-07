@@ -1,9 +1,10 @@
 import { GraphQLJSON } from "graphql-scalars";
 import { Field, ObjectType } from "type-graphql";
+import { DataResponse } from "../../../lib/graphql/DataResponse.js";
 import type { Json } from "../../../types/supabaseData.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
-import { DataResponse } from "../../../lib/graphql/DataResponse.js";
 import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
+import { GetHypercertsResponse } from "./hypercertTypeDefs.js";
 
 @ObjectType({
   description:
@@ -71,6 +72,11 @@ export class Metadata extends BasicTypeDef {
     description: "Timestamp of the end of the work (in seconds)",
   })
   work_timeframe_to?: bigint | number;
+  @Field(() => GetHypercertsResponse, {
+    nullable: true,
+    description: "Hypercerts associated with the metadata",
+  })
+  hypercerts?: GetHypercertsResponse;
 }
 
 @ObjectType()
