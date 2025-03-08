@@ -13,6 +13,12 @@ import {
 } from "./createEntityArgs.js";
 import { registry } from "./TypeRegistry.js";
 
+/**
+ * Type representing where clause arguments for entity fields.
+ * Maps field names to their filter types, handling both primitive and reference fields.
+ * @template TEntity - The entity type as defined in EntityTypeDefs
+ * @template TFields - The entity fields type
+ */
 export type WhereArgsType<
   TEntity extends EntityTypeDefs,
   TFields extends EntityFields,
@@ -25,7 +31,17 @@ export type WhereArgsType<
 };
 
 /**
- * Creates a unique name for a type based on its context
+ * Creates a unique name for a where input type based on its context.
+ *
+ * @param entity - The entity type
+ * @param context - Optional context string to create unique names for nested types
+ * @returns A unique name for the where input type
+ *
+ * @example
+ * ```typescript
+ * createTypeName(EntityTypeDefs.Contract) // "ContractWhereInput"
+ * createTypeName(EntityTypeDefs.Metadata, "Contract") // "ContractMetadataWhereInput"
+ * ```
  */
 function createTypeName(entity: EntityTypeDefs, context?: string): string {
   // If there's no context, just return the entity name with WhereInput
@@ -41,9 +57,50 @@ function createTypeName(entity: EntityTypeDefs, context?: string): string {
 }
 
 /**
- * Creates WhereArgs class for entity filtering
+ * Creates a GraphQL input type class for entity filtering.
+ *
+ * @description
+ * This function generates a class that can be used to specify filter conditions for entity queries.
+ * The generated class supports both primitive fields (string, number, bigint) and nested reference fields.
+ * Each field can be filtered using type-specific operators (e.g., eq, contains, gt, lt).
+ *
+ * @example
+ * ```typescript
+ * const WhereArgs = createEntityWhereArgs(EntityTypeDefs.Contract, {
+ *   address: "string",
+ *   chain_id: "number",
+ *   metadata: {
+ *     type: "id",
+ *     references: {
+ *       entity: EntityTypeDefs.Metadata,
+ *       fields: { name: "string" }
+ *     }
+ *   }
+ * });
+ *
+ * const instance = new WhereArgs();
+ * instance.address = { contains: "0x123" };
+ * instance.chain_id = { eq: 1 };
+ * instance.metadata.name = { contains: "Test" };
+ * ```
+ *
+ * @param entityName - The name of the entity (must be a valid EntityTypeDefs value)
+ * @param fieldDefinitions - Object defining the fields and their types for the entity
+ * @param context - Optional context string for creating unique names for nested types
+ * @returns A class that can be used as a GraphQL input type for filtering
+ *
+ * @remarks
+ * - Supports primitive fields (string, number, bigint) with type-specific filter operators
+ * - Handles nested reference fields by creating separate where input types
+ * - All fields are nullable and default to undefined
+ * - Validates field types against SearchOptionMap at creation time
+ * - Creates unique names for nested types using context
+ * - Registers created types in the TypeRegistry for future reference
+ *
+ * @throws {Error} If a field type is not found in SearchOptionMap
+ * @throws {Error} If a nested class cannot be found during creation
  */
-function createEntityWhereArgs<
+export function createEntityWhereArgs<
   TEntity extends EntityTypeDefs,
   TFields extends EntityFields,
 >(
@@ -188,5 +245,3 @@ function createEntityWhereArgs<
 
   return result as ClassType<WhereArgsType<TEntity, TFields>>;
 }
-
-export { createEntityWhereArgs };
