@@ -12,7 +12,6 @@ import {
   isReferenceDefinition,
 } from "./createEntityArgs.js";
 import { registry } from "./TypeRegistry.js";
-
 /**
  * Type representing where clause arguments for entity fields.
  * Maps field names to their filter types, handling both primitive and reference fields.
