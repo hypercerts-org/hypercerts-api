@@ -1,82 +1,124 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { applyPagination } from "../../../../src/lib/db/queryModifiers/applyPagination.js";
-import { applySort } from "../../../../src/lib/db/queryModifiers/applySort.js";
-import { applyWhere } from "../../../../src/lib/db/queryModifiers/applyWhere.js";
+import { Kysely } from "kysely";
+import { IMemoryDb, newDb } from "pg-mem";
+import { beforeEach, describe, expect, it } from "vitest";
+import { SortOrder } from "../../../../src/graphql/schemas/enums/sortEnums.js";
 import {
   composeQueryModifiers,
   createStandardQueryModifier,
   QueryModifier,
 } from "../../../../src/lib/db/queryModifiers/queryModifiers.js";
+import { DataDatabase } from "../../../../src/types/kyselySupabaseData.js";
 
-// Mock the individual query modifiers
-vi.mock("../../../../src/lib/db/queryModifiers/applyWhere.js", () => ({
-  applyWhere: vi.fn((_tableName, query, _args) => {
-    return { ...query, whereApplied: true };
-  }),
-}));
-
-vi.mock("../../../../src/lib/db/queryModifiers/applySort.js", () => ({
-  applySort: vi.fn((query, _args) => {
-    return { ...query, sortApplied: true };
-  }),
-}));
-
-vi.mock("../../../../src/lib/db/queryModifiers/applyPagination.js", () => ({
-  applyPagination: vi.fn((query, _args) => {
-    return { ...query, paginationApplied: true };
-  }),
-}));
+// Define test database type
+interface TestDatabase extends DataDatabase {
+  test_users: {
+    id: number;
+    name: string;
+    age: number;
+    active: boolean;
+    created_at: Date;
+  };
+}
 
 describe("queryModifiers", () => {
-  // Reset mocks before each test
+  let db: Kysely<TestDatabase>;
+  let mem: IMemoryDb;
+
   beforeEach(() => {
-    vi.clearAllMocks();
+    mem = newDb();
+    db = mem.adapters.createKysely();
+
+    // Create test table
+    mem.public.none(`
+      CREATE TABLE test_users (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        age INTEGER NOT NULL,
+        active BOOLEAN NOT NULL DEFAULT true,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+    `);
+
+    // Insert test data
+    mem.public.none(`
+      INSERT INTO test_users (name, age, active, created_at) VALUES
+      ('Alice', 25, true, '2024-01-01'),
+      ('Bob', 30, false, '2024-01-02'),
+      ('Charlie', 20, true, '2024-01-03');
+    `);
+  });
+
+  describe("QueryModifier Type", () => {
+    it("should allow creation of a valid query modifier", () => {
+      const modifier: QueryModifier<
+        TestDatabase,
+        "test_users",
+        { age?: number }
+      > = (query, args) => {
+        return args.age ? query.where("age", ">=", args.age) : query;
+      };
+
+      const result = modifier(db.selectFrom("test_users").selectAll(), {
+        age: 25,
+      });
+
+      const { sql, parameters } = result.compile();
+      expect(sql).toMatch(/where.*"age".*>=.*\$1/i);
+      expect(parameters).toEqual([25]);
+    });
   });
 
   describe("composeQueryModifiers", () => {
     it("should compose multiple query modifiers into a single function", () => {
-      // Create mock modifiers
-      const modifier1: QueryModifier<any, any, any> = (query, _args) => {
-        return { ...query, modifier1Applied: true };
-      };
+      const whereModifier: QueryModifier<TestDatabase, "test_users", any> = (
+        query,
+        _args,
+      ) => query.where("active", "=", true);
 
-      const modifier2: QueryModifier<any, any, any> = (query, _args) => {
-        return { ...query, modifier2Applied: true };
-      };
+      const sortModifier: QueryModifier<TestDatabase, "test_users", any> = (
+        query,
+        _args,
+      ) => query.orderBy("name", "asc");
 
-      const composedModifier = composeQueryModifiers(modifier1, modifier2);
+      const composedModifier = composeQueryModifiers(
+        whereModifier,
+        sortModifier,
+      );
+      const result = composedModifier(
+        db.selectFrom("test_users").selectAll(),
+        {},
+      );
 
-      // Test the composed modifier
-      const mockQuery = { original: true };
-      const mockArgs = { test: true };
-
-      const result = composedModifier(mockQuery as any, mockArgs);
-
-      // Verify that both modifiers were applied in sequence
-      expect(result).toEqual({
-        original: true,
-        modifier1Applied: true,
-        modifier2Applied: true,
-      });
+      const { sql, parameters } = result.compile();
+      expect(sql).toMatch(/where.*"active".*=.*\$1.*order by.*"name".*asc/i);
+      expect(parameters).toEqual([true]);
     });
 
-    it("should apply modifiers in the correct order", () => {
-      // Create mock modifiers that track the order of application
-      const appliedOrder: string[] = [];
+    it("should apply modifiers in the correct order", async () => {
+      const results: string[] = [];
 
-      const modifier1: QueryModifier<any, any, any> = (query, _args) => {
-        appliedOrder.push("modifier1");
-        return query;
+      const modifier1: QueryModifier<TestDatabase, "test_users", any> = (
+        query,
+        _args,
+      ) => {
+        results.push("where");
+        return query.where("age", ">", 20);
       };
 
-      const modifier2: QueryModifier<any, any, any> = (query, _args) => {
-        appliedOrder.push("modifier2");
-        return query;
+      const modifier2: QueryModifier<TestDatabase, "test_users", any> = (
+        query,
+        _args,
+      ) => {
+        results.push("sort");
+        return query.orderBy("name", "asc");
       };
 
-      const modifier3: QueryModifier<any, any, any> = (query, _args) => {
-        appliedOrder.push("modifier3");
-        return query;
+      const modifier3: QueryModifier<TestDatabase, "test_users", any> = (
+        query,
+        _args,
+      ) => {
+        results.push("limit");
+        return query.limit(2);
       };
 
       const composedModifier = composeQueryModifiers(
@@ -85,33 +127,118 @@ describe("queryModifiers", () => {
         modifier3,
       );
 
-      // Test the composed modifier
-      composedModifier({} as any, {});
+      const result = await composedModifier(
+        db.selectFrom("test_users").selectAll(),
+        {},
+      ).execute();
 
-      // Verify the order of application
-      expect(appliedOrder).toEqual(["modifier1", "modifier2", "modifier3"]);
+      expect(results).toEqual(["where", "sort", "limit"]);
+      expect(result).toHaveLength(2);
+      expect(result[0].name).toBe("Alice");
+      expect(result[1].name).toBe("Bob");
+    });
+
+    it("should handle undefined return values gracefully", () => {
+      const modifier1: QueryModifier<TestDatabase, "test_users", any> = (
+        _query,
+        _args,
+      ) => undefined as any;
+
+      const modifier2: QueryModifier<TestDatabase, "test_users", any> = (
+        query,
+        _args,
+      ) => query.orderBy("name", "asc");
+
+      const composedModifier = composeQueryModifiers(modifier1, modifier2);
+      const result = composedModifier(
+        db.selectFrom("test_users").selectAll(),
+        {},
+      );
+      const { sql } = result.compile();
+      expect(sql).toMatch(/order by.*"name".*asc/i);
     });
   });
 
   describe("createStandardQueryModifier", () => {
-    it("should create a composed modifier that applies where, sort, and pagination", () => {
-      const tableName = "test_table";
-      const standardModifier = createStandardQueryModifier(tableName as never);
+    it("should create a working composed modifier with all components", async () => {
+      const standardModifier = createStandardQueryModifier<
+        TestDatabase,
+        "test_users",
+        any
+      >("test_users");
 
-      const mockQuery = { original: true };
-      const mockArgs = { test: true };
+      const result = await standardModifier(
+        db.selectFrom("test_users").selectAll(),
+        {
+          where: { age: { gt: 20 } },
+          sortBy: { name: SortOrder.ascending },
+          first: 2,
+          offset: 0,
+        },
+      ).execute();
 
-      const result = standardModifier(mockQuery as any, mockArgs as any);
+      expect(result).toHaveLength(2);
+      expect(result[0].name).toBe("Alice");
+      expect(result[1].name).toBe("Bob");
+    });
 
-      // Verify that all three modifiers were applied
-      expect(applyWhere).toHaveBeenCalledWith(tableName, mockQuery, mockArgs);
-      expect(applySort).toHaveBeenCalled();
-      expect(applyPagination).toHaveBeenCalled();
+    it("should work with partial arguments", async () => {
+      const standardModifier = createStandardQueryModifier<
+        TestDatabase,
+        "test_users",
+        any
+      >("test_users");
 
-      // The result should have all three modifications
-      expect(result).toHaveProperty("whereApplied", true);
-      expect(result).toHaveProperty("sortApplied", true);
-      expect(result).toHaveProperty("paginationApplied", true);
+      // Only apply where condition
+      const result1 = await standardModifier(
+        db.selectFrom("test_users").selectAll(),
+        {
+          where: { active: { eq: true } },
+        },
+      ).execute();
+
+      expect(result1.length).toBe(2);
+      expect(result1.every((r) => r.active)).toBe(true);
+
+      // Only apply sort
+      const result2 = await standardModifier(
+        db.selectFrom("test_users").selectAll(),
+        {
+          sortBy: { age: SortOrder.descending },
+        },
+      ).execute();
+
+      expect(result2[0].age).toBe(30);
+      expect(result2[2].age).toBe(20);
+
+      // Only apply pagination
+      const result3 = await standardModifier(
+        db.selectFrom("test_users").selectAll(),
+        {
+          first: 2,
+        },
+      ).execute();
+
+      expect(result3).toHaveLength(2);
+    });
+
+    it("should preserve the type safety of the query builder", () => {
+      const standardModifier = createStandardQueryModifier<
+        TestDatabase,
+        "test_users",
+        any
+      >("test_users");
+
+      const query = db.selectFrom("test_users").selectAll();
+
+      const result = standardModifier(query, {
+        sortBy: { age: SortOrder.ascending },
+      });
+
+      // This should compile without type errors
+      const { sql } = result.compile();
+      expect(sql).toContain("select");
+      expect(sql).toContain("order by");
     });
   });
 });
