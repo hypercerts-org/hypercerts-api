@@ -5,7 +5,7 @@ import {
   createStandardQueryModifier,
   QueryModifier,
 } from "../../../lib/db/queryModifiers/queryModifiers.js";
-import { QueryStrategyFactory } from "../../../services/database/strategies/QueryBuilder.js";
+import { QueryStrategyFactory } from "../strategies/QueryStrategyFactory.js";
 import {
   QueryStrategy,
   SupportedDatabases,
