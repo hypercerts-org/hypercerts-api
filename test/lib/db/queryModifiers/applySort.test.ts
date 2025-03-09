@@ -1,122 +1,226 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SortOrder } from "../../../../src/graphql/schemas/enums/sortEnums.js";
+import { describe, it, expect, beforeEach } from "vitest";
+import { Kysely } from "kysely";
+import { IMemoryDb, newDb } from "pg-mem";
 import { applySort } from "../../../../src/lib/db/queryModifiers/applySort.js";
+import { SortOrder } from "../../../../src/graphql/schemas/enums/sortEnums.js";
+import { DataDatabase } from "../../../../src/types/kyselySupabaseData.js";
+
+type TestDatabase = DataDatabase & {
+  test_users: {
+    id: number;
+    name: string;
+    age: number;
+    active: boolean;
+    created_at: Date;
+    score: number;
+  };
+};
 
 describe("applySort", () => {
-  // Create a mock query with orderBy method
-  const mockQuery = {
-    orderBy: vi.fn().mockReturnThis(),
-  };
+  let db: Kysely<TestDatabase>;
+  let mem: IMemoryDb;
 
-  // Reset mocks before each test
   beforeEach(() => {
-    vi.clearAllMocks();
-    // Reset console.debug to avoid polluting test output
-    vi.spyOn(console, "debug").mockImplementation(() => {});
+    mem = newDb();
+    db = mem.adapters.createKysely();
+
+    // Create test table
+    mem.public.none(`
+      CREATE TABLE test_users (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        age INTEGER NOT NULL,
+        active BOOLEAN NOT NULL DEFAULT true,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        score NUMERIC NOT NULL DEFAULT 0
+      );
+    `);
+
+    // Insert some test data
+    mem.public.none(`
+      INSERT INTO test_users (name, age, score, created_at) VALUES
+      ('Alice', 25, 100, '2024-01-01'),
+      ('Bob', 30, 85, '2024-01-02'),
+      ('Charlie', 20, 95, '2024-01-03');
+    `);
   });
 
-  it("should return the original query if sortBy is not provided", () => {
-    const args = { first: 10, offset: 0 };
-    const result = applySort(mockQuery as any, args);
+  describe("basic functionality", () => {
+    it("should return original query when no sort is provided", () => {
+      const baseQuery = db.selectFrom("test_users").selectAll() as any;
+      const result = applySort<TestDatabase, "test_users", any>(baseQuery, {});
 
-    expect(result).toBe(mockQuery);
-    expect(mockQuery.orderBy).not.toHaveBeenCalled();
-    expect(console.debug).toHaveBeenCalledWith("No sort arguments provided");
-  });
+      const { sql, parameters } = result.compile();
+      expect(sql).not.toContain("order by");
+      expect(parameters).toEqual([]);
+    });
 
-  it("should return the original query if sortBy has no non-null values", () => {
-    const args = {
-      first: 10,
-      offset: 0,
-      sortBy: {
-        name: null,
-        age: undefined,
-      },
-    };
-
-    const result = applySort(mockQuery as any, args);
-
-    expect(result).toBe(mockQuery);
-    expect(mockQuery.orderBy).not.toHaveBeenCalled();
-    expect(console.debug).toHaveBeenCalledWith("No non-null sort fields found");
-  });
-
-  it("should apply orderBy for each non-null sort field with ascending order", () => {
-    const args = {
-      first: 10,
-      offset: 0,
-      sortBy: {
-        name: SortOrder.ascending,
-        age: SortOrder.ascending,
-      },
-    };
-
-    const result = applySort(mockQuery as any, args);
-
-    expect(result).toBe(mockQuery);
-    expect(mockQuery.orderBy).toHaveBeenCalledTimes(2);
-    expect(mockQuery.orderBy).toHaveBeenCalledWith("name", "asc");
-    expect(mockQuery.orderBy).toHaveBeenCalledWith("age", "asc");
-  });
-
-  it("should apply orderBy for each non-null sort field with descending order", () => {
-    const args = {
-      first: 10,
-      offset: 0,
-      sortBy: {
-        name: SortOrder.descending,
-        age: SortOrder.descending,
-      },
-    };
-
-    const result = applySort(mockQuery as any, args);
-
-    expect(result).toBe(mockQuery);
-    expect(mockQuery.orderBy).toHaveBeenCalledTimes(2);
-    expect(mockQuery.orderBy).toHaveBeenCalledWith("name", "desc");
-    expect(mockQuery.orderBy).toHaveBeenCalledWith("age", "desc");
-  });
-
-  it("should handle mixed sort directions", () => {
-    const args = {
-      first: 10,
-      offset: 0,
-      sortBy: {
-        name: SortOrder.ascending,
-        age: SortOrder.descending,
-        created_at: null, // Should be ignored
-      },
-    };
-
-    const result = applySort(mockQuery as any, args);
-
-    expect(result).toBe(mockQuery);
-    expect(mockQuery.orderBy).toHaveBeenCalledTimes(2);
-    expect(mockQuery.orderBy).toHaveBeenCalledWith("name", "asc");
-    expect(mockQuery.orderBy).toHaveBeenCalledWith("age", "desc");
-  });
-
-  it("should silently ignore errors when applying orderBy", () => {
-    // Mock orderBy to throw an error on the second call
-    mockQuery.orderBy
-      .mockImplementationOnce(() => mockQuery)
-      .mockImplementationOnce(() => {
-        throw new Error("Invalid field");
+    it("should apply single ascending sort", () => {
+      const baseQuery = db.selectFrom("test_users").selectAll() as any;
+      const result = applySort<TestDatabase, "test_users", any>(baseQuery, {
+        sortBy: { name: SortOrder.ascending },
       });
 
-    const args = {
-      first: 10,
-      offset: 0,
-      sortBy: {
-        name: SortOrder.ascending,
-        invalid_field: SortOrder.descending,
-      },
-    };
+      const { sql } = result.compile();
+      expect(sql).toMatch(/order by.*"name".*asc/i);
+    });
 
-    // This should not throw an error
-    const result = applySort(mockQuery as any, args);
+    it("should apply single descending sort", () => {
+      const baseQuery = db.selectFrom("test_users").selectAll() as any;
+      const result = applySort<TestDatabase, "test_users", any>(baseQuery, {
+        sortBy: { age: SortOrder.descending },
+      });
 
-    expect(result).toBe(mockQuery);
-    expect(mockQuery.orderBy).toHaveBeenCalledTimes(2);
+      const { sql } = result.compile();
+      expect(sql).toMatch(/order by.*"age".*desc/i);
+    });
+  });
+
+  describe("multiple sort conditions", () => {
+    it("should apply multiple sort conditions in order", () => {
+      const baseQuery = db.selectFrom("test_users").selectAll() as any;
+      const result = applySort<TestDatabase, "test_users", any>(baseQuery, {
+        sortBy: {
+          score: SortOrder.descending,
+          name: SortOrder.ascending,
+        },
+      });
+
+      const { sql } = result.compile();
+      expect(sql).toMatch(/order by.*"score".*desc.*"name".*asc/i);
+    });
+
+    it("should handle mixed sort directions", () => {
+      const baseQuery = db.selectFrom("test_users").selectAll() as any;
+      const result = applySort<TestDatabase, "test_users", any>(baseQuery, {
+        sortBy: {
+          age: SortOrder.ascending,
+          score: SortOrder.descending,
+          name: SortOrder.ascending,
+        },
+      });
+
+      const { sql } = result.compile();
+      expect(sql).toMatch(/order by.*"age".*asc.*"score".*desc.*"name".*asc/i);
+    });
+  });
+
+  describe("edge cases", () => {
+    it("should ignore null and undefined sort values", () => {
+      const baseQuery = db.selectFrom("test_users").selectAll() as any;
+      const result = applySort<TestDatabase, "test_users", any>(baseQuery, {
+        sortBy: {
+          name: null,
+          age: undefined,
+          score: SortOrder.ascending,
+        },
+      });
+
+      const { sql } = result.compile();
+      expect(sql).toMatch(/order by.*"score".*asc/i);
+      expect(sql).not.toMatch(/"test_users"."name"/);
+      expect(sql).not.toMatch(/"test_users"."age"/);
+    });
+
+    it("should return original query when all sort values are null/undefined", () => {
+      const baseQuery = db.selectFrom("test_users").selectAll() as any;
+      const result = applySort<TestDatabase, "test_users", any>(baseQuery, {
+        sortBy: {
+          name: null,
+          age: undefined,
+        },
+      });
+
+      const { sql } = result.compile();
+      expect(sql).not.toContain("order by");
+    });
+  });
+
+  describe("query builder integration", () => {
+    it("should work with existing where conditions", () => {
+      const baseQuery = db
+        .selectFrom("test_users")
+        .selectAll()
+        .where("active", "=", true) as any;
+
+      const result = applySort<TestDatabase, "test_users", any>(baseQuery, {
+        sortBy: { name: SortOrder.ascending },
+      });
+
+      const { sql } = result.compile();
+      expect(sql).toContain("where");
+      expect(sql).toMatch(/order by.*"name".*asc/i);
+    });
+
+    it("should preserve existing order by clauses", () => {
+      const baseQuery = db
+        .selectFrom("test_users")
+        .selectAll()
+        .orderBy("id", "asc") as any;
+
+      const result = applySort<TestDatabase, "test_users", any>(baseQuery, {
+        sortBy: { name: SortOrder.ascending },
+      });
+
+      const { sql } = result.compile();
+      expect(sql).toMatch(/order by.*"id".*asc.*"name".*asc/i);
+    });
+
+    it("should work with limit and offset", () => {
+      const baseQuery = db
+        .selectFrom("test_users")
+        .selectAll()
+        .limit(10)
+        .offset(20) as any;
+
+      const result = applySort<TestDatabase, "test_users", any>(baseQuery, {
+        sortBy: { name: SortOrder.ascending },
+      });
+
+      const { sql, parameters } = result.compile();
+      expect(sql).toMatch(/order by.*"name".*asc/i);
+      expect(sql).toContain("limit");
+      expect(sql).toContain("offset");
+      expect(parameters).toContain(10);
+      expect(parameters).toContain(20);
+    });
+  });
+
+  describe("data validation", () => {
+    it("should correctly sort numeric values", async () => {
+      const result = await db
+        .selectFrom("test_users")
+        .selectAll()
+        .orderBy("score", "desc")
+        .execute();
+
+      expect(result[0].score).toBe(100);
+      expect(result[1].score).toBe(95);
+      expect(result[2].score).toBe(85);
+    });
+
+    it("should correctly sort text values", async () => {
+      const result = await db
+        .selectFrom("test_users")
+        .selectAll()
+        .orderBy("name", "asc")
+        .execute();
+
+      expect(result[0].name).toBe("Alice");
+      expect(result[1].name).toBe("Bob");
+      expect(result[2].name).toBe("Charlie");
+    });
+
+    it("should correctly sort dates", async () => {
+      const result = await db
+        .selectFrom("test_users")
+        .selectAll()
+        .orderBy("created_at", "asc")
+        .execute();
+
+      expect(result[0].name).toBe("Alice"); // 2024-01-01
+      expect(result[1].name).toBe("Bob"); // 2024-01-02
+      expect(result[2].name).toBe("Charlie"); // 2024-01-03
+    });
   });
 });
