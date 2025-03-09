@@ -1,108 +1,140 @@
-import { describe, it, expect, vi } from "vitest";
-import * as paginationModule from "../../../../src/lib/db/queryModifiers/applyPagination.js";
+import { describe, it, expect, beforeEach } from "vitest";
+import { Kysely } from "kysely";
+import { IMemoryDb, newDb } from "pg-mem";
+import { applyPagination } from "../../../../src/lib/db/queryModifiers/applyPagination.js";
+import { DataDatabase } from "../../../../src/types/kyselySupabaseData.js";
+
+interface TestDatabase extends DataDatabase {
+  test_users: {
+    id: number;
+    name: string;
+    active: boolean;
+    created_at: Date;
+  };
+}
 
 describe("applyPagination", () => {
-  // Create a simple mock implementation for testing
-  const mockApplyPagination = vi.fn().mockImplementation((query, args) => {
-    if (args.first !== undefined) {
-      query.limit(args.first);
-    } else {
-      query.limit(100); // Default limit
-    }
+  let db: Kysely<TestDatabase>;
+  let mem: IMemoryDb;
 
-    if (args.offset !== undefined) {
-      query.offset(args.offset);
-    }
+  beforeEach(() => {
+    mem = newDb();
+    db = mem.adapters.createKysely();
 
-    return query;
+    // Create test table
+    mem.public.none(`
+      CREATE TABLE test_users (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        active BOOLEAN NOT NULL DEFAULT true,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+    `);
   });
 
-  // Replace the real implementation with our mock
-  vi.spyOn(paginationModule, "applyPagination").mockImplementation(
-    mockApplyPagination,
-  );
+  describe("basic functionality", () => {
+    it("should apply default limit of 100 when first is not provided", () => {
+      const baseQuery = db.selectFrom("test_users").selectAll() as any;
+      const result = applyPagination(baseQuery, {});
 
-  it("should apply default limit of 100 when first is not provided", () => {
-    const mockQuery = {
-      limit: vi.fn().mockReturnThis(),
-      offset: vi.fn().mockReturnThis(),
-    };
+      const { sql, parameters } = result.compile();
+      expect(sql).toMatch(/limit \$1/);
+      expect(parameters).toEqual([100]);
+    });
 
-    const args = { offset: 0 };
-    const result = paginationModule.applyPagination(mockQuery as any, args);
+    it("should apply the specified limit when first is provided", () => {
+      const baseQuery = db.selectFrom("test_users").selectAll() as any;
+      const result = applyPagination(baseQuery, { first: 25 });
 
-    expect(result).toBe(mockQuery);
-    expect(mockQuery.limit).toHaveBeenCalledWith(100);
-    expect(mockQuery.offset).toHaveBeenCalledWith(0);
+      const { sql, parameters } = result.compile();
+      expect(sql).toMatch(/limit \$1/);
+      expect(parameters).toEqual([25]);
+    });
+
+    it("should apply offset when provided", () => {
+      const baseQuery = db.selectFrom("test_users").selectAll() as any;
+      const result = applyPagination(baseQuery, { offset: 10 });
+
+      const { sql, parameters } = result.compile();
+      expect(sql).toMatch(/limit \$1 offset \$2/);
+      expect(parameters).toEqual([100, 10]); // Default limit and offset
+    });
+
+    it("should apply both limit and offset when both are provided", () => {
+      const baseQuery = db.selectFrom("test_users").selectAll() as any;
+      const result = applyPagination(baseQuery, { first: 20, offset: 40 });
+
+      const { sql, parameters } = result.compile();
+      expect(sql).toMatch(/limit \$1 offset \$2/);
+      expect(parameters).toEqual([20, 40]);
+    });
   });
 
-  it("should apply the specified limit when first is provided", () => {
-    const mockQuery = {
-      limit: vi.fn().mockReturnThis(),
-      offset: vi.fn().mockReturnThis(),
-    };
+  describe("edge cases", () => {
+    it("should handle zero values correctly", () => {
+      const baseQuery = db.selectFrom("test_users").selectAll() as any;
+      const result = applyPagination(baseQuery, { first: 0, offset: 0 });
 
-    const args = { first: 25, offset: 0 };
-    const result = paginationModule.applyPagination(mockQuery as any, args);
+      const { sql, parameters } = result.compile();
+      expect(sql).toMatch(/limit \$1/);
+      expect(sql).not.toMatch(/offset \$2/);
+      expect(parameters).toEqual([100]);
+    });
 
-    expect(result).toBe(mockQuery);
-    expect(mockQuery.limit).toHaveBeenCalledWith(25);
-    expect(mockQuery.offset).toHaveBeenCalledWith(0);
+    it("should handle undefined values correctly", () => {
+      const baseQuery = db.selectFrom("test_users").selectAll() as any;
+      const result = applyPagination(baseQuery, {
+        first: undefined,
+        offset: undefined,
+      });
+
+      const { sql, parameters } = result.compile();
+      expect(sql).toMatch(/limit \$1/);
+      expect(parameters).toEqual([100]); // Should use default limit
+      expect(sql).not.toMatch(/offset/);
+    });
+
+    it("should handle large values correctly", () => {
+      const baseQuery = db.selectFrom("test_users").selectAll() as any;
+      const result = applyPagination(baseQuery, { first: 1000, offset: 5000 });
+
+      const { sql, parameters } = result.compile();
+      expect(sql).toMatch(/limit \$1 offset \$2/);
+      expect(parameters).toEqual([1000, 5000]);
+    });
   });
 
-  it("should not apply offset when offset is not provided", () => {
-    const mockQuery = {
-      limit: vi.fn().mockReturnThis(),
-      offset: vi.fn().mockReturnThis(),
-    };
+  describe("query builder integration", () => {
+    it("should work with complex queries", () => {
+      const baseQuery = db
+        .selectFrom("test_users")
+        .where("active", "=", true)
+        .orderBy("created_at") as any;
 
-    const args = { first: 10 };
-    const result = paginationModule.applyPagination(mockQuery as any, args);
+      const result = applyPagination(baseQuery, { first: 10, offset: 20 });
 
-    expect(result).toBe(mockQuery);
-    expect(mockQuery.limit).toHaveBeenCalledWith(10);
-    expect(mockQuery.offset).not.toHaveBeenCalled();
-  });
+      const { sql, parameters } = result.compile();
+      expect(sql).toContain("where");
+      expect(sql).toContain("order by");
+      expect(sql).toMatch(/limit \$\d+ offset \$\d+/);
+      expect(parameters).toContain(10);
+      expect(parameters).toContain(20);
+    });
 
-  it("should apply both limit and offset when both are provided", () => {
-    const mockQuery = {
-      limit: vi.fn().mockReturnThis(),
-      offset: vi.fn().mockReturnThis(),
-    };
+    it("should preserve existing query modifiers", () => {
+      const baseQuery = db
+        .selectFrom("test_users")
+        .selectAll()
+        .where("active", "=", true)
+        .orderBy("created_at") as any;
 
-    const args = { first: 20, offset: 40 };
-    const result = paginationModule.applyPagination(mockQuery as any, args);
+      const result = applyPagination(baseQuery, { first: 10 });
 
-    expect(result).toBe(mockQuery);
-    expect(mockQuery.limit).toHaveBeenCalledWith(20);
-    expect(mockQuery.offset).toHaveBeenCalledWith(40);
-  });
-
-  it("should handle zero values correctly", () => {
-    const mockQuery = {
-      limit: vi.fn().mockReturnThis(),
-      offset: vi.fn().mockReturnThis(),
-    };
-
-    const args = { first: 0, offset: 0 };
-    const result = paginationModule.applyPagination(mockQuery as any, args);
-
-    expect(result).toBe(mockQuery);
-    expect(mockQuery.limit).toHaveBeenCalledWith(0);
-    expect(mockQuery.offset).toHaveBeenCalledWith(0);
-  });
-
-  it("should handle large values correctly", () => {
-    const mockQuery = {
-      limit: vi.fn().mockReturnThis(),
-      offset: vi.fn().mockReturnThis(),
-    };
-
-    const args = { first: 1000, offset: 5000 };
-    const result = paginationModule.applyPagination(mockQuery as any, args);
-
-    expect(result).toBe(mockQuery);
-    expect(mockQuery.limit).toHaveBeenCalledWith(1000);
-    expect(mockQuery.offset).toHaveBeenCalledWith(5000);
+      const { sql, parameters } = result.compile();
+      expect(sql).toContain("where");
+      expect(sql).toContain("order by");
+      expect(sql).toMatch(/limit \$\d+/);
+      expect(parameters).toContain(10);
+    });
   });
 });
