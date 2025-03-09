@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { container } from "tsyringe";
-import { TypeRegistry } from "../../../src/lib/graphql/TypeRegistry.js";
-import { createEntitySortArgs } from "../../../src/lib/graphql/createEntitySortArgs.js";
-import { createEntityWhereArgs } from "../../../src/lib/graphql/createEntityWhereArgs.js";
-import { EntityTypeDefs } from "../../../src/graphql/schemas/typeDefs/typeDefs.js";
+import { TypeRegistry } from "../../../../src/lib/graphql/TypeRegistry.js";
+import { createEntitySortArgs } from "../../../../src/lib/graphql/createEntitySortArgs.js";
+import { createEntityWhereArgs } from "../../../../src/lib/graphql/createEntityWhereArgs.js";
+import { EntityTypeDefs } from "../../../../src/graphql/schemas/typeDefs/typeDefs.js";
 
 // Test field definitions
 const testFields = {
