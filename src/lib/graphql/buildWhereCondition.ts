@@ -1,15 +1,70 @@
 import { Expression, ExpressionBuilder, sql, SqlBool } from "kysely";
 import { SupportedDatabases } from "../../services/database/strategies/QueryStrategy.js";
+import { getRelation, hasRelation } from "./tableRelations.js";
 
-export type NumericOperatorType = "eq" | "gt" | "gte" | "lt" | "lte";
-export type StringOperatorType = "contains" | "startsWith" | "endsWith";
-export type ArrayOperatorType = "overlaps" | "contains";
-export type OperatorType =
-  | NumericOperatorType
-  | StringOperatorType
-  | ArrayOperatorType;
+// Define more specific types for our filter values
+type BaseFilterValue = string | number | bigint | boolean | undefined;
+type ArrayFilterValue = Array<string | number | bigint>;
 
-export const getTablePrefix = (column: string): string => {
+// Define valid filter operators
+type FilterOperator =
+  | "eq"
+  | "gt"
+  | "gte"
+  | "lt"
+  | "lte"
+  | "contains"
+  | "startsWith"
+  | "endsWith"
+  | "in"
+  | "arrayContains"
+  | "arrayOverlaps";
+
+type OperatorFilterValue = Partial<
+  Record<FilterOperator, BaseFilterValue | ArrayFilterValue>
+>;
+type NestedFilterValue = Record<string, BaseFilterValue | OperatorFilterValue>;
+
+// Generic filter builder function type
+type FilterBuilder = (
+  tableName: string,
+  column: string,
+  value: BaseFilterValue | ArrayFilterValue,
+) => Expression<SqlBool>;
+
+/**
+ * The type for the filter value.
+ *
+ * @example
+ * ```typescript
+ * const value: FilterValue = { eq: "123" };
+ * const value: FilterValue = { id: { eq: "123" } };
+ * const value: FilterValue = { id: { eq: "123" }, name: { contains: "John" } };
+ * ```
+ */
+export type FilterValue =
+  | BaseFilterValue
+  | NestedFilterValue
+  | ArrayFilterValue
+  | OperatorFilterValue;
+
+/**
+ * The type for the where filter.
+ *
+ * @example
+ * ```typescript
+ * const where: WhereFilter = { id: { eq: "123" } };
+ * ```
+ */
+export type WhereFilter = Record<string, FilterValue>;
+
+/**
+ * Get the table prefix for a given column. We use this to handle nested relations where the displayed column is not the actual table name.
+ *
+ * @param column - The column name to get the prefix for
+ * @returns The table prefix for the given column
+ */
+const getTablePrefix = (column: string): string => {
   switch (column) {
     case "admins":
       return "users";
@@ -29,64 +84,41 @@ export const getTablePrefix = (column: string): string => {
   }
 };
 
-// Define more specific types for our filter values
-type BaseFilterValue = string | number | bigint | boolean | undefined;
-type NestedFilterValue = Record<string, BaseFilterValue>;
-type ArrayFilterValue = Array<string | number | bigint>;
-
-export type FilterValue =
-  | BaseFilterValue
-  | NestedFilterValue
-  | ArrayFilterValue;
-export type WhereFilter = Record<string, FilterValue>;
-
-// Define valid filter operators
-type FilterOperator =
-  | "eq"
-  | "gt"
-  | "gte"
-  | "lt"
-  | "lte"
-  | "contains"
-  | "startsWith"
-  | "endsWith"
-  | "in"
-  | "arrayContains"
-  | "arrayOverlaps";
-
 // Type guard for filter objects
-export const isFilterObject = (
-  obj: unknown,
-): obj is Record<FilterOperator, FilterValue> => {
+const isFilterObject = (obj: unknown): obj is OperatorFilterValue => {
   if (!obj || typeof obj !== "object") return false;
   return Object.keys(obj).some((key) => key in filterBuilders);
 };
 
-// Generic filter builder function type
-type FilterBuilder = (
-  tableName: string,
-  column: string,
-  value: FilterValue,
-) => Expression<SqlBool>;
+// Type guard for nested filters
+const isNestedFilter = (value: FilterValue): value is NestedFilterValue =>
+  typeof value === "object" &&
+  !Array.isArray(value) &&
+  value !== null &&
+  !isFilterObject(value);
 
-// Define filter builders using Kysely's expression builders
+/**
+ * Filter builders for different operators
+ *
+ * @type {Record<FilterOperator, FilterBuilder>}
+ */
 const filterBuilders: Record<FilterOperator, FilterBuilder> = {
   eq: (tableName, column, value) =>
-    sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} = ${sql.lit(value)}`,
+    sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} = ${value}`,
   gt: (tableName, column, value) =>
-    sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} > ${sql.lit(value)}`,
+    sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} > ${value}`,
   gte: (tableName, column, value) =>
-    sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} >= ${sql.lit(value)}`,
+    sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} >= ${value}`,
   lt: (tableName, column, value) =>
-    sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} < ${sql.lit(value)}`,
+    sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} < ${value}`,
   lte: (tableName, column, value) =>
-    sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} <= ${sql.lit(value)}`,
+    sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} <= ${value}`,
   contains: (tableName, column, value) =>
-    sql<SqlBool>`lower(${sql.raw(`"${tableName}"."${column}"`)}) like lower(${sql.lit("%" + String(value) + "%")})`,
+    sql<SqlBool>`lower(${sql.raw(`"${tableName}"."${column}"`)}) like lower(${"%" + String(value) + "%"})`,
   startsWith: (tableName, column, value) =>
-    sql<SqlBool>`lower(${sql.raw(`"${tableName}"."${column}"`)}) like lower(${sql.lit(String(value) + "%")})`,
+    sql<SqlBool>`lower(${sql.raw(`"${tableName}"."${column}"`)}) like lower(${String(value) + "%"})`,
   endsWith: (tableName, column, value) =>
-    sql<SqlBool>`lower(${sql.raw(`"${tableName}"."${column}"`)}) like lower(${sql.lit("%" + String(value))})`,
+    sql<SqlBool>`lower(${sql.raw(`"${tableName}"."${column}"`)}) like lower(${"%" + String(value)})`,
   in: (tableName, column, value) => {
     // Ensure value is an array and filter out any null/undefined values
     const values = (Array.isArray(value) ? value : [value]).filter(
@@ -99,19 +131,68 @@ const filterBuilders: Record<FilterOperator, FilterBuilder> = {
     }
 
     return sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} IN (${sql.join(
-      values.map((v) => sql.lit(v)),
+      values.map((v) => sql`${v}`),
       sql`, `,
     )})`;
   },
-  arrayContains: (tableName, column, value) =>
-    sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} @> ARRAY[${sql.join(Array.isArray(value) ? value : [value], sql`, `)}]`,
-  arrayOverlaps: (tableName, column, value) =>
-    sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} && ARRAY[${sql.join(Array.isArray(value) ? value : [value], sql`, `)}]`,
+  arrayContains: (tableName, column, value) => {
+    const values = Array.isArray(value) ? value : [value];
+    return sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} @> ARRAY[${sql.join(
+      values.map((v) => sql`${v}`),
+      sql`, `,
+    )}]`;
+  },
+  arrayOverlaps: (tableName, column, value) => {
+    const values = Array.isArray(value) ? value : [value];
+    return sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} && ARRAY[${sql.join(
+      values.map((v) => sql`${v}`),
+      sql`, `,
+    )}]`;
+  },
 };
 
-const isNestedFilter = (value: FilterValue): value is NestedFilterValue =>
-  typeof value === "object" && !Array.isArray(value) && value !== null;
-
+/**
+ * Builds a SQL WHERE condition for filtering database queries based on provided criteria.
+ * Supports basic comparisons, string operations, array operations, and nested relations.
+ *
+ * @template DB - The database type extending SupportedDatabases
+ * @template T - The table name type (must be a key of DB)
+ *
+ * @param tableName - The name of the base table to query
+ * @param where - Filter conditions to apply. Can include:
+ *   - Direct field comparisons (e.g., { id: { eq: 123 } })
+ *   - String operations (e.g., { name: { contains: "John" } })
+ *   - Array operations (e.g., { roles: { arrayContains: ["admin"] } })
+ *   - Nested relations (e.g., { company: { name: { eq: "Acme" } } })
+ * @param eb - Kysely expression builder for the current query
+ *
+ * @returns An Expression<SqlBool> that can be used in a WHERE clause, or undefined if no conditions
+ *
+ * @example
+ * ```typescript
+ * // Basic field comparison
+ * const condition = buildWhereCondition("users", { age: { gt: 18 } }, eb);
+ *
+ * // String operation
+ * const condition = buildWhereCondition("users", { name: { contains: "John" } }, eb);
+ *
+ * // Nested relation using default foreign key
+ * const condition = buildWhereCondition("users", {
+ *   company: { name: { eq: "Acme" } }
+ * }, eb);
+ *
+ * // Nested relation using custom TABLE_RELATIONS join
+ * const condition = buildWhereCondition("claims", {
+ *   fractions_view: { amount: { gt: 100 } }
+ * }, eb);
+ * ```
+ *
+ * @remarks
+ * - For nested relations, it first checks TABLE_RELATIONS for custom join conditions
+ * - If no custom relation exists, falls back to default foreign key pattern (table_id)
+ * - Multiple conditions within the same level are combined with AND
+ * - Undefined values in filter conditions are ignored
+ */
 export function buildWhereCondition<
   DB extends SupportedDatabases,
   T extends keyof DB,
@@ -134,7 +215,7 @@ export function buildWhereCondition<
             filterBuilders[operator as FilterOperator](
               tableName as string,
               key,
-              operandValue,
+              operandValue as BaseFilterValue | ArrayFilterValue,
             ),
           );
         }
@@ -144,61 +225,26 @@ export function buildWhereCondition<
       const relatedTable = getTablePrefix(key);
       const nestedConditions = buildWhereCondition(
         relatedTable as T,
-        value,
+        value as WhereFilter,
         eb,
       );
 
       if (nestedConditions) {
-        //TODO: remove exception after DB updates: create metadata view with claims_id column
-        if (tableName === "metadata" && relatedTable === "claims") {
+        if (hasRelation(tableName as string, relatedTable)) {
+          const relation = getRelation(tableName as string, relatedTable);
           conditions.push(
             sql<SqlBool>`exists (
-              select from ${sql.raw(`"claims"`)}
-              where ${sql.raw(`metadata.uri = claims.uri`)}
-              and ${nestedConditions}
-            )`,
-          );
-        } else if (tableName === "claims" && relatedTable === "metadata") {
-          conditions.push(
-            sql<SqlBool>`exists (
-              select from ${sql.raw(`"metadata"`)}
-              where ${sql.raw(`claims.uri = metadata.uri`)}
-              and ${nestedConditions}
-            )`,
-          );
-        } else if (
-          tableName === "claims" &&
-          relatedTable === "fractions_view"
-        ) {
-          conditions.push(
-            sql<SqlBool>`exists (
-              select from ${sql.raw(`"fractions_view"`)}
-              where ${sql.raw(`claims.hypercert_id = fractions_view.hypercert_id`)}
-              and ${nestedConditions}
-            )`,
-          );
-        } else if (tableName === "collections" && relatedTable === "users") {
-          conditions.push(
-            sql<SqlBool>`exists (
-              select from ${sql.raw(`"users"`)}
-              where ${sql.raw(`"users".id = "collection_admins".user_id`)}
-              where ${sql.raw(`"collections".id = "collection_admins".collection_id`)}
-              and ${nestedConditions}
-            )`,
-          );
-        } else if (tableName === "sales" && relatedTable === "claims") {
-          conditions.push(
-            sql<SqlBool>`exists (
-              select from ${sql.raw(`"claims"`)}
-              where ${sql.raw(`"claims".hypercert_id = "sales".hypercert_id`)}
+              select from ${sql.raw(`"${relatedTable}"`)}
+              where ${sql.raw(relation.joinCondition)}
               and ${nestedConditions}
             )`,
           );
         } else {
+          // Fall back to default foreign key pattern for standard relationships
           conditions.push(
             sql<SqlBool>`exists (
-            select from ${sql.raw(`"${relatedTable}"`)}
-            where ${sql.raw(`"${relatedTable}".id = "${tableName.toString()}".${relatedTable}_id`)}
+              select from ${sql.raw(`"${relatedTable}"`)}
+              where ${sql.raw(`"${relatedTable}".id = "${tableName.toString()}".${relatedTable}_id`)}
               and ${nestedConditions}
             )`,
           );
