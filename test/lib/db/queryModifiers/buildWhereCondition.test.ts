@@ -4,8 +4,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   buildWhereCondition,
   WhereFilter,
-} from "../../../src/lib/graphql/buildWhereCondition.js";
-import { DataDatabase } from "../../../src/types/kyselySupabaseData.js";
+} from "../../../../src/lib/db/queryModifiers/buildWhereCondition.js";
+import { DataDatabase } from "../../../../src/types/kyselySupabaseData.js";
 
 type GeneratedAlways<T> = import("kysely").GeneratedAlways<T>;
 

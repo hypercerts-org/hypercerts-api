@@ -5,7 +5,7 @@ import { SortOrder } from "../../../graphql/schemas/enums/sortEnums.js";
 import {
   buildWhereCondition,
   FilterValue,
-} from "../../../lib/graphql/buildWhereCondition.js";
+} from "../../../lib/db/queryModifiers/buildWhereCondition.js";
 
 /**
  * Applies where conditions to a query based on the provided arguments.

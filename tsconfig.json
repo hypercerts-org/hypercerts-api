@@ -25,12 +25,7 @@
       }
     ]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts",
-    "src/**/*.json",
-    "test/lib/graphql/typeRegistry.test.ts"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.json"],
   "exclude": ["node_modules"],
   "ts-node": {
     "swc": true

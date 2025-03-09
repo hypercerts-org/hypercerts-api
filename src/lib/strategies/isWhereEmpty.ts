@@ -1,4 +1,4 @@
-import { FilterValue } from "../graphql/buildWhereCondition.js";
+import { FilterValue } from "../db/queryModifiers/buildWhereCondition.js";
 import { WhereArgsType } from "../../lib/graphql/createEntityWhereArgs.js";
 import { EntityTypeDefs } from "../../graphql/schemas/typeDefs/typeDefs.js";
 import { EntityFields } from "../graphql/createEntityArgs.js";

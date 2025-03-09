@@ -1,5 +1,5 @@
 import { Expression, ExpressionBuilder, sql, SqlBool } from "kysely";
-import { SupportedDatabases } from "../../services/database/strategies/QueryStrategy.js";
+import { SupportedDatabases } from "../../../services/database/strategies/QueryStrategy.js";
 import { getRelation, hasRelation } from "./tableRelations.js";
 
 // Define more specific types for our filter values
