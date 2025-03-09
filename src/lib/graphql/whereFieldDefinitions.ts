@@ -1,3 +1,24 @@
+/**
+ * Defines the field types for filtering entities in GraphQL queries.
+ * This constant provides a schema-like structure that maps entity types to their
+ * filterable fields and their corresponding data types.
+ *
+ * Each entity (like Attestation, Blueprint, Collection, etc.) has a fields object
+ * that defines what properties can be used in where clauses and their expected types.
+ * This is useful for:
+ * - Type checking in GraphQL queries
+ * - Building dynamic filters
+ * - Validating query parameters
+ * - Generating TypeScript types for query builders
+ *
+ * @example
+ * // Structure for each entity:
+ * // EntityName: {
+ * //   fields: {
+ * //     fieldName: "fieldType"
+ * //   }
+ * // }
+ */
 // TODO: key values can be keyof EntityTypeDefs
 export const WhereFieldDefinitions = {
   Attestation: {
@@ -149,4 +170,9 @@ export const WhereFieldDefinitions = {
   },
 } as const;
 
+/**
+ * Type definition for the WhereFieldDefinitions constant.
+ * This type is used to ensure type safety when working with field definitions
+ * and can be used to extract field types for specific entities.
+ */
 export type WhereFieldDefinition = typeof WhereFieldDefinitions;
