@@ -1,8 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import {
-  TypeRegistry,
-  registry,
-} from "../../../src/lib/graphql/TypeRegistry.js";
+import { container } from "tsyringe";
+import { TypeRegistry } from "../../../src/lib/graphql/TypeRegistry.js";
 import { createEntitySortArgs } from "../../../src/lib/graphql/createEntitySortArgs.js";
 import { createEntityWhereArgs } from "../../../src/lib/graphql/createEntityWhereArgs.js";
 import { EntityTypeDefs } from "../../../src/graphql/schemas/typeDefs/typeDefs.js";
@@ -14,16 +12,18 @@ const testFields = {
 } as const;
 
 describe("TypeRegistry", () => {
-  let localRegistry: TypeRegistry;
+  let registry: TypeRegistry;
 
   beforeEach(() => {
-    localRegistry = new TypeRegistry();
+    // Reset the container before each test
+    container.clearInstances();
+    registry = container.resolve(TypeRegistry);
   });
 
   describe("WhereArgs", () => {
     it("should create new WhereArgs type when not found", () => {
       const creatorCalled = { value: false };
-      const whereArgs = localRegistry.getOrCreateWhereInput(
+      const whereArgs = registry.getOrCreateWhereInput(
         EntityTypeDefs.Hypercert,
         () => {
           creatorCalled.value = true;
@@ -38,14 +38,14 @@ describe("TypeRegistry", () => {
 
     it("should not call creator function when type already exists", () => {
       // First call to create the type
-      const firstCall = localRegistry.getOrCreateWhereInput(
+      const firstCall = registry.getOrCreateWhereInput(
         EntityTypeDefs.Hypercert,
         () => createEntityWhereArgs(EntityTypeDefs.Hypercert, testFields),
       );
 
       // Second call should reuse existing type
       const creatorCalled = { value: false };
-      const secondCall = localRegistry.getOrCreateWhereInput(
+      const secondCall = registry.getOrCreateWhereInput(
         EntityTypeDefs.Hypercert,
         () => {
           creatorCalled.value = true;
@@ -58,11 +58,11 @@ describe("TypeRegistry", () => {
     });
 
     it("should create different WhereArgs types for different entities", () => {
-      const firstEntity = localRegistry.getOrCreateWhereInput(
+      const firstEntity = registry.getOrCreateWhereInput(
         EntityTypeDefs.Hypercert,
         () => createEntityWhereArgs(EntityTypeDefs.Hypercert, testFields),
       );
-      const secondEntity = localRegistry.getOrCreateWhereInput(
+      const secondEntity = registry.getOrCreateWhereInput(
         EntityTypeDefs.Fraction,
         () => createEntityWhereArgs(EntityTypeDefs.Fraction, testFields),
       );
@@ -78,7 +78,7 @@ describe("TypeRegistry", () => {
       Map.prototype.get = () => undefined;
 
       expect(() =>
-        localRegistry.getOrCreateWhereInput(EntityTypeDefs.Hypercert, () =>
+        registry.getOrCreateWhereInput(EntityTypeDefs.Hypercert, () =>
           createEntityWhereArgs(EntityTypeDefs.Hypercert, testFields),
         ),
       ).toThrow("WhereInput not found for type Hypercert");
@@ -90,7 +90,7 @@ describe("TypeRegistry", () => {
 
   describe("SortArgs", () => {
     it("should create and store SortArgs type", () => {
-      const sortArgs = localRegistry.getOrCreateSortOptions(
+      const sortArgs = registry.getOrCreateSortOptions(
         EntityTypeDefs.Hypercert,
         () => createEntitySortArgs(EntityTypeDefs.Hypercert, testFields),
       );
@@ -100,11 +100,11 @@ describe("TypeRegistry", () => {
     });
 
     it("should return the same SortArgs type for the same entity", () => {
-      const firstCall = localRegistry.getOrCreateSortOptions(
+      const firstCall = registry.getOrCreateSortOptions(
         EntityTypeDefs.Hypercert,
         () => createEntitySortArgs(EntityTypeDefs.Hypercert, testFields),
       );
-      const secondCall = localRegistry.getOrCreateSortOptions(
+      const secondCall = registry.getOrCreateSortOptions(
         EntityTypeDefs.Hypercert,
         () => createEntitySortArgs(EntityTypeDefs.Hypercert, testFields),
       );
@@ -113,11 +113,11 @@ describe("TypeRegistry", () => {
     });
 
     it("should create different SortArgs types for different entities", () => {
-      const firstEntity = localRegistry.getOrCreateSortOptions(
+      const firstEntity = registry.getOrCreateSortOptions(
         EntityTypeDefs.Hypercert,
         () => createEntitySortArgs(EntityTypeDefs.Hypercert, testFields),
       );
-      const secondEntity = localRegistry.getOrCreateSortOptions(
+      const secondEntity = registry.getOrCreateSortOptions(
         EntityTypeDefs.Fraction,
         () => createEntitySortArgs(EntityTypeDefs.Fraction, testFields),
       );
@@ -133,7 +133,7 @@ describe("TypeRegistry", () => {
       Map.prototype.get = () => undefined;
 
       expect(() =>
-        localRegistry.getOrCreateSortOptions(EntityTypeDefs.Hypercert, () =>
+        registry.getOrCreateSortOptions(EntityTypeDefs.Hypercert, () =>
           createEntitySortArgs(EntityTypeDefs.Hypercert, testFields),
         ),
       ).toThrow("SortOptions not found for type Hypercert");
@@ -146,26 +146,26 @@ describe("TypeRegistry", () => {
   describe("Registry operations", () => {
     it("should clear all cached types", () => {
       // Create some types
-      localRegistry.getOrCreateWhereInput(EntityTypeDefs.Hypercert, () =>
+      registry.getOrCreateWhereInput(EntityTypeDefs.Hypercert, () =>
         createEntityWhereArgs(EntityTypeDefs.Hypercert, testFields),
       );
-      localRegistry.getOrCreateSortOptions(EntityTypeDefs.Hypercert, () =>
+      registry.getOrCreateSortOptions(EntityTypeDefs.Hypercert, () =>
         createEntitySortArgs(EntityTypeDefs.Hypercert, testFields),
       );
 
       // Clear the registry
-      localRegistry.clear();
+      registry.clear();
 
       // Verify types are recreated (creator is called again)
       const whereCreatorCalled = { value: false };
       const sortCreatorCalled = { value: false };
 
-      localRegistry.getOrCreateWhereInput(EntityTypeDefs.Hypercert, () => {
+      registry.getOrCreateWhereInput(EntityTypeDefs.Hypercert, () => {
         whereCreatorCalled.value = true;
         return createEntityWhereArgs(EntityTypeDefs.Hypercert, testFields);
       });
 
-      localRegistry.getOrCreateSortOptions(EntityTypeDefs.Hypercert, () => {
+      registry.getOrCreateSortOptions(EntityTypeDefs.Hypercert, () => {
         sortCreatorCalled.value = true;
         return createEntitySortArgs(EntityTypeDefs.Hypercert, testFields);
       });
@@ -182,7 +182,7 @@ describe("TypeRegistry", () => {
       }
 
       // This should compile without type errors
-      const whereArgs = localRegistry.getOrCreateWhereInput<TestWhereType>(
+      const whereArgs = registry.getOrCreateWhereInput<TestWhereType>(
         EntityTypeDefs.Hypercert,
         () => createEntityWhereArgs(EntityTypeDefs.Hypercert, testFields),
       );
@@ -199,20 +199,22 @@ describe("TypeRegistry", () => {
     });
   });
 
-  describe("Singleton registry", () => {
-    it("should export a singleton instance", () => {
-      expect(registry).toBeInstanceOf(TypeRegistry);
+  describe("Singleton behavior", () => {
+    it("should maintain singleton instance across multiple resolves", () => {
+      const firstInstance = container.resolve(TypeRegistry);
+      const secondInstance = container.resolve(TypeRegistry);
+      expect(firstInstance).toBe(secondInstance);
     });
 
-    it("should maintain state across multiple imports", () => {
-      const whereArgs = registry.getOrCreateWhereInput(
+    it("should maintain state across multiple resolves", () => {
+      const firstInstance = container.resolve(TypeRegistry);
+      const whereArgs = firstInstance.getOrCreateWhereInput(
         EntityTypeDefs.Hypercert,
         () => createEntityWhereArgs(EntityTypeDefs.Hypercert, testFields),
       );
 
-      // Simulate another import using the same registry
-      const sameRegistry = registry;
-      const sameWhereArgs = sameRegistry.getOrCreateWhereInput(
+      const secondInstance = container.resolve(TypeRegistry);
+      const sameWhereArgs = secondInstance.getOrCreateWhereInput(
         EntityTypeDefs.Hypercert,
         () => createEntityWhereArgs(EntityTypeDefs.Hypercert, testFields),
       );

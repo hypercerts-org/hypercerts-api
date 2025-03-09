@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { ClassType } from "type-graphql";
+import { container, singleton } from "tsyringe";
 import { EntityTypeDefs } from "../../graphql/schemas/typeDefs/typeDefs.js";
 
 /**
@@ -16,21 +17,19 @@ import { EntityTypeDefs } from "../../graphql/schemas/typeDefs/typeDefs.js";
  *
  * @example
  * ```typescript
- * // Using dependency injection (recommended for application code)
  * import { container } from 'tsyringe';
- * const registry = container.resolve(TypeRegistry);
  *
- * // Creating a new instance (useful for testing)
- * const testRegistry = new TypeRegistry();
+ * // Get the singleton instance
+ * const registry = container.resolve(TypeRegistry);
  * ```
  */
+@singleton()
 export class TypeRegistry {
   private whereInput: Map<string, ClassType<object>>;
   private sortOptions: Map<string, ClassType<object>>;
 
   /**
    * Creates a new instance of the registry with empty caches.
-   * Note: For application code, use dependency injection to resolve the singleton instance.
    */
   constructor() {
     this.whereInput = new Map<string, ClassType<object>>();
@@ -126,6 +125,4 @@ export class TypeRegistry {
   }
 }
 
-//TODO refactor into ts-syringe singleton for consistency
-// Export a single instance
-export const registry = new TypeRegistry();
+export const registry = container.resolve(TypeRegistry);
