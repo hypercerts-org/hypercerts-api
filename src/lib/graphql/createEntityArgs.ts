@@ -1,6 +1,9 @@
 import { EntityTypeDefs } from "../../graphql/schemas/typeDefs/typeDefs.js";
 import { SearchOptionMap } from "../../types/argTypes.js";
-import { createEntitySortArgs } from "./createEntitySortArgs.js";
+import {
+  createEntitySortArgs,
+  type SortOptions,
+} from "./createEntitySortArgs.js";
 import { createEntityWhereArgs } from "./createEntityWhereArgs.js";
 import { registry } from "./TypeRegistry.js";
 
@@ -157,8 +160,9 @@ export function createEntityArgs<
   const WhereInput = registry.getOrCreateWhereInput(entityName, () =>
     createEntityWhereArgs(entityName, fields),
   );
-  const SortOptions = registry.getOrCreateSortOptions<TFields>(entityName, () =>
-    createEntitySortArgs(entityName, fields),
+  const SortOptions = registry.getOrCreateSortOptions<SortOptions<TFields>>(
+    entityName,
+    () => createEntitySortArgs(entityName, fields),
   );
 
   return {
