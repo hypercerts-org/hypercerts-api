@@ -102,6 +102,7 @@ const isNestedFilter = (value: FilterValue): value is NestedFilterValue =>
  *
  * @type {Record<FilterOperator, FilterBuilder>}
  */
+// TODO: add support for negated filters
 const filterBuilders: Record<FilterOperator, FilterBuilder> = {
   eq: (tableName, column, value) =>
     sql<SqlBool>`${sql.raw(`"${tableName}"."${column}"`)} = ${value}`,

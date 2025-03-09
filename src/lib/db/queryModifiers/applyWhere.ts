@@ -8,11 +8,36 @@ import {
 } from "../../../lib/graphql/buildWhereCondition.js";
 
 /**
- * Applies where conditions to a query based on the provided arguments
- * @param tableName The name of the table to query
- * @param query The query to apply the where conditions to
- * @param args The arguments containing where conditions
+ * Applies where conditions to a query based on the provided arguments.
+ * This function processes each condition in the where clause and applies them to the query.
+ *
+ * @typeParam DB - The database type extending SupportedDatabases
+ * @typeParam T - The table name type (must be a key of DB and a string)
+ * @typeParam Args - The arguments type extending BaseQueryArgsType
+ *
+ * @param tableName - The name of the table to query
+ * @param query - The Kysely SelectQueryBuilder instance to apply where conditions to
+ * @param args - The arguments containing where conditions
+ *
  * @returns The modified query with where conditions applied
+ *
+ * @remarks
+ * - If no where conditions are provided (args.where is undefined), returns the original query
+ * - Each property in the where object is processed independently
+ * - Invalid conditions (those that return undefined from buildWhereCondition) are skipped
+ * - The conditions are applied in sequence using AND logic
+ *
+ * @example
+ * ```typescript
+ * const query = db.selectFrom('users');
+ * const args = {
+ *   where: {
+ *     name: { eq: "John" },
+ *     age: { gt: 18 }
+ *   }
+ * };
+ * const result = applyWhere('users', query, args);
+ * ```
  */
 export function applyWhere<
   DB extends SupportedDatabases,
