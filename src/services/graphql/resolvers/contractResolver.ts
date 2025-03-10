@@ -1,11 +1,11 @@
 import { inject, injectable } from "tsyringe";
 import { Args, Query, Resolver } from "type-graphql";
-import { ContractService } from "../../database/entities/ContractEntityService.js";
 import { GetContractsArgs } from "../../../graphql/schemas/args/contractArgs.js";
 import {
   Contract,
   GetContractsResponse,
 } from "../../../graphql/schemas/typeDefs/contractTypeDefs.js";
+import { ContractService } from "../../database/entities/ContractEntityService.js";
 
 /**
  * GraphQL resolver for Contract operations.
@@ -45,7 +45,6 @@ class ContractResolver {
    * @returns A promise that resolves to an object containing:
    *          - data: Array of contracts matching the query
    *          - count: Total number of matching contracts
-   * @throws {Error} If the contract service query fails
    *
    * @example
    * Query with filtering:
@@ -70,7 +69,14 @@ class ContractResolver {
    */
   @Query(() => GetContractsResponse)
   async contracts(@Args() args: GetContractsArgs) {
-    return this.contractService.getContracts(args);
+    try {
+      return await this.contractService.getContracts(args);
+    } catch (e) {
+      console.error(
+        `[ContractResolver::contracts] Error fetching contracts: ${(e as Error).message}`,
+      );
+      return null;
+    }
   }
 }
 

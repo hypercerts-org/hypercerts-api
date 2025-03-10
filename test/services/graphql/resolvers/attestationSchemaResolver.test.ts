@@ -88,7 +88,7 @@ describe("AttestationSchemaResolver", () => {
       // Act & Assert
       await expect(
         attestationSchemaResolver.attestationSchemas({}),
-      ).rejects.toThrow(error);
+      ).resolves.toBeNull();
     });
   });
 
@@ -132,7 +132,7 @@ describe("AttestationSchemaResolver", () => {
       // Act & Assert
       await expect(
         attestationSchemaResolver.attestations(schema),
-      ).rejects.toThrow(error);
+      ).resolves.toBeNull();
     });
   });
 });

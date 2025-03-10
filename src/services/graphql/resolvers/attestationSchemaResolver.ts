@@ -1,13 +1,13 @@
 import { inject, injectable } from "tsyringe";
 import { Args, FieldResolver, Query, Resolver, Root } from "type-graphql";
-import { AttestationService } from "../../../services/database/entities/AttestationEntityService.js";
-import { AttestationSchemaService } from "../../../services/database/entities/AttestationSchemaEntityService.js";
 import { GetAttestationSchemasArgs } from "../../../graphql/schemas/args/attestationSchemaArgs.js";
-import { GetAttestationsResponse } from "../../../graphql/schemas/typeDefs/attestationTypeDefs.js";
 import {
   AttestationSchema,
   GetAttestationsSchemaResponse,
 } from "../../../graphql/schemas/typeDefs/attestationSchemaTypeDefs.js";
+import { GetAttestationsResponse } from "../../../graphql/schemas/typeDefs/attestationTypeDefs.js";
+import { AttestationService } from "../../../services/database/entities/AttestationEntityService.js";
+import { AttestationSchemaService } from "../../../services/database/entities/AttestationSchemaEntityService.js";
 
 /**
  * GraphQL resolver for AttestationSchema operations.
@@ -44,7 +44,6 @@ class AttestationSchemaResolver {
    * @returns A promise that resolves to an object containing:
    *          - data: Array of attestation schemas matching the query
    *          - count: Total number of matching schemas
-   * @throws {Error} If the schema service query fails
    *
    * @example
    * Query with filtering:
@@ -70,7 +69,14 @@ class AttestationSchemaResolver {
    */
   @Query(() => GetAttestationsSchemaResponse)
   async attestationSchemas(@Args() args: GetAttestationSchemasArgs) {
-    return await this.attestationSchemaService.getAttestationSchemas(args);
+    try {
+      return await this.attestationSchemaService.getAttestationSchemas(args);
+    } catch (e) {
+      console.error(
+        `[AttestationSchemaResolver::attestationSchemas] Error fetching attestation schemas: ${(e as Error).message}`,
+      );
+      return null;
+    }
   }
 
   /**
@@ -107,9 +113,16 @@ class AttestationSchemaResolver {
    */
   @FieldResolver(() => GetAttestationsResponse, { nullable: true })
   async attestations(@Root() schema: Partial<AttestationSchema>) {
-    return await this.attestationService.getAttestations({
-      where: { supported_schemas_id: { eq: schema.id } },
-    });
+    try {
+      return await this.attestationService.getAttestations({
+        where: { supported_schemas_id: { eq: schema.id } },
+      });
+    } catch (e) {
+      console.error(
+        `[AttestationSchemaResolver::attestations] Error fetching attestations: ${(e as Error).message}`,
+      );
+      return null;
+    }
   }
 }
 

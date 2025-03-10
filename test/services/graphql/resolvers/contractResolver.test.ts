@@ -64,8 +64,8 @@ describe("ContractResolver", () => {
       // Assert
       expect(mockContractService.getContracts).toHaveBeenCalledWith(args);
       expect(result).toEqual(expectedResult);
-      expect(result.data[0].contract_address).toBe(mockContractAddress);
-      expect(result.data[1].contract_address).toBe(mockContractAddress);
+      expect(result?.data[0].contract_address).toBe(mockContractAddress);
+      expect(result?.data[1].contract_address).toBe(mockContractAddress);
     });
 
     it("should handle empty result set", async () => {
@@ -80,8 +80,8 @@ describe("ContractResolver", () => {
       const result = await resolver.contracts({});
 
       // Assert
-      expect(result.data).toHaveLength(0);
-      expect(result.count).toBe(0);
+      expect(result?.data).toHaveLength(0);
+      expect(result?.count).toBe(0);
     });
 
     it("should handle errors from contractService", async () => {
@@ -90,7 +90,7 @@ describe("ContractResolver", () => {
       mockContractService.getContracts.mockRejectedValue(error);
 
       // Act & Assert
-      await expect(resolver.contracts({})).rejects.toThrow(error);
+      await expect(resolver.contracts({})).resolves.toBeNull();
     });
   });
 });

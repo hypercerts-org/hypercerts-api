@@ -94,11 +94,7 @@ class FractionResolver {
       console.error(
         `[FractionResolver::fractions] Error fetching fractions: ${(e as Error).message}`,
       );
-      // Return empty result instead of throwing
-      return {
-        data: [],
-        count: 0,
-      };
+      return null;
     }
   }
 
@@ -208,10 +204,7 @@ class FractionResolver {
         `[FractionResolver::orders] Error fetching orders for fraction ${fraction.id}: ${(e as Error).message}`,
       );
       // Return empty result instead of throwing
-      return {
-        data: [],
-        count: 0,
-      };
+      return null;
     }
   }
 
@@ -275,11 +268,7 @@ class FractionResolver {
       console.error(
         `[FractionResolver::sales] Error fetching sales for fraction ${fraction.id}: ${(e as Error).message}`,
       );
-      // Return empty result instead of throwing
-      return {
-        data: [],
-        count: 0,
-      };
+      return null;
     }
   }
 }

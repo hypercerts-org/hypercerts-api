@@ -80,7 +80,7 @@ describe("AllowlistRecordResolver", () => {
       mockAllowlistRecordService.getAllowlistRecords.mockRejectedValue(error);
 
       // Act & Assert
-      await expect(resolver.allowlistRecords(args)).rejects.toThrow(error);
+      await expect(resolver.allowlistRecords(args)).resolves.toBeNull();
     });
   });
 
@@ -135,7 +135,7 @@ describe("AllowlistRecordResolver", () => {
       mockHypercertsService.getHypercert.mockRejectedValue(error);
 
       // Act & Assert
-      await expect(resolver.hypercert(allowlistRecord)).rejects.toThrow(error);
+      await expect(resolver.hypercert(allowlistRecord)).resolves.toBeNull();
     });
   });
 });

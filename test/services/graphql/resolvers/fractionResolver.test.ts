@@ -100,10 +100,7 @@ describe("FractionResolver", () => {
       mockFractionService.getFractions.mockRejectedValue(error);
 
       // Act & Assert
-      await expect(resolver.fractions({})).resolves.toEqual({
-        data: [],
-        count: 0,
-      });
+      await expect(resolver.fractions({})).resolves.toBeNull();
     });
   });
 
@@ -201,10 +198,7 @@ describe("FractionResolver", () => {
       mockMarketplaceOrdersService.getOrders.mockRejectedValue(error);
 
       // Act & Assert
-      await expect(resolver.orders(mockFraction)).resolves.toEqual({
-        data: [],
-        count: 0,
-      });
+      await expect(resolver.orders(mockFraction)).resolves.toBeNull();
     });
   });
 
@@ -267,10 +261,7 @@ describe("FractionResolver", () => {
       mockSalesService.getSales.mockRejectedValue(error);
 
       // Act & Assert
-      await expect(resolver.sales(mockFraction)).resolves.toEqual({
-        data: [],
-        count: 0,
-      });
+      await expect(resolver.sales(mockFraction)).resolves.toBeNull();
     });
   });
 });
