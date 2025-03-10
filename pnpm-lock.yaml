@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@faker-js/faker':
+        specifier: ^9.6.0
+        version: 9.6.0
       '@graphql-tools/merge':
         specifier: ^9.0.19
         version: 9.0.19(graphql@16.10.0)
@@ -118,7 +121,7 @@ importers:
         version: 5.11.0(graphql@16.10.0)
       kysely:
         specifier: ^0.27.4
-        version: 0.27.4
+        version: 0.27.6
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -272,7 +275,7 @@ importers:
         version: 9.1.5
       kysely-supabase:
         specifier: ^0.2.0
-        version: 0.2.0(@supabase/supabase-js@2.42.5)(kysely@0.27.4)(supabase@1.191.3)
+        version: 0.2.0(@supabase/supabase-js@2.42.5)(kysely@0.27.6)(supabase@1.191.3)
       lint-staged:
         specifier: ^15.2.9
         version: 15.2.9
@@ -287,7 +290,7 @@ importers:
         version: 3.0.3
       pg-mem:
         specifier: ^3.0.5
-        version: 3.0.5(kysely@0.27.4)
+        version: 3.0.5(kysely@0.27.6)
       prettier:
         specifier: 3.3.2
         version: 3.3.2
@@ -949,7 +952,6 @@ packages:
   '@ethereumjs/rlp@4.0.1':
     resolution: {integrity: sha512-tqsQiBQDQdmPWE1xkkBq4rlSW5QZpLOUJ5RJh2/9fug+q9tnUhuZoVLk7s0scUIKTOzEtR72DFBXI4WiZcMpvw==}
     engines: {node: '>=14'}
-    hasBin: true
 
   '@ethereumjs/util@8.1.0':
     resolution: {integrity: sha512-zQ0IqbdX8FZ9aw11vP+dZkKDkS+kgIvQPHnSAXzP9pLu+Rfu3D3XEeLbicvoXJTYnhZiPmsZUxgdzXwNKxRPbA==}
@@ -1012,6 +1014,10 @@ packages:
   '@faker-js/faker@8.4.1':
     resolution: {integrity: sha512-XQ3cU+Q8Uqmrbf2e0cIC/QN43sTBSC8KF12u29Mb47tWrt2hAgBXSgpZMj4Ao8Uk0iJcU99QsOCaIL8934obCg==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0, npm: '>=6.14.13'}
+
+  '@faker-js/faker@9.6.0':
+    resolution: {integrity: sha512-3vm4by+B5lvsFPSyep3ELWmZfE3kicDtmemVpuwl1yH7tqtnHdsA6hG8fbXedMVdkzgtvzWoRgjSB4Q+FHnZiw==}
+    engines: {node: '>=18.0.0', npm: '>=9.0.0'}
 
   '@fastify/busboy@2.1.0':
     resolution: {integrity: sha512-+KpH+QxZU7O4675t3mnkQKcZZg56u+K/Ct2K+N2AZYNVK8kyeo/bI18tI8aPm3tvNNRyTWfj6s5tnGNlcbQRsA==}
@@ -5129,8 +5135,8 @@ packages:
       kysely: '>= 0.24.0 < 1'
       supabase: '>= 1.0.0 < 2'
 
-  kysely@0.27.4:
-    resolution: {integrity: sha512-dyNKv2KRvYOQPLCAOCjjQuCk4YFd33BvGdf/o5bC7FiW+BB6snA81Zt+2wT9QDFzKqxKa5rrOmvlK/anehCcgA==}
+  kysely@0.27.6:
+    resolution: {integrity: sha512-FIyV/64EkKhJmjgC0g2hygpBv5RNWVPyNCqSAD7eTCv6eFWNIi4PN1UvdSJGicN/o35bnevgis4Y0UDC0qi8jQ==}
     engines: {node: '>=14.0.0'}
 
   levn@0.4.1:
@@ -8270,6 +8276,8 @@ snapshots:
       '@ethersproject/strings': 5.7.0
 
   '@faker-js/faker@8.4.1': {}
+
+  '@faker-js/faker@9.6.0': {}
 
   '@fastify/busboy@2.1.0': {}
 
@@ -13515,13 +13523,13 @@ snapshots:
 
   kleur@4.1.5: {}
 
-  kysely-supabase@0.2.0(@supabase/supabase-js@2.42.5)(kysely@0.27.4)(supabase@1.191.3):
+  kysely-supabase@0.2.0(@supabase/supabase-js@2.42.5)(kysely@0.27.6)(supabase@1.191.3):
     dependencies:
       '@supabase/supabase-js': 2.42.5
-      kysely: 0.27.4
+      kysely: 0.27.6
       supabase: 1.191.3
 
-  kysely@0.27.4: {}
+  kysely@0.27.6: {}
 
   levn@0.4.1:
     dependencies:
@@ -14371,7 +14379,7 @@ snapshots:
 
   pg-int8@1.0.1: {}
 
-  pg-mem@3.0.5(kysely@0.27.4):
+  pg-mem@3.0.5(kysely@0.27.6):
     dependencies:
       functional-red-black-tree: 1.0.1
       immutable: 4.3.4
@@ -14381,7 +14389,7 @@ snapshots:
       object-hash: 2.2.0
       pgsql-ast-parser: 12.0.1
     optionalDependencies:
-      kysely: 0.27.4
+      kysely: 0.27.6
 
   pg-numeric@1.0.2: {}
 
