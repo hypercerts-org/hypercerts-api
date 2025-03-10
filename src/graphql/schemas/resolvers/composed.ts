@@ -1,4 +1,4 @@
-import { HypercertResolver } from "./hypercertResolver.js";
+import { HypercertResolver } from "../../../services/graphql/resolvers/hypercertResolver.js";
 import { MetadataResolver } from "../../../services/graphql/resolvers/metadataResolver.js";
 import { ContractResolver } from "../../../services/graphql/resolvers/contractResolver.js";
 import { FractionResolver } from "../../../services/graphql/resolvers/fractionResolver.js";

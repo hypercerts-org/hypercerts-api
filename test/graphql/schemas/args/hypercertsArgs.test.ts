@@ -5,6 +5,7 @@ import {
   HypercertWhereInput,
 } from "../../../../src/graphql/schemas/args/hypercertsArgs.js";
 
+//TOOD can be removed later, used this more as a smoke test during development
 describe("HypercertsArgs", () => {
   it("should have correct class names", () => {
     expect(GetHypercertsArgs.name).toBe("GetHypercertsArgs");

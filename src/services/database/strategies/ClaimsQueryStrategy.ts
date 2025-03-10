@@ -5,8 +5,20 @@ import { CachingDatabase } from "../../../types/kyselySupabaseCaching.js";
 import { QueryStrategy } from "./QueryStrategy.js";
 
 /**
- * Strategy for querying claims
- * Handles joins with metadata, attestations, fractions, and contracts tables
+ * Strategy for building database queries for claims.
+ * Implements query logic for claim retrieval and counting.
+ *
+ * This strategy extends the base QueryStrategy to provide claim-specific query building.
+ * It handles:
+ * - Basic data retrieval from the claims table
+ * - Filtering based on relationships with:
+ *   - contracts
+ *   - fractions
+ *   - metadata
+ *   - attestations
+ * - Counting operations with appropriate joins
+ *
+ * @template CachingDatabase - The database type containing the claims table
  */
 export class ClaimsQueryStrategy extends QueryStrategy<
   CachingDatabase,
@@ -15,6 +27,29 @@ export class ClaimsQueryStrategy extends QueryStrategy<
 > {
   protected readonly tableName = "claims" as const;
 
+  /**
+   * Builds a query to retrieve claim data.
+   * Handles optional filtering through joins with related tables.
+   *
+   * @param db - Kysely database instance
+   * @param args - Optional query arguments for filtering
+   * @returns A query builder for retrieving claim data
+   *
+   * @example
+   * ```typescript
+   * // Basic query without filters
+   * buildDataQuery(db);
+   * // SELECT * FROM claims
+   *
+   * // Query with contract filtering
+   * buildDataQuery(db, { where: { contract: { ... } } });
+   * // SELECT * FROM claims
+   * // WHERE EXISTS (
+   * //   SELECT * FROM contracts
+   * //   WHERE contracts.id = claims.contracts_id
+   * // )
+   * ```
+   */
   buildDataQuery(db: Kysely<CachingDatabase>, args?: GetHypercertsArgs) {
     if (!args) {
       return db.selectFrom(this.tableName).selectAll();
@@ -62,9 +97,32 @@ export class ClaimsQueryStrategy extends QueryStrategy<
           ),
         );
       })
-      .selectAll("claims");
+      .selectAll(this.tableName);
   }
 
+  /**
+   * Builds a query to count claims.
+   * Handles optional filtering through joins with related tables.
+   *
+   * @param db - Kysely database instance
+   * @param args - Optional query arguments for filtering
+   * @returns A query builder for counting claims
+   *
+   * @example
+   * ```typescript
+   * // Count all claims
+   * buildCountQuery(db);
+   * // SELECT COUNT(*) as count FROM claims
+   *
+   * // Count with metadata filtering
+   * buildCountQuery(db, { where: { metadata: { ... } } });
+   * // SELECT COUNT(*) as count FROM claims
+   * // WHERE EXISTS (
+   * //   SELECT * FROM metadata
+   * //   WHERE metadata.uri = claims.uri
+   * // )
+   * ```
+   */
   buildCountQuery(db: Kysely<CachingDatabase>, args?: GetHypercertsArgs) {
     if (!args) {
       return db.selectFrom(this.tableName).select((eb) => {
