@@ -7,7 +7,7 @@ import { AttestationSchemaResolver } from "../../../services/graphql/resolvers/a
 import { OrderResolver } from "./orderResolver.js";
 import { HyperboardResolver } from "./hyperboardResolver.js";
 import { AllowlistRecordResolver } from "../../../services/graphql/resolvers/allowlistRecordResolver.js";
-import { SalesResolver } from "./salesResolver.js";
+import { SalesResolver } from "../../../services/graphql/resolvers/salesResolver.js";
 import { UserResolver } from "./userResolver.js";
 import { BlueprintResolver } from "./blueprintResolver.js";
 import { SignatureRequestResolver } from "./signatureRequestResolver.js";
