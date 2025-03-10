@@ -2,15 +2,15 @@ import { inject, injectable } from "tsyringe";
 import { Args, FieldResolver, Query, Resolver, Root } from "type-graphql";
 import { getAddress, isAddress } from "viem";
 import { z } from "zod";
-import { AttestationService } from "../../database/entities/AttestationEntityService.js";
-import { AttestationSchemaService } from "../../database/entities/AttestationSchemaEntityService.js";
-import { HypercertsService } from "../../database/entities/HypercertsEntityService.js";
-import { MetadataService } from "../../database/entities/MetadataEntityService.js";
 import { GetAttestationsArgs } from "../../../graphql/schemas/args/attestationArgs.js";
 import {
   Attestation,
   GetAttestationsResponse,
 } from "../../../graphql/schemas/typeDefs/attestationTypeDefs.js";
+import { AttestationService } from "../../database/entities/AttestationEntityService.js";
+import { AttestationSchemaService } from "../../database/entities/AttestationSchemaEntityService.js";
+import { HypercertsService } from "../../database/entities/HypercertsEntityService.js";
+import { MetadataService } from "../../database/entities/MetadataEntityService.js";
 
 /**
  * Schema for validating hypercert pointer data in attestations.
@@ -70,9 +70,9 @@ const HypercertPointer = z.object({
  * - Field resolution for metadata associated with the attested hypercert
  *
  * Error handling:
- * - Invalid attestation data returns undefined for related fields
+ * - Invalid attestation data returns null for related fields
  * - Database errors are propagated to the GraphQL layer
- * - Schema validation errors result in undefined hypercert IDs
+ * - Schema validation errors result in null hypercert IDs
  *
  * @injectable Marks the class as injectable for dependency injection with tsyringe
  * @resolver Marks the class as a GraphQL resolver for the Attestation type
@@ -107,7 +107,6 @@ class AttestationResolver {
    * @returns A promise that resolves to an object containing:
    *          - data: Array of attestations matching the query
    *          - count: Total number of matching attestations
-   * @throws {Error} If the database query fails
    *
    * Filtering supports:
    * - Attestation fields (id, supported_schemas_id, etc.)
@@ -137,7 +136,14 @@ class AttestationResolver {
    */
   @Query(() => GetAttestationsResponse)
   async attestations(@Args() args: GetAttestationsArgs) {
-    return await this.attestationService.getAttestations(args);
+    try {
+      return await this.attestationService.getAttestations(args);
+    } catch (e) {
+      console.error(
+        `[AttestationResolver::attestations] Error fetching attestations: ${(e as Error).message}`,
+      );
+      return null;
+    }
   }
 
   /**
@@ -152,7 +158,6 @@ class AttestationResolver {
    *            - attestation.data is null/undefined
    *            - hypercert ID cannot be extracted from data
    *            - no matching hypercert is found
-   * @throws {Error} If the hypercert service query fails
    *
    * @example
    * Query with hypercert field:
@@ -173,19 +178,26 @@ class AttestationResolver {
    */
   @FieldResolver()
   async hypercert(@Root() attestation: Attestation) {
-    if (!attestation.data) return;
+    try {
+      if (!attestation.data) return null;
 
-    const attested_hypercert_id = this.getHypercertIdFromAttestationData(
-      attestation.data,
-    );
+      const attested_hypercert_id = this.getHypercertIdFromAttestationData(
+        attestation.data,
+      );
 
-    if (!attested_hypercert_id) return;
+      if (!attested_hypercert_id) return null;
 
-    return await this.hypercertService.getHypercert({
-      where: {
-        hypercert_id: { eq: attested_hypercert_id },
-      },
-    });
+      return await this.hypercertService.getHypercert({
+        where: {
+          hypercert_id: { eq: attested_hypercert_id },
+        },
+      });
+    } catch (e) {
+      console.error(
+        `[AttestationResolver::hypercert] Error fetching hypercert: ${(e as Error).message}`,
+      );
+      return null;
+    }
   }
 
   /**
@@ -196,7 +208,6 @@ class AttestationResolver {
    * @returns A promise that resolves to:
    *          - The associated schema data if found
    *          - undefined if no schema ID is present
-   * @throws {Error} If the schema service query fails
    *
    * @example
    * Query with schema field:
@@ -219,13 +230,20 @@ class AttestationResolver {
    */
   @FieldResolver()
   async eas_schema(@Root() attestation: Attestation) {
-    if (!attestation.supported_schemas_id) return;
+    try {
+      if (!attestation.supported_schemas_id) return null;
 
-    return await this.attestationSchemaService.getAttestationSchema({
-      where: {
-        id: { eq: attestation.supported_schemas_id },
-      },
-    });
+      return await this.attestationSchemaService.getAttestationSchema({
+        where: {
+          id: { eq: attestation.supported_schemas_id },
+        },
+      });
+    } catch (e) {
+      console.error(
+        `[AttestationResolver::eas_schema] Error fetching eas_schema: ${(e as Error).message}`,
+      );
+      return null;
+    }
   }
 
   /**
@@ -263,17 +281,24 @@ class AttestationResolver {
   //TODO: Should this be part of the resolved hypercert data?
   @FieldResolver()
   async metadata(@Root() attestation: Attestation) {
-    if (!attestation.data) return;
+    try {
+      if (!attestation.data) return null;
 
-    const attested_hypercert_id = this.getHypercertIdFromAttestationData(
-      attestation.data,
-    );
+      const attested_hypercert_id = this.getHypercertIdFromAttestationData(
+        attestation.data,
+      );
 
-    if (!attested_hypercert_id) return;
+      if (!attested_hypercert_id) return null;
 
-    return await this.metadataService.getMetadataSingle({
-      where: { hypercerts: { hypercert_id: { eq: attested_hypercert_id } } },
-    });
+      return await this.metadataService.getMetadataSingle({
+        where: { hypercerts: { hypercert_id: { eq: attested_hypercert_id } } },
+      });
+    } catch (e) {
+      console.error(
+        `[AttestationResolver::metadata] Error fetching metadata: ${(e as Error).message}`,
+      );
+      return null;
+    }
   }
 
   /**
@@ -299,17 +324,22 @@ class AttestationResolver {
    * getHypercertIdFromAttestationData(null) // returns undefined
    * ```
    */
-  getHypercertIdFromAttestationData(
-    attestationData: unknown,
-  ): string | undefined {
-    if (!attestationData) return;
+  getHypercertIdFromAttestationData(attestationData: unknown): string | null {
+    try {
+      if (!attestationData) return null;
 
-    const parseResult = HypercertPointer.safeParse(attestationData);
+      const parseResult = HypercertPointer.safeParse(attestationData);
 
-    if (!parseResult.success) return;
+      if (!parseResult.success) return null;
 
-    const { chain_id, contract_address, token_id } = parseResult.data;
-    return `${chain_id.toString()}-${getAddress(contract_address)}-${token_id.toString()}`;
+      const { chain_id, contract_address, token_id } = parseResult.data;
+      return `${chain_id.toString()}-${getAddress(contract_address)}-${token_id.toString()}`;
+    } catch (e) {
+      console.error(
+        `[AttestationResolver::getHypercertIdFromAttestationData] Error parsing hypercert ID: ${(e as Error).message}`,
+      );
+      return null;
+    }
   }
 }
 

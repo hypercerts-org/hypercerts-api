@@ -59,7 +59,14 @@ class AllowlistRecordResolver {
    */
   @Query(() => GetAllowlistRecordResponse)
   async allowlistRecords(@Args() args: GetAllowlistRecordsArgs) {
-    return await this.allowlistRecordService.getAllowlistRecords(args);
+    try {
+      return await this.allowlistRecordService.getAllowlistRecords(args);
+    } catch (e) {
+      console.error(
+        `[AllowlistRecordResolver::allowlistRecords] Error fetching allowlist records: ${(e as Error).message}`,
+      );
+      return null;
+    }
   }
 
   /**
@@ -87,9 +94,16 @@ class AllowlistRecordResolver {
    */
   @FieldResolver()
   async hypercert(@Root() allowlistRecord: AllowlistRecord) {
-    return await this.hypercertsService.getHypercert({
-      where: { hypercert_id: { eq: allowlistRecord.hypercert_id } },
-    });
+    try {
+      return await this.hypercertsService.getHypercert({
+        where: { hypercert_id: { eq: allowlistRecord.hypercert_id } },
+      });
+    } catch (e) {
+      console.error(
+        `[AllowlistRecordResolver::hypercert] Error fetching hypercert: ${(e as Error).message}`,
+      );
+      return null;
+    }
   }
 }
 

@@ -97,7 +97,7 @@ describe("AttestationResolver", () => {
       mockAttestationService.getAttestations.mockRejectedValue(error);
 
       // Act & Assert
-      await expect(resolver.attestations({})).rejects.toThrow(error);
+      await expect(resolver.attestations({})).resolves.toBeNull();
     });
   });
 
@@ -132,7 +132,7 @@ describe("AttestationResolver", () => {
       expect(result).toEqual(expectedHypercert);
     });
 
-    it("should return undefined when attestation has no data", async () => {
+    it("should return null when attestation has no data", async () => {
       // Arrange
       const attestation: Attestation = {
         id: "1",
@@ -143,7 +143,7 @@ describe("AttestationResolver", () => {
       const result = await resolver.hypercert(attestation);
 
       // Assert
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
       expect(mockHypercertService.getHypercert).not.toHaveBeenCalled();
     });
 
@@ -160,7 +160,7 @@ describe("AttestationResolver", () => {
       const result = await resolver.hypercert(attestation);
 
       // Assert
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
       expect(mockHypercertService.getHypercert).not.toHaveBeenCalled();
     });
   });
@@ -194,7 +194,7 @@ describe("AttestationResolver", () => {
       expect(result).toEqual(expectedSchema);
     });
 
-    it("should return undefined when attestation has no schema id", async () => {
+    it("should return null when attestation has no schema id", async () => {
       // Arrange
       const attestation: Attestation = {
         id: "1",
@@ -204,7 +204,7 @@ describe("AttestationResolver", () => {
       const result = await resolver.eas_schema(attestation);
 
       // Assert
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
       expect(
         mockAttestationSchemaService.getAttestationSchema,
       ).not.toHaveBeenCalled();
@@ -255,7 +255,7 @@ describe("AttestationResolver", () => {
       const result = await resolver.metadata(attestation);
 
       // Assert
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
       expect(mockMetadataService.getMetadataSingle).not.toHaveBeenCalled();
     });
   });
@@ -310,7 +310,7 @@ describe("AttestationResolver", () => {
 
       const result = resolver.getHypercertIdFromAttestationData(data);
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
     });
 
     it("should handle invalid contract_address", () => {
@@ -322,7 +322,7 @@ describe("AttestationResolver", () => {
 
       const result = resolver.getHypercertIdFromAttestationData(data);
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
     });
 
     it("should handle invalid token_id", () => {
@@ -334,7 +334,7 @@ describe("AttestationResolver", () => {
 
       const result = resolver.getHypercertIdFromAttestationData(data);
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
     });
 
     it("should handle floating point numbers", () => {
@@ -346,7 +346,7 @@ describe("AttestationResolver", () => {
 
       const result = resolver.getHypercertIdFromAttestationData(data);
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
     });
 
     it("should handle missing required fields", () => {
@@ -358,19 +358,19 @@ describe("AttestationResolver", () => {
 
       const result = resolver.getHypercertIdFromAttestationData(data);
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
     });
 
     it("should handle null data", () => {
       const result = resolver.getHypercertIdFromAttestationData(null);
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
     });
 
     it("should handle empty object", () => {
       const result = resolver.getHypercertIdFromAttestationData({});
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
     });
 
     it("should handle negative bigint values", () => {
