@@ -5,31 +5,60 @@ import {
   createStandardQueryModifier,
   QueryModifier,
 } from "../../../lib/db/queryModifiers/queryModifiers.js";
-import { QueryStrategyFactory } from "../strategies/QueryStrategyFactory.js";
+import { BaseQueryArgsType } from "../../../lib/graphql/BaseQueryArgs.js";
 import {
   QueryStrategy,
   SupportedDatabases,
 } from "../strategies/QueryStrategy.js";
+import { QueryStrategyFactory } from "../strategies/QueryStrategyFactory.js";
 
+/**
+ * Interface defining the core functionality of an entity service
+ * @template TEntity - The entity type this service manages
+ * @template TArgs - The arguments type for queries
+ */
 export interface EntityService<TEntity, TArgs> {
+  /**
+   * Retrieves a single entity based on the provided arguments
+   * @param args - Query arguments
+   * @returns Promise resolving to the entity or undefined if not found
+   */
   getSingle(args: TArgs): Promise<Selectable<TEntity> | undefined>;
+
+  /**
+   * Retrieves multiple entities based on the provided arguments
+   * @param args - Query arguments
+   * @returns Promise resolving to an object containing the data and total count of all matching entities
+   */
   getMany(args: TArgs): Promise<{ data: Selectable<TEntity>[]; count: number }>;
 }
 
+/**
+ * Creates an entity service for a specific database table
+ * @template DB - The database schema type
+ * @template T - The table name type
+ * @template Args - The arguments type for queries
+ * @param tableName - Name of the table this service will manage
+ * @param ServiceName - Name to be assigned to the generated service class
+ * @param dbConnection - Database connection instance
+ * @returns An instance of EntityService for the specified table
+ * @throws {Error} If the strategy for the table cannot be found
+ */
 export function createEntityService<
   DB extends SupportedDatabases,
   T extends keyof DB & string,
-  Args extends {
-    first?: number;
-    offset?: number;
-    where?: Record<string, unknown>;
-    sortBy?: { [K in keyof DB[T]]?: SortOrder | null };
-  },
+  Args extends BaseQueryArgsType<
+    Record<string, unknown>,
+    { [K in keyof DB[T]]?: SortOrder | null }
+  >,
 >(
   tableName: T,
   ServiceName: string,
   dbConnection: Kysely<DB>,
 ): EntityService<DB[T], Args> {
+  /**
+   * Internal service class generated for the specific entity
+   */
   class GeneratedEntityService implements EntityService<DB[T], Args> {
     private readonly strategy: QueryStrategy<DB, T, Args>;
     private readonly db: Kysely<DB>;
@@ -45,7 +74,10 @@ export function createEntityService<
       );
     }
 
-    async getSingle(args: Args) {
+    /**
+     * @inheritdoc
+     */
+    async getSingle(args: Args): Promise<Selectable<DB[T]> | undefined> {
       const query = this.applyQueryModifiers(
         this.strategy.buildDataQuery(this.db, args),
         args,
@@ -54,7 +86,12 @@ export function createEntityService<
       return await query.executeTakeFirst();
     }
 
-    async getMany(args: Args) {
+    /**
+     * @inheritdoc
+     */
+    async getMany(
+      args: Args,
+    ): Promise<{ data: Selectable<DB[T]>[]; count: number }> {
       const dataQuery = this.applyQueryModifiers(
         this.strategy.buildDataQuery(this.db, args),
         args,
