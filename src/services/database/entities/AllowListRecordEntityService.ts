@@ -8,27 +8,39 @@ import {
   type EntityService,
 } from "./EntityServiceFactory.js";
 
-export type AllowlistRecordSelect = Selectable<
-  CachingDatabase["claimable_fractions_with_proofs"]
->;
-export type AllowlistRecordInsert = Insertable<
-  CachingDatabase["claimable_fractions_with_proofs"]
->;
-export type AllowlistRecordUpdate = Updateable<
-  CachingDatabase["claimable_fractions_with_proofs"]
->;
+/** The name of the allowlist records table */
+type TableName = "claimable_fractions_with_proofs";
+/** The type of the allowlist records table */
+type Table = CachingDatabase[TableName];
 
+/** Type representing a selectable record from the claimable_fractions_with_proofs table */
+export type AllowlistRecordSelect = Selectable<Table>;
+
+/** Type representing an insertable record for the claimable_fractions_with_proofs table */
+export type AllowlistRecordInsert = Insertable<Table>;
+
+/** Type representing an updateable record for the claimable_fractions_with_proofs table */
+export type AllowlistRecordUpdate = Updateable<Table>;
+
+/**
+ * Service class for managing allowlist records in the claimable_fractions_with_proofs table.
+ * This service provides methods to query and retrieve allowlist records using the EntityService pattern.
+ *
+ * @injectable
+ */
 @injectable()
 export class AllowlistRecordService {
-  private entityService: EntityService<
-    CachingDatabase["claimable_fractions_with_proofs"],
-    GetAllowlistRecordsArgs
-  >;
+  /** The underlying entity service instance for database operations */
+  private entityService: EntityService<Table, GetAllowlistRecordsArgs>;
 
+  /**
+   * Initializes a new instance of the AllowlistRecordService.
+   * Creates an EntityService instance for the claimable_fractions_with_proofs table.
+   */
   constructor() {
     this.entityService = createEntityService<
       CachingDatabase,
-      "claimable_fractions_with_proofs",
+      TableName,
       GetAllowlistRecordsArgs
     >(
       "claimable_fractions_with_proofs",
@@ -37,10 +49,22 @@ export class AllowlistRecordService {
     );
   }
 
+  /**
+   * Retrieves multiple allowlist records based on the provided arguments.
+   *
+   * @param args - Query arguments for filtering allowlist records
+   * @returns A promise that resolves to an array of allowlist records and a count of total records
+   */
   async getAllowlistRecords(args: GetAllowlistRecordsArgs) {
     return this.entityService.getMany(args);
   }
 
+  /**
+   * Retrieves a single allowlist record based on the provided arguments.
+   *
+   * @param args - Query arguments for filtering the allowlist record
+   * @returns A promise that resolves to a single allowlist record or null if not found
+   */
   async getAllowlistRecord(args: GetAllowlistRecordsArgs) {
     return this.entityService.getSingle(args);
   }

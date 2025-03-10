@@ -21,6 +21,20 @@
  */
 // TODO: key values can be keyof EntityTypeDefs
 export const WhereFieldDefinitions = {
+  AllowlistRecord: {
+    fields: {
+      hypercert_id: "string",
+      token_id: "bigint",
+      leaf: "string",
+      entry: "number",
+      user_address: "string",
+      claimed: "boolean",
+      proof: "stringArray",
+      units: "bigint",
+      total_units: "bigint",
+      root: "string",
+    },
+  },
   Attestation: {
     fields: {
       id: "string",
