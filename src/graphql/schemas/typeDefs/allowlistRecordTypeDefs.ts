@@ -1,6 +1,8 @@
 import { Field, ObjectType } from "type-graphql";
-import { EthBigInt } from "../../scalars/ethBigInt.js";
 import { DataResponse } from "../../../lib/graphql/DataResponse.js";
+import { EthBigInt } from "../../scalars/ethBigInt.js";
+import { Hypercert } from "./hypercertTypeDefs.js";
+
 @ObjectType({
   description: "Records of allow list entries for claimable fractions",
   simpleResolvers: true,
@@ -58,6 +60,12 @@ export class AllowlistRecord {
     description: "The root of the allow list Merkle tree",
   })
   root?: string;
+
+  @Field(() => Hypercert, {
+    nullable: true,
+    description: "The hypercert that the allow list record belongs to",
+  })
+  hypercert?: Hypercert;
 }
 
 @ObjectType()
