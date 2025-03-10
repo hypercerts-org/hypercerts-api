@@ -1,15 +1,14 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { faker } from "@faker-js/faker";
 import { container } from "tsyringe";
-import { AttestationResolver } from "../../../../src/services/graphql/resolvers/attestationResolver.js";
-import { AttestationService } from "../../../../src/services/database/entities/AttestationEntityService.js";
-import { HypercertsService } from "../../../../src/services/database/entities/HypercertsEntityService.js";
-import { AttestationSchemaService } from "../../../../src/services/database/entities/AttestationSchemaEntityService.js";
-import { MetadataService } from "../../../../src/services/database/entities/MetadataEntityService.js";
+import { getAddress } from "viem";
 import type { Mock } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { GetAttestationsArgs } from "../../../../src/graphql/schemas/args/attestationArgs.js";
 import type { Attestation } from "../../../../src/graphql/schemas/typeDefs/attestationTypeDefs.js";
-import { faker } from "@faker-js/faker";
-import { getAddress } from "viem";
+import { AttestationService } from "../../../../src/services/database/entities/AttestationEntityService.js";
+import { AttestationSchemaService } from "../../../../src/services/database/entities/AttestationSchemaEntityService.js";
+import { HypercertsService } from "../../../../src/services/database/entities/HypercertsEntityService.js";
+import { AttestationResolver } from "../../../../src/services/graphql/resolvers/attestationResolver.js";
 
 describe("AttestationResolver", () => {
   let resolver: AttestationResolver;
@@ -18,12 +17,10 @@ describe("AttestationResolver", () => {
   };
   let mockHypercertService: {
     getHypercert: Mock;
+    getHypercertMetadata: Mock;
   };
   let mockAttestationSchemaService: {
     getAttestationSchema: Mock;
-  };
-  let mockMetadataService: {
-    getMetadataSingle: Mock;
   };
 
   beforeEach(() => {
@@ -34,14 +31,11 @@ describe("AttestationResolver", () => {
 
     mockHypercertService = {
       getHypercert: vi.fn(),
+      getHypercertMetadata: vi.fn(),
     };
 
     mockAttestationSchemaService = {
       getAttestationSchema: vi.fn(),
-    };
-
-    mockMetadataService = {
-      getMetadataSingle: vi.fn(),
     };
 
     // Register mocks with the DI container
@@ -56,10 +50,6 @@ describe("AttestationResolver", () => {
     container.registerInstance(
       AttestationSchemaService,
       mockAttestationSchemaService as unknown as AttestationSchemaService,
-    );
-    container.registerInstance(
-      MetadataService,
-      mockMetadataService as unknown as MetadataService,
     );
 
     // Resolve the resolver with mocked dependencies
@@ -226,20 +216,16 @@ describe("AttestationResolver", () => {
         id: "metadata-1",
         name: "Test Metadata",
       };
-      mockMetadataService.getMetadataSingle.mockResolvedValue(expectedMetadata);
+      mockHypercertService.getHypercertMetadata.mockResolvedValue(
+        expectedMetadata,
+      );
 
       // Act
       const result = await resolver.metadata(attestation);
 
       // Assert
-      expect(mockMetadataService.getMetadataSingle).toHaveBeenCalledWith({
-        where: {
-          hypercerts: {
-            hypercert_id: {
-              eq: "1-0x1234567890123456789012345678901234567890-123",
-            },
-          },
-        },
+      expect(mockHypercertService.getHypercertMetadata).toHaveBeenCalledWith({
+        hypercert_id: "1-0x1234567890123456789012345678901234567890-123",
       });
       expect(result).toEqual(expectedMetadata);
     });
@@ -256,7 +242,7 @@ describe("AttestationResolver", () => {
 
       // Assert
       expect(result).toBeNull();
-      expect(mockMetadataService.getMetadataSingle).not.toHaveBeenCalled();
+      expect(mockHypercertService.getHypercertMetadata).not.toHaveBeenCalled();
     });
   });
 

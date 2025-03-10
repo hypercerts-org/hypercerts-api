@@ -104,3 +104,40 @@ export function generateMockFraction() {
     units: faker.number.bigInt({ min: 100000n, max: 100000000000n }),
   };
 }
+
+/**
+ * Generates a mock metadata record with all required fields
+ * @returns A mock metadata record with realistic test data
+ */
+export function generateMockMetadata() {
+  return {
+    id: faker.string.uuid(),
+    name: faker.commerce.productName(),
+    description: faker.lorem.paragraph(),
+    uri: `ipfs://${faker.string.alphanumeric(46)}`,
+    external_url: faker.internet.url(),
+    work_scope: faker.lorem.sentence(),
+    work_timeframe_from: faker.date.past().toISOString(),
+    work_timeframe_to: faker.date.future().toISOString(),
+    impact_scope: faker.lorem.sentence(),
+    impact_timeframe_from: faker.date.past().toISOString(),
+    impact_timeframe_to: faker.date.future().toISOString(),
+    contributors: [faker.internet.userName(), faker.internet.userName()],
+    rights: faker.lorem.sentence(),
+    properties: {},
+    allow_list_uri: null,
+    parsed: true,
+  };
+}
+
+/**
+ * Generates a minimal mock metadata record with only required fields
+ * Useful for testing specific fields or error cases
+ * @returns A minimal mock metadata record
+ */
+export function generateMinimalMockMetadata() {
+  return {
+    id: faker.string.uuid(),
+    uri: `ipfs://${faker.string.alphanumeric(46)}`,
+  };
+}

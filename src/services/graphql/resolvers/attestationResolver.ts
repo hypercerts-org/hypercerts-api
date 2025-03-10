@@ -290,8 +290,8 @@ class AttestationResolver {
 
       if (!attested_hypercert_id) return null;
 
-      return await this.metadataService.getMetadataSingle({
-        where: { hypercerts: { hypercert_id: { eq: attested_hypercert_id } } },
+      return await this.hypercertService.getHypercertMetadata({
+        hypercert_id: attested_hypercert_id,
       });
     } catch (e) {
       console.error(
