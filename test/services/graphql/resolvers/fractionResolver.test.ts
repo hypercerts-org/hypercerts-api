@@ -5,8 +5,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { GetFractionsArgs } from "../../../../src/graphql/schemas/args/fractionArgs.js";
 import type { Fraction } from "../../../../src/graphql/schemas/typeDefs/fractionTypeDefs.js";
 import { FractionService } from "../../../../src/services/database/entities/FractionEntityService.js";
+import { HypercertsService } from "../../../../src/services/database/entities/HypercertsEntityService.js";
 import { MarketplaceOrdersService } from "../../../../src/services/database/entities/MarketplaceOrdersEntityService.js";
-import { MetadataService } from "../../../../src/services/database/entities/MetadataEntityService.js";
 import { SalesService } from "../../../../src/services/database/entities/SalesEntityService.js";
 import { FractionResolver } from "../../../../src/services/graphql/resolvers/fractionResolver.js";
 import { generateMockFraction } from "../../../utils/testUtils.js";
@@ -20,14 +20,14 @@ describe("FractionResolver", () => {
   let mockFractionService: {
     getFractions: Mock;
   };
-  let mockMetadataService: {
-    getMetadataSingle: Mock;
-  };
   let mockSalesService: {
     getSales: Mock;
   };
   let mockMarketplaceOrdersService: {
     getOrders: Mock;
+  };
+  let mockHypercertService: {
+    getHypercertMetadata: Mock;
   };
   let mockFraction: Fraction;
 
@@ -37,8 +37,8 @@ describe("FractionResolver", () => {
       getFractions: vi.fn(),
     };
 
-    mockMetadataService = {
-      getMetadataSingle: vi.fn(),
+    mockHypercertService = {
+      getHypercertMetadata: vi.fn(),
     };
 
     mockSalesService = {
@@ -55,8 +55,8 @@ describe("FractionResolver", () => {
       mockFractionService as unknown as FractionService,
     );
     container.registerInstance(
-      MetadataService,
-      mockMetadataService as unknown as MetadataService,
+      HypercertsService,
+      mockHypercertService as unknown as HypercertsService,
     );
     container.registerInstance(
       SalesService,
@@ -111,14 +111,16 @@ describe("FractionResolver", () => {
         id: "test-metadata",
         name: "Test Metadata",
       };
-      mockMetadataService.getMetadataSingle.mockResolvedValue(expectedMetadata);
+      mockHypercertService.getHypercertMetadata.mockResolvedValue(
+        expectedMetadata,
+      );
 
       // Act
       const result = await resolver.metadata(mockFraction);
 
       // Assert
-      expect(mockMetadataService.getMetadataSingle).toHaveBeenCalledWith({
-        where: { hypercerts: { id: { eq: mockFraction.claims_id } } },
+      expect(mockHypercertService.getHypercertMetadata).toHaveBeenCalledWith({
+        claims_id: mockFraction.claims_id,
       });
       expect(result).toEqual(expectedMetadata);
     });
@@ -135,7 +137,7 @@ describe("FractionResolver", () => {
 
       // Assert
       expect(result).toBeNull();
-      expect(mockMetadataService.getMetadataSingle).not.toHaveBeenCalled();
+      expect(mockHypercertService.getHypercertMetadata).not.toHaveBeenCalled();
     });
   });
 

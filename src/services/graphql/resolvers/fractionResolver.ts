@@ -1,15 +1,15 @@
+import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
+import { inject, injectable } from "tsyringe";
 import { Args, FieldResolver, Query, Resolver, Root } from "type-graphql";
+import { GetFractionsArgs } from "../../../graphql/schemas/args/fractionArgs.js";
 import {
   Fraction,
   GetFractionsResponse,
 } from "../../../graphql/schemas/typeDefs/fractionTypeDefs.js";
-import { GetFractionsArgs } from "../../../graphql/schemas/args/fractionArgs.js";
-import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
-import { inject, injectable } from "tsyringe";
 import { FractionService } from "../../database/entities/FractionEntityService.js";
-import { MetadataService } from "../../database/entities/MetadataEntityService.js";
-import { SalesService } from "../../database/entities/SalesEntityService.js";
+import { HypercertsService } from "../../database/entities/HypercertsEntityService.js";
 import { MarketplaceOrdersService } from "../../database/entities/MarketplaceOrdersEntityService.js";
+import { SalesService } from "../../database/entities/SalesEntityService.js";
 
 /**
  * GraphQL resolver for Fraction operations.
@@ -48,8 +48,8 @@ class FractionResolver {
   constructor(
     @inject(FractionService)
     private fractionsService: FractionService,
-    @inject(MetadataService)
-    private metadataService: MetadataService,
+    @inject(HypercertsService)
+    private hypercertService: HypercertsService,
     @inject(SalesService)
     private salesService: SalesService,
     @inject(MarketplaceOrdersService)
@@ -132,8 +132,8 @@ class FractionResolver {
     }
 
     try {
-      return await this.metadataService.getMetadataSingle({
-        where: { hypercerts: { id: { eq: fraction.claims_id } } },
+      return await this.hypercertService.getHypercertMetadata({
+        claims_id: fraction.claims_id,
       });
     } catch (e) {
       console.error(

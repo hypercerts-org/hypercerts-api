@@ -4,7 +4,6 @@ import { Args, FieldResolver, Query, Resolver, Root } from "type-graphql";
 import { getAddress } from "viem";
 import { HypercertsService } from "../../../services/database/entities/HypercertsEntityService.js";
 import { MarketplaceOrdersService } from "../../../services/database/entities/MarketplaceOrdersEntityService.js";
-import { MetadataService } from "../../../services/database/entities/MetadataEntityService.js";
 import { Database } from "../../../types/supabaseData.js";
 import { addPriceInUsdToOrder } from "../../../utils/addPriceInUSDToOrder.js";
 import { getHypercertTokenId } from "../../../utils/tokenIds.js";
@@ -19,8 +18,6 @@ class OrderResolver {
     private marketplaceOrdersService: MarketplaceOrdersService,
     @inject(HypercertsService)
     private hypercertService: HypercertsService,
-    @inject(MetadataService)
-    private metadataService: MetadataService,
   ) {}
 
   @Query(() => GetOrdersResponse)
@@ -112,12 +109,8 @@ class OrderResolver {
           hypercert_id: { eq: formattedHypercertId },
         },
       }),
-      this.metadataService.getMetadataSingle({
-        where: {
-          hypercerts: {
-            hypercert_id: { eq: formattedHypercertId },
-          },
-        },
+      this.hypercertService.getHypercertMetadata({
+        hypercert_id: formattedHypercertId,
       }),
     ]);
 

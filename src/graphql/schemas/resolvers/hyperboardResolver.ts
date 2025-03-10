@@ -122,12 +122,12 @@ class HyperboardResolver {
                   where: { hypercert_id: { in: hypercertIds } },
                 })
                 .then((res) => res.data),
-              this.metadataService.getMetadata({
-                where: { hypercerts: { hypercert_id: { in: hypercertIds } } },
+              this.hypercertsService.getHypercertMetadataSets({
+                hypercert_ids: hypercertIds,
               }),
             ]);
 
-          const metadataByUri = _.keyBy(metadata.data, "uri");
+          const metadataByUri = _.keyBy(metadata, "uri");
 
           // get blueprints
           const collectionBlueprints =
