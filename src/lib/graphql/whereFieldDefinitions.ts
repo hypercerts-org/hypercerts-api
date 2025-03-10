@@ -77,8 +77,8 @@ export const WhereFieldDefinitions = {
   Contract: {
     fields: {
       id: "string",
-      address: "string",
-      chain_id: "number",
+      contract_address: "string",
+      chain_id: "bigint",
     },
   },
   Fraction: {
