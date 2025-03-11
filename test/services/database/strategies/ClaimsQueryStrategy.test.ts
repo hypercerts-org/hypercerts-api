@@ -1,20 +1,20 @@
+import { Kysely } from "kysely";
 import { beforeEach, describe, expect, it } from "vitest";
-import { ClaimsQueryStrategy } from "../../../../src/services/database/strategies/ClaimsQueryStrategy.js";
 import { GetHypercertsArgs } from "../../../../src/graphql/schemas/args/hypercertsArgs.js";
+import { ClaimsQueryStrategy } from "../../../../src/services/database/strategies/ClaimsQueryStrategy.js";
+import { CachingDatabase } from "../../../../src/types/kyselySupabaseCaching.js";
 import {
-  createTestDatabase,
-  TestDatabase,
+  createTestCachingDatabase,
   generateHypercertId,
 } from "../../../utils/testUtils.js";
-import { Kysely } from "kysely";
 
 describe("ClaimsQueryStrategy", () => {
   let strategy: ClaimsQueryStrategy;
-  let db: Kysely<TestDatabase>;
+  let db: Kysely<CachingDatabase>;
 
   beforeEach(async () => {
     strategy = new ClaimsQueryStrategy();
-    ({ db } = await createTestDatabase());
+    ({ db } = await createTestCachingDatabase());
   });
 
   describe("buildDataQuery", () => {

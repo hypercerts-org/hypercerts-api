@@ -1,20 +1,20 @@
 import { Kysely } from "kysely";
 import { beforeEach, describe, expect, it } from "vitest";
 import { FractionsQueryStrategy } from "../../../../src/services/database/strategies/FractionsQueryStrategy.js";
+import { CachingDatabase } from "../../../../src/types/kyselySupabaseCaching.js";
 import {
-  createTestDatabase,
+  createTestCachingDatabase,
   generateMockFraction,
-  TestDatabase,
 } from "../../../utils/testUtils.js";
 
 describe("FractionsQueryStrategy", () => {
-  let db: Kysely<TestDatabase>;
+  let db: Kysely<CachingDatabase>;
   const strategy = new FractionsQueryStrategy();
   let mockFraction: ReturnType<typeof generateMockFraction>;
 
   beforeEach(async () => {
     // Setup test database with additional metadata table
-    ({ db } = await createTestDatabase(async (db) => {
+    ({ db } = await createTestCachingDatabase(async (db) => {
       await db.schema
         .createTable("metadata")
         .addColumn("id", "varchar", (b) => b.primaryKey())
