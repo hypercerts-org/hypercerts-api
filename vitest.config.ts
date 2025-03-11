@@ -15,10 +15,10 @@ export default defineConfig({
       // If you want a coverage reports even if your tests are failing, include the reportOnFailure option
       reportOnFailure: true,
       thresholds: {
-        lines: 24,
-        branches: 72,
-        functions: 58,
-        statements: 24,
+        statements: 56,
+        branches: 31,
+        functions: 23,
+        lines: 56,
       },
       include: ["src/**/*.ts"],
       exclude: [
@@ -27,7 +27,6 @@ export default defineConfig({
         "**/types.ts",
         "src/__generated__/**/*",
         "src/graphql/**/*",
-        "src/services/**/*",
         "src/types/**/*",
         "src/abis/**/*",
         "./lib/**/*",

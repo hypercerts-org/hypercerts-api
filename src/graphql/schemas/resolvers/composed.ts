@@ -9,7 +9,7 @@ import { HyperboardResolver } from "./hyperboardResolver.js";
 import { AllowlistRecordResolver } from "../../../services/graphql/resolvers/allowlistRecordResolver.js";
 import { SalesResolver } from "../../../services/graphql/resolvers/salesResolver.js";
 import { UserResolver } from "./userResolver.js";
-import { BlueprintResolver } from "./blueprintResolver.js";
+import { BlueprintResolver } from "../../../services/graphql/resolvers/blueprintResolver.js";
 import { SignatureRequestResolver } from "./signatureRequestResolver.js";
 import { CollectionResolver } from "./collectionResolver.js";
 

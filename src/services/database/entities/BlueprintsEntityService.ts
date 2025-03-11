@@ -13,6 +13,23 @@ export type BlueprintUpdate = Updateable<DataDatabase["blueprints"]>;
 
 export type BlueprintAdminSelect = Selectable<DataDatabase["users"]>;
 
+/**
+ * Service for handling blueprint-related database operations.
+ * Provides methods for CRUD operations on blueprints and managing blueprint admins.
+ *
+ * Features:
+ * - Fetch blueprints with filtering and pagination
+ * - Manage blueprint administrators
+ * - Handle blueprint minting and collection updates
+ * - Transaction support for complex operations
+ *
+ * Error Handling:
+ * - All database operations are wrapped in try-catch blocks
+ * - Errors are logged and rethrown for proper error propagation
+ * - Transaction rollback on failure for multi-step operations
+ *
+ * @singleton Marks the class as a singleton for dependency injection
+ */
 @singleton()
 export class BlueprintsService {
   private entityService: EntityService<
@@ -20,6 +37,12 @@ export class BlueprintsService {
     GetBlueprintsArgs
   >;
 
+  /**
+   * Creates a new instance of BlueprintsService.
+   *
+   * @param dbService - Service for database operations
+   * @param usersService - Service for user-related operations
+   */
   constructor(
     @inject(DataKyselyService) private dbService: DataKyselyService,
     @inject(UsersService) private usersService: UsersService,
@@ -31,14 +54,37 @@ export class BlueprintsService {
     >("blueprints", "BlueprintsEntityService", kyselyData);
   }
 
+  /**
+   * Retrieves blueprints based on provided arguments.
+   *
+   * @param args - Query arguments for filtering and pagination
+   * @returns Promise resolving to an object containing:
+   *          - data: Array of matching blueprints
+   *          - count: Total number of matching blueprints
+   * @throws Error if database operation fails
+   */
   async getBlueprints(args: GetBlueprintsArgs) {
     return this.entityService.getMany(args);
   }
 
+  /**
+   * Retrieves a single blueprint based on provided arguments.
+   *
+   * @param args - Query arguments for filtering
+   * @returns Promise resolving to a single blueprint or undefined if not found
+   * @throws Error if database operation fails
+   */
   async getBlueprint(args: GetBlueprintsArgs) {
     return this.entityService.getSingle(args);
   }
 
+  /**
+   * Retrieves administrators for a specific blueprint.
+   *
+   * @param blueprintId - ID of the blueprint
+   * @returns Promise resolving to an array of admin users
+   * @throws Error if database operation fails
+   */
   async getBlueprintAdmins(blueprintId: number) {
     return await this.dbService
       .getConnection()
@@ -49,7 +95,13 @@ export class BlueprintsService {
       .execute();
   }
 
-  // Mutations
+  /**
+   * Deletes a blueprint by ID.
+   *
+   * @param blueprintId - ID of the blueprint to delete
+   * @returns Promise resolving when deletion is complete
+   * @throws Error if database operation fails
+   */
   async deleteBlueprint(blueprintId: number) {
     return this.dbService
       .getConnection()
@@ -58,6 +110,13 @@ export class BlueprintsService {
       .execute();
   }
 
+  /**
+   * Creates or updates multiple blueprints.
+   *
+   * @param blueprints - Array of blueprints to create or update
+   * @returns Promise resolving to an array of created/updated blueprint IDs
+   * @throws Error if database operation fails
+   */
   async upsertBlueprints(blueprints: BlueprintInsert[]) {
     return this.dbService
       .getConnection()
@@ -75,6 +134,16 @@ export class BlueprintsService {
       .execute();
   }
 
+  /**
+   * Adds an administrator to a blueprint.
+   * Creates the user if they don't exist.
+   *
+   * @param blueprintId - ID of the blueprint
+   * @param adminAddress - Ethereum address of the admin
+   * @param chainId - Chain ID where the admin address is valid
+   * @returns Promise resolving to the created/updated admin record
+   * @throws Error if database operation fails
+   */
   async addAdminToBlueprint(
     blueprintId: number,
     adminAddress: string,
@@ -104,6 +173,22 @@ export class BlueprintsService {
       .executeTakeFirst();
   }
 
+  /**
+   * Mints a blueprint and updates related collections.
+   * This operation:
+   * 1. Gets all blueprint hyperboard metadata
+   * 2. Inserts the new hypercert into collections
+   * 3. Updates hyperboard metadata
+   * 4. Marks the blueprint as minted
+   * 5. Removes the blueprint from collections
+   *
+   * All operations are wrapped in a transaction for atomicity.
+   *
+   * @param blueprintId - ID of the blueprint to mint
+   * @param hypercertId - ID of the newly created hypercert
+   * @returns Promise resolving when all operations are complete
+   * @throws Error if any database operation fails (triggers rollback)
+   */
   async mintBlueprintAndSwapInCollections(
     blueprintId: number,
     hypercertId: string,

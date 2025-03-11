@@ -1,8 +1,8 @@
 import { Kysely } from "kysely";
-import { IMemoryDb, newDb } from "pg-mem";
 import { beforeEach, describe, expect, it } from "vitest";
 import { ContractsQueryStrategy } from "../../../../src/services/database/strategies/ContractsQueryStrategy.js";
 import { CachingDatabase } from "../../../../src/types/kyselySupabaseCaching.js";
+import { createTestCachingDatabase } from "../../../utils/testUtils.js";
 
 type TestDatabase = CachingDatabase;
 
@@ -17,28 +17,10 @@ type TestDatabase = CachingDatabase;
  */
 describe("ContractsQueryStrategy", () => {
   let db: Kysely<TestDatabase>;
-  let mem: IMemoryDb;
   const strategy = new ContractsQueryStrategy();
 
   beforeEach(async () => {
-    mem = newDb();
-    db = mem.adapters.createKysely() as Kysely<TestDatabase>;
-
-    // Create required tables with appropriate columns and relationships
-    await db.schema
-      .createTable("contracts")
-      .addColumn("id", "varchar", (b) => b.primaryKey())
-      .addColumn("chain_id", "integer")
-      .addColumn("contract_address", "varchar")
-      .addColumn("start_block", "integer")
-      .execute();
-
-    // Create related tables
-    await db.schema
-      .createTable("claims")
-      .addColumn("id", "integer", (b) => b.primaryKey())
-      .addColumn("contracts_id", "varchar")
-      .execute();
+    ({ db } = await createTestCachingDatabase());
   });
 
   describe("data query building", () => {
