@@ -1,34 +1,37 @@
 import { faker } from "@faker-js/faker";
 import { Kysely, sql } from "kysely";
-import { newDb } from "pg-mem";
+import { DataType, newDb } from "pg-mem";
 import { getAddress } from "viem";
 import { CachingDatabase } from "../../src/types/kyselySupabaseCaching.js";
 import { DataDatabase } from "../../src/types/kyselySupabaseData.js";
 
 export type TestDatabase = CachingDatabase | DataDatabase;
 
-export function generateId(): string {
-  return faker.string.uuid();
-}
-
 export async function createTestDataDatabase(
   setupSchema?: (db: Kysely<DataDatabase>) => Promise<void>,
 ) {
   const mem = newDb();
 
-  // Intercept the blueprint update query that uses array_append
-  mem.public.interceptQueries((sql: string) => {
-    if (sql.includes("array_append") && sql.includes("blueprints")) {
-      return [
-        {
-          minted: true,
-        },
-      ];
-    }
-    return null;
+  // Create database instance
+  const db = mem.adapters.createKysely() as Kysely<DataDatabase>;
+
+  // NOTE: pg-mem does not support the generateUUID() function, so we need to register our own and for some reason it needs to be lowercase
+  mem.public.registerFunction({
+    name: "generateuuid",
+    returns: DataType.uuid,
+    implementation: () => faker.string.uuid(),
   });
 
-  const db = mem.adapters.createKysely() as Kysely<DataDatabase>;
+  // NOTE: pg-mem does not support the array_append function, so we need to register our own
+  mem.public.registerFunction({
+    name: "array_append",
+    args: [
+      mem.public.getType(DataType.text).asArray(),
+      mem.public.getType(DataType.text),
+    ],
+    returns: mem.public.getType(DataType.text).asArray(),
+    implementation: (arr: string[], element: string) => [...arr, element],
+  });
 
   // Create blueprints table
   await db.schema
@@ -46,7 +49,9 @@ export async function createTestDataDatabase(
   // Create users table
   await db.schema
     .createTable("users")
-    .addColumn("id", "text", (col) => col.primaryKey().defaultTo(generateId()))
+    .addColumn("id", "uuid", (col) =>
+      col.primaryKey().defaultTo(sql`generateuuid()`),
+    )
     .addColumn("address", "text", (col) => col.notNull())
     .addColumn("display_name", "text")
     .addColumn("avatar", "text")
@@ -282,5 +287,70 @@ export function generateMockBlueprint() {
     minter_address: generateMockAddress(),
     minted: faker.datatype.boolean(),
     hypercert_ids: [generateHypercertId(), generateHypercertId()],
+  };
+}
+
+/**
+ * Generates a mock user record
+ * @returns A mock user record with realistic test data
+ */
+export function generateMockUser(
+  overrides?: Partial<{
+    id: string;
+    address: string;
+    chain_id: number;
+    display_name: string;
+    avatar: string;
+  }>,
+) {
+  const defaultUser = {
+    id: faker.string.uuid(),
+    address: generateMockAddress(),
+    chain_id: faker.number.int({ min: 1, max: 100000 }),
+    display_name: faker.internet.username(),
+    avatar: faker.image.avatar(),
+    created_at: faker.date.past().toISOString(),
+  };
+
+  return {
+    ...defaultUser,
+    ...overrides,
+  };
+}
+
+/**
+ * Generates a mock signature request
+ * @param overrides Optional overrides for the generated data
+ * @returns A mock signature request with realistic test data
+ */
+export function generateMockSignatureRequest(
+  overrides?: Partial<{
+    chain_id: number;
+    message: string;
+    message_hash: string;
+    purpose: "update_user_data";
+    safe_address: string;
+    status: "pending" | "executed" | "canceled";
+    timestamp: number;
+  }>,
+) {
+  const defaultMessage = {
+    metadata: {
+      name: faker.person.fullName(),
+      description: faker.lorem.sentence(),
+    },
+  };
+
+  return {
+    chain_id: faker.number.int({ min: 1, max: 100000 }),
+    message: JSON.stringify(
+      overrides?.message ? JSON.parse(overrides.message) : defaultMessage,
+    ),
+    message_hash: faker.string.hexadecimal({ length: 64 }),
+    purpose: "update_user_data" as const,
+    safe_address: faker.finance.ethereumAddress(),
+    status: "pending" as const,
+    timestamp: Math.floor(Date.now() / 1000),
+    ...overrides,
   };
 }
