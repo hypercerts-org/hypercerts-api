@@ -11,6 +11,7 @@ import {
   generateHypercertId,
   generateMockAddress,
   generateMockBlueprint,
+  generateMockUser,
 } from "../../../utils/testUtils.js";
 
 const mockDb = vi.fn();
@@ -148,14 +149,7 @@ describe("BlueprintsService", () => {
       const mockBlueprint = generateMockBlueprint();
       await db.insertInto("blueprints").values(mockBlueprint).execute();
 
-      const mockUser = {
-        id: "user1",
-        address: "0x123",
-        display_name: "Test Admin",
-        avatar: "test-avatar",
-        chain_id: 1,
-        created_at: new Date().toISOString(),
-      };
+      const mockUser = generateMockUser();
       await db.insertInto("users").values(mockUser).execute();
 
       await db

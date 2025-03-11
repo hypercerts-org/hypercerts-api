@@ -23,11 +23,6 @@ export type BlueprintAdminSelect = Selectable<DataDatabase["users"]>;
  * - Handle blueprint minting and collection updates
  * - Transaction support for complex operations
  *
- * Error Handling:
- * - All database operations are wrapped in try-catch blocks
- * - Errors are logged and rethrown for proper error propagation
- * - Transaction rollback on failure for multi-step operations
- *
  * @singleton Marks the class as a singleton for dependency injection
  */
 @singleton()
