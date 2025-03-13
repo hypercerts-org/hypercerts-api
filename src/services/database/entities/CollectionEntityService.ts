@@ -15,6 +15,19 @@ import { UserInsert, UsersService } from "./UsersEntityService.js";
 export type CollectionSelect = Selectable<DataDatabase["collections"]>;
 export type CollectionInsert = Insertable<DataDatabase["collections"]>;
 
+/**
+ * Service for managing collection entities in the database.
+ * Handles CRUD operations and relationships for collections, including hypercerts, blueprints, and admins.
+ *
+ * Features:
+ * - Fetch collections with filtering and pagination
+ * - Manage collection contents (hypercerts and blueprints)
+ * - Handle collection administrators
+ * - Support for complex queries with JSON aggregation
+ * - Transaction support for data integrity
+ *
+ * @injectable Marks the class as injectable for dependency injection with tsyringe
+ */
 @injectable()
 export class CollectionService {
   private entityService: EntityService<
@@ -22,6 +35,14 @@ export class CollectionService {
     GetCollectionsArgs
   >;
 
+  /**
+   * Creates a new instance of CollectionService.
+   *
+   * @param hypercertsService - Service for hypercert-related operations
+   * @param dbService - Service for database operations
+   * @param blueprintsService - Service for blueprint-related operations
+   * @param usersService - Service for user-related operations
+   */
   constructor(
     @inject(HypercertsService)
     private hypercertsService: HypercertsService,
@@ -39,15 +60,37 @@ export class CollectionService {
     >("collections", "CollectionEntityService", kyselyData);
   }
 
-  //TODO can we programatically generate these?
+  /**
+   * Retrieves multiple collections based on provided arguments.
+   *
+   * @param args - Query arguments for filtering and pagination
+   * @returns A promise resolving to an object containing:
+   *          - data: Array of collections matching the query
+   *          - count: Total number of matching collections
+   * @throws {Error} If the database query fails
+   */
   async getCollections(args: GetCollectionsArgs) {
     return this.entityService.getMany(args);
   }
 
+  /**
+   * Retrieves a single collection based on provided arguments.
+   *
+   * @param args - Query arguments for filtering
+   * @returns A promise resolving to a single collection or undefined if not found
+   * @throws {Error} If the database query fails
+   */
   async getCollection(args: GetCollectionsArgs) {
     return this.entityService.getSingle(args);
   }
 
+  /**
+   * Retrieves blueprint IDs associated with a collection.
+   *
+   * @param collectionId - ID of the collection
+   * @returns Promise resolving to an array of blueprint IDs
+   * @throws {Error} If the database query fails
+   */
   async getCollectionBlueprintIds(collectionId: string) {
     return await this.dbService
       .getConnection()
@@ -57,10 +100,16 @@ export class CollectionService {
       .execute();
   }
 
+  /**
+   * Retrieves all blueprints associated with a collection.
+   *
+   * @param collectionId - ID of the collection
+   * @returns Promise resolving to an array of blueprints
+   * @throws {Error} If the database query fails
+   */
   async getCollectionBlueprints(collectionId: string) {
     const collectionBlueprintIds =
       await this.getCollectionBlueprintIds(collectionId);
-
     const blueprintIds = collectionBlueprintIds.map(
       (blueprint) => blueprint.blueprint_id,
     );
@@ -70,6 +119,13 @@ export class CollectionService {
     });
   }
 
+  /**
+   * Retrieves hypercert IDs associated with a collection.
+   *
+   * @param collectionId - ID of the collection
+   * @returns Promise resolving to an array of hypercert IDs
+   * @throws {Error} If the database query fails
+   */
   async getCollectionHypercertIds(collectionId: string) {
     return await this.dbService
       .getConnection()
@@ -79,9 +135,15 @@ export class CollectionService {
       .execute();
   }
 
+  /**
+   * Retrieves all hypercerts associated with a collection.
+   *
+   * @param collectionId - ID of the collection
+   * @returns Promise resolving to an array of hypercerts
+   * @throws {Error} If the database query fails
+   */
   async getCollectionHypercerts(collectionId: string) {
     const hypercerts = await this.getCollectionHypercertIds(collectionId);
-
     const hypercertIds = hypercerts.map((hypercert) => hypercert.hypercert_id);
 
     return this.hypercertsService.getHypercerts({
@@ -89,6 +151,13 @@ export class CollectionService {
     });
   }
 
+  /**
+   * Retrieves all administrators of a collection.
+   *
+   * @param collectionId - ID of the collection
+   * @returns Promise resolving to an array of users who are admins
+   * @throws {Error} If the database query fails
+   */
   async getCollectionAdmins(collectionId: string) {
     return await this.dbService
       .getConnection()
@@ -104,6 +173,14 @@ export class CollectionService {
       .execute();
   }
 
+  /**
+   * Retrieves detailed collection information including admins.
+   * Uses JSON aggregation for efficient data retrieval.
+   *
+   * @param collectionId - ID of the collection
+   * @returns Promise resolving to the collection with admin details
+   * @throws {Error} If the database query fails
+   */
   // TODO this type and query can be cleaner. Do we need a view?
   async getCollectionById(collectionId: string) {
     return await this.dbService
@@ -130,7 +207,13 @@ export class CollectionService {
       .executeTakeFirst();
   }
 
-  // Mutations
+  /**
+   * Creates or updates multiple collections.
+   *
+   * @param collections - Array of collection data to upsert
+   * @returns Promise resolving to the result of the upsert operation
+   * @throws {Error} If the database operation fails
+   */
   async upsertCollections(collections: CollectionInsert[]) {
     return this.dbService
       .getConnection()
@@ -148,6 +231,13 @@ export class CollectionService {
       .execute();
   }
 
+  /**
+   * Removes all hypercerts from a collection.
+   *
+   * @param collectionId - ID of the collection
+   * @returns Promise resolving to the result of the delete operation
+   * @throws {Error} If the database operation fails
+   */
   async deleteAllHypercertsFromCollection(collectionId: string) {
     return this.dbService
       .getConnection()
@@ -156,6 +246,13 @@ export class CollectionService {
       .execute();
   }
 
+  /**
+   * Removes all blueprints from a collection.
+   *
+   * @param collectionId - ID of the collection
+   * @returns Promise resolving to the result of the delete operation
+   * @throws {Error} If the database operation fails
+   */
   async deleteAllBlueprintsFromCollection(collectionId: string) {
     return this.dbService
       .getConnection()
@@ -164,6 +261,13 @@ export class CollectionService {
       .execute();
   }
 
+  /**
+   * Associates hypercerts with collections.
+   *
+   * @param hypercerts - Array of hypercert-collection associations to create or update
+   * @returns Promise resolving to the result of the upsert operation
+   * @throws {Error} If the database operation fails
+   */
   async upsertHypercertCollections(
     hypercerts: Insertable<DataDatabase["hypercerts"]>[],
   ) {
@@ -180,6 +284,14 @@ export class CollectionService {
       .execute();
   }
 
+  /**
+   * Adds an administrator to a collection.
+   *
+   * @param collectionId - ID of the collection
+   * @param admin - User data for the new admin
+   * @returns Promise resolving to the result of the operation
+   * @throws {Error} If the database operation fails
+   */
   async addAdminToCollection(collectionId: string, admin: UserInsert) {
     const user = await this.usersService.getOrCreateUser(admin);
     return this.dbService
@@ -200,6 +312,13 @@ export class CollectionService {
       .executeTakeFirst();
   }
 
+  /**
+   * Associates blueprints with a collection.
+   *
+   * @param values - Array of blueprint-collection associations to create
+   * @returns Promise resolving to the result of the insert operation
+   * @throws {Error} If the database operation fails
+   */
   async addBlueprintsToCollection(
     values: Insertable<DataDatabase["collection_blueprints"]>[],
   ) {
