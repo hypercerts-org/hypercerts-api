@@ -11,7 +11,7 @@ import { SalesResolver } from "../../../services/graphql/resolvers/salesResolver
 import { UserResolver } from "../../../services/graphql/resolvers/userResolver.js";
 import { BlueprintResolver } from "../../../services/graphql/resolvers/blueprintResolver.js";
 import { SignatureRequestResolver } from "./signatureRequestResolver.js";
-import { CollectionResolver } from "./collectionResolver.js";
+import { CollectionResolver } from "../../../services/graphql/resolvers/collectionResolver.js";
 
 export const resolvers = [
   ContractResolver,

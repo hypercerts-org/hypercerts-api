@@ -12,6 +12,7 @@ import { DataResponse } from "../../../lib/graphql/DataResponse.js";
   description: "Collection of hypercerts for reference and display purposes",
 })
 export class Collection extends BasicTypeDef {
+  //TODO convert to timestamp in seconds
   @Field({ description: "Creation timestamp of the collection" })
   created_at?: string;
   @Field({ description: "Name of the collection" })

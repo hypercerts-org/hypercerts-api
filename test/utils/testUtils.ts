@@ -113,6 +113,26 @@ export async function createTestDataDatabase(
     ])
     .execute();
 
+  // Create collections table
+  await db.schema
+    .createTable("collections")
+    .addColumn("id", "varchar", (b) =>
+      b.primaryKey().defaultTo(sql`generateuuid()`),
+    )
+    .addColumn("name", "varchar")
+    .addColumn("description", "varchar")
+    .addColumn("chain_ids", sql`integer[]`, (col) => col.notNull())
+    .addColumn("hidden", "boolean")
+    .addColumn("created_at", "timestamp")
+    .execute();
+
+  // Create collection_admins table
+  await db.schema
+    .createTable("collection_admins")
+    .addColumn("collection_id", "varchar")
+    .addColumn("user_id", "varchar")
+    .execute();
+
   // Create collection_blueprints table
   await db.schema
     .createTable("collection_blueprints")
@@ -352,5 +372,38 @@ export function generateMockSignatureRequest(
     status: "pending" as const,
     timestamp: Math.floor(Date.now() / 1000),
     ...overrides,
+  };
+}
+
+export function generateMockHypercert() {
+  return {
+    chain_id: faker.number.int({ min: 1, max: 100000 }),
+    hypercert_id: generateHypercertId(),
+    units: faker.number.bigInt({ min: 100000n, max: 100000000000n }),
+    owner_address: generateMockAddress(),
+    created_at: faker.date.past().toISOString(),
+    contracts_id: generateMockContract().id,
+    token_id: generateTokenId(),
+    uri: `ipfs://${faker.string.alphanumeric(46)}`,
+    creation_block_number: faker.number.int({ min: 1, max: 1000000 }),
+    creation_block_timestamp: faker.date.past().toISOString(),
+    last_update_block_number: faker.number.int({ min: 1, max: 1000000 }),
+    last_update_block_timestamp: faker.date.past().toISOString(),
+    attestations_count: faker.number.int({ min: 0, max: 100 }),
+    sales_count: faker.number.int({ min: 0, max: 100 }),
+  };
+}
+
+export function generateMockCollection() {
+  return {
+    id: faker.string.uuid(),
+    created_at: faker.date.past().toISOString(),
+    name: faker.commerce.productName(),
+    description: faker.lorem.paragraph(),
+    chain_ids: [generateChainId()],
+    hidden: faker.datatype.boolean(),
+    admins: [generateMockUser()],
+    hypercerts: [{ data: [generateMockHypercert()], count: 1 }],
+    blueprints: [generateMockBlueprint()],
   };
 }
