@@ -296,6 +296,24 @@ export async function createTestDataDatabase(
     .addUniqueConstraint("hyperboard_admins_pkey", ["user_id", "hyperboard_id"])
     .execute();
 
+  await db.schema
+    .createTable("signature_requests")
+    .addColumn("safe_address", "varchar", (col) => col.notNull())
+    .addColumn("message_hash", "text", (col) => col.notNull())
+    .addColumn("chain_id", "integer", (col) => col.notNull())
+    .addColumn("timestamp", "integer", (col) => col.notNull())
+    .addColumn("message", "jsonb", (col) => col.notNull())
+    .addColumn("purpose", "varchar", (col) =>
+      col.notNull().check(sql`purpose IN ('update_user_data')`),
+    )
+    .addColumn("status", "varchar", (col) =>
+      col.notNull().check(sql`status IN ('pending', 'executed', 'canceled')`),
+    )
+    .addUniqueConstraint("signature_requests_pkey", [
+      "safe_address",
+      "message_hash",
+    ])
+    .execute();
   // Allow caller to setup additional schema
   if (setupSchema) {
     await setupSchema(db);
@@ -504,35 +522,15 @@ export function generateMockUser(
  * @param overrides Optional overrides for the generated data
  * @returns A mock signature request with realistic test data
  */
-export function generateMockSignatureRequest(
-  overrides?: Partial<{
-    chain_id: number;
-    message: string;
-    message_hash: string;
-    purpose: "update_user_data";
-    safe_address: string;
-    status: "pending" | "executed" | "canceled";
-    timestamp: number;
-  }>,
-) {
-  const defaultMessage = {
-    metadata: {
-      name: faker.person.fullName(),
-      description: faker.lorem.sentence(),
-    },
-  };
-
+export function generateMockSignatureRequest() {
   return {
-    chain_id: generateChainId(),
-    message: JSON.stringify(
-      overrides?.message ? JSON.parse(overrides.message) : defaultMessage,
-    ),
-    message_hash: faker.string.hexadecimal({ length: 64 }),
-    purpose: "update_user_data" as const,
-    safe_address: faker.finance.ethereumAddress(),
-    status: "pending" as const,
+    safe_address: generateMockAddress(),
+    message_hash: `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`,
+    chain_id: faker.number.int({ min: 1, max: 100000 }),
     timestamp: Math.floor(Date.now() / 1000),
-    ...overrides,
+    message: JSON.stringify({ test: "data" }),
+    purpose: "update_user_data" as const,
+    status: "pending" as const,
   };
 }
 
