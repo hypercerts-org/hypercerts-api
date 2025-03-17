@@ -1,7 +1,9 @@
 import { faker } from "@faker-js/faker";
+import { currenciesByNetwork } from "@hypercerts-org/marketplace-sdk";
 import { Kysely, sql } from "kysely";
 import { DataType, newDb } from "pg-mem";
 import { getAddress } from "viem";
+import { MarketplaceOrderSelect } from "../../src/services/database/entities/MarketplaceOrdersEntityService.js";
 import { CachingDatabase } from "../../src/types/kyselySupabaseCaching.js";
 import { DataDatabase } from "../../src/types/kyselySupabaseData.js";
 
@@ -33,6 +35,59 @@ export async function createTestDataDatabase(
     implementation: (arr: string[], element: string) => [...arr, element],
   });
 
+  mem.public.registerFunction({
+    name: "exists",
+    args: [mem.public.getType(DataType.uuid).asArray()],
+    returns: mem.public.getType(DataType.bool),
+    implementation: (arr: string[]) => arr.length > 0,
+  });
+
+  // Create marketplace_orders table
+  // TODO typings in DB are inconsisten do this will need to be updated when the DB is updated
+  await db.schema
+    .createTable("marketplace_orders")
+    .addColumn("id", "uuid", (col) =>
+      col.primaryKey().defaultTo(sql`generateuuid()`),
+    )
+    .addColumn("createdAt", "timestamp", (col) =>
+      col.notNull().defaultTo(sql`now()`),
+    )
+    .addColumn("quoteType", "bigint", (col) => col.notNull())
+    .addColumn("globalNonce", "text", (col) => col.notNull())
+    .addColumn("orderNonce", "text", (col) => col.notNull())
+    .addColumn("strategyId", "bigint", (col) => col.notNull())
+    .addColumn("collectionType", "bigint", (col) => col.notNull())
+    .addColumn("collection", "text", (col) => col.notNull())
+    .addColumn("currency", "text", (col) => col.notNull())
+    .addColumn("signer", "text", (col) => col.notNull())
+    .addColumn("startTime", "bigint", (col) => col.notNull())
+    .addColumn("endTime", "bigint", (col) => col.notNull())
+    .addColumn("price", "text", (col) => col.notNull())
+    .addColumn("signature", "text", (col) => col.notNull())
+    .addColumn("additionalParameters", "text", (col) => col.notNull())
+    .addColumn("chainId", "bigint", (col) => col.notNull())
+    .addColumn("subsetNonce", "bigint", (col) => col.notNull())
+    .addColumn("itemIds", sql`text[]`, (col) => col.notNull())
+    .addColumn("amounts", sql`bigint[]`, (col) => col.notNull())
+    .addColumn("invalidated", "boolean", (col) =>
+      col.notNull().defaultTo(false),
+    )
+    .addColumn("validator_codes", sql`integer[]`)
+    .addColumn("hypercert_id", "text", (col) => col.notNull().defaultTo(""))
+    .execute();
+
+  // Create marketplace_order_nonces table
+  await db.schema
+    .createTable("marketplace_order_nonces")
+    .addColumn("address", "text", (col) => col.notNull())
+    .addColumn("chain_id", "bigint", (col) => col.notNull())
+    .addColumn("nonce_counter", "bigint", (col) => col.notNull())
+    .addUniqueConstraint("marketplace_order_nonces_pkey", [
+      "address",
+      "chain_id",
+    ])
+    .execute();
+
   // Create blueprints table
   await db.schema
     .createTable("blueprints")
@@ -44,6 +99,19 @@ export async function createTestDataDatabase(
     .addColumn("minter_address", "text", (col) => col.notNull())
     .addColumn("minted", "boolean", (col) => col.notNull().defaultTo(false))
     .addColumn("hypercert_ids", sql`text[]`, (col) => col.notNull())
+    .execute();
+
+  // Create collections table
+  await db.schema
+    .createTable("collections")
+    .addColumn("id", "uuid", (b) =>
+      b.primaryKey().defaultTo(sql`generateuuid()`),
+    )
+    .addColumn("name", "varchar")
+    .addColumn("description", "varchar")
+    .addColumn("chain_ids", sql`integer[]`, (col) => col.notNull())
+    .addColumn("hidden", "boolean")
+    .addColumn("created_at", "timestamp")
     .execute();
 
   // Create users table
@@ -62,26 +130,87 @@ export async function createTestDataDatabase(
     .addUniqueConstraint("users_address_chain_id", ["address", "chain_id"])
     .execute();
 
-  // Create blueprint_admins table
-  await db.schema
-    .createTable("blueprint_admins")
-    .addColumn("blueprint_id", "integer", (col) => col.notNull())
-    .addColumn("user_id", "text", (col) => col.notNull())
-    .addColumn("created_at", "timestamp", (col) =>
-      col.notNull().defaultTo(sql`now()`),
-    )
-    .addUniqueConstraint("blueprint_admins_pkey", ["blueprint_id", "user_id"])
-    .execute();
-
   // Create hypercerts table
   await db.schema
     .createTable("hypercerts")
     .addColumn("hypercert_id", "text", (col) => col.notNull())
-    .addColumn("collection_id", "text", (col) => col.notNull())
+    .addColumn("collection_id", "uuid", (col) => col.notNull())
     .addColumn("created_at", "timestamp", (col) =>
       col.notNull().defaultTo(sql`now()`),
     )
     .addUniqueConstraint("hypercerts_pkey", ["hypercert_id", "collection_id"])
+    .execute();
+
+  // Create collection_blueprints table
+  await db.schema
+    .createTable("collection_blueprints")
+    .addColumn("blueprint_id", "integer", (col) =>
+      col.notNull().references("blueprints.id").onDelete("cascade"),
+    )
+    .addColumn("collection_id", "uuid", (col) =>
+      col.notNull().references("collections.id").onDelete("cascade"),
+    )
+    .addColumn("created_at", "timestamp", (col) =>
+      col.notNull().defaultTo(sql`now()`),
+    )
+    .addUniqueConstraint("collection_blueprints_pkey", [
+      "blueprint_id",
+      "collection_id",
+    ])
+    .execute();
+
+  // Create blueprint_admins table
+  await db.schema
+    .createTable("blueprint_admins")
+    .addColumn("created_at", "timestamp", (col) =>
+      col.notNull().defaultTo(sql`now()`),
+    )
+    .addColumn("user_id", "uuid", (col) =>
+      col.notNull().references("users.id").onDelete("cascade"),
+    )
+    .addColumn("blueprint_id", "integer", (col) =>
+      col.notNull().references("blueprints.id").onDelete("cascade"),
+    )
+    .addUniqueConstraint("blueprint_admins_pkey", ["user_id", "blueprint_id"])
+    .execute();
+
+  // Create collection_admins table
+  await db.schema
+    .createTable("collection_admins")
+    .addColumn("collection_id", "uuid", (col) =>
+      col.notNull().references("collections.id").onDelete("cascade"),
+    )
+    .addColumn("user_id", "uuid", (col) =>
+      col.notNull().references("users.id").onDelete("cascade"),
+    )
+    .addUniqueConstraint("collection_admins_pkey", ["collection_id", "user_id"])
+    .execute();
+
+  // Create blueprints_with_admins view
+  await db.schema
+    .createView("blueprints_with_admins")
+    .as(
+      db
+        .selectFrom("blueprints")
+        .innerJoin(
+          "blueprint_admins",
+          "blueprints.id",
+          "blueprint_admins.blueprint_id",
+        )
+        .innerJoin("users", "blueprint_admins.user_id", "users.id")
+        .select([
+          "blueprints.id as id",
+          "blueprints.form_values as form_values",
+          "blueprints.created_at as created_at",
+          "blueprints.minter_address as minter_address",
+          "blueprints.minted as minted",
+          "blueprints.hypercert_ids as hypercert_ids",
+          "users.address as admin_address",
+          "users.chain_id as admin_chain_id",
+          "users.avatar",
+          "users.display_name",
+        ]),
+    )
     .execute();
 
   // Create hyperboard_blueprint_metadata table
@@ -89,7 +218,7 @@ export async function createTestDataDatabase(
     .createTable("hyperboard_blueprint_metadata")
     .addColumn("blueprint_id", "integer", (col) => col.notNull())
     .addColumn("hyperboard_id", "text", (col) => col.notNull())
-    .addColumn("collection_id", "text", (col) => col.notNull())
+    .addColumn("collection_id", "uuid", (col) => col.notNull())
     .addColumn("display_size", "integer", (col) => col.notNull())
     .addColumn("created_at", "timestamp", (col) =>
       col.notNull().defaultTo(sql`now()`),
@@ -111,36 +240,6 @@ export async function createTestDataDatabase(
       "hypercert_id",
       "collection_id",
     ])
-    .execute();
-
-  // Create collections table
-  await db.schema
-    .createTable("collections")
-    .addColumn("id", "varchar", (b) =>
-      b.primaryKey().defaultTo(sql`generateuuid()`),
-    )
-    .addColumn("name", "varchar")
-    .addColumn("description", "varchar")
-    .addColumn("chain_ids", sql`integer[]`, (col) => col.notNull())
-    .addColumn("hidden", "boolean")
-    .addColumn("created_at", "timestamp")
-    .execute();
-
-  // Create collection_admins table
-  await db.schema
-    .createTable("collection_admins")
-    .addColumn("collection_id", "varchar")
-    .addColumn("user_id", "varchar")
-    .execute();
-
-  // Create collection_blueprints table
-  await db.schema
-    .createTable("collection_blueprints")
-    .addColumn("blueprint_id", "integer", (col) => col.notNull())
-    .addColumn("collection_id", "text", (col) => col.notNull())
-    .addColumn("created_at", "timestamp", (col) =>
-      col.notNull().defaultTo(sql`now()`),
-    )
     .execute();
 
   // Allow caller to setup additional schema
@@ -196,7 +295,15 @@ export async function createTestCachingDatabase(
 }
 
 export function generateChainId(): bigint {
-  return faker.number.bigInt({ min: 1, max: 100000 });
+  return 11155111n;
+}
+
+export function generateCurrency(): string {
+  const currency = currenciesByNetwork[11155111]["WETH"];
+  if (!currency) {
+    throw new Error("Currency not found");
+  }
+  return currency.address;
 }
 
 /**
@@ -362,7 +469,7 @@ export function generateMockSignatureRequest(
   };
 
   return {
-    chain_id: faker.number.int({ min: 1, max: 100000 }),
+    chain_id: generateChainId(),
     message: JSON.stringify(
       overrides?.message ? JSON.parse(overrides.message) : defaultMessage,
     ),
@@ -377,7 +484,7 @@ export function generateMockSignatureRequest(
 
 export function generateMockHypercert() {
   return {
-    chain_id: faker.number.int({ min: 1, max: 100000 }),
+    chain_id: generateChainId(),
     hypercert_id: generateHypercertId(),
     units: faker.number.bigInt({ min: 100000n, max: 100000000000n }),
     owner_address: generateMockAddress(),
@@ -406,4 +513,68 @@ export function generateMockCollection() {
     hypercerts: [{ data: [generateMockHypercert()], count: 1 }],
     blueprints: [generateMockBlueprint()],
   };
+}
+
+/**
+ * Generates a mock marketplace order record
+ * @returns A mock marketplace order record
+ */
+export function generateMockOrder(
+  overrides?: Partial<{
+    id: string;
+    createdAt: string;
+    quoteType: bigint;
+    globalNonce: string;
+    orderNonce: string;
+    strategyId: bigint;
+    collectionType: bigint;
+    collection: string;
+    currency: string;
+    signer: string;
+    startTime: bigint;
+    endTime: bigint;
+    price: string;
+    signature: string;
+    additionalParameters: string;
+    chainId: bigint;
+    subsetNonce: bigint;
+    itemIds: string[];
+    amounts: bigint[];
+    invalidated: boolean;
+    validator_codes: number[];
+    hypercert_id: string;
+  }>,
+) {
+  const defaultOrder = {
+    id: faker.string.uuid(),
+    createdAt: new Date().toISOString(),
+    quoteType: faker.number.bigInt({ min: 1n, max: 100n }),
+    globalNonce: faker.string.alphanumeric(10),
+    orderNonce: faker.string.alphanumeric(10),
+    strategyId: faker.number.bigInt({ min: 1n, max: 100n }),
+    collectionType: faker.number.bigInt({ min: 1n, max: 100n }),
+    collection: generateMockAddress(),
+    currency: generateCurrency(),
+    signer: generateMockAddress(),
+    startTime: faker.number.bigInt({ min: 1n, max: 100000n }),
+    endTime: faker.number.bigInt({ min: 100001n, max: 200000n }),
+    price: faker.number.bigInt({ min: 1000000n, max: 1000000000n }).toString(),
+    signature: faker.string.hexadecimal({ length: 130 }),
+    additionalParameters: faker.string.alphanumeric(10),
+    chainId: generateChainId(),
+    subsetNonce: faker.number.bigInt({ min: 1n, max: 100n }),
+    itemIds: [generateTokenId().toString(), generateTokenId().toString()],
+    amounts: [
+      faker.number.bigInt({ min: 1n, max: 1000n }),
+      faker.number.bigInt({ min: 1n, max: 1000n }),
+    ],
+    invalidated: faker.datatype.boolean(),
+    validator_codes: [faker.number.int({ min: 1, max: 100 })],
+    hypercert_id: generateHypercertId(),
+  };
+
+  return {
+    ...defaultOrder,
+    ...overrides,
+  } as unknown as MarketplaceOrderSelect;
 }

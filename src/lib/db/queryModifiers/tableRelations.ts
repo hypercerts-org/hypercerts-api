@@ -35,12 +35,6 @@ export const TABLE_RELATIONS: TableRelations = {
       joinCondition: "claims.hypercert_id = fractions_view.hypercert_id",
     },
   },
-  collections: {
-    users: {
-      joinCondition:
-        "users.id = collection_admins.user_id AND collections.id = collection_admins.collection_id",
-    },
-  },
   sales: {
     claims: {
       joinCondition: "claims.hypercert_id = sales.hypercert_id",

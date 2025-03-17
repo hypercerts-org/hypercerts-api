@@ -59,22 +59,26 @@ export class CollectionsQueryStrategy extends QueryStrategy<
       .$if(!isWhereEmpty(args.where?.admins), (qb) => {
         return qb.where(({ exists, selectFrom }) =>
           exists(
-            selectFrom("collection_admins")
-              .whereRef(
+            selectFrom("collections")
+              .innerJoin(
+                "collection_admins",
                 "collection_admins.collection_id",
-                "=",
                 "collections.id",
               )
-              .innerJoin("users", "collection_admins.user_id", "users.id"),
+              .select("collections.id"),
           ),
         );
       })
       .$if(!isWhereEmpty(args.where?.blueprints), (qb) => {
         return qb.where(({ exists, selectFrom }) =>
           exists(
-            selectFrom("collection_blueprints as cb")
-              .innerJoin("blueprints as b", "b.id", "cb.blueprint_id")
-              .whereRef("cb.collection_id", "=", "collections.id"),
+            selectFrom("collections")
+              .innerJoin(
+                "collection_blueprints",
+                "collection_blueprints.collection_id",
+                "collections.id",
+              )
+              .select("collections.id"),
           ),
         );
       })
@@ -117,22 +121,26 @@ export class CollectionsQueryStrategy extends QueryStrategy<
       .$if(!isWhereEmpty(args.where?.admins), (qb) => {
         return qb.where(({ exists, selectFrom }) =>
           exists(
-            selectFrom("collection_admins")
-              .whereRef(
+            selectFrom("collections")
+              .innerJoin(
+                "collection_admins",
                 "collection_admins.collection_id",
-                "=",
                 "collections.id",
               )
-              .innerJoin("users", "collection_admins.user_id", "users.id"),
+              .select("collections.id"),
           ),
         );
       })
       .$if(!isWhereEmpty(args.where?.blueprints), (qb) => {
         return qb.where(({ exists, selectFrom }) =>
           exists(
-            selectFrom("collection_blueprints as cb")
-              .innerJoin("blueprints as b", "b.id", "cb.blueprint_id")
-              .whereRef("cb.collection_id", "=", "collections.id"),
+            selectFrom("collections")
+              .innerJoin(
+                "collection_blueprints",
+                "collection_blueprints.collection_id",
+                "collections.id",
+              )
+              .select("collections.id"),
           ),
         );
       })

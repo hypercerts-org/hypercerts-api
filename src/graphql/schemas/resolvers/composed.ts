@@ -4,7 +4,7 @@ import { ContractResolver } from "../../../services/graphql/resolvers/contractRe
 import { FractionResolver } from "../../../services/graphql/resolvers/fractionResolver.js";
 import { AttestationResolver } from "../../../services/graphql/resolvers/attestationResolver.js";
 import { AttestationSchemaResolver } from "../../../services/graphql/resolvers/attestationSchemaResolver.js";
-import { OrderResolver } from "./orderResolver.js";
+import { OrderResolver } from "../../../services/graphql/resolvers/orderResolver.js";
 import { HyperboardResolver } from "./hyperboardResolver.js";
 import { AllowlistRecordResolver } from "../../../services/graphql/resolvers/allowlistRecordResolver.js";
 import { SalesResolver } from "../../../services/graphql/resolvers/salesResolver.js";

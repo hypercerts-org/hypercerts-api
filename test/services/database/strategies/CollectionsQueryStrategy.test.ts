@@ -50,7 +50,6 @@ describe("CollectionsQueryStrategy", () => {
 
       expect(sql).toContain("collections");
       expect(sql).toContain("collection_admins");
-      expect(sql).toContain("users");
     });
 
     it("should build a query with blueprint filter", async () => {
@@ -75,7 +74,6 @@ describe("CollectionsQueryStrategy", () => {
 
       expect(sql).toContain("collections");
       expect(sql).toContain("collection_admins");
-      expect(sql).toContain("users");
       expect(sql).toContain("collection_blueprints");
       expect(sql).toContain("blueprints");
     });
@@ -100,7 +98,6 @@ describe("CollectionsQueryStrategy", () => {
 
       expect(sql).toContain("collections");
       expect(sql).toContain("collection_admins");
-      expect(sql).toContain("users");
     });
 
     it("should build a count query with blueprint filter", async () => {
@@ -125,7 +122,6 @@ describe("CollectionsQueryStrategy", () => {
 
       expect(sql).toContain("collections");
       expect(sql).toContain("collection_admins");
-      expect(sql).toContain("users");
       expect(sql).toContain("collection_blueprints");
       expect(sql).toContain("blueprints");
     });

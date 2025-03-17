@@ -228,6 +228,7 @@ export class CollectionService {
           hidden: eb.ref("excluded.hidden"),
         })),
       )
+      .returningAll()
       .execute();
   }
 
