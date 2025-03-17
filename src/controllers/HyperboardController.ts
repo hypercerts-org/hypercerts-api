@@ -390,7 +390,7 @@ export class HyperboardController extends Controller {
             },
           ]);
 
-        const collectionId = collectionCreateResponse[0].insertId;
+        const collectionId = collectionCreateResponse[0].id;
         if (!collectionId) {
           throw new Error("Collection must have an id to add claims.");
         }
@@ -848,7 +848,7 @@ export class HyperboardController extends Controller {
             },
           ]);
 
-        const collectionId = collectionCreateResponse[0].insertId;
+        const collectionId = collectionCreateResponse[0].id;
         if (!collectionId) {
           throw new Error("Collection must have an id to add claims.");
         }

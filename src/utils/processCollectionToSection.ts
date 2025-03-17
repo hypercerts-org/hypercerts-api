@@ -308,7 +308,14 @@ export const processCollectionToSection = ({
         total_units: unitsForHypercert,
         name,
         percentage: 100,
-        owners,
+        owners: {
+          data: owners.map((owner) => ({
+            ...owner,
+            percentage: owner.percentage,
+            units: owner.units,
+          })),
+          count: owners.length,
+        },
       };
     },
   );
@@ -324,7 +331,7 @@ export const processCollectionToSection = ({
           `[HyperboardResolver::processCollectionToSection] Display size not found for ${entry.id} while processing section ${collection.id}`,
         );
       }
-      return entry.owners.map((owner) => ({
+      return entry.owners.data.map((owner) => ({
         ...owner,
         percentage: (owner.percentage || 0) * display_size,
       }));
@@ -348,7 +355,10 @@ export const processCollectionToSection = ({
   return {
     collection,
     label: collection.name,
-    entries,
-    owners,
+    entries: entries || [],
+    owners: {
+      data: owners || [],
+      count: owners?.length || 0,
+    },
   };
 };
