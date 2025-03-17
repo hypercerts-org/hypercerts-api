@@ -74,7 +74,7 @@ export class Section {
   entries?: SectionEntry[];
 
   @Field(() => GetHyperboardOwnersResponse)
-  owners?: GetHyperboardOwnersResponse[];
+  owners?: GetHyperboardOwnersResponse;
 }
 
 @ObjectType()

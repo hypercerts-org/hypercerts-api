@@ -1,5 +1,5 @@
 import { createYoga } from "graphql-yoga";
-import { resolvers } from "../graphql/schemas/resolvers/composed.js";
+import { resolvers } from "../services/graphql/resolvers/composed.js";
 import { buildSchema } from "type-graphql";
 import { container } from "tsyringe";
 import { Client, cacheExchange, fetchExchange } from "@urql/core";

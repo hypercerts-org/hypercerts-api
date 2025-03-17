@@ -1,7 +1,8 @@
-import { describe, it, expect } from "vitest";
-import { processCollectionToSection } from "../../src/utils/processCollectionToSection.js";
+import { Selectable } from "kysely";
 import { sepolia } from "viem/chains";
-import { Database as DataDatabase } from "../../src/types/supabaseData.js";
+import { describe, expect, it } from "vitest";
+import { DataDatabase } from "../../src/types/kyselySupabaseData.js";
+import { processCollectionToSection } from "../../src/utils/processCollectionToSection.js";
 
 describe("processCollectionToSection", async () => {
   const collection = {
@@ -22,7 +23,7 @@ describe("processCollectionToSection", async () => {
     hyperboardHypercertMetadata: [],
     collection,
   };
-  const user1: DataDatabase["public"]["Tables"]["users"]["Row"] = {
+  const user1: Selectable<DataDatabase["users"]> = {
     address: "0x1",
     chain_id: sepolia.id,
     avatar: "testAvatar1",
@@ -31,7 +32,7 @@ describe("processCollectionToSection", async () => {
     created_at: new Date().toISOString(),
   };
 
-  const user2: DataDatabase["public"]["Tables"]["users"]["Row"] = {
+  const user2: Selectable<DataDatabase["users"]> = {
     address: "0x2",
     chain_id: sepolia.id,
     avatar: "testAvatar2",
@@ -111,31 +112,33 @@ describe("processCollectionToSection", async () => {
     hypercert_allow_lists_id: "test",
   };
 
-  const hypercertMetadata1: DataDatabase["public"]["Tables"]["hyperboard_hypercert_metadata"]["Row"] =
-    {
-      hypercert_id: hypercert1.hypercert_id as string,
-      hyperboard_id: "testHyperboard1",
-      collection_id: "testCollection1",
-      display_size: 1,
-      created_at: new Date().toISOString(),
-    };
+  const hypercertMetadata1: Selectable<
+    DataDatabase["hyperboard_hypercert_metadata"]
+  > = {
+    hypercert_id: hypercert1.hypercert_id as string,
+    hyperboard_id: "testHyperboard1",
+    collection_id: "testCollection1",
+    display_size: 1,
+    created_at: new Date().toISOString(),
+  };
 
-  const hypercertMetadata2: DataDatabase["public"]["Tables"]["hyperboard_hypercert_metadata"]["Row"] =
-    {
-      hypercert_id: hypercert2.hypercert_id as string,
-      hyperboard_id: "testHyperboard2",
-      collection_id: "testCollection2",
-      display_size: 1,
-      created_at: new Date().toISOString(),
-    };
+  const hypercertMetadata2: Selectable<
+    DataDatabase["hyperboard_hypercert_metadata"]
+  > = {
+    hypercert_id: hypercert2.hypercert_id as string,
+    hyperboard_id: "testHyperboard2",
+    collection_id: "testCollection2",
+    display_size: 1,
+    created_at: new Date().toISOString(),
+  };
   it("should process empty collection to section", async () => {
     const emptySection = processCollectionToSection(emptyArgs);
 
     expect(emptySection).toBeDefined();
     expect(emptySection.entries).toBeDefined();
-    expect(emptySection.entries.length).toBe(0);
+    expect(emptySection.entries?.length).toBe(0);
     expect(emptySection.owners).toBeDefined();
-    expect(emptySection.owners.length).toBe(0);
+    expect(emptySection.owners?.data?.length).toBe(0);
   });
 
   it("should process allowlist entries according to size", async () => {
@@ -148,14 +151,14 @@ describe("processCollectionToSection", async () => {
       allowlistEntries: [allowlistEntry1, allowlistEntry2],
     });
 
-    expect(section.owners.length).toBe(2);
+    expect(section.owners?.data?.length).toBe(2);
     expect(
-      section.owners.find(
+      section.owners?.data?.find(
         (owner) => owner.address === allowlistEntry1.user_address,
       )?.percentage_owned,
     ).toBe(25);
     expect(
-      section.owners.find(
+      section.owners?.data?.find(
         (owner) => owner.address === allowlistEntry2.user_address,
       )?.percentage_owned,
     ).toBe(75);
@@ -172,8 +175,8 @@ describe("processCollectionToSection", async () => {
       ],
     });
 
-    expect(section.owners.length).toBe(1);
-    expect(section.owners[0].percentage_owned).toBe(100);
+    expect(section.owners?.data?.length).toBe(1);
+    expect(section.owners?.data?.[0].percentage_owned).toBe(100);
   });
 
   it("should use correct user metadata for allowlist entries", async () => {
@@ -186,17 +189,21 @@ describe("processCollectionToSection", async () => {
     });
     console.log(owners);
     expect(
-      owners.find((owner) => owner.address === user1.address)?.avatar,
+      owners?.data?.find((owner) => owner.address === user1.address)?.avatar,
     ).toBe(user1.avatar);
     expect(
-      owners.find((owner) => owner.address === user1.address)?.display_name,
+      owners?.data?.find((owner) => owner.address === user1.address)
+        ?.display_name,
     ).toBe(user1.display_name);
   });
 
   it("Should adjust for display size", () => {
     const { owners } = processCollectionToSection({
       ...emptyArgs,
-      hypercerts: [hypercert1, { ...hypercert2, units: 157 }],
+      hypercerts: [
+        { ...hypercert1, units: 100 },
+        { ...hypercert2, units: 100 },
+      ],
       hyperboardHypercertMetadata: [hypercertMetadata1, hypercertMetadata2],
       users: [user1, user2],
       fractions: [
@@ -205,7 +212,7 @@ describe("processCollectionToSection", async () => {
           hypercert_id: hypercert1.hypercert_id,
           owner_address: user1.address,
           token_id: 1,
-          units: 1,
+          units: 100,
           creation_block_timestamp: 1,
           creation_block_number: 1,
           last_update_block_number: 1,
@@ -219,7 +226,7 @@ describe("processCollectionToSection", async () => {
           hypercert_id: hypercert2.hypercert_id,
           owner_address: user2.address,
           token_id: 2,
-          units: 157,
+          units: 100,
           creation_block_timestamp: 1,
           creation_block_number: 1,
           last_update_block_number: 1,
@@ -231,6 +238,10 @@ describe("processCollectionToSection", async () => {
       ],
     });
 
-    expect(owners[0].percentage_owned).toBe(owners[1].percentage_owned);
+    expect(owners?.data?.[0].percentage_owned).toBe(50);
+    expect(owners?.data?.[1].percentage_owned).toBe(50);
+    expect(owners?.data?.[0].percentage_owned).toBe(
+      owners?.data?.[1].percentage_owned,
+    );
   });
 });
