@@ -6,6 +6,7 @@ import type { GetOrdersArgs } from "../../../../src/graphql/schemas/args/orderAr
 import { MarketplaceOrdersService } from "../../../../src/services/database/entities/MarketplaceOrdersEntityService.js";
 import type { DataDatabase } from "../../../../src/types/kyselySupabaseData.js";
 import {
+  checkSimilarity,
   createTestDataDatabase,
   generateMockOrder,
 } from "../../../utils/testUtils.js";
@@ -28,29 +29,6 @@ vi.mock("../../../../src/client/kysely.js", () => ({
     return mockDb();
   },
 }));
-
-// Check similarity of mock and returned object. The createdAt field is a timestamp and will be different. Its value in seconds should be the same.
-// Bigints and numbers are compared as strings.
-const checkSimilarity = (obj1: any, obj2: any) => {
-  const { createdAt: createdAt1, ...rest1 } = obj1;
-  const { createdAt: createdAt2, ...rest2 } = obj2;
-
-  for (const key in rest1) {
-    if (typeof rest1[key] === "bigint" || typeof rest1[key] === "number") {
-      expect(rest1[key].toString()).toEqual(rest2[key].toString());
-    } else if (Array.isArray(rest1[key])) {
-      for (let i = 0; i < rest1[key].length; i++) {
-        checkSimilarity(rest1[key][i], rest2[key][i]);
-      }
-    } else {
-      expect(rest1[key]).toEqual(rest2[key]);
-    }
-  }
-
-  expect(new Date(createdAt1).getTime()).toEqual(
-    new Date(createdAt2).getTime(),
-  );
-};
 
 describe("MarketplaceOrdersService", () => {
   let service: MarketplaceOrdersService;

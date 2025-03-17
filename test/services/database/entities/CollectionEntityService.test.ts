@@ -15,7 +15,9 @@ import type { DataDatabase } from "../../../../src/types/kyselySupabaseData.js";
 import {
   createTestCachingDatabase,
   createTestDataDatabase,
+  generateMockBlueprint,
   generateMockCollection,
+  generateMockUser,
 } from "../../../utils/testUtils.js";
 
 const mockDataDb = vi.fn();
@@ -113,7 +115,7 @@ describe("CollectionService", () => {
         .execute();
 
       // Insert mock admin
-      const admin = mockCollection.admins[0];
+      const admin = generateMockUser();
       await dataDb
         .insertInto("users")
         .values({
@@ -132,7 +134,7 @@ describe("CollectionService", () => {
         .execute();
 
       // Insert mock blueprint
-      const blueprint = mockCollection.blueprints[0];
+      const blueprint = generateMockBlueprint();
       await dataDb
         .insertInto("blueprints")
         .values({
@@ -213,7 +215,7 @@ describe("CollectionService", () => {
         .returning("id")
         .execute();
 
-      const admin = mockCollection.admins[0];
+      const admin = generateMockUser();
       await dataDb
         .insertInto("users")
         .values({
@@ -261,7 +263,7 @@ describe("CollectionService", () => {
         .returning("id")
         .execute();
 
-      const blueprint = mockCollection.blueprints[0];
+      const blueprint = generateMockBlueprint();
       await dataDb
         .insertInto("blueprints")
         .values({
@@ -357,7 +359,7 @@ describe("CollectionService", () => {
         .returning("id")
         .execute();
 
-      const admin = mockCollection.admins[0];
+      const admin = generateMockUser();
       await dataDb
         .insertInto("users")
         .values({
@@ -401,7 +403,7 @@ describe("CollectionService", () => {
         .returning("id")
         .execute();
 
-      const blueprint = mockCollection.blueprints[0];
+      const blueprint = generateMockBlueprint();
       await dataDb
         .insertInto("blueprints")
         .values({
@@ -465,7 +467,7 @@ describe("CollectionService", () => {
         .returning("id")
         .execute();
 
-      const blueprint = mockCollection.blueprints[0];
+      const blueprint = generateMockBlueprint();
       await dataDb
         .insertInto("blueprints")
         .values({

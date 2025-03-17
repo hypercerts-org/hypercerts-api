@@ -7,6 +7,13 @@ import { ArgsType } from "type-graphql";
 const { WhereInput: HyperboardWhereInput, SortOptions: HyperboardSortOptions } =
   createEntityArgs("Hyperboard", {
     ...WhereFieldDefinitions.Hyperboard.fields,
+    collections: {
+      type: "id",
+      references: {
+        entity: EntityTypeDefs.Collection,
+        fields: WhereFieldDefinitions.Collection.fields,
+      },
+    },
     admins: {
       type: "id",
       references: {

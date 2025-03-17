@@ -36,6 +36,17 @@ export type HyperboardBlueprintMetadataInsert = Insertable<
   DataDatabase["hyperboard_blueprint_metadata"]
 >;
 
+/**
+ * Service for managing hyperboard entities and their relationships.
+ * Handles CRUD operations and relationship management for hyperboards.
+ *
+ * This service provides methods for:
+ * - Retrieving hyperboards and their related data
+ * - Managing hyperboard collections
+ * - Managing hyperboard admins
+ * - Managing hyperboard metadata (hypercerts and blueprints)
+ * - Creating and updating hyperboards
+ */
 @injectable()
 export class HyperboardService {
   private entityService: EntityService<
@@ -55,15 +66,32 @@ export class HyperboardService {
     >("hyperboards", "HyperboardEntityService", kyselyData);
   }
 
+  /**
+   * Retrieves multiple hyperboards based on provided arguments.
+   * @param args - Query arguments for filtering hyperboards
+   * @returns Promise resolving to hyperboards matching the criteria
+   * @throws {Error} If there's an error executing the query
+   */
   async getHyperboards(args: GetHyperboardsArgs) {
     return this.entityService.getMany(args);
   }
 
+  /**
+   * Retrieves a single hyperboard based on provided arguments.
+   * @param args - Query arguments for filtering the hyperboard
+   * @returns Promise resolving to the matching hyperboard
+   * @throws {Error} If there's an error executing the query
+   */
   async getHyperboard(args: GetHyperboardsArgs) {
     return this.entityService.getSingle(args);
   }
 
-  // Relations
+  /**
+   * Retrieves collections associated with a hyperboard.
+   * @param hyperboardId - ID of the hyperboard
+   * @returns Promise resolving to associated collections
+   * @throws {DatabaseError} If there's an error executing the query
+   */
   async getHyperboardCollections(hyperboardId: string) {
     const hyperboardCollections = await this.dbService
       .getConnection()
@@ -84,6 +112,12 @@ export class HyperboardService {
     });
   }
 
+  /**
+   * Retrieves admin users associated with a hyperboard.
+   * @param hyperboardId - ID of the hyperboard
+   * @returns Promise resolving to admin users
+   * @throws {Error} If there's an error executing the query
+   */
   async getHyperboardAdmins(hyperboardId: string) {
     const hyperboardAdminIds = await this.dbService
       .getConnection()
@@ -102,7 +136,12 @@ export class HyperboardService {
     });
   }
 
-  // Metadata
+  /**
+   * Retrieves hypercert metadata for a hyperboard.
+   * @param hyperboardId - ID of the hyperboard
+   * @returns Promise resolving to hypercert metadata
+   * @throws {Error} If there's an error executing the query
+   */
   async getHyperboardHypercertMetadata(
     hyperboardId: string,
   ): Promise<HyperboardHypercertMetadataSelect[]> {
@@ -114,6 +153,12 @@ export class HyperboardService {
       .execute();
   }
 
+  /**
+   * Retrieves blueprint metadata for a hyperboard.
+   * @param hyperboardId - ID of the hyperboard
+   * @returns Promise resolving to blueprint metadata
+   * @throws {Error} If there's an error executing the query
+   */
   async getHyperboardBlueprintMetadata(
     hyperboardId: string,
   ): Promise<HyperboardBlueprintMetadataSelect[]> {
@@ -125,7 +170,12 @@ export class HyperboardService {
       .execute();
   }
 
-  // Mutations
+  /**
+   * Deletes a hyperboard by ID.
+   * @param hyperboardId - ID of the hyperboard to delete
+   * @returns Promise resolving to the deleted hyperboard
+   * @throws {Error} If there's an error executing the query
+   */
   async deleteHyperboard(hyperboardId: string) {
     return this.dbService
       .getConnection()
@@ -134,6 +184,12 @@ export class HyperboardService {
       .executeTakeFirstOrThrow();
   }
 
+  /**
+   * Creates or updates hyperboards.
+   * @param hyperboards - Array of hyperboard data to upsert
+   * @returns Promise resolving to the upserted hyperboards
+   * @throws {Error} If there's an error executing the query
+   */
   async upsertHyperboard(hyperboards: HyperboardInsert[]) {
     return this.dbService
       .getConnection()
@@ -153,6 +209,12 @@ export class HyperboardService {
       .execute();
   }
 
+  /**
+   * Creates or updates hypercert metadata for a hyperboard.
+   * @param metadata - Array of metadata to upsert
+   * @returns Promise resolving to the upserted metadata
+   * @throws {Error} If there's an error executing the query
+   */
   async upsertHyperboardHypercertMetadata(
     metadata: HyperboardHypercertMetadataInsert[],
   ) {
@@ -174,6 +236,12 @@ export class HyperboardService {
       .execute();
   }
 
+  /**
+   * Creates or updates blueprint metadata for a hyperboard.
+   * @param metadata - Array of metadata to upsert
+   * @returns Promise resolving to the upserted metadata
+   * @throws {Error} If there's an error executing the query
+   */
   async upsertHyperboardBlueprintMetadata(
     metadata: HyperboardBlueprintMetadataInsert[],
   ) {
@@ -195,6 +263,13 @@ export class HyperboardService {
       .execute();
   }
 
+  /**
+   * Adds a collection to a hyperboard.
+   * @param hyperboardId - ID of the hyperboard
+   * @param collectionId - ID of the collection to add
+   * @returns Promise resolving to the created relationship
+   * @throws {Error} If there's an error executing the query
+   */
   async addCollectionToHyperboard(hyperboardId: string, collectionId: string) {
     return this.dbService
       .getConnection()
@@ -215,6 +290,13 @@ export class HyperboardService {
       .executeTakeFirstOrThrow();
   }
 
+  /**
+   * Adds an admin user to a hyperboard.
+   * @param hyperboardId - ID of the hyperboard
+   * @param user - User data to add as admin
+   * @returns Promise resolving to the created relationship
+   * @throws {Error} If there's an error executing the query
+   */
   async addAdminToHyperboard(hyperboardId: string, user: UserInsert) {
     const { id: user_id } = await this.usersService.getOrCreateUser(user);
     return this.dbService

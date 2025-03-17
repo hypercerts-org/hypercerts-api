@@ -5,7 +5,7 @@ import { FractionResolver } from "../../../services/graphql/resolvers/fractionRe
 import { AttestationResolver } from "../../../services/graphql/resolvers/attestationResolver.js";
 import { AttestationSchemaResolver } from "../../../services/graphql/resolvers/attestationSchemaResolver.js";
 import { OrderResolver } from "../../../services/graphql/resolvers/orderResolver.js";
-import { HyperboardResolver } from "./hyperboardResolver.js";
+import { HyperboardResolver } from "../../../services/graphql/resolvers/hyperboardResolver.js";
 import { AllowlistRecordResolver } from "../../../services/graphql/resolvers/allowlistRecordResolver.js";
 import { SalesResolver } from "../../../services/graphql/resolvers/salesResolver.js";
 import { UserResolver } from "../../../services/graphql/resolvers/userResolver.js";

@@ -3,6 +3,7 @@ import { currenciesByNetwork } from "@hypercerts-org/marketplace-sdk";
 import { Kysely, sql } from "kysely";
 import { DataType, newDb } from "pg-mem";
 import { getAddress } from "viem";
+import { expect } from "vitest";
 import { MarketplaceOrderSelect } from "../../src/services/database/entities/MarketplaceOrdersEntityService.js";
 import { CachingDatabase } from "../../src/types/kyselySupabaseCaching.js";
 import { DataDatabase } from "../../src/types/kyselySupabaseData.js";
@@ -213,6 +214,24 @@ export async function createTestDataDatabase(
     )
     .execute();
 
+  // Create hyperboards table
+  await db.schema
+    .createTable("hyperboards")
+    .addColumn("id", "uuid", (col) =>
+      col.primaryKey().defaultTo(sql`generateuuid()`),
+    )
+    .addColumn("created_at", "timestamptz", (col) =>
+      col.notNull().defaultTo(sql`now()`),
+    )
+    .addColumn("name", "text", (col) => col.notNull())
+    .addColumn("background_image", "text")
+    .addColumn("grayscale_images", "boolean", (col) =>
+      col.notNull().defaultTo(false),
+    )
+    .addColumn("tile_border_color", "text")
+    .addColumn("chain_ids", sql`integer[]`, (col) => col.notNull())
+    .execute();
+
   // Create hyperboard_blueprint_metadata table
   await db.schema
     .createTable("hyperboard_blueprint_metadata")
@@ -240,6 +259,41 @@ export async function createTestDataDatabase(
       "hypercert_id",
       "collection_id",
     ])
+    .execute();
+
+  // Create hyperboard_collections table
+  await db.schema
+    .createTable("hyperboard_collections")
+    .addColumn("created_at", "timestamptz", (col) =>
+      col.notNull().defaultTo(sql`now()`),
+    )
+    .addColumn("hyperboard_id", "uuid", (col) =>
+      col.notNull().references("hyperboards.id").onDelete("cascade"),
+    )
+    .addColumn("collection_id", "uuid", (col) =>
+      col.notNull().references("collections.id").onDelete("cascade"),
+    )
+    .addColumn("label", "text")
+    .addColumn("render_method", "text")
+    .addUniqueConstraint("hyperboard_collections_pkey", [
+      "hyperboard_id",
+      "collection_id",
+    ])
+    .execute();
+
+  // Create hyperboard_admins table
+  await db.schema
+    .createTable("hyperboard_admins")
+    .addColumn("created_at", "timestamptz", (col) =>
+      col.notNull().defaultTo(sql`now()`),
+    )
+    .addColumn("user_id", "uuid", (col) =>
+      col.notNull().references("users.id").onDelete("cascade"),
+    )
+    .addColumn("hyperboard_id", "uuid", (col) =>
+      col.notNull().references("hyperboards.id").onDelete("cascade"),
+    )
+    .addUniqueConstraint("hyperboard_admins_pkey", ["user_id", "hyperboard_id"])
     .execute();
 
   // Allow caller to setup additional schema
@@ -509,9 +563,6 @@ export function generateMockCollection() {
     description: faker.lorem.paragraph(),
     chain_ids: [generateChainId()],
     hidden: faker.datatype.boolean(),
-    admins: [generateMockUser()],
-    hypercerts: [{ data: [generateMockHypercert()], count: 1 }],
-    blueprints: [generateMockBlueprint()],
   };
 }
 
@@ -578,3 +629,193 @@ export function generateMockOrder(
     ...overrides,
   } as unknown as MarketplaceOrderSelect;
 }
+
+export function generateMockHyperboard(
+  overrides?: Partial<{
+    id: string;
+    name: string;
+    chain_ids: (bigint | number | string)[];
+    background_image: string;
+    grayscale_images: boolean;
+    tile_border_color: string;
+    admins: { data: ReturnType<typeof generateMockUser>[]; count: number };
+    sections: Array<{
+      data: Array<{
+        label: string;
+        collection: ReturnType<typeof generateMockCollection>;
+        entries: {
+          id: string;
+          is_blueprint: boolean;
+          percentage_of_section: number;
+          display_size: number;
+          name?: string;
+          total_units?: bigint | number | string;
+          owners: {
+            data: Array<
+              ReturnType<typeof generateMockUser> & {
+                percentage: number;
+                units?: bigint | number | string;
+              }
+            >;
+            count: number;
+          };
+        }[];
+        owners: Array<{
+          data: Array<
+            ReturnType<typeof generateMockUser> & { percentage_owned: number }
+          >;
+          count: number;
+        }>;
+      }>;
+      count: number;
+    }>;
+    owners: {
+      data: Array<
+        ReturnType<typeof generateMockUser> & { percentage_owned: number }
+      >;
+      count: number;
+    };
+  }>,
+) {
+  const mockUser = generateMockUser();
+  const mockCollection = generateMockCollection();
+
+  const defaultHyperboard = {
+    id: faker.string.uuid(),
+    name: faker.company.name(),
+    chain_ids: [generateChainId()],
+    background_image: faker.image.url(),
+    grayscale_images: faker.datatype.boolean(),
+    tile_border_color: faker.color.rgb(),
+    admins: {
+      data: [mockUser],
+      count: 1,
+    },
+    sections: [
+      {
+        data: [
+          {
+            label: faker.commerce.department(),
+            collection: mockCollection,
+            entries: [
+              {
+                id: faker.string.uuid(),
+                is_blueprint: faker.datatype.boolean(),
+                percentage_of_section: faker.number.float({
+                  min: 0,
+                  max: 100,
+                  fractionDigits: 2,
+                }),
+                display_size: faker.number.float({
+                  min: 1,
+                  max: 10,
+                  fractionDigits: 2,
+                }),
+                name: faker.commerce.productName(),
+                total_units: faker.number.bigInt({ min: 1000n, max: 1000000n }),
+                owners: {
+                  data: [
+                    {
+                      ...mockUser,
+                      percentage: faker.number.float({
+                        min: 0,
+                        max: 100,
+                        fractionDigits: 2,
+                      }),
+                      units: faker.number.bigInt({ min: 1n, max: 1000n }),
+                    },
+                  ],
+                  count: 1,
+                },
+              },
+            ],
+            owners: [
+              {
+                data: [
+                  {
+                    ...mockUser,
+                    percentage_owned: faker.number.float({
+                      min: 0,
+                      max: 100,
+                      fractionDigits: 2,
+                    }),
+                  },
+                ],
+                count: 1,
+              },
+            ],
+          },
+        ],
+        count: 1,
+      },
+    ],
+    owners: {
+      data: [
+        {
+          ...mockUser,
+          percentage_owned: faker.number.float({
+            min: 0,
+            max: 100,
+            fractionDigits: 2,
+          }),
+        },
+      ],
+      count: 1,
+    },
+  };
+
+  return {
+    ...defaultHyperboard,
+    ...overrides,
+  };
+}
+
+// Check similarity of mock and returned object. The createdAt field is a timestamp and will be different. Its value in seconds should be the same.
+// Bigints and numbers are compared as strings.
+export const checkSimilarity = (obj1: unknown, obj2: unknown) => {
+  // Extract all timestamp fields (both regular and timezone-aware)
+  const timestampFields = ["createdAt", "created_at"];
+  const timestamps1: Record<string, string> = {};
+  const timestamps2: Record<string, string> = {};
+  const rest1: Record<string, unknown> = {};
+  const rest2: Record<string, unknown> = {};
+
+  // Separate timestamp fields from other fields
+  Object.entries(obj1 || {}).forEach(([key, value]) => {
+    if (timestampFields.includes(key)) {
+      timestamps1[key] = value as string;
+    } else {
+      rest1[key] = value;
+    }
+  });
+
+  Object.entries(obj2 || {}).forEach(([key, value]) => {
+    if (timestampFields.includes(key)) {
+      timestamps2[key] = value as string;
+    } else {
+      rest2[key] = value;
+    }
+  });
+
+  // Compare non-timestamp fields
+  for (const key in rest1) {
+    if (typeof rest1[key] === "bigint" || typeof rest1[key] === "number") {
+      expect(rest1[key].toString()).toEqual(rest2[key]?.toString());
+    } else if (Array.isArray(rest1[key])) {
+      for (let i = 0; i < rest1[key].length; i++) {
+        checkSimilarity(rest1[key][i], rest2[key]?.[i]);
+      }
+    } else {
+      expect(rest1[key]).toEqual(rest2[key]);
+    }
+  }
+
+  // Compare timestamp fields
+  for (const key in timestamps1) {
+    if (timestamps1[key] && timestamps2[key]) {
+      const date1 = new Date(timestamps1[key]);
+      const date2 = new Date(timestamps2[key]);
+      expect(date1.getTime()).toEqual(date2.getTime());
+    }
+  }
+};
