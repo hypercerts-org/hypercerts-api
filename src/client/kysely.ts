@@ -6,6 +6,15 @@ import type { CachingDatabase } from "../types/kyselySupabaseCaching.js";
 import type { DataDatabase } from "../types/kyselySupabaseData.js";
 import { cachingDatabaseUrl, dataDatabaseUrl } from "../utils/constants.js";
 import { container } from "tsyringe";
+import { format } from "date-fns";
+
+pkg.types.setTypeParser(pkg.types.builtins.TIMESTAMPTZ, (val) => {
+  return format(new Date(val), "t");
+});
+
+pkg.types.setTypeParser(pkg.types.builtins.TIMESTAMP, (val) => {
+  return format(new Date(val), "t");
+});
 
 export abstract class BaseKyselyService<
   DB extends CachingDatabase | DataDatabase,

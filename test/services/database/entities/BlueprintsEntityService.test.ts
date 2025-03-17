@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { Kysely } from "kysely";
 import { container } from "tsyringe";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -11,6 +12,7 @@ import {
   generateHypercertId,
   generateMockAddress,
   generateMockBlueprint,
+  generateMockCollection,
   generateMockUser,
 } from "../../../utils/testUtils.js";
 
@@ -263,15 +265,27 @@ describe("BlueprintsService", () => {
       const mockBlueprint = generateMockBlueprint();
       await db.insertInto("blueprints").values(mockBlueprint).execute();
 
-      const hyperboardId = "1";
-      const collectionId = "1";
+      const mockCollection = generateMockCollection();
+      await db
+        .insertInto("collections")
+        .values({
+          id: mockCollection.id,
+          name: mockCollection.name,
+          description: mockCollection.description,
+          chain_ids: mockCollection.chain_ids.map((id) => Number(id)),
+          hidden: mockCollection.hidden,
+          created_at: new Date().toISOString(),
+        })
+        .execute();
+
+      const hyperboardId = faker.string.uuid();
       const displaySize = 100;
       await db
         .insertInto("hyperboard_blueprint_metadata")
         .values({
           blueprint_id: mockBlueprint.id,
           hyperboard_id: hyperboardId,
-          collection_id: collectionId,
+          collection_id: mockCollection.id,
           display_size: displaySize,
           created_at: new Date().toISOString(),
         })
@@ -281,7 +295,7 @@ describe("BlueprintsService", () => {
         .insertInto("collection_blueprints")
         .values({
           blueprint_id: mockBlueprint.id,
-          collection_id: collectionId,
+          collection_id: mockCollection.id,
           created_at: new Date().toISOString(),
         })
         .execute();
@@ -310,14 +324,14 @@ describe("BlueprintsService", () => {
       const hypercert = await db
         .selectFrom("hypercerts")
         .where("hypercert_id", "=", hypercertId)
-        .where("collection_id", "=", collectionId)
+        .where("collection_id", "=", mockCollection.id)
         .executeTakeFirst();
       expect(hypercert).toBeDefined();
 
       const hypercertMetadata = await db
         .selectFrom("hyperboard_hypercert_metadata")
         .where("hypercert_id", "=", hypercertId)
-        .where("collection_id", "=", collectionId)
+        .where("collection_id", "=", mockCollection.id)
         .where("hyperboard_id", "=", hyperboardId)
         .selectAll()
         .executeTakeFirst();

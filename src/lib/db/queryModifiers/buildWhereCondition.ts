@@ -240,6 +240,31 @@ export function buildWhereCondition<
               and ${nestedConditions}
             )`,
           );
+        } else if (tableName === "collections" && relatedTable === "users") {
+          // TODO: This is a hack to support the collections.users relation
+          // TODO: This should be removed once we have a proper relation in TABLE_RELATIONS or a view in the database
+          conditions.push(
+            sql<SqlBool>`exists (
+              select 1 from "users"
+              inner join "collection_admins" on "users".id = "collection_admins".user_id
+              inner join "collections" on "collections".id = "collection_admins".collection_id
+              and ${nestedConditions}
+            )`,
+          );
+        } else if (
+          tableName === "collections" &&
+          relatedTable === "blueprints_with_admins"
+        ) {
+          // TODO: This is a hack to support the collections.blueprints relation
+          // TODO: This should be removed once we have a proper relation in TABLE_RELATIONS or a view in the database
+          conditions.push(
+            sql<SqlBool>`exists (
+              select from "blueprints_with_admins"
+              inner join "collection_blueprints" on "blueprints_with_admins".id = "collection_blueprints".blueprint_id
+              inner join "collections" on "collections".id = "collection_blueprints".collection_id
+              and ${nestedConditions}
+            )`,
+          );
         } else {
           // Fall back to default foreign key pattern for standard relationships
           conditions.push(
