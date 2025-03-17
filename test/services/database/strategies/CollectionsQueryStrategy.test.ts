@@ -4,7 +4,8 @@ import { CollectionsQueryStrategy } from "../../../../src/services/database/stra
 import { DataDatabase } from "../../../../src/types/kyselySupabaseData.js";
 import {
   createTestDataDatabase,
-  generateMockCollection,
+  generateMockBlueprint,
+  generateMockUser,
 } from "../../../utils/testUtils.js";
 
 type TestDatabase = DataDatabase;
@@ -23,12 +24,10 @@ type TestDatabase = DataDatabase;
 describe("CollectionsQueryStrategy", () => {
   let db: Kysely<TestDatabase>;
   const strategy = new CollectionsQueryStrategy();
-  let mockCollection: ReturnType<typeof generateMockCollection>;
 
   beforeEach(async () => {
     // Create test database with schema
     ({ db } = await createTestDataDatabase());
-    mockCollection = generateMockCollection();
   });
 
   describe("data query building", () => {
@@ -41,9 +40,10 @@ describe("CollectionsQueryStrategy", () => {
     });
 
     it("should build a query with admin filter", async () => {
+      const admin = generateMockUser();
       const query = strategy.buildDataQuery(db, {
         where: {
-          admins: { address: { eq: mockCollection.admins[0].address } },
+          admins: { address: { eq: admin.address } },
         },
       });
       const { sql } = query.compile();
@@ -53,8 +53,9 @@ describe("CollectionsQueryStrategy", () => {
     });
 
     it("should build a query with blueprint filter", async () => {
+      const blueprint = generateMockBlueprint();
       const query = strategy.buildDataQuery(db, {
-        where: { blueprints: { id: { eq: mockCollection.blueprints[0].id } } },
+        where: { blueprints: { id: { eq: blueprint.id } } },
       });
       const { sql } = query.compile();
 
@@ -64,10 +65,12 @@ describe("CollectionsQueryStrategy", () => {
     });
 
     it("should build a query with both admin and blueprint filters", async () => {
+      const admin = generateMockUser();
+      const blueprint = generateMockBlueprint();
       const query = strategy.buildDataQuery(db, {
         where: {
-          admins: { address: { eq: mockCollection.admins[0].address } },
-          blueprints: { id: { eq: mockCollection.blueprints[0].id } },
+          admins: { address: { eq: admin.address } },
+          blueprints: { id: { eq: blueprint.id } },
         },
       });
       const { sql } = query.compile();
@@ -89,9 +92,10 @@ describe("CollectionsQueryStrategy", () => {
     });
 
     it("should build a count query with admin filter", async () => {
+      const admin = generateMockUser();
       const query = strategy.buildCountQuery(db, {
         where: {
-          admins: { address: { eq: mockCollection.admins[0].address } },
+          admins: { address: { eq: admin.address } },
         },
       });
       const { sql } = query.compile();
@@ -101,8 +105,9 @@ describe("CollectionsQueryStrategy", () => {
     });
 
     it("should build a count query with blueprint filter", async () => {
+      const blueprint = generateMockBlueprint();
       const query = strategy.buildCountQuery(db, {
-        where: { blueprints: { id: { eq: mockCollection.blueprints[0].id } } },
+        where: { blueprints: { id: { eq: blueprint.id } } },
       });
       const { sql } = query.compile();
 
@@ -112,10 +117,12 @@ describe("CollectionsQueryStrategy", () => {
     });
 
     it("should build a count query with both admin and blueprint filters", async () => {
+      const admin = generateMockUser();
+      const blueprint = generateMockBlueprint();
       const query = strategy.buildCountQuery(db, {
         where: {
-          admins: { address: { eq: mockCollection.admins[0].address } },
-          blueprints: { id: { eq: mockCollection.blueprints[0].id } },
+          admins: { address: { eq: admin.address } },
+          blueprints: { id: { eq: blueprint.id } },
         },
       });
       const { sql } = query.compile();
