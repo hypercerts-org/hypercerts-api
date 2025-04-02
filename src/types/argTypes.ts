@@ -9,17 +9,6 @@ import {
   SignatureRequestStatusSearchOptions,
 } from "../graphql/schemas/inputs/searchOptions.js";
 
-export type SearchOptionType = {
-  string: typeof StringSearchOptions;
-  number: typeof NumberSearchOptions;
-  bigint: typeof BigIntSearchOptions;
-  id: typeof IdSearchOptions;
-  boolean: typeof BooleanSearchOptions;
-  stringArray: typeof StringArraySearchOptions;
-  numberArray: typeof NumberArraySearchOptions;
-  enum: typeof SignatureRequestStatusSearchOptions;
-};
-
 export const SearchOptionMap = {
   string: StringSearchOptions,
   number: NumberSearchOptions,

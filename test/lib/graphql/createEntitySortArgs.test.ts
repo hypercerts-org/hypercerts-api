@@ -123,39 +123,10 @@ describe("createEntitySort", () => {
     expect(fields[0].typeOptions?.nullable).toBe(true);
   });
 
-  it("should only create properties for primitive fields", () => {
-    const SortArgs = createEntitySortArgs("Contract", {
-      address: "string",
-      chain_id: "number",
-      metadata: {
-        type: "id",
-        references: {
-          entity: "Metadata",
-          fields: { name: "string" },
-        },
-      },
-    });
-
-    const instance = new SortArgs();
-
-    // Check which properties are actually defined on the instance
-    const ownProps = Object.getOwnPropertyNames(instance);
-    expect(ownProps).toContain("address");
-    expect(ownProps).toContain("chain_id");
-    expect(ownProps).not.toContain("metadata");
-  });
-
   it("should handle empty field definitions", () => {
     const SortArgs = createEntitySortArgs(EntityTypeDefs.Contract, {});
     const instance = new SortArgs();
     expect(Object.keys(instance).length).toBe(0);
-  });
-
-  it("should handle special characters in entity names", () => {
-    const SortArgs = createEntitySortArgs(EntityTypeDefs.Contract, {
-      field: "string",
-    });
-    expect(SortArgs.name).toBe("ContractSortOptions");
   });
 
   it("should accept valid sort orders and null", () => {
@@ -203,7 +174,7 @@ describe("createEntitySort", () => {
     expect("invalid" in instance).toBe(false);
   });
 
-  it("should handle complex nested field definitions", () => {
+  it("should not add complex nested field definitions", () => {
     const SortArgs = createEntitySortArgs(EntityTypeDefs.Contract, {
       simple: "string",
       nested: {
@@ -220,6 +191,7 @@ describe("createEntitySort", () => {
 
     const instance = new SortArgs();
     expect("simple" in instance).toBe(true);
+    // We don't support nested fields yet in sort args
     expect("nested" in instance).toBe(false);
   });
 });

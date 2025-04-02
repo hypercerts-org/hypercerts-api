@@ -1,6 +1,6 @@
 import { SelectQueryBuilder, Selectable } from "kysely";
 import { SortOrder } from "../../../graphql/schemas/enums/sortEnums.js";
-import { SupportedDatabases } from "../../../services/database/strategies/QueryStrategy.js";
+import { SupportedDatabase } from "../../../services/database/strategies/QueryStrategy.js";
 import { BaseQueryArgsType } from "../../graphql/BaseQueryArgs.js";
 import { applyPagination } from "./applyPagination.js";
 import { applySort } from "./applySort.js";
@@ -27,7 +27,7 @@ import { applyWhere } from "./applyWhere.js";
  * ```
  */
 export type QueryModifier<
-  DB extends SupportedDatabases,
+  DB extends SupportedDatabase,
   T extends keyof DB & string,
   Args,
 > = (
@@ -64,7 +64,7 @@ export type QueryModifier<
  * ```
  */
 export function composeQueryModifiers<
-  DB extends SupportedDatabases,
+  DB extends SupportedDatabase,
   T extends keyof DB & string,
   Args,
 >(...modifiers: QueryModifier<DB, T, Args>[]) {
@@ -105,7 +105,7 @@ export function composeQueryModifiers<
  * ```
  */
 export function createStandardQueryModifier<
-  DB extends SupportedDatabases,
+  DB extends SupportedDatabase,
   T extends keyof DB & string,
   Args extends BaseQueryArgsType<
     object,

@@ -45,6 +45,8 @@ describe("applyWhere", () => {
         {},
       );
 
+      expect(result).toBe(baseQuery);
+
       const { sql, parameters } = result.compile();
       expect(sql).not.toContain("where");
       expect(parameters).toEqual([]);

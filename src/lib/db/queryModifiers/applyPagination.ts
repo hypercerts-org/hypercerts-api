@@ -1,5 +1,5 @@
 import { SelectQueryBuilder, Selectable } from "kysely";
-import { SupportedDatabases } from "../../../services/database/strategies/QueryStrategy.js";
+import { SupportedDatabase } from "../../../services/database/strategies/QueryStrategy.js";
 
 /**
  * Type definition for pagination parameters
@@ -36,7 +36,7 @@ type PaginationArgs = {
  * ```
  */
 export function applyPagination<
-  DB extends SupportedDatabases,
+  DB extends SupportedDatabase,
   T extends keyof DB & string,
   Args extends PaginationArgs,
 >(

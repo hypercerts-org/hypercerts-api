@@ -1,5 +1,5 @@
 import { Expression, ExpressionBuilder, sql, SqlBool } from "kysely";
-import { SupportedDatabases } from "../../../services/database/strategies/QueryStrategy.js";
+import { SupportedDatabase } from "../../../services/database/strategies/QueryStrategy.js";
 import { getRelation, hasRelation } from "./tableRelations.js";
 
 // Define more specific types for our filter values
@@ -195,7 +195,7 @@ const filterBuilders: Record<FilterOperator, FilterBuilder> = {
  * - Undefined values in filter conditions are ignored
  */
 export function buildWhereCondition<
-  DB extends SupportedDatabases,
+  DB extends SupportedDatabase,
   T extends keyof DB,
 >(
   tableName: T,

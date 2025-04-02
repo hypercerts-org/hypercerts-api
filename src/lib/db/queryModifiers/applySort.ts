@@ -1,6 +1,6 @@
 import { SelectQueryBuilder, Selectable } from "kysely";
 import { SortOrder } from "../../../graphql/schemas/enums/sortEnums.js";
-import { SupportedDatabases } from "../../../services/database/strategies/QueryStrategy.js";
+import { SupportedDatabase } from "../../../services/database/strategies/QueryStrategy.js";
 
 /**
  * Applies sorting to a query based on the provided arguments.
@@ -35,7 +35,7 @@ import { SupportedDatabases } from "../../../services/database/strategies/QueryS
  * ```
  */
 export function applySort<
-  DB extends SupportedDatabases,
+  DB extends SupportedDatabase,
   T extends keyof DB & string,
   Args extends {
     sortBy?: { [K in keyof DB[T]]?: SortOrder | null | undefined };

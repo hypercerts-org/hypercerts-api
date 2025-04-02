@@ -9,14 +9,14 @@ import { FractionsQueryStrategy } from "../../../../src/services/database/strate
 import { HyperboardsQueryStrategy } from "../../../../src/services/database/strategies/HyperboardsQueryStrategy.js";
 import { MarketplaceOrdersQueryStrategy } from "../../../../src/services/database/strategies/MarketplaceOrdersQueryStrategy.js";
 import { MetadataQueryStrategy } from "../../../../src/services/database/strategies/MetadataQueryStrategy.js";
-import { SupportedDatabases } from "../../../../src/services/database/strategies/QueryStrategy.js";
+import { SupportedDatabase } from "../../../../src/services/database/strategies/QueryStrategy.js";
 import { QueryStrategyFactory } from "../../../../src/services/database/strategies/QueryStrategyFactory.js";
 import { SalesQueryStrategy } from "../../../../src/services/database/strategies/SalesQueryStrategy.js";
 import { SignatureRequestsQueryStrategy } from "../../../../src/services/database/strategies/SignatureRequestsQueryStrategy.js";
 import { SupportedSchemasQueryStrategy } from "../../../../src/services/database/strategies/SupportedSchemasQueryStrategy.js";
 import { UsersQueryStrategy } from "../../../../src/services/database/strategies/UsersQueryStrategy.js";
 
-type TableName = keyof SupportedDatabases;
+type TableName = keyof SupportedDatabase;
 
 describe("QueryStrategyFactory", () => {
   describe("Basic Strategy Resolution", () => {

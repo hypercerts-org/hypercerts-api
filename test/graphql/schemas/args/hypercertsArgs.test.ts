@@ -48,8 +48,6 @@ describe("HypercertsArgs", () => {
     const sortInstance = new HypercertSortOptions();
     const sortFields = Object.keys(sortInstance);
 
-    console.log("Available sort fields:", sortFields); // Debug line
-
     // Basic fields that should be sortable
     expect(sortFields).toContain("id");
     expect(sortFields).toContain("creation_block_timestamp");

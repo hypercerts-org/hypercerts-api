@@ -3,7 +3,7 @@ import { Kysely, Selectable, SelectQueryBuilder } from "kysely";
 import type { CachingDatabase } from "../../../types/kyselySupabaseCaching.js";
 import type { DataDatabase } from "../../../types/kyselySupabaseData.js";
 
-export type SupportedDatabases = CachingDatabase | DataDatabase;
+export type SupportedDatabase = CachingDatabase | DataDatabase;
 
 /**
  * Abstract base class for building database queries with a consistent interface.
@@ -38,7 +38,7 @@ export type SupportedDatabases = CachingDatabase | DataDatabase;
  * }
  */
 export abstract class QueryStrategy<
-  DB extends SupportedDatabases,
+  DB extends SupportedDatabase,
   T extends keyof DB & string,
   Args = void,
   Selection = Selectable<DB[T]>,

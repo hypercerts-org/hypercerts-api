@@ -8,7 +8,7 @@ import {
 import { BaseQueryArgsType } from "../../../lib/graphql/BaseQueryArgs.js";
 import {
   QueryStrategy,
-  SupportedDatabases,
+  SupportedDatabase,
 } from "../strategies/QueryStrategy.js";
 import { QueryStrategyFactory } from "../strategies/QueryStrategyFactory.js";
 
@@ -45,7 +45,7 @@ export interface EntityService<TEntity, TArgs> {
  * @throws {Error} If the strategy for the table cannot be found
  */
 export function createEntityService<
-  DB extends SupportedDatabases,
+  DB extends SupportedDatabase,
   T extends keyof DB & string,
   Args extends BaseQueryArgsType<
     Record<string, unknown>,
