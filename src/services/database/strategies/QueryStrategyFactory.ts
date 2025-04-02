@@ -9,7 +9,7 @@ import { FractionsQueryStrategy } from "./FractionsQueryStrategy.js";
 import { HyperboardsQueryStrategy } from "./HyperboardsQueryStrategy.js";
 import { MarketplaceOrdersQueryStrategy } from "./MarketplaceOrdersQueryStrategy.js";
 import { MetadataQueryStrategy } from "./MetadataQueryStrategy.js";
-import { QueryStrategy, SupportedDatabases } from "./QueryStrategy.js";
+import { QueryStrategy, SupportedDatabase } from "./QueryStrategy.js";
 import { SalesQueryStrategy } from "./SalesQueryStrategy.js";
 import { SignatureRequestsQueryStrategy } from "./SignatureRequestsQueryStrategy.js";
 import { SupportedSchemasQueryStrategy } from "./SupportedSchemasQueryStrategy.js";
@@ -29,7 +29,7 @@ type QueryArgs = BaseQueryArgsType<
  * Type for strategy constructors to ensure they match the QueryStrategy interface
  */
 type QueryStrategyConstructor<
-  DB extends SupportedDatabases = SupportedDatabases,
+  DB extends SupportedDatabase = SupportedDatabase,
   T extends keyof DB & string = keyof DB & string,
   Args extends QueryArgs = QueryArgs,
 > = new () => QueryStrategy<DB, T, Args>;
@@ -38,8 +38,8 @@ type QueryStrategyConstructor<
  * Type for the strategy registry mapping table names to their constructors
  */
 type StrategyRegistry = {
-  [K in keyof SupportedDatabases & string]: QueryStrategyConstructor<
-    SupportedDatabases,
+  [K in keyof SupportedDatabase & string]: QueryStrategyConstructor<
+    SupportedDatabase,
     K
   >;
 };
@@ -48,10 +48,7 @@ type StrategyRegistry = {
  * Type for the strategy cache mapping table names to their instances
  */
 type StrategyCache = {
-  [K in keyof SupportedDatabases & string]?: QueryStrategy<
-    SupportedDatabases,
-    K
-  >;
+  [K in keyof SupportedDatabase & string]?: QueryStrategy<SupportedDatabase, K>;
 };
 
 /**
@@ -91,13 +88,13 @@ export class QueryStrategyFactory {
    * Cache of strategy instances
    * @private
    */
-  private static strategies: StrategyCache = new Proxy<StrategyCache>(
+  private static strategies = new Proxy<StrategyCache>(
     {},
     {
-      get<K extends keyof SupportedDatabases & string>(
+      get<K extends keyof SupportedDatabase & string>(
         target: StrategyCache,
         prop: K | string | symbol,
-      ): QueryStrategy<SupportedDatabases, K> | undefined {
+      ): QueryStrategy<SupportedDatabase, K> | undefined {
         if (typeof prop !== "string") {
           return undefined;
         }
@@ -106,7 +103,7 @@ export class QueryStrategyFactory {
 
         // Check if we already have a cached instance
         if (key in target && target[key]) {
-          return target[key] as QueryStrategy<SupportedDatabases, K>;
+          return target[key] as QueryStrategy<SupportedDatabase, K>;
         }
 
         // Get the constructor from the registry
@@ -121,10 +118,10 @@ export class QueryStrategyFactory {
 
         // Create and cache a new instance
         const strategy = new Constructor() as QueryStrategy<
-          SupportedDatabases,
+          SupportedDatabase,
           K
         >;
-        (target as Record<K, QueryStrategy<SupportedDatabases, K>>)[key] =
+        (target as Record<K, QueryStrategy<SupportedDatabase, K>>)[key] =
           strategy;
         return strategy;
       },
@@ -140,18 +137,17 @@ export class QueryStrategyFactory {
    * @throws Error if no strategy is registered for the table
    */
   static getStrategy<
-    DB extends SupportedDatabases,
+    DB extends SupportedDatabase,
     T extends keyof DB & string,
     Args extends QueryArgs = QueryArgs,
   >(tableName: T): QueryStrategy<DB, T, Args> {
-    const strategy = (this.strategies as Record<T, QueryStrategy<DB, T, Args>>)[
-      tableName
-    ];
+    const strategy =
+      this.strategies[tableName as keyof SupportedDatabase & string];
     if (!strategy) {
       throw new Error(
         `Failed to get strategy for table "${tableName}". This might be a type mismatch or the strategy is not properly registered.`,
       );
     }
-    return strategy;
+    return strategy as QueryStrategy<DB, T, Args>;
   }
 }

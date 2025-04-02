@@ -15,8 +15,16 @@ export const addPriceInUsdToOrder = async (
     throw new Error(`Token price not found for ${currency}`);
   }
 
-  if (!tokenPrice.decimals || !tokenPrice.price) {
-    throw new Error(`Token price data incomplete for ${currency}`);
+  if (!tokenPrice.decimals) {
+    throw new Error(
+      `Token price data incomplete for ${currency}: decimals missing`,
+    );
+  }
+
+  if (!tokenPrice.price) {
+    throw new Error(
+      `Token price data incomplete for ${currency}: price missing`,
+    );
   }
 
   const unitsInPercentage = BigInt(unitsInHypercerts) / BigInt(100);

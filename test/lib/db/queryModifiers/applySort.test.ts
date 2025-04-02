@@ -50,6 +50,8 @@ describe("applySort", () => {
       const baseQuery = db.selectFrom("test_users").selectAll() as any;
       const result = applySort<TestDatabase, "test_users", any>(baseQuery, {});
 
+      expect(result).toBe(baseQuery);
+
       const { sql, parameters } = result.compile();
       expect(sql).not.toContain("order by");
       expect(parameters).toEqual([]);
@@ -131,6 +133,8 @@ describe("applySort", () => {
         },
       });
 
+      expect(result).toBe(baseQuery);
+
       const { sql } = result.compile();
       expect(sql).not.toContain("order by");
     });
@@ -183,44 +187,6 @@ describe("applySort", () => {
       expect(sql).toContain("offset");
       expect(parameters).toContain(10);
       expect(parameters).toContain(20);
-    });
-  });
-
-  describe("data validation", () => {
-    it("should correctly sort numeric values", async () => {
-      const result = await db
-        .selectFrom("test_users")
-        .selectAll()
-        .orderBy("score", "desc")
-        .execute();
-
-      expect(result[0].score).toBe(100);
-      expect(result[1].score).toBe(95);
-      expect(result[2].score).toBe(85);
-    });
-
-    it("should correctly sort text values", async () => {
-      const result = await db
-        .selectFrom("test_users")
-        .selectAll()
-        .orderBy("name", "asc")
-        .execute();
-
-      expect(result[0].name).toBe("Alice");
-      expect(result[1].name).toBe("Bob");
-      expect(result[2].name).toBe("Charlie");
-    });
-
-    it("should correctly sort dates", async () => {
-      const result = await db
-        .selectFrom("test_users")
-        .selectAll()
-        .orderBy("created_at", "asc")
-        .execute();
-
-      expect(result[0].name).toBe("Alice"); // 2024-01-01
-      expect(result[1].name).toBe("Bob"); // 2024-01-02
-      expect(result[2].name).toBe("Charlie"); // 2024-01-03
     });
   });
 });

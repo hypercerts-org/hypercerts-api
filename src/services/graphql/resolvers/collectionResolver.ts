@@ -10,7 +10,7 @@ import { User } from "../../../graphql/schemas/typeDefs/userTypeDefs.js";
 
 import { inject, injectable } from "tsyringe";
 import { CollectionService } from "../../database/entities/CollectionEntityService.js";
-import { Hypercert } from "../../../graphql/schemas/typeDefs/hypercertTypeDefs.js";
+import { GetHypercertsResponse } from "../../../graphql/schemas/typeDefs/hypercertTypeDefs.js";
 
 /**
  * GraphQL resolver for Collection operations.
@@ -113,7 +113,7 @@ class CollectionResolver {
    * }
    * ```
    */
-  @FieldResolver(() => [Hypercert])
+  @FieldResolver(() => GetHypercertsResponse)
   async hypercerts(@Root() collection: Collection) {
     if (!collection.id) {
       console.error(

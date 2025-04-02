@@ -1,5 +1,5 @@
 import { expressionBuilder, SelectQueryBuilder, Selectable } from "kysely";
-import { SupportedDatabases } from "../../../services/database/strategies/QueryStrategy.js";
+import { SupportedDatabase } from "../../../services/database/strategies/QueryStrategy.js";
 import { BaseQueryArgsType } from "../../graphql/BaseQueryArgs.js";
 import { SortOrder } from "../../../graphql/schemas/enums/sortEnums.js";
 import {
@@ -40,7 +40,7 @@ import {
  * ```
  */
 export function applyWhere<
-  DB extends SupportedDatabases,
+  DB extends SupportedDatabase,
   T extends keyof DB & string,
   // TODO: cleaner typing than object, object. We'd need to have a general where input type
   Args extends BaseQueryArgsType<

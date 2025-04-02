@@ -96,11 +96,14 @@ describe("applyPagination", () => {
 
     it("should handle large values correctly", () => {
       const baseQuery = db.selectFrom("test_users").selectAll() as any;
-      const result = applyPagination(baseQuery, { first: 1000, offset: 5000 });
+      const result = applyPagination(baseQuery, {
+        first: 1000,
+        offset: Number.MAX_SAFE_INTEGER,
+      });
 
       const { sql, parameters } = result.compile();
       expect(sql).toMatch(/limit \$1 offset \$2/);
-      expect(parameters).toEqual([1000, 5000]);
+      expect(parameters).toEqual([1000, Number.MAX_SAFE_INTEGER]);
     });
   });
 
