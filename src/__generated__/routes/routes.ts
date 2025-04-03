@@ -9,6 +9,8 @@ import { UploadController } from './../../controllers/UploadController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { SignatureRequestController } from './../../controllers/SignatureRequestController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { MonitoringController } from './../../controllers/MonitoringController.js';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MetadataController } from './../../controllers/MetadataController.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MarketplaceController } from './../../controllers/MarketplaceController.js';
@@ -112,6 +114,18 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "process.NodeJS.MemoryUsage": {
+        "dataType": "refObject",
+        "properties": {
+            "rss": {"dataType":"double","required":true},
+            "heapTotal": {"dataType":"double","required":true},
+            "heapUsed": {"dataType":"double","required":true},
+            "external": {"dataType":"double","required":true},
+            "arrayBuffers": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "HypercertClaimdata": {
         "dataType": "refObject",
         "properties": {
@@ -192,17 +206,17 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "OrderValidatorCode": {
         "dataType": "refEnum",
-        "enums": [0,101,111,112,113,201,211,212,213,301,311,312,321,322,401,402,411,412,413,414,415,421,422,501,502,503,601,611,612,621,622,623,631,632,633,634,701,702,801,802,901,902],
+        "enums": [0,101,111,112,113,201,211,212,213,301,311,312,321,322,401,402,411,412,413,414,415,421,422,501,502,503,601,611,612,621,622,623,631,632,633,634,641,642,701,702,801,802,901,902],
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Pick__additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.Exclude_keyof_additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.id-or-createdAt-or-invalidated-or-validator_codes__": {
+    "Pick_Order.Exclude_keyofOrder.id-or-createdAt-or-invalidated-or-validator_codes__": {
         "dataType": "refAlias",
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Omit__additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.id-or-createdAt-or-invalidated-or-validator_codes_": {
+    "Omit_Order.id-or-createdAt-or-invalidated-or-validator_codes_": {
         "dataType": "refAlias",
-        "type": {"ref":"Pick__additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.Exclude_keyof_additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.id-or-createdAt-or-invalidated-or-validator_codes__","validators":{}},
+        "type": {"ref":"Pick_Order.Exclude_keyofOrder.id-or-createdAt-or-invalidated-or-validator_codes__","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateOrderRequest": {
@@ -477,6 +491,35 @@ export function RegisterRoutes(app: Router) {
                 next,
                 validatedArgs,
                 successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/monitoring/health',
+            ...(fetchMiddlewares<RequestHandler>(MonitoringController)),
+            ...(fetchMiddlewares<RequestHandler>(MonitoringController.prototype.healthCheck)),
+
+            async function MonitoringController_healthCheck(request: ExRequest, response: ExResponse, next: any) {
+            const args: Record<string, TsoaRoute.ParameterSchema> = {
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+
+                const controller = new MonitoringController();
+
+              await templateService.apiHandler({
+                methodName: 'healthCheck',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
               });
             } catch (err) {
                 return next(err);
