@@ -9,7 +9,7 @@ import type { HypercertMetadata } from "@hypercerts-org/sdk";
 export interface BaseResponse {
   success: boolean; // Whether the API call itself succeeded
   message?: string; // Human readable message about the operation
-  errors?: Record<string, string | string[]>; // Any errors that occurred
+  errors?: Record<string, unknown>; // Any errors that occurred
 }
 
 // Response for operations that return data
@@ -99,6 +99,52 @@ export type AddOrUpdateUserRequest =
   | MultisigUserUpsertRequest;
 
 export interface UserResponse extends DataResponse<{ address: string }> {}
+
+// Marketplace-related interfaces
+
+export interface EOACreateOrderRequest {
+  type: "eoa";
+  signature: string;
+  chainId: number;
+  quoteType: number;
+  globalNonce: string;
+  subsetNonce: number;
+  orderNonce: string;
+  strategyId: number;
+  collectionType: number;
+  collection: string;
+  currency: string;
+  signer: string;
+  startTime: number;
+  endTime: number;
+  price: string;
+  itemIds: string[];
+  amounts: number[];
+  additionalParameters: string;
+}
+
+export interface MultisigCreateOrderRequest {
+  type: "multisig";
+  messageHash: string;
+  chainId: number;
+}
+
+export type LegacyCreateOrderRequest = Omit<EOACreateOrderRequest, "type">;
+
+export type CreateOrderRequest =
+  | EOACreateOrderRequest
+  | MultisigCreateOrderRequest
+  | LegacyCreateOrderRequest;
+
+export interface UpdateOrderNonceRequest {
+  address: string;
+  chainId: number;
+}
+
+export interface ValidateOrderRequest {
+  tokenIds: string[];
+  chainId: number;
+}
 
 // Blueprint-related interfaces
 export interface BlueprintCreateRequest {
