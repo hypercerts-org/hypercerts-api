@@ -1,8 +1,9 @@
 import { Database } from "../types/supabaseData.js";
 import { ISafeApiCommand } from "../types/safe-signatures.js";
 
-import { UserUpsertCommand } from "./UserUpsertCommand.js";
+import { MarketplaceCreateOrderCommand } from "./MarketplaceCreateOrderCommand.js";
 import { SafeApiCommand } from "./SafeApiCommand.js";
+import { UserUpsertCommand } from "./UserUpsertCommand.js";
 
 type SignatureRequest =
   Database["public"]["Tables"]["signature_requests"]["Row"];
@@ -14,6 +15,12 @@ export function getCommand(request: SignatureRequest): ISafeApiCommand {
         request.safe_address,
         request.message_hash,
         // The type is lying. It's a string.
+        Number(request.chain_id),
+      );
+    case "create_marketplace_order":
+      return new MarketplaceCreateOrderCommand(
+        request.safe_address,
+        request.message_hash,
         Number(request.chain_id),
       );
     default:
