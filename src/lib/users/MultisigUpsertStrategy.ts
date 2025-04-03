@@ -60,7 +60,14 @@ export default class MultisigUpdateStrategy implements UserUpsertStrategy {
     if (!parseResult.success) {
       throw new UserUpsertError(
         400,
-        parseResult.error.errors.map((e) => e.message).join("; "),
+        "Couldn't parse user update message",
+        parseResult.error.errors.reduce((acc, err) => {
+          const path = err.path.join(".");
+          return {
+            ...acc,
+            [path]: err.message,
+          };
+        }, {}),
       );
     }
     console.log("Creating signature request for", parseResult);
