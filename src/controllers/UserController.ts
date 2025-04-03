@@ -15,7 +15,7 @@ import type {
   BaseResponse,
   UserResponse,
 } from "../types/api.js";
-import { UserUpsertError } from "../lib/users/errors.js";
+import { isUserUpsertError } from "../lib/users/errors.js";
 import { USER_UPDATE_REQUEST_SCHEMA } from "../lib/users/schemas.js";
 import { createStrategy } from "../lib/users/UserUpsertStrategy.js";
 import { ParseError } from "../lib/errors/request-parsing.js";
@@ -69,8 +69,8 @@ export class UserController extends Controller {
   }
 
   errorResponse(error: unknown) {
-    if (error instanceof UserUpsertError) {
-      this.setStatus(error.code);
+    if (isUserUpsertError(error)) {
+      this.setStatus(error.statusCode);
       return {
         success: false,
         message: error.message,
