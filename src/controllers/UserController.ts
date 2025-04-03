@@ -18,6 +18,7 @@ import type {
 import { UserUpsertError } from "../lib/users/errors.js";
 import { USER_UPDATE_REQUEST_SCHEMA } from "../lib/users/schemas.js";
 import { createStrategy } from "../lib/users/UserUpsertStrategy.js";
+import { ParseError } from "../lib/errors/request-parsing.js";
 
 @Route("v1/users")
 @Tags("Users")
@@ -94,9 +95,7 @@ function parseInput(
 ): z.infer<typeof USER_UPDATE_REQUEST_SCHEMA> {
   const parsedBody = USER_UPDATE_REQUEST_SCHEMA.safeParse(input);
   if (!parsedBody.success) {
-    const userUpdateError = new UserUpsertError(400, "Invalid input");
-    userUpdateError.errors = JSON.parse(parsedBody.error.toString());
-    throw userUpdateError;
+    throw new ParseError(parsedBody);
   }
   return parsedBody.data;
 }
