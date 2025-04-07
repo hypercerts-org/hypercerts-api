@@ -29,7 +29,7 @@ class FractionResolver extends FractionBaseResolver {
       return;
     }
 
-    return await this.getMetadata(
+    return await this.getMetadataWithoutImage(
       {
         where: { hypercerts: { id: { eq: fraction.claims_id } } },
       },

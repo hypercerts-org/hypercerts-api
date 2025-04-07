@@ -9,6 +9,7 @@ import swaggerJson from "./__generated__/swagger.json" assert { type: "json" };
 import { RegisterRoutes } from "./__generated__/routes/routes.js";
 import * as Sentry from "@sentry/node";
 import SignatureRequestProcessorCron from "./cron/SignatureRequestProcessing.js";
+import OrderInvalidationCronjob from "./cron/OrderInvalidation.js";
 
 // @ts-expect-error BigInt is not supported by JSON
 BigInt.prototype.toJSON = function () {
@@ -29,16 +30,6 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(express.json({ limit: "10mb" }));
 app.use(cors());
 
-app.get("/health", (req, res) => {
-  const data = {
-    uptime: process.uptime(),
-    message: "OK",
-    date: new Date(),
-  };
-
-  res.status(200).send(data);
-});
-
 // Bind GraphQL Yoga to the graphql endpoint to avoid rendering the playground on any path
 app.use(yoga.graphqlEndpoint, yoga);
 
@@ -56,6 +47,7 @@ Sentry.setupExpressErrorHandler(app);
 
 // Start Safe signature request processing cron job
 SignatureRequestProcessorCron.start();
+OrderInvalidationCronjob.start();
 
 app.listen(PORT, () => {
   console.log(

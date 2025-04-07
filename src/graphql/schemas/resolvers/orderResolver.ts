@@ -107,7 +107,7 @@ class OrderResolver extends OrderBaseResolver {
       true,
     );
 
-    const metadata = await this.getMetadata(
+    const metadata = await this.getMetadataWithoutImage(
       {
         where: {
           hypercerts: {

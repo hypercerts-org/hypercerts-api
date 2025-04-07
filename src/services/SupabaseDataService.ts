@@ -21,6 +21,8 @@ import { applySorting } from "../graphql/schemas/utils/sorting.js";
 import type { DataDatabase as KyselyDataDatabase } from "../types/kyselySupabaseData.js";
 import type { Database as DataDatabase } from "../types/supabaseData.js";
 import { BaseSupabaseService } from "./BaseSupabaseService.js";
+import { EvmClientFactory } from "../client/evmClient.js";
+import _ from "lodash";
 
 @singleton()
 export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase> {
@@ -246,52 +248,89 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
     tokenIds: string[];
     chainId: number;
   }) {
-    console.log("[marketplace-api] Validating orders by token IDs", tokenIds);
     const ordersToUpdate: {
       id: string;
       invalidated: boolean;
       validator_codes: OrderValidatorCode[];
     }[] = [];
-    for (const tokenId of tokenIds) {
-      // Fetch all orders for token ID from database
-      const { data: matchingOrders, error } = await this.getOrdersByTokenId({
-        tokenId,
-        chainId,
-      });
+    const getOrdersResults = await Promise.all(
+      tokenIds.map(async (tokenId) =>
+        this.getOrdersByTokenId({
+          tokenId,
+          chainId,
+        }),
+      ),
+    );
 
-      if (error) {
+    if (getOrdersResults.some((res) => res.error)) {
+      throw new Error(
+        `[SupabaseDataService::validateOrderByTokenId] Error fetching orders: ${getOrdersResults.find((res) => res.error)?.error?.message}`,
+      );
+    }
+
+    const matchingOrders = getOrdersResults
+      .flatMap((res) => res.data)
+      .filter((x) => x !== null);
+
+    // Validate orders using logic in the SDK
+    const hec = new HypercertExchangeClient(
+      chainId,
+      // @ts-expect-error Typing issue with provider
+      EvmClientFactory.createEthersClient(chainId),
+    );
+    const validationResults = await hec.checkOrdersValidity(matchingOrders);
+
+    // Determine all orders that have changed validity or validator codes so we don't
+    // update the order if it hasn't changed
+    for (const order of matchingOrders) {
+      const validationResult = validationResults.find(
+        (result) => result.id === order.id,
+      );
+
+      if (!validationResult) {
         throw new Error(
-          `[SupabaseDataService::validateOrderByTokenId] Error fetching orders: ${error.message}`,
+          `[SupabaseDataService::validateOrderByTokenId] No validation result found for order ${order.id}`,
         );
       }
 
-      if (!matchingOrders) {
-        console.warn(
-          `[SupabaseDataService::validateOrderByTokenId] No orders found for tokenId: ${tokenId}`,
-        );
+      const currentOrderIsValid = !order.invalidated;
+
+      // If the order validity has changed, we need to update the order and add the validator codes
+      if (validationResult.valid !== currentOrderIsValid) {
+        ordersToUpdate.push({
+          id: order.id,
+          invalidated: !validationResult.valid,
+          validator_codes: validationResult.validatorCodes,
+        });
         continue;
       }
 
-      // Validate orders using logic in the SDK
-      const hec = new HypercertExchangeClient(
-        chainId,
-        // @ts-expect-error Typing issue with provider
-        EvmClientFactory.createEthersClient(chainId),
-      );
-      const validationResults = await hec.checkOrdersValidity(matchingOrders);
+      if (
+        order.validator_codes === null &&
+        validationResult.validatorCodes.every(
+          (code) => code === OrderValidatorCode.ORDER_EXPECTED_TO_BE_VALID,
+        )
+      ) {
+        // Orders are added to the database by default with validator_codes set to null
+        // The contract will return an array of ORDER_EXPECTED_TO_BE_VALID if the order is valid
+        // In this special case we won't have to update the order
+        continue;
+      }
 
-      // Determine which orders to update in DB, and update them
-      ordersToUpdate.push(
-        ...validationResults
-          .filter((x) => !x.valid)
-          .map(({ validatorCodes, id }) => ({
-            id,
-            invalidated: true,
-            validator_codes: validatorCodes,
-          })),
-      );
+      // If the validator codes have changed, we need to update the order
+      if (!_.isEqual(validationResult.validatorCodes, order.validator_codes)) {
+        ordersToUpdate.push({
+          id: order.id,
+          invalidated: !validationResult.valid,
+          validator_codes: validationResult.validatorCodes,
+        });
+      }
     }
-    console.log("[marketplace-api] Invalidating orders", ordersToUpdate);
+
+    console.log(
+      "[SupabaseDataService::validateOrderByTokenId] Updating orders from validation results",
+      ordersToUpdate,
+    );
     await this.updateOrders(ordersToUpdate);
     return ordersToUpdate;
   }
@@ -431,24 +470,9 @@ export class SupabaseDataService extends BaseSupabaseService<KyselyDataDatabase>
       .execute();
   }
 
-  async getCollections(args: GetCollectionsArgs) {
-    let query = this.db
-      .selectFrom("collections")
-      .select([
-        "collections.id",
-        "collections.name",
-        "collections.description",
-        "collections.chain_ids",
-        "collections.hidden",
-        "collections.created_at",
-      ]);
-
-    if (args.sort?.by) {
-      query = this.applySorting(query, args.sort.by);
-    }
-
+  getCollections(args: GetCollectionsArgs) {
     return {
-      data: await query.execute(),
+      data: this.handleGetData("collections", args),
       count: this.handleGetCount("collections", args),
     };
   }

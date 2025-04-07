@@ -56,7 +56,7 @@ export class SupabaseCachingService extends BaseSupabaseService<CachingDatabase>
     };
   }
 
-  getMetadata(args: GetMetadataArgs) {
+  getMetadataWithoutImage(args: GetMetadataArgs) {
     return {
       data: this.handleGetData("metadata", args),
       count: this.handleGetCount("metadata", args),
@@ -93,19 +93,37 @@ export class SupabaseCachingService extends BaseSupabaseService<CachingDatabase>
       case "attestations":
         return this.db
           .selectFrom("attestations")
-          .selectAll("attestations")
+          .innerJoin(
+            "supported_schemas",
+            "supported_schemas.id",
+            "attestations.supported_schemas_id",
+          )
+          .select([
+            "attestations.id",
+            "attestations.uid",
+            "attestations.chain_id",
+            "attestations.contract_address",
+            "attestations.token_id",
+            "attestations.claims_id",
+            "attestations.recipient",
+            "attestations.attester",
+            "attestations.attestation",
+            "attestations.data",
+            "attestations.creation_block_timestamp",
+            "attestations.creation_block_number",
+            "attestations.last_update_block_number",
+            "attestations.last_update_block_timestamp",
+            "supported_schemas.uid as schema_uid",
+          ])
           .$if(args.where?.hypercerts, (qb) =>
-            qb.innerJoin("claims", "claims.id", "attestations.claims_id"),
+            qb.innerJoin(
+              "claims as claims",
+              "claims.id",
+              "attestations.claims_id",
+            ),
           )
           .$if(args.where?.metadata, (qb) =>
             qb.innerJoin("metadata", "metadata.uri", "claims.uri"),
-          )
-          .$if(args.where?.eas_schema, (qb) =>
-            qb.innerJoin(
-              "supported_schemas",
-              "supported_schemas.id",
-              "attestations.supported_schemas_id",
-            ),
           );
       case "eas_schema":
       case "supported_schemas":
@@ -140,7 +158,24 @@ export class SupabaseCachingService extends BaseSupabaseService<CachingDatabase>
       case "metadata":
         return this.db
           .selectFrom("metadata")
-          .selectAll("metadata")
+          .select([
+            "metadata.id",
+            "metadata.name",
+            "metadata.description",
+            "metadata.external_url",
+            "metadata.work_scope",
+            "metadata.work_timeframe_from",
+            "metadata.work_timeframe_to",
+            "metadata.impact_scope",
+            "metadata.impact_timeframe_from",
+            "metadata.impact_timeframe_to",
+            "metadata.contributors",
+            "metadata.rights",
+            "metadata.uri",
+            "metadata.properties",
+            "metadata.allow_list_uri",
+            "metadata.parsed",
+          ])
           .$if(args.where?.hypercerts, (qb) =>
             qb.innerJoin("claims", "claims.uri", "metadata.uri"),
           );
