@@ -1,10 +1,11 @@
 import { Field, ObjectType } from "type-graphql";
+import { DataResponse } from "../../../lib/graphql/DataResponse.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
-
-import { SignatureRequest } from "./signatureRequestTypeDefs.js";
+import { GetSignatureRequestResponse } from "./signatureRequestTypeDefs.js";
+import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 
 @ObjectType()
-class User {
+export class User extends BasicTypeDef {
   @Field({ description: "The address of the user" })
   address?: string;
 
@@ -20,11 +21,12 @@ class User {
   })
   chain_id?: bigint | number | string;
 
-  @Field(() => [SignatureRequest], {
+  @Field(() => GetSignatureRequestResponse, {
     nullable: true,
     description: "Pending signature requests for the user",
   })
-  signature_requests?: SignatureRequest[];
+  signature_requests?: GetSignatureRequestResponse;
 }
 
-export { User };
+@ObjectType()
+export default class GetUsersResponse extends DataResponse(User) {}

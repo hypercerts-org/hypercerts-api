@@ -1,24 +1,40 @@
 import { getAddress } from "viem";
 
+import UserUpsertSignatureVerifier from "../lib/safe/signature-verification/UserUpsertSignatureVerifier.js";
 import {
   MultisigUserUpdateMessage,
   USER_UPDATE_MESSAGE_SCHEMA,
 } from "../lib/users/schemas.js";
 import { isTypedMessage } from "../utils/signatures.js";
-import UserUpsertSignatureVerifier from "../lib/safe/signature-verification/UserUpsertSignatureVerifier.js";
-import { Database } from "../types/supabaseData.js";
 
+import { Insertable } from "kysely";
+import { inject, injectable } from "tsyringe";
+import { SignatureRequestsService } from "../services/database/entities/SignatureRequestsEntityService.js";
+import { UsersService } from "../services/database/entities/UsersEntityService.js";
+import { SignatureRequest } from "./CommandFactory.js";
 import { SafeApiCommand } from "./SafeApiCommand.js";
 
-type SignatureRequest =
-  Database["public"]["Tables"]["signature_requests"]["Row"];
-
+@injectable()
 export class UserUpsertCommand extends SafeApiCommand {
+  constructor(
+    safeAddress: string,
+    messageHash: string,
+    chainId: number,
+    @inject(SignatureRequestsService)
+    private signatureRequestsService: SignatureRequestsService,
+    @inject(UsersService)
+    private usersService: UsersService,
+  ) {
+    super(safeAddress, messageHash, chainId);
+  }
   async execute(): Promise<void> {
-    const signatureRequest = await this.dataService.getSignatureRequest(
-      this.safeAddress,
-      this.messageHash,
-    );
+    const signatureRequest =
+      await this.signatureRequestsService.getSignatureRequest({
+        where: {
+          safe_address: { eq: this.safeAddress },
+          message_hash: { eq: this.messageHash },
+        },
+      });
 
     if (!signatureRequest || signatureRequest.status !== "pending") {
       return;
@@ -44,7 +60,9 @@ export class UserUpsertCommand extends SafeApiCommand {
       message.data,
     );
 
-    if (!(await verifier.verify(safeMessage.preparedSignature))) {
+    if (
+      !(await verifier.verify(safeMessage.preparedSignature as `0x${string}`))
+    ) {
       console.error(`Signature verification failed: ${this.getId()}`);
       return;
     }
@@ -54,10 +72,10 @@ export class UserUpsertCommand extends SafeApiCommand {
   }
 
   async updateDatabase(
-    signatureRequest: Exclude<SignatureRequest, undefined>,
+    signatureRequest: Insertable<SignatureRequest>,
     message: MultisigUserUpdateMessage,
   ): Promise<void> {
-    const users = await this.dataService.upsertUsers([
+    const users = await this.usersService.upsertUsers([
       {
         address: this.safeAddress,
         chain_id: signatureRequest.chain_id,
@@ -68,10 +86,21 @@ export class UserUpsertCommand extends SafeApiCommand {
     if (!users.length) {
       throw new Error("Error adding or updating user");
     }
-    await this.dataService.updateSignatureRequestStatus(
+    await this.signatureRequestsService.updateSignatureRequestStatus(
       this.safeAddress,
       this.messageHash,
       "executed",
     );
+  }
+
+  public initialize(
+    safeAddress: string,
+    messageHash: string,
+    chainId: number,
+  ): this {
+    this.safeAddress = safeAddress;
+    this.messageHash = messageHash;
+    this.chainId = chainId;
+    return this;
   }
 }

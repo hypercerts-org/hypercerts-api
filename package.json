@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon",
-    "build": "rimraf dist && tsoa spec-and-routes && swc src --out-dir dist --copy-files",
+    "build": "rimraf dist && tsoa spec-and-routes && tsc && swc src --out-dir dist --copy-files",
     "start": "node -r dotenv/config dist/src/index.js",
     "integration": "concurrently -c \"green,blue\" --names \"CACHE,DATA\"  \"pnpm --dir ./lib/hypercerts-indexer run dev\" \"pnpm run dev\"",
     "supabase:reset:all": "concurrently -c \"blue,green\" --names \"DATA,CACHE\" \"npm run supabase:reset:data\" \"npm run supabase:reset:cache\"",
@@ -26,6 +26,7 @@
     "commitlint": "commitlint --config commitlintrc.ts --edit"
   },
   "dependencies": {
+    "@faker-js/faker": "^9.6.0",
     "@graphql-tools/merge": "^9.0.19",
     "@graphql-yoga/plugin-response-cache": "^3.13.0",
     "@hypercerts-org/contracts": "2.0.0-alpha.12",
@@ -53,6 +54,7 @@
     "@web3-storage/w3up-client": "^16.0.0",
     "axios": "^1.6.5",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
     "ethers": "^6.12.2",
     "express": "^4.19.2",
     "file-type": "^19.6.0",
@@ -99,6 +101,9 @@
     "@sentry/types": "^8.2.1",
     "@swc/cli": "^0.3.12",
     "@swc/core": "^1.4.15",
+    "@swc/helpers": "^0.5.15",
+    "@swc/jest": "^0.2.37",
+    "@types/better-sqlite3": "^7.6.12",
     "@types/body-parser": "^1.19.5",
     "@types/mime-types": "^2.1.4",
     "@types/multer": "^1.4.12",
@@ -107,6 +112,7 @@
     "@types/sinon": "^17.0.2",
     "@types/swagger-ui-express": "^4.1.6",
     "@vitest/coverage-v8": "^2.1.8",
+    "better-sqlite3": "^11.8.1",
     "chai": "^5.0.0",
     "chai-assertions-count": "^1.0.2",
     "concurrently": "^8.2.2",
@@ -119,6 +125,7 @@
     "multiformats": "^13.0.0",
     "node-mocks-http": "^1.14.1",
     "nodemon": "^3.0.3",
+    "pg-mem": "^3.0.5",
     "prettier": "3.3.2",
     "rimraf": "^5.0.5",
     "sinon": "^17.0.1",
@@ -129,6 +136,7 @@
     "typedoc": "^0.26.5",
     "typescript": "5.5.3",
     "typescript-eslint": "^7.7.0",
+    "unplugin-swc": "^1.5.1",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^2.1.8",
     "vitest-mock-extended": "^2.0.2"

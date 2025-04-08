@@ -1,26 +1,25 @@
-import { ArgsType, InputType, Field } from "type-graphql";
-import { BasicSaleWhereInput } from "../inputs/salesInput.js";
-import { withPagination } from "./baseArgs.js";
-import { SaleSortOptions } from "../inputs/sortOptions.js";
-import { Sale } from "../typeDefs/salesTypeDefs.js";
-import { OrderOptions } from "../inputs/orderOptions.js";
+import { ArgsType } from "type-graphql";
+import { BaseQueryArgs } from "../../../lib/graphql/BaseQueryArgs.js";
+import { createEntityArgs } from "../../../lib/graphql/createEntityArgs.js";
+import { WhereFieldDefinitions } from "../../../lib/graphql/whereFieldDefinitions.js";
+import { EntityTypeDefs } from "../typeDefs/typeDefs.js";
 
-@InputType()
-export class SaleWhereInput extends BasicSaleWhereInput {}
-
-@InputType()
-export class SaleFetchInput implements OrderOptions<Sale> {
-  @Field(() => SaleSortOptions, { nullable: true })
-  by?: SaleSortOptions;
-}
-
-@ArgsType()
-class SalesArgs {
-  @Field(() => SaleWhereInput, { nullable: true })
-  where?: SaleWhereInput;
-  @Field(() => SaleFetchInput, { nullable: true })
-  sort?: SaleFetchInput;
-}
+const { WhereInput: SalesWhereInput, SortOptions: SalesSortOptions } =
+  createEntityArgs("Sale", {
+    ...WhereFieldDefinitions.Sale.fields,
+    hypercert: {
+      type: "id",
+      references: {
+        entity: EntityTypeDefs.Hypercert,
+        fields: WhereFieldDefinitions.Hypercert.fields,
+      },
+    },
+  });
 
 @ArgsType()
-export class GetSalesArgs extends withPagination(SalesArgs) {}
+export class GetSalesArgs extends BaseQueryArgs(
+  SalesWhereInput,
+  SalesSortOptions,
+) {}
+
+export { SalesSortOptions, SalesWhereInput };
