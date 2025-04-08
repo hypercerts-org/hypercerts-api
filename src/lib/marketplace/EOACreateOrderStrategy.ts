@@ -17,15 +17,18 @@ import { MarketplaceOrdersService } from "../../services/database/entities/Marke
 
 @injectable()
 export default class EOACreateOrderStrategy extends MarketplaceStrategy {
-  private request: EOACreateOrderRequest;
+  private request!: EOACreateOrderRequest;
 
   constructor(
-    request: EOACreateOrderRequest,
     @inject(MarketplaceOrdersService)
     private readonly marketplaceOrdersService: MarketplaceOrdersService,
   ) {
     super();
+  }
+
+  initialize(request: EOACreateOrderRequest): this {
     this.request = request;
+    return this;
   }
 
   // TODO: Clean up this long ass method. I copied it 1:1 from the controller.
@@ -51,7 +54,15 @@ export default class EOACreateOrderStrategy extends MarketplaceStrategy {
     }
 
     const [validationResult] = await hec.checkOrdersValidity([
-      { ...makerOrder, signature, chainId, id: "temporary" },
+      {
+        ...makerOrder,
+        signature,
+        chainId,
+        id: "temporary",
+        createdAt: new Date().toISOString(),
+        invalidated: false,
+        validator_codes: [],
+      },
     ]);
     if (!validationResult.valid) {
       throw new Errors.InvalidOrder(validationResult);

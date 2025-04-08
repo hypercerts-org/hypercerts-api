@@ -5,23 +5,24 @@ import {
 } from "@hypercerts-org/marketplace-sdk";
 import SafeApiKit from "@safe-global/api-kit";
 
-import { DataResponse } from "../../types/api.js";
 import { EvmClientFactory } from "../../client/evmClient.js";
+import { DataResponse } from "../../types/api.js";
 import { getFractionsById } from "../../utils/getFractionsById.js";
-import { getHypercertTokenId } from "../../utils/tokenIds.js";
 import { isTypedMessage } from "../../utils/signatures.js";
+import { getHypercertTokenId } from "../../utils/tokenIds.js";
 import { SafeApiStrategyFactory } from "../safe/SafeApiKitStrategy.js";
 
+import { inject, injectable } from "tsyringe";
+import { MarketplaceOrdersService } from "../../services/database/entities/MarketplaceOrdersEntityService.js";
+import { SignatureRequestsService } from "../../services/database/entities/SignatureRequestsEntityService.js";
+import * as Errors from "./errors.js";
 import { MarketplaceStrategy } from "./MarketplaceStrategy.js";
 import {
   MultisigCreateOrderRequest,
   SAFE_CREATE_ORDER_MESSAGE_SCHEMA,
   SafeCreateOrderMessage,
 } from "./schemas.js";
-import * as Errors from "./errors.js";
-import { injectable, inject } from "tsyringe";
-import { MarketplaceOrdersService } from "../../services/database/entities/MarketplaceOrdersEntityService.js";
-import { SignatureRequestsService } from "../../services/database/entities/SignatureRequestsEntityService.js";
+
 type ValidatableOrder = Omit<
   Order,
   "createdAt" | "invalidated" | "validator_codes"
@@ -132,7 +133,14 @@ export default class MultisigCreateOrderStrategy extends MarketplaceStrategy {
       EvmClientFactory.createEthersClient(this.request.chainId),
     );
 
-    const [validationResult] = await hec.checkOrdersValidity([orderToValidate]);
+    const [validationResult] = await hec.checkOrdersValidity([
+      {
+        ...orderToValidate,
+        createdAt: new Date().toISOString(),
+        invalidated: false,
+        validator_codes: [],
+      },
+    ]);
 
     if (!validationResult.valid) {
       const errorCodes = validationResult.validatorCodes || [];
