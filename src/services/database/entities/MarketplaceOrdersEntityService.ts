@@ -294,15 +294,22 @@ export class MarketplaceOrdersService {
       );
       const validationResults = await hec.checkOrdersValidity(matchingOrders);
 
-      ordersToUpdate.push(
-        ...validationResults
-          .filter((x) => !x.valid)
-          .map(({ validatorCodes, id }) => ({
-            id,
-            invalidated: true,
-            validator_codes: validatorCodes,
-          })),
-      );
+      // filter all orders that have changed validity or validator codes
+      const _changedOrders = validationResults
+        .filter((x) => {
+          const order = matchingOrders.find((y) => y.id === x.id);
+          return (
+            order?.invalidated !== x.valid ||
+            order?.validator_codes !== x.validatorCodes
+          );
+        })
+        .map((x) => ({
+          id: x.id,
+          invalidated: x.valid,
+          validator_codes: x.validatorCodes,
+        }));
+
+      ordersToUpdate.push(..._changedOrders);
     }
 
     return await this.updateOrders(ordersToUpdate);

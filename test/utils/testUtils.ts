@@ -628,60 +628,14 @@ export function generateMockOrder(
   } as unknown as MarketplaceOrderSelect;
 }
 
-export function generateMockHyperboard(
-  overrides?: Partial<{
-    id: string;
-    name: string;
-    chain_ids: (bigint | number | string)[];
-    background_image: string;
-    grayscale_images: boolean;
-    tile_border_color: string;
-    admins: { data: ReturnType<typeof generateMockUser>[]; count: number };
-    sections: {
-      data: Array<{
-        label: string;
-        collection: ReturnType<typeof generateMockCollection>;
-        entries: {
-          id: string;
-          is_blueprint: boolean;
-          percentage_of_section: number;
-          display_size: number;
-          name?: string;
-          total_units?: bigint | number | string;
-          owners: {
-            data: Array<
-              ReturnType<typeof generateMockUser> & {
-                percentage: number;
-                units?: bigint | number | string;
-              }
-            >;
-            count: number;
-          };
-        }[];
-        owners: Array<{
-          data: Array<
-            ReturnType<typeof generateMockUser> & { percentage_owned: number }
-          >;
-          count: number;
-        }>;
-      }>;
-      count: number;
-    };
-    owners: {
-      data: Array<
-        ReturnType<typeof generateMockUser> & { percentage_owned: number }
-      >;
-      count: number;
-    };
-  }>,
-) {
+export function generateMockHyperboard() {
   const mockUser = generateMockUser();
   const mockCollection = generateMockCollection();
 
-  const defaultHyperboard = {
+  return {
     id: faker.string.uuid(),
-    name: faker.company.name(),
-    chain_ids: [generateChainId()],
+    name: faker.commerce.productName(),
+    chain_ids: [faker.number.bigInt()],
     background_image: faker.image.url(),
     grayscale_images: faker.datatype.boolean(),
     tile_border_color: faker.color.rgb(),
@@ -689,82 +643,60 @@ export function generateMockHyperboard(
       data: [mockUser],
       count: 1,
     },
-    sections: [
-      {
-        data: [
-          {
-            label: faker.commerce.department(),
-            collection: mockCollection,
-            entries: [
-              {
-                id: faker.string.uuid(),
-                is_blueprint: faker.datatype.boolean(),
-                percentage_of_section: faker.number.float({
-                  min: 0,
-                  max: 100,
-                  fractionDigits: 2,
-                }),
-                display_size: faker.number.float({
-                  min: 1,
-                  max: 10,
-                  fractionDigits: 2,
-                }),
-                name: faker.commerce.productName(),
-                total_units: faker.number.bigInt({ min: 1000n, max: 1000000n }),
-                owners: {
-                  data: [
-                    {
-                      ...mockUser,
-                      percentage: faker.number.float({
-                        min: 0,
-                        max: 100,
-                        fractionDigits: 2,
-                      }),
-                      units: faker.number.bigInt({ min: 1n, max: 1000n }),
-                    },
-                  ],
-                  count: 1,
-                },
-              },
-            ],
-            owners: [
-              {
+    sections: {
+      data: [
+        {
+          label: faker.commerce.department(),
+          collections: [mockCollection],
+          entries: [
+            {
+              id: faker.string.uuid(),
+              is_blueprint: faker.datatype.boolean(),
+              percentage_of_section: faker.number.float({
+                min: 0,
+                max: 100,
+                fractionDigits: 2,
+              }),
+              display_size: faker.number.float({
+                min: 1,
+                max: 10,
+                fractionDigits: 2,
+              }),
+              name: faker.commerce.productName(),
+              total_units: faker.number.bigInt({ min: 1000n, max: 1000000n }),
+              owners: {
                 data: [
                   {
                     ...mockUser,
-                    percentage_owned: faker.number.float({
+                    percentage: faker.number.float({
                       min: 0,
                       max: 100,
                       fractionDigits: 2,
                     }),
+                    units: faker.number.bigInt({ min: 1n, max: 1000n }),
                   },
                 ],
                 count: 1,
               },
+            },
+          ],
+          owners: {
+            data: [
+              {
+                ...mockUser,
+                percentage_owned: faker.number.float({
+                  min: 0,
+                  max: 100,
+                  fractionDigits: 2,
+                }),
+              },
             ],
+            count: 1,
           },
-        ],
-        count: 1,
-      },
-    ],
-    owners: {
-      data: [
-        {
-          ...mockUser,
-          percentage_owned: faker.number.float({
-            min: 0,
-            max: 100,
-            fractionDigits: 2,
-          }),
         },
       ],
       count: 1,
     },
-  };
-
-  return {
-    ...defaultHyperboard,
-    ...overrides,
   };
 }
 

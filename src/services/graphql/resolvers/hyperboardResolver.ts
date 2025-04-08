@@ -5,10 +5,10 @@ import { Args, FieldResolver, Query, Resolver, Root } from "type-graphql";
 import { DataKyselyService } from "../../../client/kysely.js";
 import { GetHyperboardsArgs } from "../../../graphql/schemas/args/hyperboardArgs.js";
 import {
+  GetHyperboardOwnersResponse,
   GetHyperboardsResponse,
-  Hyperboard,
-  HyperboardOwner,
   GetSectionsResponse,
+  Hyperboard,
 } from "../../../graphql/schemas/typeDefs/hyperboardTypeDefs.js";
 import GetUsersResponse from "../../../graphql/schemas/typeDefs/userTypeDefs.js";
 import { CachingDatabase } from "../../../types/kyselySupabaseCaching.js";
@@ -271,7 +271,7 @@ class HyperboardResolver {
    *          - Array of owners if found
    *          - null if an error occurs
    */
-  @FieldResolver(() => [HyperboardOwner])
+  @FieldResolver(() => GetHyperboardOwnersResponse)
   async owners(@Root() hyperboard: Hyperboard) {
     try {
       const sections = await this.sections(hyperboard);
