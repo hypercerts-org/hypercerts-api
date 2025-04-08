@@ -7,21 +7,9 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"Record_string.string-or-string-Array_": {
+			"Record_string.unknown_": {
 				"properties": {},
-				"additionalProperties": {
-					"anyOf": [
-						{
-							"type": "string"
-						},
-						{
-							"items": {
-								"type": "string"
-							},
-							"type": "array"
-						}
-					]
-				},
+				"additionalProperties": {},
 				"type": "object",
 				"description": "Construct a type with a set of properties K of type T"
 			},
@@ -34,7 +22,7 @@
 						"type": "string"
 					},
 					"errors": {
-						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+						"$ref": "#/components/schemas/Record_string.unknown_"
 					},
 					"data": {
 						"properties": {
@@ -63,7 +51,7 @@
 						"type": "string"
 					},
 					"errors": {
-						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+						"$ref": "#/components/schemas/Record_string.unknown_"
 					}
 				},
 				"required": [
@@ -239,6 +227,39 @@
 					"signature",
 					"owner_address",
 					"chain_id"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"process.NodeJS.MemoryUsage": {
+				"properties": {
+					"rss": {
+						"type": "number",
+						"format": "double"
+					},
+					"heapTotal": {
+						"type": "number",
+						"format": "double"
+					},
+					"heapUsed": {
+						"type": "number",
+						"format": "double"
+					},
+					"external": {
+						"type": "number",
+						"format": "double"
+					},
+					"arrayBuffers": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"rss",
+					"heapTotal",
+					"heapUsed",
+					"external",
+					"arrayBuffers"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -500,7 +521,7 @@
 						"type": "string"
 					},
 					"errors": {
-						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+						"$ref": "#/components/schemas/Record_string.unknown_"
 					},
 					"data": {
 						"properties": {
@@ -548,7 +569,7 @@
 						"type": "string"
 					},
 					"errors": {
-						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+						"$ref": "#/components/schemas/Record_string.unknown_"
 					},
 					"valid": {
 						"type": "boolean"
@@ -574,64 +595,130 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"OrderValidatorCode": {
-				"description": "Error errors returned by the order validator contract",
-				"enum": [
-					0,
-					101,
-					111,
-					112,
-					113,
-					201,
-					211,
-					212,
-					213,
-					301,
-					311,
-					312,
-					321,
-					322,
-					401,
-					402,
-					411,
-					412,
-					413,
-					414,
-					415,
-					421,
-					422,
-					501,
-					502,
-					503,
-					601,
-					611,
-					612,
-					621,
-					622,
-					623,
-					631,
-					632,
-					633,
-					634,
-					701,
-					702,
-					801,
-					802,
-					901,
-					902
+			"EOACreateOrderRequest": {
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": [
+							"eoa"
+						],
+						"nullable": false
+					},
+					"signature": {
+						"type": "string"
+					},
+					"chainId": {
+						"type": "number",
+						"format": "double"
+					},
+					"quoteType": {
+						"type": "number",
+						"format": "double"
+					},
+					"globalNonce": {
+						"type": "string"
+					},
+					"subsetNonce": {
+						"type": "number",
+						"format": "double"
+					},
+					"orderNonce": {
+						"type": "string"
+					},
+					"strategyId": {
+						"type": "number",
+						"format": "double"
+					},
+					"collectionType": {
+						"type": "number",
+						"format": "double"
+					},
+					"collection": {
+						"type": "string"
+					},
+					"currency": {
+						"type": "string"
+					},
+					"signer": {
+						"type": "string"
+					},
+					"startTime": {
+						"type": "number",
+						"format": "double"
+					},
+					"endTime": {
+						"type": "number",
+						"format": "double"
+					},
+					"price": {
+						"type": "string"
+					},
+					"itemIds": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"amounts": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"additionalParameters": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"type",
+					"signature",
+					"chainId",
+					"quoteType",
+					"globalNonce",
+					"subsetNonce",
+					"orderNonce",
+					"strategyId",
+					"collectionType",
+					"collection",
+					"currency",
+					"signer",
+					"startTime",
+					"endTime",
+					"price",
+					"itemIds",
+					"amounts",
+					"additionalParameters"
 				],
-				"type": "number"
-			},
-			"Pick__additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.Exclude_keyof_additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.id-or-createdAt-or-invalidated-or-validator_codes__": {
-				"properties": {},
 				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
+				"additionalProperties": false
 			},
-			"Omit__additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.id-or-createdAt-or-invalidated-or-validator_codes_": {
-				"$ref": "#/components/schemas/Pick__additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.Exclude_keyof_additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.id-or-createdAt-or-invalidated-or-validator_codes__",
-				"description": "Construct a type with the properties of T except for those in type K."
+			"MultisigCreateOrderRequest": {
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": [
+							"multisig"
+						],
+						"nullable": false
+					},
+					"messageHash": {
+						"type": "string"
+					},
+					"chainId": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"type",
+					"messageHash",
+					"chainId"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
-			"CreateOrderRequest": {
+			"Pick_EOACreateOrderRequest.Exclude_keyofEOACreateOrderRequest.type__": {
 				"properties": {
 					"signature": {
 						"type": "string"
@@ -719,7 +806,27 @@
 					"additionalParameters"
 				],
 				"type": "object",
-				"additionalProperties": false
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_EOACreateOrderRequest.type_": {
+				"$ref": "#/components/schemas/Pick_EOACreateOrderRequest.Exclude_keyofEOACreateOrderRequest.type__",
+				"description": "Construct a type with the properties of T except for those in type K."
+			},
+			"LegacyCreateOrderRequest": {
+				"$ref": "#/components/schemas/Omit_EOACreateOrderRequest.type_"
+			},
+			"CreateOrderRequest": {
+				"anyOf": [
+					{
+						"$ref": "#/components/schemas/EOACreateOrderRequest"
+					},
+					{
+						"$ref": "#/components/schemas/MultisigCreateOrderRequest"
+					},
+					{
+						"$ref": "#/components/schemas/LegacyCreateOrderRequest"
+					}
+				]
 			},
 			"UpdateOrderNonceRequest": {
 				"properties": {
@@ -737,6 +844,56 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"OrderValidatorCode": {
+				"description": "Error errors returned by the order validator contract",
+				"enum": [
+					0,
+					101,
+					111,
+					112,
+					113,
+					201,
+					211,
+					212,
+					213,
+					301,
+					311,
+					312,
+					321,
+					322,
+					401,
+					402,
+					411,
+					412,
+					413,
+					414,
+					415,
+					421,
+					422,
+					501,
+					502,
+					503,
+					601,
+					611,
+					612,
+					621,
+					622,
+					623,
+					631,
+					632,
+					633,
+					634,
+					641,
+					642,
+					701,
+					702,
+					801,
+					802,
+					901,
+					902
+				],
+				"type": "number"
 			},
 			"ValidateOrderRequest": {
 				"properties": {
@@ -767,7 +924,7 @@
 						"type": "string"
 					},
 					"errors": {
-						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+						"$ref": "#/components/schemas/Record_string.unknown_"
 					},
 					"data": {
 						"properties": {
@@ -996,7 +1153,7 @@
 						"type": "string"
 					},
 					"errors": {
-						"$ref": "#/components/schemas/Record_string.string-or-string-Array_"
+						"$ref": "#/components/schemas/Record_string.unknown_"
 					},
 					"data": {
 						"properties": {
@@ -1359,6 +1516,47 @@
 				"parameters": []
 			}
 		},
+		"/monitoring/health": {
+			"get": {
+				"operationId": "HealthCheck",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"memory": {
+											"$ref": "#/components/schemas/process.NodeJS.MemoryUsage"
+										},
+										"timestamp": {
+											"type": "number",
+											"format": "double"
+										},
+										"uptime": {
+											"type": "number",
+											"format": "double"
+										},
+										"status": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"memory",
+										"timestamp",
+										"uptime",
+										"status"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
 		"/v1/metadata": {
 			"post": {
 				"operationId": "StoreMetadata",
@@ -1693,9 +1891,13 @@
 								"schema": {
 									"anyOf": [
 										{
+											"$ref": "#/components/schemas/BaseResponse"
+										},
+										{
 											"properties": {
-												"error": {},
-												"data": {},
+												"error": {
+													"type": "string"
+												},
 												"message": {
 													"type": "string"
 												},
@@ -1705,190 +1907,8 @@
 											},
 											"required": [
 												"error",
-												"data",
 												"message",
 												"success"
-											],
-											"type": "object"
-										},
-										{
-											"properties": {
-												"error": {},
-												"data": {
-													"properties": {
-														"order": {
-															"$ref": "#/components/schemas/Omit__additionalParameters-string--amounts-number-Array--chainId-number--collection-string--collectionType-number--createdAt-string--currency-string--endTime-number--globalNonce-string--id-string--invalidated-boolean--itemIds-string-Array--orderNonce-string--price-string--quoteType-number--signature-string--signer-string--startTime-number--strategyId-number--subsetNonce-number--validator_codes-number-Array_.id-or-createdAt-or-invalidated-or-validator_codes_"
-														},
-														"validatorCodes": {
-															"items": {
-																"$ref": "#/components/schemas/OrderValidatorCode"
-															},
-															"type": "array"
-														},
-														"valid": {
-															"type": "boolean"
-														},
-														"id": {
-															"type": "string"
-														}
-													},
-													"required": [
-														"order",
-														"validatorCodes",
-														"valid",
-														"id"
-													],
-													"type": "object"
-												},
-												"success": {
-													"type": "boolean"
-												},
-												"message": {
-													"type": "string"
-												}
-											},
-											"required": [
-												"data",
-												"success",
-												"message"
-											],
-											"type": "object"
-										},
-										{
-											"properties": {
-												"error": {},
-												"data": {
-													"properties": {
-														"validator_codes": {
-															"items": {
-																"type": "number",
-																"format": "double"
-															},
-															"type": "array"
-														},
-														"subsetNonce": {
-															"type": "number",
-															"format": "double"
-														},
-														"strategyId": {
-															"type": "number",
-															"format": "double"
-														},
-														"startTime": {
-															"type": "number",
-															"format": "double"
-														},
-														"signer": {
-															"type": "string"
-														},
-														"signature": {
-															"type": "string"
-														},
-														"quoteType": {
-															"type": "number",
-															"format": "double"
-														},
-														"price": {
-															"type": "string"
-														},
-														"orderNonce": {
-															"type": "string"
-														},
-														"invalidated": {
-															"type": "boolean"
-														},
-														"id": {
-															"type": "string"
-														},
-														"hypercert_id": {
-															"type": "string"
-														},
-														"globalNonce": {
-															"type": "string"
-														},
-														"endTime": {
-															"type": "number",
-															"format": "double"
-														},
-														"currency": {
-															"type": "string"
-														},
-														"createdAt": {
-															"type": "string"
-														},
-														"collectionType": {
-															"type": "number",
-															"format": "double"
-														},
-														"collection": {
-															"type": "string"
-														},
-														"chainId": {
-															"type": "number",
-															"format": "double"
-														},
-														"additionalParameters": {
-															"type": "string"
-														},
-														"hash": {
-															"type": "string"
-														},
-														"status": {
-															"type": "string"
-														},
-														"amounts": {
-															"items": {
-																"type": "number",
-																"format": "double"
-															},
-															"type": "array"
-														},
-														"itemIds": {
-															"items": {
-																"type": "string"
-															},
-															"type": "array"
-														}
-													},
-													"required": [
-														"validator_codes",
-														"subsetNonce",
-														"strategyId",
-														"startTime",
-														"signer",
-														"signature",
-														"quoteType",
-														"price",
-														"orderNonce",
-														"invalidated",
-														"id",
-														"hypercert_id",
-														"globalNonce",
-														"endTime",
-														"currency",
-														"createdAt",
-														"collectionType",
-														"collection",
-														"chainId",
-														"additionalParameters",
-														"hash",
-														"status",
-														"amounts",
-														"itemIds"
-													],
-													"type": "object"
-												},
-												"success": {
-													"type": "boolean"
-												},
-												"message": {
-													"type": "string"
-												}
-											},
-											"required": [
-												"data",
-												"success",
-												"message"
 											],
 											"type": "object"
 										}
@@ -1916,7 +1936,7 @@
 						}
 					}
 				},
-				"description": "Submits a new order for validation and storage on the database.",
+				"description": "Submits a new order for validation and storage on the database.\n\nFor backwards compatibility, the old v1 order format is also supported. (Example 3)",
 				"tags": [
 					"Marketplace"
 				],
@@ -1928,6 +1948,66 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/CreateOrderRequest"
+							},
+							"examples": {
+								"Example 1": {
+									"value": {
+										"type": "eoa",
+										"signature": "0x1234567890abcdef",
+										"chainId": 11155111,
+										"quoteType": 0,
+										"globalNonce": "1",
+										"subsetNonce": 0,
+										"orderNonce": "1",
+										"strategyId": 0,
+										"collectionType": 0,
+										"collection": "0x1234567890abcdef",
+										"currency": "0x1234567890abcdef",
+										"signer": "0x1234567890abcdef",
+										"startTime": 1620000000,
+										"endTime": 1630000000,
+										"price": "1000000000000000000",
+										"itemIds": [
+											"1"
+										],
+										"amounts": [
+											1
+										],
+										"additionalParameters": "0x"
+									}
+								},
+								"Example 2": {
+									"value": {
+										"type": "multisig",
+										"messageHash": "0x1234567890abcdef",
+										"chainId": 11155111
+									}
+								},
+								"Example 3": {
+									"value": {
+										"signature": "0x1234567890abcdef",
+										"chainId": 11155111,
+										"quoteType": 0,
+										"globalNonce": "1",
+										"subsetNonce": 0,
+										"orderNonce": "1",
+										"strategyId": 0,
+										"collectionType": 0,
+										"collection": "0x1234567890abcdef",
+										"currency": "0x1234567890abcdef",
+										"signer": "0x1234567890abcdef",
+										"startTime": 1620000000,
+										"endTime": 1630000000,
+										"price": "1000000000000000000",
+										"itemIds": [
+											"1"
+										],
+										"amounts": [
+											1
+										],
+										"additionalParameters": "0x"
+									}
+								}
 							}
 						}
 					}
