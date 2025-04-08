@@ -248,21 +248,20 @@ describe("HyperboardResolver", () => {
         throw new Error("Result should not be null");
       }
 
-      expect(result).toHaveLength(1);
-      expect(result[0].data).toHaveLength(1);
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].collections).toHaveLength(1);
       expect(
         mockHyperboardService.getHyperboardCollections,
       ).toHaveBeenCalledWith(mockHyperboard.id);
 
       // Verify the section data structure
-      const section = result[0].data[0];
+      const section = result.data[0];
       expect(section).toHaveProperty("label");
-      expect(section).toHaveProperty("collection");
+      expect(section).toHaveProperty("collections");
       expect(section).toHaveProperty("entries");
       expect(section).toHaveProperty("owners");
-      expect(section.collection).toBeDefined();
-      expect(section.entries).toBeInstanceOf(Array);
-      expect(section.owners).toBeInstanceOf(Array);
+      expect(section.collections).toBeInstanceOf(Array);
+      expect(section.owners?.data).toHaveLength(2);
     });
 
     it("should return empty sections when hyperboard has no id", async () => {

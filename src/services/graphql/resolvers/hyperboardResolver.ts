@@ -8,7 +8,7 @@ import {
   GetHyperboardsResponse,
   Hyperboard,
   HyperboardOwner,
-  SectionResponseType,
+  GetSectionsResponse,
 } from "../../../graphql/schemas/typeDefs/hyperboardTypeDefs.js";
 import GetUsersResponse from "../../../graphql/schemas/typeDefs/userTypeDefs.js";
 import { CachingDatabase } from "../../../types/kyselySupabaseCaching.js";
@@ -151,7 +151,7 @@ class HyperboardResolver {
    * }
    * ```
    */
-  @FieldResolver(() => [SectionResponseType])
+  @FieldResolver(() => GetSectionsResponse)
   async sections(@Root() hyperboard: Hyperboard) {
     if (!hyperboard.id) {
       console.error(
@@ -253,7 +253,7 @@ class HyperboardResolver {
         }),
       );
 
-      return [{ data: sections, count: sections.length }];
+      return { data: sections, count: sections.length };
     } catch (e) {
       console.error(
         `[HyperboardResolver::sections] Error fetching sections for hyperboard ${hyperboard.id}: ${(e as Error).message}`,
@@ -280,8 +280,7 @@ class HyperboardResolver {
         return [];
       }
 
-      const allSections = sections.flatMap((section) => section.data || []);
-      return processSectionsToHyperboardOwnership(allSections);
+      return processSectionsToHyperboardOwnership(sections.data);
     } catch (e) {
       console.error(
         `[HyperboardResolver::owners] Error fetching owners for hyperboard ${hyperboard.id}: ${(e as Error).message}`,

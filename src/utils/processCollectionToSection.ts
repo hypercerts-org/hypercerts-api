@@ -353,7 +353,7 @@ export const processCollectionToSection = ({
     .value();
 
   return {
-    collection,
+    collections: [collection],
     label: collection.name,
     entries: entries || [],
     owners: {

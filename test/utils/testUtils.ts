@@ -637,7 +637,7 @@ export function generateMockHyperboard(
     grayscale_images: boolean;
     tile_border_color: string;
     admins: { data: ReturnType<typeof generateMockUser>[]; count: number };
-    sections: Array<{
+    sections: {
       data: Array<{
         label: string;
         collection: ReturnType<typeof generateMockCollection>;
@@ -666,7 +666,7 @@ export function generateMockHyperboard(
         }>;
       }>;
       count: number;
-    }>;
+    };
     owners: {
       data: Array<
         ReturnType<typeof generateMockUser> & { percentage_owned: number }

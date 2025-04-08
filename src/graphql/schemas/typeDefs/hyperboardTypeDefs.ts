@@ -17,58 +17,15 @@ export class GetHyperboardOwnersResponse extends DataResponse(
 ) {}
 
 @ObjectType({
-  description: "Hyperboard of hypercerts for reference and display purposes",
-})
-export class Hyperboard extends BasicTypeDef {
-  @Field({ description: "Name of the hyperboard" })
-  name?: string;
-  @Field(() => [EthBigInt], {
-    nullable: true,
-    description: "Chain ID of the hyperboard",
-  })
-  chain_ids?: (bigint | number | string)[];
-  @Field({ nullable: true, description: "Background image of the hyperboard" })
-  background_image?: string;
-  @Field({
-    nullable: true,
-    description:
-      "Whether the hyperboard should be rendered as a grayscale image",
-  })
-  grayscale_images?: boolean;
-  @Field({
-    nullable: true,
-    description: "Color of the borders of the hyperboard",
-  })
-  tile_border_color?: string;
-
-  @Field(() => GetUsersResponse)
-  admins?: GetUsersResponse;
-
-  @Field(() => [SectionResponseType])
-  sections?: SectionResponseType[];
-
-  @Field(() => GetHyperboardOwnersResponse)
-  owners?: GetHyperboardOwnersResponse;
-}
-
-@ObjectType({})
-export class SectionResponseType {
-  @Field(() => [Section])
-  data?: Section[];
-
-  @Field()
-  count?: number;
-}
-
-@ObjectType({
-  description: "Section representing a collection within a hyperboard",
+  description:
+    "Section representing one or more collectionswithin a hyperboard",
 })
 export class Section {
   @Field()
   label?: string;
 
-  @Field(() => Collection)
-  collection?: Collection;
+  @Field(() => [Collection])
+  collections?: Collection[];
 
   @Field(() => [SectionEntry])
   entries?: SectionEntry[];
@@ -76,6 +33,8 @@ export class Section {
   @Field(() => GetHyperboardOwnersResponse)
   owners?: GetHyperboardOwnersResponse;
 }
+@ObjectType({})
+export class GetSectionsResponse extends DataResponse(Section) {}
 
 @ObjectType()
 class SectionEntryOwner extends User {
@@ -109,6 +68,41 @@ class SectionEntry {
 
   @Field(() => GetSectionEntryOwnersResponse)
   owners?: GetSectionEntryOwnersResponse;
+}
+
+@ObjectType({
+  description: "Hyperboard of hypercerts for reference and display purposes",
+})
+export class Hyperboard extends BasicTypeDef {
+  @Field({ description: "Name of the hyperboard" })
+  name?: string;
+  @Field(() => [EthBigInt], {
+    nullable: true,
+    description: "Chain ID of the hyperboard",
+  })
+  chain_ids?: (bigint | number | string)[];
+  @Field({ nullable: true, description: "Background image of the hyperboard" })
+  background_image?: string;
+  @Field({
+    nullable: true,
+    description:
+      "Whether the hyperboard should be rendered as a grayscale image",
+  })
+  grayscale_images?: boolean;
+  @Field({
+    nullable: true,
+    description: "Color of the borders of the hyperboard",
+  })
+  tile_border_color?: string;
+
+  @Field(() => GetUsersResponse)
+  admins?: GetUsersResponse;
+
+  @Field(() => GetSectionsResponse)
+  sections?: GetSectionsResponse;
+
+  @Field(() => GetHyperboardOwnersResponse)
+  owners?: GetHyperboardOwnersResponse;
 }
 
 @ObjectType()
