@@ -728,7 +728,9 @@ export type Database = {
       };
     };
     Enums: {
-      signature_request_purpose_enum: "update_user_data";
+      signature_request_purpose_enum:
+        | "update_user_data"
+        | "create_marketplace_order";
       signature_request_status_enum: "pending" | "executed" | "canceled";
     };
     CompositeTypes: {

@@ -1,10 +1,4 @@
 import {
-  addressesByNetwork,
-  HypercertExchangeClient,
-  utils,
-} from "@hypercerts-org/marketplace-sdk";
-import { verifyTypedData } from "ethers";
-import {
   Body,
   Controller,
   Delete,
@@ -15,44 +9,18 @@ import {
   Tags,
 } from "tsoa";
 import { z } from "zod";
-
 import { isAddress, verifyMessage } from "viem";
-import { EvmClientFactory } from "../client/evmClient.js";
+
 import { SupabaseDataService } from "../services/SupabaseDataService.js";
-import { BaseResponse } from "../types/api.js";
-import { getFractionsById } from "../utils/getFractionsById.js";
-import { isParsableToBigInt } from "../utils/isParsableToBigInt.js";
-import { getHypercertTokenId } from "../utils/tokenIds.js";
-
-export interface CreateOrderRequest {
-  signature: string;
-  chainId: number;
-  quoteType: number;
-  globalNonce: string;
-  subsetNonce: number;
-  orderNonce: string;
-  strategyId: number;
-  collectionType: number;
-  collection: string;
-  currency: string;
-  signer: string;
-  startTime: number;
-  endTime: number;
-  price: string;
-  itemIds: string[];
-  amounts: number[];
-  additionalParameters: string;
-}
-
-interface UpdateOrderNonceRequest {
-  address: string;
-  chainId: number;
-}
-
-interface ValidateOrderRequest {
-  tokenIds: string[];
-  chainId: number;
-}
+import type {
+  BaseResponse,
+  CreateOrderRequest,
+  UpdateOrderNonceRequest,
+  ValidateOrderRequest,
+} from "../types/api.js";
+import { parseCreateOrderRequest } from "../lib/marketplace/request-parser.js";
+import { isControllerError } from "../lib/errors/controller.js";
+import { createMarketplaceStrategy } from "../lib/marketplace/MarketplaceStrategyFactory.js";
 
 @Route("v1/marketplace")
 @Tags("Marketplace")
@@ -60,6 +28,54 @@ export class MarketplaceController extends Controller {
   /**
    * Submits a new order for validation and storage on the database.
    *
+   * For backwards compatibility, the old v1 order format is also supported. (Example 3)
+   *
+   * @example requestBody {
+   *   "type": "eoa",
+   *   "signature": "0x1234567890abcdef",
+   *   "chainId": 11155111,
+   *   "quoteType": 0,
+   *   "globalNonce": "1",
+   *   "subsetNonce": 0,
+   *   "orderNonce": "1",
+   *   "strategyId": 0,
+   *   "collectionType": 0,
+   *   "collection": "0x1234567890abcdef",
+   *   "currency": "0x1234567890abcdef",
+   *   "signer": "0x1234567890abcdef",
+   *   "startTime": 1620000000,
+   *   "endTime": 1630000000,
+   *   "price": "1000000000000000000",
+   *   "itemIds": ["1"],
+   *   "amounts": [1],
+   *   "additionalParameters": "0x"
+   * }
+   *
+   * @example requestBody {
+   *   "type": "multisig",
+   *   "messageHash": "0x1234567890abcdef",
+   *   "chainId": 11155111
+   * }
+   *
+   * @example requestBody {
+   *   "signature": "0x1234567890abcdef",
+   *   "chainId": 11155111,
+   *   "quoteType": 0,
+   *   "globalNonce": "1",
+   *   "subsetNonce": 0,
+   *   "orderNonce": "1",
+   *   "strategyId": 0,
+   *   "collectionType": 0,
+   *   "collection": "0x1234567890abcdef",
+   *   "currency": "0x1234567890abcdef",
+   *   "signer": "0x1234567890abcdef",
+   *   "startTime": 1620000000,
+   *   "endTime": 1630000000,
+   *   "price": "1000000000000000000",
+   *   "itemIds": ["1"],
+   *   "amounts": [1],
+   *   "additionalParameters": "0x"
+   * }
    */
   @Post("/orders")
   @SuccessResponse(201, "Order created successfully")
@@ -68,194 +84,24 @@ export class MarketplaceController extends Controller {
     message: "Order could not be created",
   })
   public async storeOrder(@Body() requestBody: CreateOrderRequest) {
-    // Validate inputs
-    const inputSchema = z
-      .object({
-        signature: z.string(),
-        chainId: z.number(),
-        quoteType: z.number(),
-        globalNonce: z.string(),
-        subsetNonce: z.number(),
-        orderNonce: z.string(),
-        strategyId: z.number(),
-        collectionType: z.number(),
-        collection: z.string(),
-        currency: z.string(),
-        signer: z.string(),
-        startTime: z.number(),
-        endTime: z.number(),
-        price: z.string(),
-        itemIds: z.array(z.string()),
-        amounts: z.array(z.number()),
-        additionalParameters: z.string(),
-      })
-      .refine(
-        ({ chainId }) => isParsableToBigInt(chainId),
-        `ChainId is not parseable as bigint`,
-      )
-      .refine(
-        ({ globalNonce }) => isParsableToBigInt(globalNonce),
-        `globalNonce is not parseable as bigint`,
-      )
-      .refine(
-        ({ orderNonce }) => isParsableToBigInt(orderNonce),
-        `orderNonce is not parseable as bigint`,
-      )
-      .refine(
-        ({ price }) => isParsableToBigInt(price),
-        `price is not parseable as bigint`,
-      )
-      .refine(({ price }) => {
-        const priceBigInt = BigInt(price);
-        return priceBigInt > 0n;
-      }, `Price must be greater than 0`)
-      .refine(({ currency }) => isAddress(currency), `Invalid currency address`)
-      .refine(({ signer }) => isAddress(signer), `Invalid signer address`)
-      .refine(({ itemIds }) => itemIds.length > 0, `itemIds must not be empty`)
-      .refine(({ amounts }) => amounts.length > 0, `amounts must not be empty`)
-      .refine(
-        ({ itemIds, amounts }) => itemIds.length === amounts.length,
-        "itemIds and amounts must have the same length",
-      )
-      .refine(
-        ({ startTime, endTime }) => startTime < endTime,
-        "startTime must be less than endTime",
-      )
-      .refine(
-        ({ collection }) => isAddress(collection),
-        `Invalid collection address`,
-      )
-      .refine(
-        ({ collection, chainId }) =>
-          // @ts-expect-error Typing issue with chainId
-          addressesByNetwork[chainId]?.MINTER?.toLowerCase() ===
-          collection.toLowerCase(),
-        `Collection address does not match the minter address for chainId`,
-      );
-    const parsedBody = inputSchema.safeParse(requestBody);
-
-    if (!parsedBody.success) {
-      this.setStatus(400);
-      return {
-        success: false,
-        message: "Invalid input",
-        data: null,
-        error: JSON.parse(parsedBody.error.toString()),
-      };
-    }
-    const { signature, chainId, ...makerOrder } = parsedBody.data;
-
-    const hec = new HypercertExchangeClient(
-      chainId,
-      // @ts-expect-error Typing issue with provider
-      EvmClientFactory.createEthersClient(chainId),
-    );
-    const typedData = hec.getTypedDataDomain();
-
-    const recoveredAddress = verifyTypedData(
-      typedData,
-      utils.makerTypes,
-      makerOrder,
-      signature,
-    );
-
-    if (!(recoveredAddress.toLowerCase() === makerOrder.signer.toLowerCase())) {
-      this.setStatus(401);
-      return {
-        message: "Recovered address is not equal to signer of order",
-        success: false,
-        data: null,
-      };
-    }
-
-    const [validationResult] = await hec.checkOrdersValidity([
-      { ...makerOrder, signature, chainId },
-    ]);
-    if (!validationResult.valid) {
-      this.setStatus(401);
-      return {
-        message: "Order is not valid within contract",
-        success: false,
-        data: validationResult,
-      };
-    }
-
-    const tokenIds = makerOrder.itemIds.map(
-      (id) => `${chainId}-${makerOrder.collection}-${id}`,
-    );
-
-    const fractions = await Promise.all(
-      tokenIds.map((fractionId) => getFractionsById(fractionId)),
-    );
-
-    // Check if all fractions exist
-    if (fractions.some((fraction) => !fraction)) {
-      this.setStatus(401);
-      return {
-        message: "Not all fractions in itemIds exist",
-        success: false,
-        data: null,
-      };
-    }
-
-    const allFractions = fractions.flatMap((fraction) => fraction || []);
-
-    // Check if all fractions are owned by signer
-    if (
-      !allFractions.every(
-        (claimToken) =>
-          claimToken?.owner_address?.toLowerCase() ===
-          recoveredAddress.toLowerCase(),
-      )
-    ) {
-      this.setStatus(401);
-      return {
-        message: "Not all fractions are owned by signer",
-        success: false,
-        data: null,
-      };
-    }
-
     try {
-      const tokenId = makerOrder.itemIds[0];
-      const hypercertTokenId = getHypercertTokenId(BigInt(tokenId));
-      const formattedHypercertId = `${chainId}-${makerOrder.collection}-${hypercertTokenId.toString()}`;
-      // Add to database
-      const insertEntity = {
-        ...makerOrder,
-        chainId,
-        signature,
-        hypercert_id: formattedHypercertId,
-      };
-      console.log("[marketplace-api] Inserting order entity", insertEntity);
-
-      const supabaseService = new SupabaseDataService();
-      const result = await supabaseService.storeOrder(insertEntity);
-
+      const parsedBody = parseCreateOrderRequest(requestBody);
+      const strategy = createMarketplaceStrategy(parsedBody);
+      const result = await strategy.executeCreate();
       this.setStatus(200);
-      return {
-        message: "Added to database",
-        success: true,
-        data: result.data
-          ? {
-              ...result.data,
-              itemIds: result.data.itemIds as string[],
-              amounts: result.data.amounts as number[],
-              status: "VALID",
-              hash: "0x",
-            }
-          : null,
-      };
+      return result;
     } catch (error) {
       console.error(error);
-      if (error) {
-        this.setStatus(500);
-        return {
-          message: "Could not add to database",
-          success: false,
-          data: null,
-        };
+      if (isControllerError(error)) {
+        this.setStatus(error.statusCode);
+        return error.toResponse();
       }
+      this.setStatus(500);
+      return {
+        success: false,
+        message: "Error processing order",
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
   }
 
