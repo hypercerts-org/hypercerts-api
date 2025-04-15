@@ -14,7 +14,7 @@ import { EOACreateOrderRequest } from "./schemas.js";
 import * as Errors from "./errors.js";
 
 export default class EOACreateOrderStrategy extends MarketplaceStrategy {
-  constructor(private readonly request: EOACreateOrderRequest) {
+  constructor(private readonly request: Omit<EOACreateOrderRequest, "type">) {
     super();
   }
 

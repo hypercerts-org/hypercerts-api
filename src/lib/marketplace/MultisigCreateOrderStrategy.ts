@@ -30,7 +30,9 @@ type OrderDetails = SafeCreateOrderMessage["message"];
 export default class MultisigCreateOrderStrategy extends MarketplaceStrategy {
   private readonly safeApiKit: SafeApiKit.default;
 
-  constructor(private readonly request: MultisigCreateOrderRequest) {
+  constructor(
+    private readonly request: Omit<MultisigCreateOrderRequest, "type">,
+  ) {
     super();
     this.safeApiKit = SafeApiStrategyFactory.getStrategy(
       request.chainId,
