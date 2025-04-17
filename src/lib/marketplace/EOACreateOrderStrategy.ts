@@ -17,7 +17,7 @@ import { MarketplaceOrdersService } from "../../services/database/entities/Marke
 
 @injectable()
 export default class EOACreateOrderStrategy extends MarketplaceStrategy {
-  private request!: EOACreateOrderRequest;
+  private request!: Omit<EOACreateOrderRequest, "type">;
 
   constructor(
     @inject(MarketplaceOrdersService)
@@ -26,7 +26,7 @@ export default class EOACreateOrderStrategy extends MarketplaceStrategy {
     super();
   }
 
-  initialize(request: EOACreateOrderRequest): this {
+  initialize(request: Omit<EOACreateOrderRequest, "type">): this {
     this.request = request;
     return this;
   }

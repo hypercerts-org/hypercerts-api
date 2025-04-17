@@ -33,7 +33,7 @@ type OrderDetails = SafeCreateOrderMessage["message"];
 @injectable()
 export default class MultisigCreateOrderStrategy extends MarketplaceStrategy {
   private safeApiKit!: SafeApiKit.default;
-  private request!: MultisigCreateOrderRequest;
+  private request!: Omit<MultisigCreateOrderRequest, "type">;
 
   constructor(
     @inject(MarketplaceOrdersService)
@@ -44,7 +44,7 @@ export default class MultisigCreateOrderStrategy extends MarketplaceStrategy {
     super();
   }
 
-  initialize(request: MultisigCreateOrderRequest): this {
+  initialize(request: Omit<MultisigCreateOrderRequest, "type">): this {
     this.safeApiKit = SafeApiStrategyFactory.getStrategy(
       request.chainId,
     ).createInstance();

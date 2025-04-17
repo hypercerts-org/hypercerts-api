@@ -8,14 +8,15 @@ import MultisigCreateOrderStrategy from "./MultisigCreateOrderStrategy.js";
 import { container } from "tsyringe";
 
 export function createMarketplaceStrategy(
-  request: MultisigCreateOrderRequest | EOACreateOrderRequest,
+  type,
+  ...request: MultisigCreateOrderRequest | EOACreateOrderRequest,
 ): MarketplaceStrategy {
-  switch (request.type) {
+  switch (type) {
     case "eoa": {
-      return container.resolve(EOACreateOrderStrategy).initialize(request);
+      return container.resolve(EOACreateOrderStrategy).initialize(request as Omit<EOACreateOrderRequest, "type">);
     }
     case "multisig": {
-      return container.resolve(MultisigCreateOrderStrategy).initialize(request);
+      return container.resolve(MultisigCreateOrderStrategy).initialize(request as Omit<MultisigCreateOrderRequest, "type">);
     }
     default:
       throw new Error("Invalid marketplace request type");
