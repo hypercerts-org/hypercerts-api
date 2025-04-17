@@ -5,10 +5,10 @@ import {
 import _ from "lodash";
 
 export const processSectionsToHyperboardOwnership = (
-  sections: Pick<Section, "owners">[],
+  sections: Section[],
 ): HyperboardOwner[] => {
   const numberOfSectionsWithOwners = sections.filter(
-    (section) => !!section.owners?.length,
+    (section) => !!section.owners?.data?.length,
   ).length;
 
   if (numberOfSectionsWithOwners === 0) {
@@ -16,7 +16,7 @@ export const processSectionsToHyperboardOwnership = (
   }
 
   return _.chain(sections)
-    .flatMap((section) => section.owners)
+    .flatMap((section) => section.owners?.data || [])
     .groupBy((owner) => owner?.address)
     .mapValues((values) => ({
       ...values[0],

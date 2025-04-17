@@ -5,20 +5,23 @@ import {
 } from "@hypercerts-org/marketplace-sdk";
 import SafeApiKit from "@safe-global/api-kit";
 
-import { DataResponse } from "../../types/api.js";
 import { EvmClientFactory } from "../../client/evmClient.js";
+import { DataResponse } from "../../types/api.js";
 import { getFractionsById } from "../../utils/getFractionsById.js";
-import { getHypercertTokenId } from "../../utils/tokenIds.js";
 import { isTypedMessage } from "../../utils/signatures.js";
+import { getHypercertTokenId } from "../../utils/tokenIds.js";
 import { SafeApiStrategyFactory } from "../safe/SafeApiKitStrategy.js";
 
+import { inject, injectable } from "tsyringe";
+import { MarketplaceOrdersService } from "../../services/database/entities/MarketplaceOrdersEntityService.js";
+import { SignatureRequestsService } from "../../services/database/entities/SignatureRequestsEntityService.js";
+import * as Errors from "./errors.js";
 import { MarketplaceStrategy } from "./MarketplaceStrategy.js";
 import {
   MultisigCreateOrderRequest,
   SAFE_CREATE_ORDER_MESSAGE_SCHEMA,
   SafeCreateOrderMessage,
 } from "./schemas.js";
-import * as Errors from "./errors.js";
 
 type ValidatableOrder = Omit<
   Order,
@@ -27,16 +30,26 @@ type ValidatableOrder = Omit<
 
 type OrderDetails = SafeCreateOrderMessage["message"];
 
+@injectable()
 export default class MultisigCreateOrderStrategy extends MarketplaceStrategy {
-  private readonly safeApiKit: SafeApiKit.default;
+  private safeApiKit!: SafeApiKit.default;
+  private request!: Omit<MultisigCreateOrderRequest, "type">;
 
   constructor(
-    private readonly request: Omit<MultisigCreateOrderRequest, "type">,
+    @inject(MarketplaceOrdersService)
+    private readonly marketplaceOrdersService: MarketplaceOrdersService,
+    @inject(SignatureRequestsService)
+    private readonly signatureRequestsService: SignatureRequestsService,
   ) {
     super();
+  }
+
+  initialize(request: Omit<MultisigCreateOrderRequest, "type">): this {
     this.safeApiKit = SafeApiStrategyFactory.getStrategy(
       request.chainId,
     ).createInstance();
+    this.request = request;
+    return this;
   }
 
   async executeCreate(): Promise<DataResponse<unknown>> {
@@ -50,10 +63,13 @@ export default class MultisigCreateOrderStrategy extends MarketplaceStrategy {
     }
 
     // Check if signature request already exists
-    const existingRequest = await this.dataService.getSignatureRequest(
-      safeAddress,
-      messageHash,
-    );
+    const existingRequest =
+      await this.signatureRequestsService.getSignatureRequest({
+        where: {
+          safe_address: { eq: safeAddress },
+          message_hash: { eq: messageHash },
+        },
+      });
 
     if (existingRequest) {
       return this.returnSuccess("Signature request already exists", {
@@ -117,7 +133,14 @@ export default class MultisigCreateOrderStrategy extends MarketplaceStrategy {
       EvmClientFactory.createEthersClient(this.request.chainId),
     );
 
-    const [validationResult] = await hec.checkOrdersValidity([orderToValidate]);
+    const [validationResult] = await hec.checkOrdersValidity([
+      {
+        ...orderToValidate,
+        createdAt: new Date().toISOString(),
+        invalidated: false,
+        validator_codes: [],
+      },
+    ]);
 
     if (!validationResult.valid) {
       const errorCodes = validationResult.validatorCodes || [];
@@ -184,7 +207,7 @@ export default class MultisigCreateOrderStrategy extends MarketplaceStrategy {
       amounts: orderDetails.amounts.map((amount) => amount.toString()),
     };
 
-    await this.dataService.addSignatureRequest({
+    await this.signatureRequestsService.addSignatureRequest({
       chain_id: this.request.chainId,
       safe_address: safeAddress,
       message_hash: messageHash,

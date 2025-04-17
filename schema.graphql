@@ -11,9 +11,11 @@ type AllowlistRecord {
   """The entry index of the Merkle tree for the claimable fraction"""
   entry: Float
 
+  """The hypercert that the allow list record belongs to"""
+  hypercert: Hypercert
+
   """The hypercert ID the claimable fraction belongs to"""
   hypercert_id: String
-  id: ID!
 
   """The leaf of the Merkle tree for the claimable fraction"""
   leaf: String
@@ -37,26 +39,38 @@ type AllowlistRecord {
   user_address: String
 }
 
-input AllowlistRecordFetchInput {
-  by: AllowlistRecordSortOptions
+input AllowlistRecordHypercertWhereInput {
+  attestations_count: NumberSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
+  creator_address: StringSearchOptions
+  hypercert_id: StringSearchOptions
+  id: StringSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
+  sales_count: NumberSearchOptions
+  token_id: BigIntSearchOptions
+  units: BigIntSearchOptions
+  uri: StringSearchOptions
 }
 
 input AllowlistRecordSortOptions {
-  claimed: SortOrder
-  entry: SortOrder
-  hypercert_id: SortOrder
-  leaf: SortOrder
-  proof: SortOrder
-  root: SortOrder
-  token_id: SortOrder
-  total_units: SortOrder
-  units: SortOrder
-  user_address: SortOrder
+  claimed: SortOrder = null
+  entry: SortOrder = null
+  hypercert_id: SortOrder = null
+  leaf: SortOrder = null
+  proof: SortOrder = null
+  root: SortOrder = null
+  token_id: SortOrder = null
+  total_units: SortOrder = null
+  units: SortOrder = null
+  user_address: SortOrder = null
 }
 
 input AllowlistRecordWhereInput {
   claimed: BooleanSearchOptions
-  entry: BigIntSearchOptions
+  entry: NumberSearchOptions
+  hypercert: AllowlistRecordHypercertWhereInput = {}
   hypercert_id: StringSearchOptions
   leaf: StringSearchOptions
   proof: StringArraySearchOptions
@@ -86,7 +100,7 @@ type Attestation {
 
   """Hypercert related to the attestation"""
   hypercert: HypercertBaseType!
-  id: ID!
+  id: ID
 
   """Block number at which the attestation was last updated"""
   last_update_block_number: EthBigInt
@@ -94,11 +108,11 @@ type Attestation {
   """Timestamp at which the attestation was last updated"""
   last_update_block_timestamp: EthBigInt
 
+  """Metadata related to the attestation"""
+  metadata: Metadata!
+
   """Address of the recipient of the attestation"""
   recipient: String
-
-  """Address of the resolver contract for the attestation"""
-  resolver: String
 
   """Unique identifier of the EAS schema used to create the attestation"""
   schema_uid: String
@@ -107,51 +121,37 @@ type Attestation {
   uid: ID
 }
 
-type AttestationBaseType {
-  """Address of the creator of the attestation"""
-  attester: String
-
-  """Block number at which the attestation was created"""
-  creation_block_number: EthBigInt
-
-  """Timestamp at which the attestation was created"""
-  creation_block_timestamp: EthBigInt
-
-  """Encoded data of the attestation"""
-  data: JSON
-  id: ID!
-
-  """Block number at which the attestation was last updated"""
-  last_update_block_number: EthBigInt
-
-  """Timestamp at which the attestation was last updated"""
-  last_update_block_timestamp: EthBigInt
-
-  """Address of the recipient of the attestation"""
-  recipient: String
-
-  """Address of the resolver contract for the attestation"""
-  resolver: String
-
-  """Unique identifier of the EAS schema used to create the attestation"""
-  schema_uid: String
-
-  """Unique identifier for the attestation on EAS"""
-  uid: ID
+input AttestationAttestationSchemaWhereInput {
+  chain_id: NumberSearchOptions
+  id: StringSearchOptions
+  resolver: StringSearchOptions
+  revocable: BooleanSearchOptions
+  uid: StringSearchOptions
 }
 
-input AttestationFetchInput {
-  by: AttestationSortOptions
+input AttestationHypercertWhereInput {
+  attestations_count: NumberSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
+  creator_address: StringSearchOptions
+  hypercert_id: StringSearchOptions
+  id: StringSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
+  sales_count: NumberSearchOptions
+  token_id: BigIntSearchOptions
+  units: BigIntSearchOptions
+  uri: StringSearchOptions
 }
 
 """Supported EAS attestation schemas and their related records"""
 type AttestationSchema {
+  """List of attestations related to the attestation schema"""
+  attestations: GetAttestationsResponse!
+
   """Chain ID of the chains where the attestation schema is supported"""
   chain_id: EthBigInt!
-  id: ID!
-
-  """List of attestations related to the attestation schema"""
-  records: [AttestationBaseType!]!
+  id: ID
 
   """Address of the resolver contract for the attestation schema"""
   resolver: String!
@@ -164,13 +164,26 @@ type AttestationSchema {
 
   """Unique identifier for the attestation schema"""
   uid: ID!
+}
+
+input AttestationSchemaAttestationWhereInput {
+  attester: StringSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
+  id: StringSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
+  recipient: StringSearchOptions
+  resolver: StringSearchOptions
+  supported_schemas_id: StringSearchOptions
+  uid: StringSearchOptions
 }
 
 """Supported EAS attestation schemas and their related records"""
 type AttestationSchemaBaseType {
   """Chain ID of the chains where the attestation schema is supported"""
   chain_id: EthBigInt!
-  id: ID!
+  id: ID
 
   """Address of the resolver contract for the attestation schema"""
   resolver: String!
@@ -185,107 +198,49 @@ type AttestationSchemaBaseType {
   uid: ID!
 }
 
+input AttestationSchemaSortOptions {
+  chain_id: SortOrder = null
+  id: SortOrder = null
+  resolver: SortOrder = null
+  revocable: SortOrder = null
+  uid: SortOrder = null
+}
+
+input AttestationSchemaWhereInput {
+  attestations: AttestationSchemaAttestationWhereInput = {}
+  chain_id: NumberSearchOptions
+  id: StringSearchOptions
+  resolver: StringSearchOptions
+  revocable: BooleanSearchOptions
+  uid: StringSearchOptions
+}
+
 input AttestationSortOptions {
-  attestation_uid: SortOrder
-  attester_address: SortOrder
-  creation_block_number: SortOrder
-  creation_block_timestamp: SortOrder
-  last_update_block_number: SortOrder
-  last_update_block_timestamp: SortOrder
-  recipient_address: SortOrder
-  schema: SortOrder
+  attester: SortOrder = null
+  creation_block_number: SortOrder = null
+  creation_block_timestamp: SortOrder = null
+  id: SortOrder = null
+  last_update_block_number: SortOrder = null
+  last_update_block_timestamp: SortOrder = null
+  recipient: SortOrder = null
+  resolver: SortOrder = null
+  supported_schemas_id: SortOrder = null
+  uid: SortOrder = null
 }
 
 input AttestationWhereInput {
-  attestation: StringSearchOptions
   attester: StringSearchOptions
-  chain_id: BigIntSearchOptions
-  contract_address: StringSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
-  eas_schema: BasicAttestationSchemaWhereInput
-  hypercerts: BasicHypercertWhereArgs
-  last_update_block_number: BigIntSearchOptions
-  last_update_block_timestamp: BigIntSearchOptions
-  metadata: BasicMetadataWhereInput
-  recipient: StringSearchOptions
-  resolver: StringSearchOptions
-  token_id: StringSearchOptions
-  uid: StringSearchOptions
-}
-
-input BasicAttestationSchemaWhereInput {
-  chain_id: BigIntSearchOptions
-  resolver: StringSearchOptions
-  revocable: BooleanSearchOptions
-  schema: StringSearchOptions
-  uid: StringSearchOptions
-}
-
-input BasicAttestationWhereInput {
-  attestation: StringSearchOptions
-  attester: StringSearchOptions
-  chain_id: BigIntSearchOptions
-  contract_address: StringSearchOptions
-  creation_block_number: BigIntSearchOptions
-  creation_block_timestamp: BigIntSearchOptions
+  eas_schema: AttestationAttestationSchemaWhereInput = {}
+  hypercert: AttestationHypercertWhereInput = {}
+  id: StringSearchOptions
   last_update_block_number: BigIntSearchOptions
   last_update_block_timestamp: BigIntSearchOptions
   recipient: StringSearchOptions
   resolver: StringSearchOptions
-  token_id: StringSearchOptions
+  supported_schemas_id: StringSearchOptions
   uid: StringSearchOptions
-}
-
-input BasicContractWhereInput {
-  chain_id: BigIntSearchOptions
-  contract_address: StringSearchOptions
-  id: IdSearchOptions
-}
-
-input BasicFractionWhereInput {
-  creation_block_number: BigIntSearchOptions
-  creation_block_timestamp: BigIntSearchOptions
-  fraction_id: StringSearchOptions
-  hypercert_id: StringSearchOptions
-  id: IdSearchOptions
-  last_update_block_number: BigIntSearchOptions
-  last_update_block_timestamp: BigIntSearchOptions
-  owner_address: StringSearchOptions
-  token_id: BigIntSearchOptions
-  units: BigIntSearchOptions
-}
-
-input BasicHypercertWhereArgs {
-  """Count of attestations referencing this hypercert"""
-  attestations_count: NumberSearchOptions
-  creation_block_number: BigIntSearchOptions
-  creation_block_timestamp: BigIntSearchOptions
-  creator_address: StringSearchOptions
-  hypercert_id: StringSearchOptions
-  id: IdSearchOptions
-  last_update_block_number: BigIntSearchOptions
-  last_update_block_timestamp: BigIntSearchOptions
-  sales_count: NumberSearchOptions
-  token_id: BigIntSearchOptions
-  uri: StringSearchOptions
-}
-
-input BasicMetadataWhereInput {
-  contributors: StringArraySearchOptions
-  creation_block_timestamp: BigIntSearchOptions
-  description: StringSearchOptions
-  id: IdSearchOptions
-  impact_scope: StringArraySearchOptions
-  impact_timeframe_from: BigIntSearchOptions
-  impact_timeframe_to: BigIntSearchOptions
-  last_block_update_timestamp: BigIntSearchOptions
-  name: StringSearchOptions
-  rights: StringArraySearchOptions
-  uri: StringSearchOptions
-  work_scope: StringArraySearchOptions
-  work_timeframe_from: BigIntSearchOptions
-  work_timeframe_to: BigIntSearchOptions
 }
 
 """
@@ -301,26 +256,34 @@ input BigIntSearchOptions {
   lte: BigInt
 }
 
+"""Blueprint for hypercert creation"""
 type Blueprint {
   admins: [User!]!
   created_at: String!
   form_values: JSON!
-  hypercerts: GetHypercertsResponse!
+  hypercerts: HypercertsResponse!
   id: Float!
   minted: Boolean!
   minter_address: String!
 }
 
-input BlueprintFetchInput {
-  by: BlueprintSortOptions
+input BlueprintSortOptions {
+  created_at: SortOrder = null
+  id: SortOrder = null
+  minted: SortOrder = null
+  minter_address: SortOrder = null
 }
 
-input BlueprintSortOptions {
-  created_at: SortOrder
+input BlueprintUserWhereInput {
+  address: StringSearchOptions
+  chain_id: NumberSearchOptions
+  display_name: StringSearchOptions
+  id: StringSearchOptions
 }
 
 input BlueprintWhereInput {
-  admin_address: StringSearchOptions
+  admins: BlueprintUserWhereInput = {}
+  created_at: StringSearchOptions
   id: NumberSearchOptions
   minted: BooleanSearchOptions
   minter_address: StringSearchOptions
@@ -343,26 +306,56 @@ type Collection {
 
   """Description of the collection"""
   description: String!
-  hypercerts: [Hypercert!]
-  id: ID!
+  hypercerts: HypercertsResponse
+  id: ID
 
   """Name of the collection"""
   name: String!
 }
 
-input CollectionFetchInput {
-  by: CollectionSortOptions
+input CollectionBlueprintWhereInput {
+  created_at: StringSearchOptions
+  id: NumberSearchOptions
+  minted: BooleanSearchOptions
+  minter_address: StringSearchOptions
+}
+
+input CollectionHypercertWhereInput {
+  attestations_count: NumberSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
+  creator_address: StringSearchOptions
+  hypercert_id: StringSearchOptions
+  id: StringSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
+  sales_count: NumberSearchOptions
+  token_id: BigIntSearchOptions
+  units: BigIntSearchOptions
+  uri: StringSearchOptions
 }
 
 input CollectionSortOptions {
-  created_at: SortOrder
-  description: SortOrder
-  name: SortOrder
+  created_at: SortOrder = null
+  description: SortOrder = null
+  id: SortOrder = null
+  name: SortOrder = null
+}
+
+input CollectionUserWhereInput {
+  address: StringSearchOptions
+  chain_id: NumberSearchOptions
+  display_name: StringSearchOptions
+  id: StringSearchOptions
 }
 
 input CollectionWhereInput {
+  admins: CollectionUserWhereInput = {}
+  blueprints: CollectionBlueprintWhereInput = {}
+  created_at: StringSearchOptions
   description: StringSearchOptions
-  id: IdSearchOptions
+  hypercerts: CollectionHypercertWhereInput = {}
+  id: StringSearchOptions
   name: StringSearchOptions
 }
 
@@ -373,26 +366,22 @@ type Contract {
 
   """The address of the contract"""
   contract_address: String
-  id: ID!
+  id: ID
 
   """The block number at which the contract was deployed"""
   start_block: EthBigInt
 }
 
-input ContractFetchInput {
-  by: ContractSortOptions
-}
-
 input ContractSortOptions {
-  chain_id: SortOrder
-  contract_address: SortOrder
-  contract_id: SortOrder
+  chain_id: SortOrder = null
+  contract_address: SortOrder = null
+  id: SortOrder = null
 }
 
 input ContractWhereInput {
   chain_id: BigIntSearchOptions
   contract_address: StringSearchOptions
-  id: IdSearchOptions
+  id: StringSearchOptions
 }
 
 """Handles uint256 bigint values stored in DB"""
@@ -400,6 +389,9 @@ scalar EthBigInt
 
 """Fraction of an hypercert"""
 type Fraction {
+  """The ID of the claims"""
+  claims_id: String
+
   """Block number of the creation of the fraction"""
   creation_block_number: EthBigInt
 
@@ -415,7 +407,7 @@ type Fraction {
   The ID of the fraction concatenated from the chain ID, contract address, and ID of the hypercert claim
   """
   hypercert_id: ID
-  id: ID!
+  id: ID
 
   """Block number of the last update of the fraction"""
   last_update_block_number: EthBigInt
@@ -435,22 +427,41 @@ type Fraction {
   """Sales related to this fraction"""
   sales: GetSalesResponse
 
+  """The token ID of the fraction"""
+  token_id: EthBigInt
+
   """Units held by the fraction"""
   units: EthBigInt
 }
 
-input FractionFetchInput {
-  by: FractionSortOptions
+input FractionMetadataWhereInput {
+  allow_list_uri: StringSearchOptions
+  contributors: StringArraySearchOptions
+  description: StringSearchOptions
+  external_url: StringSearchOptions
+  id: StringSearchOptions
+  impact_scope: StringArraySearchOptions
+  impact_timeframe_from: BigIntSearchOptions
+  impact_timeframe_to: BigIntSearchOptions
+  name: StringSearchOptions
+  rights: StringArraySearchOptions
+  uri: StringSearchOptions
+  work_scope: StringArraySearchOptions
+  work_timeframe_from: BigIntSearchOptions
+  work_timeframe_to: BigIntSearchOptions
 }
 
 input FractionSortOptions {
-  creation_block_number: SortOrder
-  creation_block_timestamp: SortOrder
-  last_update_block_number: SortOrder
-  last_update_block_timestamp: SortOrder
-  owner_address: SortOrder
-  token_id: SortOrder
-  units: SortOrder
+  creation_block_number: SortOrder = null
+  creation_block_timestamp: SortOrder = null
+  fraction_id: SortOrder = null
+  hypercert_id: SortOrder = null
+  id: SortOrder = null
+  last_update_block_number: SortOrder = null
+  last_update_block_timestamp: SortOrder = null
+  owner_address: SortOrder = null
+  token_id: SortOrder = null
+  units: SortOrder = null
 }
 
 input FractionWhereInput {
@@ -458,10 +469,10 @@ input FractionWhereInput {
   creation_block_timestamp: BigIntSearchOptions
   fraction_id: StringSearchOptions
   hypercert_id: StringSearchOptions
-  hypercerts: BasicHypercertWhereArgs
-  id: IdSearchOptions
+  id: StringSearchOptions
   last_update_block_number: BigIntSearchOptions
   last_update_block_timestamp: BigIntSearchOptions
+  metadata: FractionMetadataWhereInput = {}
   owner_address: StringSearchOptions
   token_id: BigIntSearchOptions
   units: BigIntSearchOptions
@@ -482,26 +493,31 @@ type GetAttestationsSchemaResponse {
   data: [AttestationSchema!]
 }
 
-type GetBlueprintResponse {
+"""Blueprints for hypercert creation"""
+type GetBlueprintsResponse {
   count: Int
   data: [Blueprint!]
 }
 
+"""Collection of hypercerts for reference and display purposes"""
 type GetCollectionsResponse {
   count: Int
   data: [Collection!]
 }
 
-"""Pointer to a contract deployed on a chain"""
 type GetContractsResponse {
   count: Int
   data: [Contract!]
 }
 
-"""Fraction of an hypercert"""
 type GetFractionsResponse {
   count: Int
   data: [Fraction!]
+}
+
+type GetHyperboardOwnersResponse {
+  count: Int
+  data: [HyperboardOwner!]
 }
 
 type GetHyperboardsResponse {
@@ -522,6 +538,9 @@ type GetMetadataResponse {
   data: [Metadata!]
 }
 
+"""
+Hypercert with metadata, contract, orders, sales and fraction information
+"""
 type GetOrdersForHypercertResponse {
   cheapestOrder: Order
   count: Int
@@ -539,6 +558,16 @@ type GetSalesResponse {
   data: [Sale!]
 }
 
+type GetSectionEntryOwnersResponse {
+  count: Int
+  data: [SectionEntryOwner!]
+}
+
+type GetSectionsResponse {
+  count: Int
+  data: [Section!]
+}
+
 type GetSignatureRequestResponse {
   count: Int
   data: [SignatureRequest!]
@@ -551,7 +580,7 @@ type GetUsersResponse {
 
 """Hyperboard of hypercerts for reference and display purposes"""
 type Hyperboard {
-  admins: [User!]!
+  admins: GetUsersResponse!
 
   """Background image of the hyperboard"""
   background_image: String
@@ -561,19 +590,22 @@ type Hyperboard {
 
   """Whether the hyperboard should be rendered as a grayscale image"""
   grayscale_images: Boolean
-  id: ID!
+  id: ID
 
   """Name of the hyperboard"""
   name: String!
-  owners: [HyperboardOwner!]!
-  sections: SectionResponseType!
+  owners: GetHyperboardOwnersResponse!
+  sections: GetSectionsResponse!
 
   """Color of the borders of the hyperboard"""
   tile_border_color: String
 }
 
-input HyperboardFetchInput {
-  by: HyperboardSortOptions
+input HyperboardCollectionWhereInput {
+  created_at: StringSearchOptions
+  description: StringSearchOptions
+  id: StringSearchOptions
+  name: StringSearchOptions
 }
 
 type HyperboardOwner {
@@ -588,22 +620,30 @@ type HyperboardOwner {
 
   """The display name of the user"""
   display_name: String
+  id: ID
   percentage_owned: Float!
 
   """Pending signature requests for the user"""
-  signature_requests: [SignatureRequest!]
+  signature_requests: GetSignatureRequestResponse
 }
 
 input HyperboardSortOptions {
-  admin_id: SortOrder
-  chainId: SortOrder
-  name: SortOrder
+  chain_ids: SortOrder = null
+  id: SortOrder = null
+}
+
+input HyperboardUserWhereInput {
+  address: StringSearchOptions
+  chain_id: NumberSearchOptions
+  display_name: StringSearchOptions
+  id: StringSearchOptions
 }
 
 input HyperboardWhereInput {
-  admin_id: StringSearchOptions
-  chain_id: BigIntSearchOptions
-  id: IdSearchOptions
+  admins: HyperboardUserWhereInput = {}
+  chain_ids: NumberArraySearchOptions
+  collections: HyperboardCollectionWhereInput = {}
+  id: StringSearchOptions
 }
 
 """
@@ -634,7 +674,7 @@ type Hypercert {
   Concatenation of [chainID]-[contractAddress]-[tokenID] to discern hypercerts across chains
   """
   hypercert_id: ID
-  id: ID!
+  id: ID
   last_update_block_number: EthBigInt
   last_update_block_timestamp: EthBigInt
 
@@ -660,6 +700,19 @@ type Hypercert {
   uri: String
 }
 
+input HypercertAttestationWhereInput {
+  attester: StringSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
+  id: StringSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
+  recipient: StringSearchOptions
+  resolver: StringSearchOptions
+  supported_schemas_id: StringSearchOptions
+  uid: StringSearchOptions
+}
+
 type HypercertBaseType {
   """Count of attestations referencing this hypercert"""
   attestations_count: Int
@@ -676,12 +729,9 @@ type HypercertBaseType {
   Concatenation of [chainID]-[contractAddress]-[tokenID] to discern hypercerts across chains
   """
   hypercert_id: ID
-  id: ID!
+  id: ID
   last_update_block_number: EthBigInt
   last_update_block_timestamp: EthBigInt
-
-  """The metadata for the hypercert as referenced by the uri"""
-  metadata: Metadata
 
   """Count of sales of fractions that belong to this hypercert"""
   sales_count: Int
@@ -696,49 +746,82 @@ type HypercertBaseType {
   uri: String
 }
 
-input HypercertFetchInput {
-  by: HypercertSortOptions
+input HypercertContractWhereInput {
+  chain_id: BigIntSearchOptions
+  contract_address: StringSearchOptions
+  id: StringSearchOptions
+}
+
+input HypercertFractionWhereInput {
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
+  fraction_id: StringSearchOptions
+  hypercert_id: StringSearchOptions
+  id: StringSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
+  owner_address: StringSearchOptions
+  token_id: BigIntSearchOptions
+  units: BigIntSearchOptions
+}
+
+input HypercertMetadataWhereInput {
+  allow_list_uri: StringSearchOptions
+  contributors: StringArraySearchOptions
+  description: StringSearchOptions
+  external_url: StringSearchOptions
+  id: StringSearchOptions
+  impact_scope: StringArraySearchOptions
+  impact_timeframe_from: BigIntSearchOptions
+  impact_timeframe_to: BigIntSearchOptions
+  name: StringSearchOptions
+  rights: StringArraySearchOptions
+  uri: StringSearchOptions
+  work_scope: StringArraySearchOptions
+  work_timeframe_from: BigIntSearchOptions
+  work_timeframe_to: BigIntSearchOptions
 }
 
 input HypercertSortOptions {
-  attestations_count: SortOrder
-  creation_block_number: SortOrder
-  creation_block_timestamp: SortOrder
-  hypercert_id: SortOrder
-  last_block_update_timestamp: SortOrder
-  last_update_block_number: SortOrder
-  last_update_block_timestamp: SortOrder
-  owner_address: SortOrder
-  sales_count: SortOrder
-  token_id: SortOrder
-  units: SortOrder
-  uri: SortOrder
+  attestations_count: SortOrder = null
+  creation_block_number: SortOrder = null
+  creation_block_timestamp: SortOrder = null
+  creator_address: SortOrder = null
+  hypercert_id: SortOrder = null
+  id: SortOrder = null
+  last_update_block_number: SortOrder = null
+  last_update_block_timestamp: SortOrder = null
+  sales_count: SortOrder = null
+  token_id: SortOrder = null
+  units: SortOrder = null
+  uri: SortOrder = null
 }
 
-"""Arguments for filtering hypercerts"""
-input HypercertsWhereArgs {
-  attestations: BasicAttestationWhereInput
-
-  """Count of attestations referencing this hypercert"""
+input HypercertWhereInput {
+  attestations: HypercertAttestationWhereInput = {}
   attestations_count: NumberSearchOptions
-  contract: BasicContractWhereInput
+  contract: HypercertContractWhereInput = {}
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   creator_address: StringSearchOptions
-  fractions: BasicFractionWhereInput
+  fractions: HypercertFractionWhereInput = {}
   hypercert_id: StringSearchOptions
-  id: IdSearchOptions
+  id: StringSearchOptions
   last_update_block_number: BigIntSearchOptions
   last_update_block_timestamp: BigIntSearchOptions
-  metadata: BasicMetadataWhereInput
+  metadata: HypercertMetadataWhereInput = {}
   sales_count: NumberSearchOptions
   token_id: BigIntSearchOptions
+  units: BigIntSearchOptions
   uri: StringSearchOptions
 }
 
-input IdSearchOptions {
-  eq: UUID
-  in: [UUID!]
+"""
+Hypercert without metadata, contract, orders, sales and fraction information
+"""
+type HypercertsResponse {
+  count: Int
+  data: [HypercertBaseType!]
 }
 
 """
@@ -761,10 +844,8 @@ type Metadata {
 
   """References additional information related to the hypercert"""
   external_url: String
-  id: ID!
-
-  """Base64 encoded representation of the image of the hypercert"""
-  image: String
+  id: ID
+  image: String!
 
   """Impact scope of the hypercert"""
   impact_scope: [String!]
@@ -797,29 +878,32 @@ type Metadata {
   work_timeframe_to: EthBigInt
 }
 
-input MetadataFetchInput {
-  by: MetadataSortOptions
-}
-
 input MetadataSortOptions {
-  allow_list_uri: SortOrder
-  description: SortOrder
-  external_url: SortOrder
-  metadata_id: SortOrder
-  name: SortOrder
-  uri: SortOrder
+  allow_list_uri: SortOrder = null
+  contributors: SortOrder = null
+  description: SortOrder = null
+  external_url: SortOrder = null
+  id: SortOrder = null
+  impact_scope: SortOrder = null
+  impact_timeframe_from: SortOrder = null
+  impact_timeframe_to: SortOrder = null
+  name: SortOrder = null
+  rights: SortOrder = null
+  uri: SortOrder = null
+  work_scope: SortOrder = null
+  work_timeframe_from: SortOrder = null
+  work_timeframe_to: SortOrder = null
 }
 
 input MetadataWhereInput {
+  allow_list_uri: StringSearchOptions
   contributors: StringArraySearchOptions
-  creation_block_timestamp: BigIntSearchOptions
   description: StringSearchOptions
-  hypercerts: BasicHypercertWhereArgs
-  id: IdSearchOptions
+  external_url: StringSearchOptions
+  id: StringSearchOptions
   impact_scope: StringArraySearchOptions
   impact_timeframe_from: BigIntSearchOptions
   impact_timeframe_to: BigIntSearchOptions
-  last_block_update_timestamp: BigIntSearchOptions
   name: StringSearchOptions
   rights: StringArraySearchOptions
   uri: StringSearchOptions
@@ -830,10 +914,10 @@ input MetadataWhereInput {
 
 input NumberArraySearchOptions {
   """Array of numbers"""
-  contains: [BigInt!]
+  arrayContains: [BigInt!]
 
   """Array of numbers"""
-  overlaps: [BigInt!]
+  arrayOverlaps: [BigInt!]
 }
 
 input NumberSearchOptions {
@@ -845,13 +929,14 @@ input NumberSearchOptions {
   lte: Int
 }
 
+"""Marketplace order for a hypercert"""
 type Order {
   additionalParameters: String!
   amounts: [Float!]!
   chainId: EthBigInt!
   collection: String!
   collectionType: Float!
-  createdAt: String!
+  createdAt: Float!
   currency: String!
   endTime: Float!
   globalNonce: String!
@@ -859,7 +944,7 @@ type Order {
   """The hypercert associated with this order"""
   hypercert: HypercertBaseType
   hypercert_id: String!
-  id: ID!
+  id: ID
   invalidated: Boolean!
   itemIds: [String!]!
   orderNonce: String!
@@ -872,56 +957,84 @@ type Order {
   startTime: Float!
   strategyId: Float!
   subsetNonce: Float!
-  validator_codes: [String!]
+  validator_codes: [Int!]
 }
 
-input OrderFetchInput {
-  by: OrderSortOptions
+input OrderHypercertWhereInput {
+  attestations_count: NumberSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
+  creator_address: StringSearchOptions
+  hypercert_id: StringSearchOptions
+  id: StringSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
+  sales_count: NumberSearchOptions
+  token_id: BigIntSearchOptions
+  units: BigIntSearchOptions
+  uri: StringSearchOptions
 }
 
 input OrderSortOptions {
-  amounts: SortOrder
-  chainId: SortOrder
-  collection: SortOrder
-  collectionType: SortOrder
-  createdAt: SortOrder
-  currency: SortOrder
-  endTime: SortOrder
-  globalNonce: SortOrder
-  hypercert_id: SortOrder
-  invalidated: SortOrder
-  orderNonce: SortOrder
-  price: SortOrder
-  quoteType: SortOrder
-  signer: SortOrder
-  startTime: SortOrder
-  strategyId: SortOrder
+  amounts: SortOrder = null
+  chainId: SortOrder = null
+  collection: SortOrder = null
+  collectionType: SortOrder = null
+  createdAt: SortOrder = null
+  currency: SortOrder = null
+  endTime: SortOrder = null
+  globalNonce: SortOrder = null
+  hypercert_id: SortOrder = null
+  id: SortOrder = null
+  invalidated: SortOrder = null
+  itemIds: SortOrder = null
+  orderNonce: SortOrder = null
+  price: SortOrder = null
+  quoteType: SortOrder = null
+  signer: SortOrder = null
+  startTime: SortOrder = null
+  strategyId: SortOrder = null
+  subsetNonce: SortOrder = null
 }
 
 input OrderWhereInput {
+  amounts: NumberArraySearchOptions
   chainId: BigIntSearchOptions
+  collection: StringSearchOptions
+  collectionType: NumberSearchOptions
+  createdAt: StringSearchOptions
   currency: StringSearchOptions
+  endTime: NumberSearchOptions
+  globalNonce: StringSearchOptions
+  hypercert: OrderHypercertWhereInput = {}
   hypercert_id: StringSearchOptions
-  id: IdSearchOptions
+  id: StringSearchOptions
   invalidated: BooleanSearchOptions
+  itemIds: StringArraySearchOptions
+  orderNonce: StringSearchOptions
+  price: StringSearchOptions
+  quoteType: NumberSearchOptions
   signer: StringSearchOptions
+  startTime: NumberSearchOptions
+  strategyId: NumberSearchOptions
+  subsetNonce: NumberSearchOptions
 }
 
 type Query {
-  allowlistRecords(first: Int, offset: Int, sort: AllowlistRecordFetchInput, where: AllowlistRecordWhereInput): GetAllowlistRecordResponse!
-  attestationSchemas(first: Int, offset: Int): GetAttestationsSchemaResponse!
-  attestations(first: Int, offset: Int, sort: AttestationFetchInput, where: AttestationWhereInput): GetAttestationsResponse!
-  blueprints(first: Int, offset: Int, sort: BlueprintFetchInput, where: BlueprintWhereInput): GetBlueprintResponse!
-  collections(first: Int, offset: Int, sort: CollectionFetchInput, where: CollectionWhereInput): GetCollectionsResponse!
-  contracts(first: Int, offset: Int, sort: ContractFetchInput, where: ContractWhereInput): GetContractsResponse!
-  fractions(first: Int, offset: Int, sort: FractionFetchInput, where: FractionWhereInput): GetFractionsResponse!
-  hyperboards(first: Int, offset: Int, sort: HyperboardFetchInput, where: HyperboardWhereInput): GetHyperboardsResponse!
-  hypercerts(first: Int, offset: Int, sort: HypercertFetchInput, where: HypercertsWhereArgs): GetHypercertsResponse!
-  metadata(first: Int, offset: Int, sort: MetadataFetchInput, where: MetadataWhereInput): GetMetadataResponse!
-  orders(first: Int, offset: Int, sort: OrderFetchInput, where: OrderWhereInput): GetOrdersResponse!
-  sales(first: Int, offset: Int, sort: SaleFetchInput, where: SaleWhereInput): GetSalesResponse!
-  signatureRequests(first: Int, offset: Int, sort: SignatureRequestFetchInput, where: SignatureRequestWhereInput): GetSignatureRequestResponse!
-  users(first: Int, offset: Int, where: UserWhereInput): GetUsersResponse!
+  allowlistRecords(first: Int, offset: Int, sortBy: AllowlistRecordSortOptions, where: AllowlistRecordWhereInput): GetAllowlistRecordResponse!
+  attestationSchemas(first: Int, offset: Int, sortBy: AttestationSchemaSortOptions, where: AttestationSchemaWhereInput): GetAttestationsSchemaResponse!
+  attestations(first: Int, offset: Int, sortBy: AttestationSortOptions, where: AttestationWhereInput): GetAttestationsResponse!
+  blueprints(first: Int, offset: Int, sortBy: BlueprintSortOptions, where: BlueprintWhereInput): GetBlueprintsResponse!
+  collections(first: Int, offset: Int, sortBy: CollectionSortOptions, where: CollectionWhereInput): GetCollectionsResponse!
+  contracts(first: Int, offset: Int, sortBy: ContractSortOptions, where: ContractWhereInput): GetContractsResponse!
+  fractions(first: Int, offset: Int, sortBy: FractionSortOptions, where: FractionWhereInput): GetFractionsResponse!
+  hyperboards(first: Int, offset: Int, sortBy: HyperboardSortOptions, where: HyperboardWhereInput): GetHyperboardsResponse!
+  hypercerts(first: Int, offset: Int, sortBy: HypercertSortOptions, where: HypercertWhereInput): GetHypercertsResponse!
+  metadata(first: Int, offset: Int, sortBy: MetadataSortOptions, where: MetadataWhereInput): GetMetadataResponse!
+  orders(first: Int, offset: Int, sortBy: OrderSortOptions, where: OrderWhereInput): GetOrdersResponse!
+  sales(first: Int, offset: Int, sortBy: SaleSortOptions, where: SaleWhereInput): GetSalesResponse!
+  signatureRequests(first: Int, offset: Int, sortBy: SignatureRequestSortOptions, where: SignatureRequestWhereInput): GetSignatureRequestResponse!
+  users(first: Int, offset: Int, sortBy: UserSortOptions, where: UserWhereInput): GetUsersResponse!
 }
 
 type Sale {
@@ -949,7 +1062,7 @@ type Sale {
 
   """The ID of the hypercert token referenced in the order"""
   hypercert_id: String
-  id: ID!
+  id: ID
 
   """Token ids of the sold fractions"""
   item_ids: [EthBigInt!]
@@ -964,21 +1077,34 @@ type Sale {
   transaction_hash: String!
 }
 
-input SaleFetchInput {
-  by: SaleSortOptions
+input SaleHypercertWhereInput {
+  attestations_count: NumberSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
+  creator_address: StringSearchOptions
+  hypercert_id: StringSearchOptions
+  id: StringSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
+  sales_count: NumberSearchOptions
+  token_id: BigIntSearchOptions
+  units: BigIntSearchOptions
+  uri: StringSearchOptions
 }
 
 input SaleSortOptions {
-  amounts: SortOrder
-  buyer: SortOrder
-  collection: SortOrder
-  creationBlockNumber: SortOrder
-  creationBlockTimestamp: SortOrder
-  currency: SortOrder
-  hypercertId: SortOrder
-  seller: SortOrder
-  strategyId: SortOrder
-  transactionHash: SortOrder
+  amounts: SortOrder = null
+  buyer: SortOrder = null
+  collection: SortOrder = null
+  creation_block_number: SortOrder = null
+  creation_block_timestamp: SortOrder = null
+  currency: SortOrder = null
+  hypercert_id: SortOrder = null
+  id: SortOrder = null
+  item_ids: SortOrder = null
+  seller: SortOrder = null
+  strategy_id: SortOrder = null
+  transaction_hash: SortOrder = null
 }
 
 input SaleWhereInput {
@@ -988,19 +1114,21 @@ input SaleWhereInput {
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   currency: StringSearchOptions
+  hypercert: SaleHypercertWhereInput = {}
   hypercert_id: StringSearchOptions
+  id: StringSearchOptions
   item_ids: StringArraySearchOptions
   seller: StringSearchOptions
-  strategy_id: BigIntSearchOptions
-  transaction_hash: IdSearchOptions
+  strategy_id: NumberSearchOptions
+  transaction_hash: StringSearchOptions
 }
 
-"""Section representing a collection within a hyperboard"""
+"""Section representing one or more collectionswithin a hyperboard"""
 type Section {
-  collection: Collection!
+  collections: [Collection!]!
   entries: [SectionEntry!]!
   label: String!
-  owners: [HyperboardOwner!]!
+  owners: GetHyperboardOwnersResponse!
 }
 
 """Entry representing a hypercert or blueprint within a section"""
@@ -1013,9 +1141,9 @@ type SectionEntry {
 
   """Name of the hypercert or blueprint"""
   name: String
-  owners: [SectionEntryOwner!]!
+  owners: GetSectionEntryOwnersResponse!
   percentage_of_section: Float!
-  total_units: BigInt
+  total_units: EthBigInt
 }
 
 type SectionEntryOwner {
@@ -1030,16 +1158,12 @@ type SectionEntryOwner {
 
   """The display name of the user"""
   display_name: String
+  id: ID
   percentage: Float!
 
   """Pending signature requests for the user"""
-  signature_requests: [SignatureRequest!]
-  units: BigInt
-}
-
-type SectionResponseType {
-  count: Float!
-  data: [Section!]!
+  signature_requests: GetSignatureRequestResponse
+  units: EthBigInt
 }
 
 """Pending signature request for a user"""
@@ -1066,24 +1190,17 @@ type SignatureRequest {
   timestamp: EthBigInt!
 }
 
-input SignatureRequestFetchInput {
-  by: SignatureRequestSortOptions
-}
-
 """Purpose of the signature request"""
 enum SignatureRequestPurpose {
   UPDATE_USER_DATA
 }
 
-input SignatureRequestPurposeSearchOptions {
-  eq: SignatureRequestPurpose
-}
-
 input SignatureRequestSortOptions {
-  message_hash: SortOrder
-  purpose: SortOrder
-  safe_address: SortOrder
-  timestamp: SortOrder
+  chain_id: SortOrder = null
+  message_hash: SortOrder = null
+  safe_address: SortOrder = null
+  status: SortOrder = null
+  timestamp: SortOrder = null
 }
 
 """Status of the signature request"""
@@ -1100,7 +1217,6 @@ input SignatureRequestStatusSearchOptions {
 input SignatureRequestWhereInput {
   chain_id: BigIntSearchOptions
   message_hash: StringSearchOptions
-  purpose: SignatureRequestPurposeSearchOptions
   safe_address: StringSearchOptions
   status: SignatureRequestStatusSearchOptions
   timestamp: BigIntSearchOptions
@@ -1116,8 +1232,11 @@ enum SortOrder {
 }
 
 input StringArraySearchOptions {
-  contains: [String!]
-  overlaps: [String!]
+  """Array of strings"""
+  arrayContains: [String!]
+
+  """Array of strings"""
+  arrayOverlaps: [String!]
 }
 
 input StringSearchOptions {
@@ -1127,11 +1246,6 @@ input StringSearchOptions {
   in: [String!]
   startsWith: String
 }
-
-"""
-A field whose value is a generic Universally Unique Identifier: https://en.wikipedia.org/wiki/Universally_unique_identifier.
-"""
-scalar UUID
 
 type User {
   """The address of the user"""
@@ -1145,12 +1259,22 @@ type User {
 
   """The display name of the user"""
   display_name: String
+  id: ID
 
   """Pending signature requests for the user"""
-  signature_requests: [SignatureRequest!]
+  signature_requests: GetSignatureRequestResponse
+}
+
+input UserSortOptions {
+  address: SortOrder = null
+  chain_id: SortOrder = null
+  display_name: SortOrder = null
+  id: SortOrder = null
 }
 
 input UserWhereInput {
   address: StringSearchOptions
-  chain_id: BigIntSearchOptions
+  chain_id: NumberSearchOptions
+  display_name: StringSearchOptions
+  id: StringSearchOptions
 }

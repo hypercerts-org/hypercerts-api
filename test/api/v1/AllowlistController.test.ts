@@ -20,7 +20,7 @@ vi.mock("../../../src/services/StorageService", async () => {
   };
 });
 
-describe("Allow list upload at v1/allowlists", async () => {
+describe("Allow list upload at v2/allowlists", async () => {
   const controller = new AllowListController();
   const mockStorage = mock<StorageService>();
 
@@ -77,7 +77,7 @@ describe("Allow list upload at v1/allowlists", async () => {
   });
 });
 
-describe("Allow list validation at v1/allowlists/validate", async () => {
+describe("Allow list validation at v2/allowlists/validate", async () => {
   const controller = new AllowListController();
 
   test("Validates correctness of allowlist and returns results", async () => {

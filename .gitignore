@@ -36,9 +36,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# generated graphql files
-src/generated/
-
 dist
 .rollup.cache
 .idea
+
+# generated swagger files
+src/__generated__/

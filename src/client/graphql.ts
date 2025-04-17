@@ -1,5 +1,5 @@
 import { createYoga } from "graphql-yoga";
-import { resolvers } from "../graphql/schemas/resolvers/composed.js";
+import { resolvers } from "../services/graphql/resolvers/composed.js";
 import { buildSchema } from "type-graphql";
 import { container } from "tsyringe";
 import { Client, cacheExchange, fetchExchange } from "@urql/core";
@@ -53,7 +53,7 @@ export const yoga = createYoga({
   cors: {
     methods: ["POST"],
   },
-  graphqlEndpoint: "/v1/graphql",
+  graphqlEndpoint: "/v2/graphql",
   plugins: [
     useResponseCache({
       // global cache
@@ -76,6 +76,6 @@ export const yoga = createYoga({
 });
 
 export const urqlClient = new Client({
-  url: `${CONSTANTS.ENDPOINTS[indexerEnvironment as "production" | "test"]}/v1/graphql`,
+  url: `${CONSTANTS.ENDPOINTS[indexerEnvironment as "production" | "test"]}/v2/graphql`,
   exchanges: [cacheExchange, fetchExchange],
 });

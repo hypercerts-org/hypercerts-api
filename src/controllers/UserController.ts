@@ -1,4 +1,3 @@
-import { z } from "zod";
 import {
   Body,
   Controller,
@@ -9,18 +8,19 @@ import {
   SuccessResponse,
   Tags,
 } from "tsoa";
+import { z } from "zod";
 
+import { ParseError } from "../lib/errors/request-parsing.js";
+import { isUserUpsertError } from "../lib/users/errors.js";
+import { USER_UPDATE_REQUEST_SCHEMA } from "../lib/users/schemas.js";
+import { createStrategy } from "../lib/users/UserUpsertStrategy.js";
 import type {
   AddOrUpdateUserRequest,
   BaseResponse,
   UserResponse,
 } from "../types/api.js";
-import { isUserUpsertError } from "../lib/users/errors.js";
-import { USER_UPDATE_REQUEST_SCHEMA } from "../lib/users/schemas.js";
-import { createStrategy } from "../lib/users/UserUpsertStrategy.js";
-import { ParseError } from "../lib/errors/request-parsing.js";
 
-@Route("v1/users")
+@Route("v2/users")
 @Tags("Users")
 export class UserController extends Controller {
   /**

@@ -9,13 +9,42 @@ import MarketplaceCreateOrderSignatureVerifier from "../lib/safe/signature-verif
 
 import { SafeApiCommand } from "./SafeApiCommand.js";
 import { getHypercertTokenId } from "../utils/tokenIds.js";
+import { inject, injectable } from "tsyringe";
+import { SignatureRequestsService } from "../services/database/entities/SignatureRequestsEntityService.js";
+import { MarketplaceOrdersService } from "../services/database/entities/MarketplaceOrdersEntityService.js";
 
+@injectable()
 export class MarketplaceCreateOrderCommand extends SafeApiCommand {
+  constructor(
+    safeAddress: string,
+    messageHash: string,
+    chainId: number,
+    @inject(SignatureRequestsService)
+    private signatureRequestsService: SignatureRequestsService,
+    @inject(MarketplaceOrdersService)
+    private marketplaceOrdersService: MarketplaceOrdersService,
+  ) {
+    super(safeAddress, messageHash, chainId);
+  }
+
+  initialize(
+    safeAddress: string,
+    messageHash: string,
+    chainId: number,
+  ): this {
+    this.safeAddress = safeAddress;
+    this.messageHash = messageHash;
+    this.chainId = chainId;
+    return this;
+  }
+
   async execute(): Promise<void> {
-    const signatureRequest = await this.dataService.getSignatureRequest(
-      this.safeAddress,
-      this.messageHash,
-    );
+    const signatureRequest = await this.signatureRequestsService.getSignatureRequest({
+      where: {
+        safe_address: { eq: this.safeAddress },
+        message_hash: { eq: this.messageHash },
+      },
+    });
 
     if (!signatureRequest || signatureRequest.status !== "pending") {
       return;
@@ -72,9 +101,9 @@ export class MarketplaceCreateOrderCommand extends SafeApiCommand {
       amounts: orderDetails.amounts.map((x) => parseInt(x, 10)),
     };
 
-    await this.dataService.storeOrder(insertEntity);
+    await this.marketplaceOrdersService.storeOrder(insertEntity);
 
-    await this.dataService.updateSignatureRequestStatus(
+    await this.signatureRequestsService.updateSignatureRequestStatus(
       this.safeAddress,
       this.messageHash,
       "executed",

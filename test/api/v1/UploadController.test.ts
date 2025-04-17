@@ -18,7 +18,7 @@ vi.mock("../../../src/services/StorageService", async () => {
   };
 });
 
-describe("File upload at v1/upload", async () => {
+describe("File upload at v2/upload", async () => {
   const controller = new UploadController();
   const mockStorage = mock<StorageService>();
 

@@ -1,4 +1,3 @@
-import { jsonToBlob } from "../utils/jsonToBlob.js";
 import {
   Body,
   Controller,
@@ -8,6 +7,7 @@ import {
   SuccessResponse,
   Tags,
 } from "tsoa";
+import { parseAndValidateMerkleTree } from "../lib/allowlists/parseAndValidateMerkleTreeDump.js";
 import { StorageService } from "../services/StorageService.js";
 import type {
   BaseResponse,
@@ -17,11 +17,11 @@ import type {
   ValidateMetadataRequest,
   ValidationResponse,
 } from "../types/api.js";
+import { jsonToBlob } from "../utils/jsonToBlob.js";
 import { validateMetadataAndClaimdata } from "../utils/validateMetadataAndClaimdata.js";
 import { validateRemoteAllowList } from "../utils/validateRemoteAllowList.js";
-import { parseAndValidateMerkleTree } from "../lib/allowlists/parseAndValidateMerkleTreeDump.js";
 
-@Route("v1/metadata")
+@Route("v2/metadata")
 @Tags("Metadata")
 export class MetadataController extends Controller {
   /**
@@ -46,12 +46,12 @@ export class MetadataController extends Controller {
 
     try {
       const metadataValidationResult = validateMetadataAndClaimdata(metadata);
-      if (!metadataValidationResult.valid) {
+      if (!metadataValidationResult.valid || !metadataValidationResult.data) {
         this.setStatus(422);
         return {
           success: false,
           valid: false,
-          message: "Errors while validating metadata",
+          message: "Metadata validation failed",
           errors: metadataValidationResult.errors,
         };
       }
@@ -66,7 +66,7 @@ export class MetadataController extends Controller {
           return {
             success: false,
             valid: false,
-            message: "Errors while validating allow list",
+            message: "Allowlist validation failed",
             errors: allowListValidationResult.errors,
           };
         }
@@ -126,7 +126,7 @@ export class MetadataController extends Controller {
         this.setStatus(422);
         return {
           success: false,
-          message: "Validation failed",
+          message: "Metadata validation failed",
           errors: metadataValidationResult.errors,
         };
       }
@@ -149,7 +149,7 @@ export class MetadataController extends Controller {
         this.setStatus(422);
         return {
           success: false,
-          message: "Validation failed",
+          message: "Allowlist validation failed",
           errors: allowlistValidationResult.errors,
         };
       }
@@ -205,7 +205,7 @@ export class MetadataController extends Controller {
         return {
           success: true,
           valid: false,
-          message: "Errors while validating metadata",
+          message: "Metadata validation failed",
           errors: metadataValidationResult.errors,
         };
       }
@@ -220,8 +220,7 @@ export class MetadataController extends Controller {
           return {
             success: true,
             valid: false,
-            message:
-              "Errors while validating allow list referenced in metadata",
+            message: "Allowlist validation failed",
             errors: allowListValidationResult.errors,
           };
         }
@@ -238,7 +237,7 @@ export class MetadataController extends Controller {
       return {
         success: false,
         valid: false,
-        message: "Error while validating metadata",
+        message: "Validation failed",
         errors: { metadata: (e as Error).message },
       };
     }
@@ -270,7 +269,7 @@ export class MetadataController extends Controller {
         return {
           success: true,
           valid: false,
-          message: "Validation failed",
+          message: "Metadata validation failed",
           errors: metadataValidationResult.errors,
         };
       }
@@ -285,7 +284,7 @@ export class MetadataController extends Controller {
         return {
           success: true,
           valid: false,
-          message: "Validation failed",
+          message: "Allowlist validation failed",
           errors: allowlistValidationResult.errors,
         };
       }
@@ -301,7 +300,7 @@ export class MetadataController extends Controller {
       return {
         success: false,
         valid: false,
-        message: "Error while validating metadata",
+        message: "Validation failed",
         errors: { metadata: (e as Error).message },
       };
     }

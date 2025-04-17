@@ -7,15 +7,15 @@ import {
   Tags,
   UploadedFiles,
 } from "tsoa";
-import { StorageService } from "../services/StorageService.js";
-import type { UploadResponse } from "../types/api.js";
 import {
   FileUploadError,
   NoFilesUploadedError,
   PartialUploadError,
-  UploadFailedError,
   SingleUploadFailedError,
+  UploadFailedError,
 } from "../lib/uploads/errors.js";
+import { StorageService } from "../services/StorageService.js";
+import type { UploadResponse } from "../types/api.js";
 
 // Type definitions and guards at module scope
 type UploadResult = {
@@ -39,7 +39,7 @@ function isFailedUpload(
  * Controller handling file uploads to IPFS storage
  * @class UploadController
  */
-@Route("v1/upload")
+@Route("v2/upload")
 @Tags("Upload")
 export class UploadController extends Controller {
   /**
@@ -53,7 +53,7 @@ export class UploadController extends Controller {
    * @example
    * Using curl:
    * ```bash
-   * curl -X POST http://api.example.com/v1/upload \
+   * curl -X POST http://api.example.com/v2/upload \
    *   -F "files=@/path/to/file1.txt" \
    *   -F "files=@/path/to/file2.txt" \
    *   -F "jsonData={\"key\":\"value\"}"
@@ -61,7 +61,7 @@ export class UploadController extends Controller {
    *
    * Using HTML Form:
    * ```html
-   * <form action="/v1/upload" method="post" enctype="multipart/form-data">
+   * <form action="/v2/upload" method="post" enctype="multipart/form-data">
    *   <input type="file" name="files" multiple>
    *   <input type="hidden" name="jsonData" value='{"key":"value"}'>
    *   <button type="submit">Upload</button>
@@ -75,7 +75,7 @@ export class UploadController extends Controller {
    * formData.append('files', fileInput.files[1]);
    * formData.append('jsonData', JSON.stringify({key: 'value'}));
    *
-   * fetch('/v1/upload', {
+   * fetch('/v2/upload', {
    *   method: 'POST',
    *   body: formData
    * });

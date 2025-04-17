@@ -10,12 +10,25 @@ import { getFractionsById } from "../../utils/getFractionsById.js";
 import { getHypercertTokenId } from "../../utils/tokenIds.js";
 
 import { MarketplaceStrategy } from "./MarketplaceStrategy.js";
-import { EOACreateOrderRequest } from "./schemas.js";
+import type { EOACreateOrderRequest } from "./schemas.js";
 import * as Errors from "./errors.js";
+import { inject, injectable } from "tsyringe";
+import { MarketplaceOrdersService } from "../../services/database/entities/MarketplaceOrdersEntityService.js";
 
+@injectable()
 export default class EOACreateOrderStrategy extends MarketplaceStrategy {
-  constructor(private readonly request: Omit<EOACreateOrderRequest, "type">) {
+  private request!: Omit<EOACreateOrderRequest, "type">;
+
+  constructor(
+    @inject(MarketplaceOrdersService)
+    private readonly marketplaceOrdersService: MarketplaceOrdersService,
+  ) {
     super();
+  }
+
+  initialize(request: Omit<EOACreateOrderRequest, "type">): this {
+    this.request = request;
+    return this;
   }
 
   // TODO: Clean up this long ass method. I copied it 1:1 from the controller.
@@ -41,7 +54,15 @@ export default class EOACreateOrderStrategy extends MarketplaceStrategy {
     }
 
     const [validationResult] = await hec.checkOrdersValidity([
-      { ...makerOrder, signature, chainId, id: "temporary" },
+      {
+        ...makerOrder,
+        signature,
+        chainId,
+        id: "temporary",
+        createdAt: new Date().toISOString(),
+        invalidated: false,
+        validator_codes: [],
+      },
     ]);
     if (!validationResult.valid) {
       throw new Errors.InvalidOrder(validationResult);
@@ -84,15 +105,15 @@ export default class EOACreateOrderStrategy extends MarketplaceStrategy {
     };
     console.log("[marketplace-api] Inserting order entity", insertEntity);
 
-    const result = await this.dataService.storeOrder(insertEntity);
+    const result = await this.marketplaceOrdersService.storeOrder(insertEntity);
 
     return this.returnSuccess(
       "Added order to database",
-      result.data
+      result
         ? {
-            ...result.data,
-            itemIds: result.data.itemIds as string[],
-            amounts: result.data.amounts as number[],
+            ...result,
+            itemIds: result.itemIds as string[],
+            amounts: result.amounts as number[],
             status: "VALID",
             hash: "0x",
           }
