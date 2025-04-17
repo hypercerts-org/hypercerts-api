@@ -20,7 +20,7 @@ vi.mock("../../../src/services/StorageService", async () => {
   };
 });
 
-describe("Metadata upload at v1/metadata", async () => {
+describe("Metadata upload at v2/metadata", async () => {
   const controller = new MetadataController();
   const mockStorage = mock<StorageService>();
 
@@ -65,7 +65,7 @@ describe("Metadata upload at v1/metadata", async () => {
   });
 });
 
-describe("Metadata validation at v1/metadata/validate", async () => {
+describe("Metadata validation at v2/metadata/validate", async () => {
   const controller = new MetadataController();
 
   test("Validates a metadata set and returns results", async () => {

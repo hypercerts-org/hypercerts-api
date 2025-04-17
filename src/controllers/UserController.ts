@@ -20,7 +20,7 @@ import type {
   UserResponse,
 } from "../types/api.js";
 
-@Route("v1/users")
+@Route("v2/users")
 @Tags("Users")
 export class UserController extends Controller {
   /**

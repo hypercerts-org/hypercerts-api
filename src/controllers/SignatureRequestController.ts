@@ -21,7 +21,7 @@ interface CancelSignatureRequest {
 }
 
 @injectable()
-@Route("v1/signature-requests")
+@Route("v2/signature-requests")
 @Tags("SignatureRequests")
 export class SignatureRequestController extends Controller {
   constructor(

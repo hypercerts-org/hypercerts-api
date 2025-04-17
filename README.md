@@ -28,10 +28,10 @@ The API implements a fallback to the first available RPC. You can set the RPCs i
 
 ### Supabase
 
-* Install Docker
-* `git submodule init`
-* `git submodule update --remote`
-* `pnpm supabase:start:all`
+- Install Docker
+- `git submodule init`
+- `git submodule update --remote`
+- `pnpm supabase:start:all`
 
 This will spin up 2 Supabase instances in Docker, one for the indexer service (caching) and one for the data service (static data) which are both exposed by the API.
 
@@ -43,7 +43,7 @@ From both instances, you can get their respective keys and add them to the env v
 
 This will run a live production instance by running `swc` to compile the code and `nodemon` to restart the server on changes.
 
-You can then find the API at `localhost:4000/spec` (Swagger instance) and the GraphQL at `localhost:4000/v1/graphql`
+You can then find the API at `localhost:4000/spec` (Swagger instance) and the GraphQL at `localhost:4000/v2/graphql`
 
 ## Deployments
 
@@ -51,13 +51,13 @@ Production: `https://api.hypercerts.org/`
 Staging: `https://staging-api.hypercerts.org`
 
 `/spec` - Swagger instance documenting the API and exposing a playground to experiment with the endpoints
-`/v1/graphql` - GraphQL API to access hypercerts data like claims, fractions, attestations, allow lists
+`/v2/graphql` - GraphQL API to access hypercerts data like claims, fractions, attestations, allow lists
 
 ## Scripts
 
 - `dev`: Starts the development server using `nodemon`, which will automatically restart the server whenever you save a file that the server uses.
 - `build`: Denerates the OpenAPI specification and routes using `tsoa`, and then compiles the TypeScript code into JavaScript using `swc`. The compiled code is output to the `dist` directory.
-- `start`: Starts the application in production mode. 
+- `start`: Starts the application in production mode.
 - `lint`: Runs `eslint` on the codebase to check for linting errors.
 - `test`: Runs tests using `vitest`
 
@@ -86,37 +86,37 @@ The API also provides an upload and validation endpoint for hypercert and allow 
 graph TB
     Client[Client Applications]
     API[Hypercerts API :4000]
-    
+
     subgraph "API Endpoints"
         Swagger["/spec\nSwagger Documentation"]
-        GraphQL["/v1/graphql\nGraphQL Endpoint"]
+        GraphQL["/v2/graphql\nGraphQL Endpoint"]
         Upload["Upload & Validation\nEndpoints"]
     end
-    
+
     subgraph "Data Services"
         Static[("Static Data Service\n(Supabase DB)\n- User Data\n- Collections\n- Signed Orders")]
         Indexer[("Indexer Service\n(Supabase DB)\n- On-chain Data\n- IPFS Data")]
     end
-    
+
     subgraph "External Services"
         IPFS[(IPFS\nMetadata Storage)]
         Blockchain[(Blockchain\nSupported Chains)]
         EAS[(EAS\nAttestations)]
     end
-    
+
     Client --> API
     API --> Swagger
     API --> GraphQL
     API --> Upload
-    
+
     GraphQL --> Static
     GraphQL --> Indexer
     Upload --> IPFS
-    
+
     Indexer --> Blockchain
     Indexer --> IPFS
     Indexer --> EAS
-    
+
     class Swagger,GraphQL,Upload apiEndpoint;
     class Static,Indexer database;
     class IPFS,Blockchain,EAS external;

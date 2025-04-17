@@ -53,7 +53,7 @@ cronJob.start();
 
 app.listen(PORT, () => {
   console.log(
-    `🕸️ Running a GraphQL API server at http://localhost:${PORT}/v1/graphql`,
+    `🕸️ Running a GraphQL API server at http://localhost:${PORT}/v2/graphql`,
   );
 
   console.log(`🚀 Running Swagger docs at http://localhost:${PORT}/spec`);

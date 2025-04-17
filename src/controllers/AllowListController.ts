@@ -17,7 +17,7 @@ import type {
 } from "../types/api.js";
 import { jsonToBlob } from "../utils/jsonToBlob.js";
 
-@Route("v1/allowlists")
+@Route("v2/allowlists")
 @Tags("Allowlists")
 export class AllowListController extends Controller {
   /**

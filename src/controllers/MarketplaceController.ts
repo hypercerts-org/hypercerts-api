@@ -26,7 +26,7 @@ import { FractionService } from "../services/database/entities/FractionEntitySer
 import { MarketplaceOrdersService } from "../services/database/entities/MarketplaceOrdersEntityService.js";
 
 @injectable()
-@Route("v1/marketplace")
+@Route("v2/marketplace")
 @Tags("Marketplace")
 export class MarketplaceController extends Controller {
   constructor(

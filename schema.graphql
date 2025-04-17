@@ -515,6 +515,11 @@ type GetFractionsResponse {
   data: [Fraction!]
 }
 
+type GetHyperboardOwnersResponse {
+  count: Int
+  data: [HyperboardOwner!]
+}
+
 type GetHyperboardsResponse {
   count: Int
   data: [Hyperboard!]
@@ -553,6 +558,16 @@ type GetSalesResponse {
   data: [Sale!]
 }
 
+type GetSectionEntryOwnersResponse {
+  count: Int
+  data: [SectionEntryOwner!]
+}
+
+type GetSectionsResponse {
+  count: Int
+  data: [Section!]
+}
+
 type GetSignatureRequestResponse {
   count: Int
   data: [SignatureRequest!]
@@ -579,11 +594,18 @@ type Hyperboard {
 
   """Name of the hyperboard"""
   name: String!
-  owners: [HyperboardOwner!]!
-  sections: [SectionResponseType!]!
+  owners: GetHyperboardOwnersResponse!
+  sections: GetSectionsResponse!
 
   """Color of the borders of the hyperboard"""
   tile_border_color: String
+}
+
+input HyperboardCollectionWhereInput {
+  created_at: StringSearchOptions
+  description: StringSearchOptions
+  id: StringSearchOptions
+  name: StringSearchOptions
 }
 
 type HyperboardOwner {
@@ -620,6 +642,7 @@ input HyperboardUserWhereInput {
 input HyperboardWhereInput {
   admins: HyperboardUserWhereInput = {}
   chain_ids: NumberArraySearchOptions
+  collections: HyperboardCollectionWhereInput = {}
   id: StringSearchOptions
 }
 
@@ -822,9 +845,7 @@ type Metadata {
   """References additional information related to the hypercert"""
   external_url: String
   id: ID
-
-  """Base64 encoded representation of the image of the hypercert"""
-  image: String
+  image: String!
 
   """Impact scope of the hypercert"""
   impact_scope: [String!]
@@ -915,7 +936,7 @@ type Order {
   chainId: EthBigInt!
   collection: String!
   collectionType: Float!
-  createdAt: String!
+  createdAt: Float!
   currency: String!
   endTime: Float!
   globalNonce: String!
@@ -936,7 +957,7 @@ type Order {
   startTime: Float!
   strategyId: Float!
   subsetNonce: Float!
-  validator_codes: [String!]
+  validator_codes: [Int!]
 }
 
 input OrderHypercertWhereInput {
@@ -1102,12 +1123,12 @@ input SaleWhereInput {
   transaction_hash: StringSearchOptions
 }
 
-"""Section representing a collection within a hyperboard"""
+"""Section representing one or more collectionswithin a hyperboard"""
 type Section {
-  collection: Collection!
+  collections: [Collection!]!
   entries: [SectionEntry!]!
   label: String!
-  owners: [HyperboardOwner!]!
+  owners: GetHyperboardOwnersResponse!
 }
 
 """Entry representing a hypercert or blueprint within a section"""
@@ -1120,9 +1141,9 @@ type SectionEntry {
 
   """Name of the hypercert or blueprint"""
   name: String
-  owners: [SectionEntryOwner!]!
+  owners: GetSectionEntryOwnersResponse!
   percentage_of_section: Float!
-  total_units: BigInt
+  total_units: EthBigInt
 }
 
 type SectionEntryOwner {
@@ -1142,12 +1163,7 @@ type SectionEntryOwner {
 
   """Pending signature requests for the user"""
   signature_requests: GetSignatureRequestResponse
-  units: BigInt
-}
-
-type SectionResponseType {
-  count: Float!
-  data: [Section!]!
+  units: EthBigInt
 }
 
 """Pending signature request for a user"""

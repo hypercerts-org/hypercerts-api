@@ -165,7 +165,7 @@ For a complete example, you can look at the implementation of existing entities 
 ## Testing Your Implementation
 
 1. Start the development server: `pnpm dev`
-2. Access the GraphQL playground at `http://localhost:4000/v1/graphql`
+2. Access the GraphQL playground at `http://localhost:4000/v2/graphql`
 3. Test your queries and mutations
 4. Run the test suite: `pnpm test`
 

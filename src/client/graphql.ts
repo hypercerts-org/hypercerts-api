@@ -53,7 +53,7 @@ export const yoga = createYoga({
   cors: {
     methods: ["POST"],
   },
-  graphqlEndpoint: "/v1/graphql",
+  graphqlEndpoint: "/v2/graphql",
   plugins: [
     useResponseCache({
       // global cache
@@ -76,6 +76,6 @@ export const yoga = createYoga({
 });
 
 export const urqlClient = new Client({
-  url: `${CONSTANTS.ENDPOINTS[indexerEnvironment as "production" | "test"]}/v1/graphql`,
+  url: `${CONSTANTS.ENDPOINTS[indexerEnvironment as "production" | "test"]}/v2/graphql`,
   exchanges: [cacheExchange, fetchExchange],
 });

@@ -33,7 +33,7 @@ const allChains = Object.keys(CONSTANTS.DEPLOYMENTS).map((chain) =>
 );
 
 @injectable()
-@Route("v1/hyperboards")
+@Route("v2/hyperboards")
 @Tags("Hyperboards")
 export class HyperboardController extends Controller {
   constructor(

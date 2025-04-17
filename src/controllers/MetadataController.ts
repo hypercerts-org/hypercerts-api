@@ -21,7 +21,7 @@ import { jsonToBlob } from "../utils/jsonToBlob.js";
 import { validateMetadataAndClaimdata } from "../utils/validateMetadataAndClaimdata.js";
 import { validateRemoteAllowList } from "../utils/validateRemoteAllowList.js";
 
-@Route("v1/metadata")
+@Route("v2/metadata")
 @Tags("Metadata")
 export class MetadataController extends Controller {
   /**

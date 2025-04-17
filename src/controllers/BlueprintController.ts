@@ -26,7 +26,7 @@ import { verifyAuthSignedData } from "../utils/verifyAuthSignedData.js";
 import { waitForTxThenMintBlueprint } from "../utils/waitForTxThenMintBlueprint.js";
 
 @injectable()
-@Route("v1/blueprints")
+@Route("v2/blueprints")
 @Tags("Blueprints")
 export class BlueprintController extends Controller {
   constructor(
