@@ -1,30 +1,27 @@
-import { ArgsType, Field, InputType } from "type-graphql";
-import { BasicAllowlistRecordWhereInput } from "../inputs/allowlistRecordsInput.js";
-import { withPagination } from "./baseArgs.js";
-import type { OrderOptions } from "../inputs/orderOptions.js";
-import { AllowlistRecord } from "../typeDefs/allowlistRecordTypeDefs.js";
-import { AllowlistRecordSortOptions } from "../inputs/sortOptions.js";
+import { ArgsType } from "type-graphql";
+import { BaseQueryArgs } from "../../../lib/graphql/BaseQueryArgs.js";
+import { createEntityArgs } from "../../../lib/graphql/createEntityArgs.js";
+import { EntityTypeDefs } from "../typeDefs/typeDefs.js";
+import { WhereFieldDefinitions } from "../../../lib/graphql/whereFieldDefinitions.js";
 
-@InputType()
-class AllowlistRecordWhereInput extends BasicAllowlistRecordWhereInput {}
-
-@InputType()
-export class AllowlistRecordFetchInput
-  implements OrderOptions<AllowlistRecord>
-{
-  @Field(() => AllowlistRecordSortOptions, { nullable: true })
-  by?: AllowlistRecordSortOptions;
-}
-
-@ArgsType()
-export class AllowlistRecordsArgs {
-  @Field(() => AllowlistRecordWhereInput, { nullable: true })
-  where?: AllowlistRecordWhereInput;
-  @Field(() => AllowlistRecordFetchInput, { nullable: true })
-  sort?: AllowlistRecordFetchInput;
-}
+const {
+  WhereInput: AllowlistRecordWhereInput,
+  SortOptions: AllowlistRecordSortOptions,
+} = createEntityArgs("AllowlistRecord", {
+  ...WhereFieldDefinitions.AllowlistRecord.fields,
+  hypercert: {
+    type: "id",
+    references: {
+      entity: EntityTypeDefs.Hypercert,
+      fields: WhereFieldDefinitions.Hypercert.fields,
+    },
+  },
+});
 
 @ArgsType()
-export class GetAllowlistRecordsArgs extends withPagination(
-  AllowlistRecordsArgs,
+export class GetAllowlistRecordsArgs extends BaseQueryArgs(
+  AllowlistRecordWhereInput,
+  AllowlistRecordSortOptions,
 ) {}
+
+export { AllowlistRecordSortOptions, AllowlistRecordWhereInput };

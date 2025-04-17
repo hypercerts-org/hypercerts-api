@@ -1,14 +1,79 @@
 import { Field, ObjectType } from "type-graphql";
-import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
+import { DataResponse } from "../../../lib/graphql/DataResponse.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
-import { User } from "./userTypeDefs.js";
-import { GraphQLBigInt } from "graphql-scalars";
+import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { Collection } from "./collectionTypeDefs.js";
+import GetUsersResponse, { User } from "./userTypeDefs.js";
+
+@ObjectType()
+export class HyperboardOwner extends User {
+  @Field()
+  percentage_owned?: number;
+}
+
+@ObjectType()
+export class GetHyperboardOwnersResponse extends DataResponse(
+  HyperboardOwner,
+) {}
+
+@ObjectType({
+  description:
+    "Section representing one or more collectionswithin a hyperboard",
+})
+export class Section {
+  @Field()
+  label?: string;
+
+  @Field(() => [Collection])
+  collections?: Collection[];
+
+  @Field(() => [SectionEntry])
+  entries?: SectionEntry[];
+
+  @Field(() => GetHyperboardOwnersResponse)
+  owners?: GetHyperboardOwnersResponse;
+}
+@ObjectType({})
+export class GetSectionsResponse extends DataResponse(Section) {}
+
+@ObjectType()
+class SectionEntryOwner extends User {
+  @Field()
+  percentage?: number;
+  @Field(() => EthBigInt, { nullable: true })
+  units?: bigint | number | string;
+}
+
+@ObjectType()
+export class GetSectionEntryOwnersResponse extends DataResponse(
+  SectionEntryOwner,
+) {}
+
+@ObjectType({
+  description: "Entry representing a hypercert or blueprint within a section",
+})
+class SectionEntry {
+  @Field({ description: "ID of the hypercert or blueprint" })
+  id?: string;
+  @Field()
+  is_blueprint?: boolean;
+  @Field()
+  percentage_of_section?: number;
+  @Field()
+  display_size?: number;
+  @Field({ description: "Name of the hypercert or blueprint", nullable: true })
+  name?: string;
+  @Field(() => EthBigInt, { nullable: true })
+  total_units?: bigint | number | string;
+
+  @Field(() => GetSectionEntryOwnersResponse)
+  owners?: GetSectionEntryOwnersResponse;
+}
 
 @ObjectType({
   description: "Hyperboard of hypercerts for reference and display purposes",
 })
-class Hyperboard extends BasicTypeDef {
+export class Hyperboard extends BasicTypeDef {
   @Field({ description: "Name of the hyperboard" })
   name?: string;
   @Field(() => [EthBigInt], {
@@ -30,75 +95,15 @@ class Hyperboard extends BasicTypeDef {
   })
   tile_border_color?: string;
 
-  @Field(() => [User])
-  admins?: User[];
+  @Field(() => GetUsersResponse)
+  admins?: GetUsersResponse;
 
-  @Field(() => SectionResponseType)
-  sections?: SectionResponseType[];
+  @Field(() => GetSectionsResponse)
+  sections?: GetSectionsResponse;
 
-  @Field(() => [HyperboardOwner])
-  owners?: HyperboardOwner[];
-}
-
-@ObjectType({})
-class SectionResponseType {
-  @Field(() => [Section])
-  data?: Section[];
-
-  @Field()
-  count?: number;
-}
-
-@ObjectType({
-  description: "Section representing a collection within a hyperboard",
-})
-export class Section {
-  @Field()
-  label?: string;
-
-  @Field(() => Collection)
-  collection?: Collection;
-
-  @Field(() => [SectionEntry])
-  entries?: SectionEntry[];
-
-  @Field(() => [HyperboardOwner])
-  owners?: HyperboardOwner[];
+  @Field(() => GetHyperboardOwnersResponse)
+  owners?: GetHyperboardOwnersResponse;
 }
 
 @ObjectType()
-export class HyperboardOwner extends User {
-  @Field()
-  percentage_owned?: number;
-}
-
-@ObjectType({
-  description: "Entry representing a hypercert or blueprint within a section",
-})
-class SectionEntry {
-  @Field({ description: "ID of the hypercert or blueprint" })
-  id?: string;
-  @Field()
-  is_blueprint?: boolean;
-  @Field()
-  percentage_of_section?: number;
-  @Field()
-  display_size?: number;
-  @Field({ description: "Name of the hypercert or blueprint", nullable: true })
-  name?: string;
-  @Field(() => GraphQLBigInt, { nullable: true })
-  total_units?: bigint | number | string;
-
-  @Field(() => [SectionEntryOwner])
-  owners?: SectionEntryOwner[];
-}
-
-@ObjectType()
-class SectionEntryOwner extends User {
-  @Field()
-  percentage?: number;
-  @Field(() => GraphQLBigInt, { nullable: true })
-  units?: bigint | number | string;
-}
-
-export { Hyperboard };
+export class GetHyperboardsResponse extends DataResponse(Hyperboard) {}

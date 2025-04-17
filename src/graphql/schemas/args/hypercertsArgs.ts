@@ -1,41 +1,46 @@
-import { ArgsType, InputType, Field } from "type-graphql";
-import { BasicContractWhereInput } from "../inputs/contractInput.js";
-import { BasicMetadataWhereInput } from "../inputs/metadataInput.js";
-import { BasicAttestationWhereInput } from "../inputs/attestationInput.js";
-import { BasicFractionWhereInput } from "../inputs/fractionInput.js";
-import { withPagination } from "./baseArgs.js";
-import { Hypercert } from "../typeDefs/hypercertTypeDefs.js";
-import type { OrderOptions } from "../inputs/orderOptions.js";
-import { HypercertSortOptions } from "../inputs/sortOptions.js";
-import { BasicHypercertWhereArgs } from "../inputs/hypercertsInput.js";
+import { EntityTypeDefs } from "../typeDefs/typeDefs.js";
+import { createEntityArgs } from "../../../lib/graphql/createEntityArgs.js";
+import { BaseQueryArgs } from "../../../lib/graphql/BaseQueryArgs.js";
+import { WhereFieldDefinitions } from "../../../lib/graphql/whereFieldDefinitions.js";
+import { ArgsType } from "type-graphql";
 
-@InputType({
-  description: "Arguments for filtering hypercerts",
-})
-export class HypercertsWhereArgs extends BasicHypercertWhereArgs {
-  @Field(() => BasicContractWhereInput, { nullable: true })
-  contract?: BasicContractWhereInput;
-  @Field(() => BasicMetadataWhereInput, { nullable: true })
-  metadata?: BasicMetadataWhereInput;
-  @Field(() => BasicAttestationWhereInput, { nullable: true })
-  attestations?: BasicAttestationWhereInput;
-  @Field(() => BasicFractionWhereInput, { nullable: true })
-  fractions?: BasicFractionWhereInput;
-}
-
-@InputType()
-export class HypercertFetchInput implements OrderOptions<Hypercert> {
-  @Field(() => HypercertSortOptions, { nullable: true })
-  by?: HypercertSortOptions;
-}
+const { SortOptions: HypercertSortOptions, WhereInput: HypercertWhereInput } =
+  createEntityArgs("Hypercert", {
+    ...WhereFieldDefinitions.Hypercert.fields,
+    contract: {
+      type: "id",
+      references: {
+        entity: EntityTypeDefs.Contract,
+        fields: WhereFieldDefinitions.Contract.fields,
+      },
+    },
+    metadata: {
+      type: "id",
+      references: {
+        entity: EntityTypeDefs.Metadata,
+        fields: WhereFieldDefinitions.Metadata.fields,
+      },
+    },
+    attestations: {
+      type: "id",
+      references: {
+        entity: EntityTypeDefs.Attestation,
+        fields: WhereFieldDefinitions.Attestation.fields,
+      },
+    },
+    fractions: {
+      type: "id",
+      references: {
+        entity: EntityTypeDefs.Fraction,
+        fields: WhereFieldDefinitions.Fraction.fields,
+      },
+    },
+  });
 
 @ArgsType()
-class HypercertArgs {
-  @Field(() => HypercertsWhereArgs, { nullable: true })
-  where?: HypercertsWhereArgs;
-  @Field(() => HypercertFetchInput, { nullable: true })
-  sort?: HypercertFetchInput;
-}
+export class GetHypercertsArgs extends BaseQueryArgs(
+  HypercertWhereInput,
+  HypercertSortOptions,
+) {}
 
-@ArgsType()
-export class GetHypercertsArgs extends withPagination(HypercertArgs) {}
+export { HypercertSortOptions, HypercertWhereInput };

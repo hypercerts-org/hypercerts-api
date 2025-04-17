@@ -1,12 +1,13 @@
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 
 import { EthBigInt } from "../../scalars/ethBigInt.js";
+import { DataResponse } from "../../../lib/graphql/DataResponse.js";
 
-enum SignatureRequestPurpose {
+export enum SignatureRequestPurpose {
   UPDATE_USER_DATA = "update_user_data",
 }
 
-enum SignatureRequestStatus {
+export enum SignatureRequestStatus {
   PENDING = "pending",
   EXECUTED = "executed",
   CANCELED = "canceled",
@@ -26,7 +27,7 @@ registerEnumType(SignatureRequestStatus, {
   description: "Pending signature request for a user",
   simpleResolvers: true,
 })
-class SignatureRequest {
+export class SignatureRequest {
   @Field({
     description: "The safe address of the user who needs to sign",
   })
@@ -63,4 +64,7 @@ class SignatureRequest {
   chain_id?: bigint | number | string;
 }
 
-export { SignatureRequest, SignatureRequestPurpose, SignatureRequestStatus };
+@ObjectType()
+export class GetSignatureRequestResponse extends DataResponse(
+  SignatureRequest,
+) {}

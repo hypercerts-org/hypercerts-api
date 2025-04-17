@@ -1,32 +1,22 @@
-import { ArgsType, Field, InputType } from "type-graphql";
+import { ArgsType } from "type-graphql";
+import { BaseQueryArgs } from "../../../lib/graphql/BaseQueryArgs.js";
+import { createEntityArgs } from "../../../lib/graphql/createEntityArgs.js";
 
-import { BasicSignatureRequestWhereInput } from "../inputs/signatureRequestInput.js";
-import type { OrderOptions } from "../inputs/orderOptions.js";
-import { SignatureRequest } from "../typeDefs/signatureRequestTypeDefs.js";
-import { SignatureRequestSortOptions } from "../inputs/sortOptions.js";
-
-import { withPagination } from "./baseArgs.js";
-
-@InputType()
-export class SignatureRequestWhereInput extends BasicSignatureRequestWhereInput {}
-
-@InputType()
-export class SignatureRequestFetchInput
-  implements OrderOptions<SignatureRequest>
-{
-  @Field(() => SignatureRequestSortOptions, { nullable: true })
-  by?: SignatureRequestSortOptions;
-}
+const {
+  WhereInput: SignatureRequestWhereInput,
+  SortOptions: SignatureRequestSortOptions,
+} = createEntityArgs("SignatureRequest", {
+  safe_address: "string",
+  message_hash: "string",
+  timestamp: "bigint",
+  chain_id: "bigint",
+  status: "enum",
+});
 
 @ArgsType()
-class SignatureRequestArgs {
-  @Field(() => SignatureRequestWhereInput, { nullable: true })
-  where?: SignatureRequestWhereInput;
-  @Field(() => SignatureRequestFetchInput, { nullable: true })
-  sort?: SignatureRequestFetchInput;
-}
-
-@ArgsType()
-export class GetSignatureRequestArgs extends withPagination(
-  SignatureRequestArgs,
+export class GetSignatureRequestsArgs extends BaseQueryArgs(
+  SignatureRequestWhereInput,
+  SignatureRequestSortOptions,
 ) {}
+
+export { SignatureRequestSortOptions, SignatureRequestWhereInput };

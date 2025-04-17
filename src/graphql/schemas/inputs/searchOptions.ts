@@ -79,11 +79,19 @@ export class NumberSearchOptions {
 
 @InputType()
 export class StringArraySearchOptions {
-  @Field(() => [String], { nullable: true })
-  contains?: string[];
+  @Field(() => [String], {
+    nullable: true,
+    description: "Array of strings",
+    name: "contains",
+  })
+  arrayContains?: string[];
 
-  @Field(() => [String], { nullable: true })
-  overlaps?: string[];
+  @Field(() => [String], {
+    nullable: true,
+    description: "Array of strings",
+    name: "overlaps",
+  })
+  arrayOverlaps?: string[];
 }
 
 @InputType()
@@ -91,14 +99,16 @@ export class NumberArraySearchOptions {
   @Field(() => [GraphQLBigInt], {
     nullable: true,
     description: "Array of numbers",
+    name: "contains",
   })
-  contains?: bigint[];
+  arrayContains?: bigint[];
 
   @Field(() => [GraphQLBigInt], {
     nullable: true,
     description: "Array of numbers",
+    name: "overlaps",
   })
-  overlaps?: bigint[];
+  arrayOverlaps?: bigint[];
 }
 
 @InputType()

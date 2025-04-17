@@ -1,26 +1,25 @@
-import { ArgsType, Field, InputType } from "type-graphql";
-import { withPagination } from "./baseArgs.js";
-import type { OrderOptions } from "../inputs/orderOptions.js";
-import { BasicBlueprintWhereInput } from "../inputs/blueprintInput.js";
-import { Blueprint } from "../typeDefs/blueprintTypeDefs.js";
-import { BlueprintSortOptions } from "../inputs/sortOptions.js";
+import { EntityTypeDefs } from "../typeDefs/typeDefs.js";
+import { createEntityArgs } from "../../../lib/graphql/createEntityArgs.js";
+import { BaseQueryArgs } from "../../../lib/graphql/BaseQueryArgs.js";
+import { WhereFieldDefinitions } from "../../../lib/graphql/whereFieldDefinitions.js";
+import { ArgsType } from "type-graphql";
 
-@InputType()
-export class BlueprintWhereInput extends BasicBlueprintWhereInput {}
-
-@InputType()
-export class BlueprintFetchInput implements OrderOptions<Blueprint> {
-  @Field(() => BlueprintSortOptions, { nullable: true })
-  by?: BlueprintSortOptions;
-}
-
-@ArgsType()
-export class BlueprintArgs {
-  @Field(() => BlueprintWhereInput, { nullable: true })
-  where?: BlueprintWhereInput;
-  @Field(() => BlueprintFetchInput, { nullable: true })
-  sort?: BlueprintFetchInput;
-}
+const { WhereInput: BlueprintWhereInput, SortOptions: BlueprintSortOptions } =
+  createEntityArgs("Blueprint", {
+    ...WhereFieldDefinitions.Blueprint.fields,
+    admins: {
+      type: "id",
+      references: {
+        entity: EntityTypeDefs.User,
+        fields: WhereFieldDefinitions.User.fields,
+      },
+    },
+  });
 
 @ArgsType()
-export class GetBlueprintArgs extends withPagination(BlueprintArgs) {}
+export class GetBlueprintsArgs extends BaseQueryArgs(
+  BlueprintWhereInput,
+  BlueprintSortOptions,
+) {}
+
+export { BlueprintSortOptions, BlueprintWhereInput };

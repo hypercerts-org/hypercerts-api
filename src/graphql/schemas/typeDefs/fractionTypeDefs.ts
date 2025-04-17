@@ -1,17 +1,27 @@
 import { Field, ID, ObjectType } from "type-graphql";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
 import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
-import GetOrdersResponse from "../resolvers/orderResolver.js";
 import { Metadata } from "./metadataTypeDefs.js";
-import GetSalesResponse from "../resolvers/salesResolver.js";
+import { DataResponse } from "../../../lib/graphql/DataResponse.js";
+import { GetOrdersResponse } from "./orderTypeDefs.js";
+import { GetSalesResponse } from "./salesTypeDefs.js";
 
 @ObjectType({
   description: "Fraction of an hypercert",
   simpleResolvers: true,
 })
-class Fraction extends BasicTypeDef {
-  claims_id?: string;
+export class Fraction extends BasicTypeDef {
+  @Field(() => EthBigInt, {
+    nullable: true,
+    description: "The token ID of the fraction",
+  })
+  token_id?: bigint;
 
+  @Field({
+    nullable: true,
+    description: "The ID of the claims",
+  })
+  claims_id?: string;
   @Field({
     nullable: true,
     description: "Address of the owner of the fractions",
@@ -38,25 +48,6 @@ class Fraction extends BasicTypeDef {
   })
   fraction_id?: string;
 
-  // Resolved fields
-  @Field(() => GetOrdersResponse, {
-    nullable: true,
-    description: "Marketplace orders related to this fraction",
-  })
-  orders?: GetOrdersResponse;
-
-  @Field(() => Metadata, {
-    nullable: true,
-    description: "The metadata for the fraction",
-  })
-  metadata?: Metadata;
-
-  @Field(() => GetSalesResponse, {
-    nullable: true,
-    description: "Sales related to this fraction",
-  })
-  sales?: GetSalesResponse;
-
   @Field(() => EthBigInt, {
     nullable: true,
     description: "Block number of the creation of the fraction",
@@ -77,6 +68,26 @@ class Fraction extends BasicTypeDef {
     description: "Timestamp of the block of the last update of the fraction",
   })
   last_update_block_timestamp?: bigint | number | string;
+
+  // Resolved fields
+  @Field(() => GetOrdersResponse, {
+    nullable: true,
+    description: "Marketplace orders related to this fraction",
+  })
+  orders?: GetOrdersResponse;
+
+  @Field(() => Metadata, {
+    nullable: true,
+    description: "The metadata for the fraction",
+  })
+  metadata?: Metadata;
+
+  @Field(() => GetSalesResponse, {
+    nullable: true,
+    description: "Sales related to this fraction",
+  })
+  sales?: GetSalesResponse;
 }
 
-export { Fraction };
+@ObjectType()
+export class GetFractionsResponse extends DataResponse(Fraction) {}

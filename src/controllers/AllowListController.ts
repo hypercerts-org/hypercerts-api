@@ -1,4 +1,3 @@
-import { jsonToBlob } from "../utils/jsonToBlob.js";
 import {
   Body,
   Controller,
@@ -8,16 +7,17 @@ import {
   SuccessResponse,
   Tags,
 } from "tsoa";
-import { StorageService } from "../services/StorageService.js";
 import { parseAndValidateMerkleTree } from "../lib/allowlists/parseAndValidateMerkleTreeDump.js";
+import { StorageService } from "../services/StorageService.js";
 import type {
   StorageResponse,
   StoreAllowListRequest,
   ValidateAllowListRequest,
   ValidationResponse,
 } from "../types/api.js";
+import { jsonToBlob } from "../utils/jsonToBlob.js";
 
-@Route("v1/allowlists")
+@Route("v2/allowlists")
 @Tags("Allowlists")
 export class AllowListController extends Controller {
   /**

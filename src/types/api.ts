@@ -199,3 +199,7 @@ export interface HyperboardUpdateRequest extends HyperboardCreateRequest {
 }
 
 export interface HyperboardResponse extends DataResponse<{ id: string }> {}
+
+export type ValidationResult<T = void> =
+  | { valid: true; data: T; errors?: Record<string, string | string[]> }
+  | { valid: false; data?: T; errors?: Record<string, string | string[]> };
