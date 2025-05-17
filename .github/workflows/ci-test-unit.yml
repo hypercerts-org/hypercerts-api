@@ -18,7 +18,6 @@ jobs:
 
       ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
       DRPC_API_KEY: "test"
-      INFURA_API_KEY: "test"
       FILECOIN_API_KEY: "test"
 
       INDEXER_ENVIRONMENT: "test"
