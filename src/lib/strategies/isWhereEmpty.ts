@@ -12,5 +12,5 @@ export function isWhereEmpty(
 ): boolean {
   if (!where) return true;
   if (Array.isArray(where)) return where.length === 0;
-  return Object.keys(where).length === 0;
+  return Object.values(where).filter((x) => x !== undefined).length === 0;
 }
