@@ -116,10 +116,7 @@ export class AttestationService {
       "token_id" in data &&
       data.token_id
     ) {
-      const tokenId =
-        typeof data.token_id === "string"
-          ? data.token_id
-          : String(data.token_id);
+      const tokenId = Number(data.token_id);
       return { ...data, token_id: BigInt(tokenId).toString() };
     }
     return data;
