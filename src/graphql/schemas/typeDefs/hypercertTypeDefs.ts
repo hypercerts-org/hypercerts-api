@@ -68,6 +68,20 @@ export class Hypercert extends HypercertBaseType {
 @ObjectType({
   description:
     "Hypercert with metadata, contract, orders, sales and fraction information",
+  simpleResolvers: true,
+})
+export class HypercertWithMetadata extends HypercertBaseType {
+  // Resolved fields
+  @Field(() => Metadata, {
+    nullable: true,
+    description: "The metadata for the hypercert as referenced by the uri",
+  })
+  metadata?: Metadata;
+}
+
+@ObjectType({
+  description:
+    "Hypercert with metadata, contract, orders, sales and fraction information",
 })
 export class GetHypercertsResponse extends DataResponse(Hypercert) {}
 
