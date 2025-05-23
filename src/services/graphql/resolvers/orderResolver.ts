@@ -94,9 +94,7 @@ class OrderResolver {
 
       // Get unique hypercert IDs and convert to lowercase once
       const allHypercertIds = _.uniq(
-        data.map((order) =>
-          (order.hypercert_id as unknown as string)?.toLowerCase(),
-        ),
+        data.map((order) => order.hypercert_id as unknown as string),
       );
 
       // Fetch hypercerts in parallel with any other async operations
