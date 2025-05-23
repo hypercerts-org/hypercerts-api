@@ -3,6 +3,7 @@ import { DataResponse } from "../../../lib/graphql/DataResponse.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
 import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
+import { HypercertWithMetadata } from "./hypercertTypeDefs.js";
 
 @ObjectType({
   description: "Marketplace order for a hypercert",
@@ -56,7 +57,7 @@ export class Order extends BasicTypeDef {
   @Field()
   pricePerPercentInToken?: string;
 
-  @Field(() => HypercertBaseType, {
+  @Field(() => HypercertWithMetadata, {
     nullable: true,
     description: "The hypercert associated with this order",
   })
