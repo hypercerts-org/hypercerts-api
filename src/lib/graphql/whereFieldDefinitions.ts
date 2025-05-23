@@ -47,6 +47,7 @@ export const WhereFieldDefinitions = {
       recipient: "string",
       resolver: "string",
       supported_schemas_id: "string",
+      contract_address: "string",
     },
   },
   AttestationSchema: {
