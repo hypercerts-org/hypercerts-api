@@ -28,7 +28,7 @@ export type BlueprintAdminSelect = Selectable<DataDatabase["users"]>;
 @singleton()
 export class BlueprintsService {
   private entityService: EntityService<
-    DataDatabase["blueprints"],
+    DataDatabase["blueprints_with_admins"],
     GetBlueprintsArgs
   >;
 
@@ -44,9 +44,9 @@ export class BlueprintsService {
   ) {
     this.entityService = createEntityService<
       DataDatabase,
-      "blueprints",
+      "blueprints_with_admins",
       GetBlueprintsArgs
-    >("blueprints", "BlueprintsEntityService", kyselyData);
+    >("blueprints_with_admins", "BlueprintsEntityService", kyselyData);
   }
 
   /**
