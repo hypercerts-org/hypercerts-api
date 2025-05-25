@@ -132,6 +132,13 @@ export type Database = {
             referencedRelation: "collections";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "collection_admins_collection_id_fkey";
+            columns: ["collection_id"];
+            isOneToOne: false;
+            referencedRelation: "collections_with_admins";
+            referencedColumns: ["id"];
+          },
         ];
       };
       collection_blueprints: {
@@ -170,6 +177,13 @@ export type Database = {
             columns: ["collection_id"];
             isOneToOne: false;
             referencedRelation: "collections";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "collection_blueprints_collection_id_fkey";
+            columns: ["collection_id"];
+            isOneToOne: false;
+            referencedRelation: "collections_with_admins";
             referencedColumns: ["id"];
           },
         ];
@@ -307,6 +321,13 @@ export type Database = {
             referencedRelation: "hyperboards";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "hyperboard_admins_hyperboard_id_fkey";
+            columns: ["hyperboard_id"];
+            isOneToOne: false;
+            referencedRelation: "hyperboards_with_admins";
+            referencedColumns: ["id"];
+          },
         ];
       };
       hyperboard_blueprint_metadata: {
@@ -347,10 +368,24 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "hyperboard_blueprint_metadata_collection_id_fkey";
+            columns: ["collection_id"];
+            isOneToOne: false;
+            referencedRelation: "collections_with_admins";
+            referencedColumns: ["id"];
+          },
+          {
             foreignKeyName: "hyperboard_blueprint_metadata_hyperboard_id_fkey";
             columns: ["hyperboard_id"];
             isOneToOne: false;
             referencedRelation: "hyperboards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "hyperboard_blueprint_metadata_hyperboard_id_fkey";
+            columns: ["hyperboard_id"];
+            isOneToOne: false;
+            referencedRelation: "hyperboards_with_admins";
             referencedColumns: ["id"];
           },
         ];
@@ -386,10 +421,24 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "hyperboard_registries_hyperboard_id_fkey";
+            columns: ["hyperboard_id"];
+            isOneToOne: false;
+            referencedRelation: "hyperboards_with_admins";
+            referencedColumns: ["id"];
+          },
+          {
             foreignKeyName: "hyperboard_registries_registries_id_fk";
             columns: ["collection_id"];
             isOneToOne: false;
             referencedRelation: "collections";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "hyperboard_registries_registries_id_fk";
+            columns: ["collection_id"];
+            isOneToOne: false;
+            referencedRelation: "collections_with_admins";
             referencedColumns: ["id"];
           },
         ];
@@ -425,10 +474,24 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "hyperboard_hypercert_metadata_collection_id_fkey";
+            columns: ["collection_id"];
+            isOneToOne: false;
+            referencedRelation: "collections_with_admins";
+            referencedColumns: ["id"];
+          },
+          {
             foreignKeyName: "hyperboard_hypercert_metadata_hyperboard_id_fkey";
             columns: ["hyperboard_id"];
             isOneToOne: false;
             referencedRelation: "hyperboards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "hyperboard_hypercert_metadata_hyperboard_id_fkey";
+            columns: ["hyperboard_id"];
+            isOneToOne: false;
+            referencedRelation: "hyperboards_with_admins";
             referencedColumns: ["id"];
           },
           {
@@ -492,6 +555,13 @@ export type Database = {
             columns: ["collection_id"];
             isOneToOne: false;
             referencedRelation: "collections";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "claims_registry_id_fkey";
+            columns: ["collection_id"];
+            isOneToOne: false;
+            referencedRelation: "collections_with_admins";
             referencedColumns: ["id"];
           },
         ];
@@ -687,6 +757,37 @@ export type Database = {
           id: number | null;
           minted: boolean | null;
           minter_address: string | null;
+        };
+        Relationships: [];
+      };
+      collections_with_admins: {
+        Row: {
+          admin_address: string | null;
+          admin_chain_id: number | null;
+          avatar: string | null;
+          chain_ids: number[] | null;
+          created_at: string | null;
+          description: string | null;
+          display_name: string | null;
+          hidden: boolean | null;
+          id: string | null;
+          name: string | null;
+        };
+        Relationships: [];
+      };
+      hyperboards_with_admins: {
+        Row: {
+          admin_address: string | null;
+          admin_chain_id: number | null;
+          avatar: string | null;
+          background_image: string | null;
+          chain_ids: number[] | null;
+          created_at: string | null;
+          display_name: string | null;
+          grayscale_images: boolean | null;
+          id: string | null;
+          name: string | null;
+          tile_border_color: string | null;
         };
         Relationships: [];
       };

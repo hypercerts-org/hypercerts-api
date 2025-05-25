@@ -23,10 +23,10 @@ import { QueryStrategy } from "./QueryStrategy.js";
  */
 export class HyperboardsQueryStrategy extends QueryStrategy<
   DataDatabase,
-  "hyperboards",
+  "hyperboards_with_admins",
   GetHyperboardsArgs
 > {
-  protected readonly tableName = "hyperboards" as const;
+  protected readonly tableName = "hyperboards_with_admins" as const;
 
   /**
    * Builds a query to retrieve hyperboard data.

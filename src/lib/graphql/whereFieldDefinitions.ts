@@ -117,6 +117,7 @@ export const WhereFieldDefinitions = {
     fields: {
       id: "string",
       chain_ids: "numberArray",
+      admin_address: "string",
     },
   },
   Metadata: {
