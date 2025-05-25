@@ -65,6 +65,7 @@ export const WhereFieldDefinitions = {
       created_at: "string",
       minter_address: "string",
       minted: "boolean",
+      admin_address: "string",
     },
   },
   Collection: {

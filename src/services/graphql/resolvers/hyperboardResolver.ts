@@ -324,7 +324,7 @@ class HyperboardResolver {
     allowlistEntries: Selectable<
       CachingDatabase["claimable_fractions_with_proofs"]
     >[],
-    blueprints: Selectable<DataDatabase["blueprints"]>[],
+    blueprints: Selectable<DataDatabase["blueprints_with_admins"]>[],
   ) {
     try {
       const ownerAddresses = _.uniq([

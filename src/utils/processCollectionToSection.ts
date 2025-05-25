@@ -11,7 +11,7 @@ interface ProcessCollectionToSectionArgs {
   hyperboardHypercertMetadata: Selectable<
     DataDatabase["hyperboard_hypercert_metadata"]
   >[];
-  blueprints: Selectable<DataDatabase["blueprints"]>[];
+  blueprints: Selectable<DataDatabase["blueprints_with_admins"]>[];
   blueprintMetadata: Selectable<
     DataDatabase["hyperboard_blueprint_metadata"]
   >[];
@@ -149,6 +149,11 @@ export const processCollectionToSection = ({
     "blueprint_id",
   );
   const blueprintResults = blueprints.map((blueprint) => {
+    if (!blueprint.id) {
+      throw new Error(
+        `[HyperboardResolver::processCollectionToSection] Blueprint does not have an id`,
+      );
+    }
     const blueprintMeta = blueprintMetadataByBlueprintId[blueprint.id];
 
     if (!blueprintMeta) {

@@ -4,9 +4,9 @@ import { QueryStrategy } from "./QueryStrategy.js";
 
 export class BlueprintsQueryStrategy extends QueryStrategy<
   DataDatabase,
-  "blueprints"
+  "blueprints_with_admins"
 > {
-  protected readonly tableName = "blueprints" as const;
+  protected readonly tableName = "blueprints_with_admins" as const;
 
   buildDataQuery(db: Kysely<DataDatabase>) {
     return db.selectFrom(this.tableName).selectAll();
