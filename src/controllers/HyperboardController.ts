@@ -630,7 +630,14 @@ export class HyperboardController extends Controller {
     }
 
     const { signature, adminAddress } = parsedBody.data;
-    const chainId = hyperboard.chain_ids[0];
+    const chainId = hyperboard.chain_ids?.[0];
+    if (!chainId) {
+      this.setStatus(400);
+      return {
+        success: false,
+        message: "Hyperboard must have a chain id",
+      };
+    }
     const success = await verifyAuthSignedData({
       address: adminAddress as `0x${string}`,
       signature: signature as `0x${string}`,
@@ -697,6 +704,14 @@ export class HyperboardController extends Controller {
       return {
         success: false,
         message: "Not authorized to update hyperboard",
+      };
+    }
+
+    if (!hyperboard.chain_ids) {
+      this.setStatus(400);
+      return {
+        success: false,
+        message: "Hyperboard must have a chain id",
       };
     }
 
@@ -967,7 +982,14 @@ export class HyperboardController extends Controller {
     const { data: admins } =
       await this.hyperboardsService.getHyperboardAdmins(hyperboardId);
 
-    const chain_id = hyperboard.chain_ids[0];
+    const chain_id = hyperboard.chain_ids?.[0];
+    if (!chain_id) {
+      this.setStatus(400);
+      return {
+        success: false,
+        message: "Hyperboard must have a chain id",
+      };
+    }
 
     if (
       !admins.find(

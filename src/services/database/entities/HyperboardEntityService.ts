@@ -50,7 +50,7 @@ export type HyperboardBlueprintMetadataInsert = Insertable<
 @injectable()
 export class HyperboardService {
   private entityService: EntityService<
-    DataDatabase["hyperboards"],
+    DataDatabase["hyperboards_with_admins"],
     GetHyperboardsArgs
   >;
 
@@ -61,9 +61,9 @@ export class HyperboardService {
   ) {
     this.entityService = createEntityService<
       DataDatabase,
-      "hyperboards",
+      "hyperboards_with_admins",
       GetHyperboardsArgs
-    >("hyperboards", "HyperboardEntityService", kyselyData);
+    >("hyperboards_with_admins", "HyperboardEntityService", kyselyData);
   }
 
   /**

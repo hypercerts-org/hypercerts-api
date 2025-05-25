@@ -73,6 +73,7 @@ export class QueryStrategyFactory {
     fractions: FractionsQueryStrategy,
     fractions_view: FractionsQueryStrategy,
     hyperboards: HyperboardsQueryStrategy,
+    hyperboards_with_admins: HyperboardsQueryStrategy,
     metadata: MetadataQueryStrategy,
     orders: MarketplaceOrdersQueryStrategy,
     marketplace_orders: MarketplaceOrdersQueryStrategy,
