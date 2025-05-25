@@ -1,8 +1,9 @@
 import { Field, ObjectType } from "type-graphql";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
 import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
-import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
 import { DataResponse } from "../../../lib/graphql/DataResponse.js";
+import { HypercertWithMetadata } from "./hypercertTypeDefs.js";
+import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
 
 @ObjectType()
 export class Sale extends BasicTypeDef {
@@ -51,7 +52,7 @@ export class Sale extends BasicTypeDef {
   })
   creation_block_timestamp?: bigint | number | string;
 
-  @Field(() => HypercertBaseType, {
+  @Field(() => HypercertWithMetadata, {
     nullable: true,
     description: "The hypercert associated with this order",
   })
