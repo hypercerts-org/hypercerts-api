@@ -10,6 +10,11 @@ import { Hypercert } from "./hypercertTypeDefs.js";
 export class AllowlistRecord {
   @Field({
     nullable: true,
+    description: "The ID of the allow list record",
+  })
+  id?: string;
+  @Field({
+    nullable: true,
     description: "The hypercert ID the claimable fraction belongs to",
   })
   hypercert_id?: string;
