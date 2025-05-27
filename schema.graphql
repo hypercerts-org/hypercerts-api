@@ -17,6 +17,9 @@ type AllowlistRecord {
   """The hypercert ID the claimable fraction belongs to"""
   hypercert_id: String
 
+  """The ID of the allow list record"""
+  id: String
+
   """The leaf of the Merkle tree for the claimable fraction"""
   leaf: String
 
@@ -168,6 +171,7 @@ type AttestationSchema {
 
 input AttestationSchemaAttestationWhereInput {
   attester: StringSearchOptions
+  contract_address: StringSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   id: StringSearchOptions
@@ -217,6 +221,7 @@ input AttestationSchemaWhereInput {
 
 input AttestationSortOptions {
   attester: SortOrder = null
+  contract_address: SortOrder = null
   creation_block_number: SortOrder = null
   creation_block_timestamp: SortOrder = null
   id: SortOrder = null
@@ -230,6 +235,7 @@ input AttestationSortOptions {
 
 input AttestationWhereInput {
   attester: StringSearchOptions
+  contract_address: StringSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   eas_schema: AttestationAttestationSchemaWhereInput = {}
@@ -268,6 +274,7 @@ type Blueprint {
 }
 
 input BlueprintSortOptions {
+  admin_address: SortOrder = null
   created_at: SortOrder = null
   id: SortOrder = null
   minted: SortOrder = null
@@ -282,6 +289,7 @@ input BlueprintUserWhereInput {
 }
 
 input BlueprintWhereInput {
+  admin_address: StringSearchOptions
   admins: BlueprintUserWhereInput = {}
   created_at: StringSearchOptions
   id: NumberSearchOptions
@@ -314,6 +322,7 @@ type Collection {
 }
 
 input CollectionBlueprintWhereInput {
+  admin_address: StringSearchOptions
   created_at: StringSearchOptions
   id: NumberSearchOptions
   minted: BooleanSearchOptions
@@ -628,6 +637,7 @@ type HyperboardOwner {
 }
 
 input HyperboardSortOptions {
+  admin_address: SortOrder = null
   chain_ids: SortOrder = null
   id: SortOrder = null
 }
@@ -640,6 +650,7 @@ input HyperboardUserWhereInput {
 }
 
 input HyperboardWhereInput {
+  admin_address: StringSearchOptions
   admins: HyperboardUserWhereInput = {}
   chain_ids: NumberArraySearchOptions
   collections: HyperboardCollectionWhereInput = {}
@@ -702,6 +713,7 @@ type Hypercert {
 
 input HypercertAttestationWhereInput {
   attester: StringSearchOptions
+  contract_address: StringSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   id: StringSearchOptions
@@ -817,6 +829,45 @@ input HypercertWhereInput {
 }
 
 """
+Hypercert with metadata, contract, orders, sales and fraction information
+"""
+type HypercertWithMetadata {
+  """Count of attestations referencing this hypercert"""
+  attestations_count: Int
+
+  """The UUID of the contract as stored in the database"""
+  contracts_id: ID
+  creation_block_number: EthBigInt
+  creation_block_timestamp: EthBigInt
+
+  """The address of the creator of the hypercert"""
+  creator_address: String
+
+  """
+  Concatenation of [chainID]-[contractAddress]-[tokenID] to discern hypercerts across chains
+  """
+  hypercert_id: ID
+  id: ID
+  last_update_block_number: EthBigInt
+  last_update_block_timestamp: EthBigInt
+
+  """The metadata for the hypercert as referenced by the uri"""
+  metadata: Metadata
+
+  """Count of sales of fractions that belong to this hypercert"""
+  sales_count: Int
+
+  """The token ID of the hypercert"""
+  token_id: EthBigInt
+
+  """The total units held by the hypercert"""
+  units: EthBigInt
+
+  """References the metadata for this claim"""
+  uri: String
+}
+
+"""
 Hypercert without metadata, contract, orders, sales and fraction information
 """
 type HypercertsResponse {
@@ -878,6 +929,21 @@ type Metadata {
   work_timeframe_to: EthBigInt
 }
 
+input MetadataHypercertWhereInput {
+  attestations_count: NumberSearchOptions
+  creation_block_number: BigIntSearchOptions
+  creation_block_timestamp: BigIntSearchOptions
+  creator_address: StringSearchOptions
+  hypercert_id: StringSearchOptions
+  id: StringSearchOptions
+  last_update_block_number: BigIntSearchOptions
+  last_update_block_timestamp: BigIntSearchOptions
+  sales_count: NumberSearchOptions
+  token_id: BigIntSearchOptions
+  units: BigIntSearchOptions
+  uri: StringSearchOptions
+}
+
 input MetadataSortOptions {
   allow_list_uri: SortOrder = null
   contributors: SortOrder = null
@@ -900,6 +966,7 @@ input MetadataWhereInput {
   contributors: StringArraySearchOptions
   description: StringSearchOptions
   external_url: StringSearchOptions
+  hypercert: MetadataHypercertWhereInput = {}
   id: StringSearchOptions
   impact_scope: StringArraySearchOptions
   impact_timeframe_from: BigIntSearchOptions
@@ -942,7 +1009,7 @@ type Order {
   globalNonce: String!
 
   """The hypercert associated with this order"""
-  hypercert: HypercertBaseType
+  hypercert: HypercertWithMetadata
   hypercert_id: String!
   id: ID
   invalidated: Boolean!
@@ -1058,7 +1125,7 @@ type Sale {
   currency_amount: EthBigInt!
 
   """The hypercert associated with this order"""
-  hypercert: HypercertBaseType
+  hypercert: HypercertWithMetadata
 
   """The ID of the hypercert token referenced in the order"""
   hypercert_id: String
