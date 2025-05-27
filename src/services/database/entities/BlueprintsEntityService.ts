@@ -87,7 +87,14 @@ export class BlueprintsService {
       .where("blueprint_id", "=", blueprintId)
       .innerJoin("users", "blueprint_admins.user_id", "users.id")
       .selectAll("users")
-      .execute();
+      .execute()
+      .then((res) =>
+        res.map((admin) => ({
+          ...admin,
+          // TODO: Investigate why chain_id is returned as a string
+          chain_id: Number(admin.chain_id),
+        })),
+      );
   }
 
   /**

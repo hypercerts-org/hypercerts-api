@@ -130,13 +130,21 @@ export class MarketplaceOrdersService {
       throw new Error("Address and chain ID are required");
     }
 
-    return this.dbService
-      .getConnection()
-      .selectFrom("marketplace_order_nonces")
-      .selectAll()
-      .where("address", "=", nonce.address)
-      .where("chain_id", "=", nonce.chain_id)
-      .executeTakeFirst();
+    return (
+      this.dbService
+        .getConnection()
+        .selectFrom("marketplace_order_nonces")
+        .selectAll()
+        .where("address", "=", nonce.address)
+        .where("chain_id", "=", nonce.chain_id)
+        .executeTakeFirst()
+        // TODO: Investigate why chain_id and nonce_counter are returned as strings
+        .then((res) => ({
+          ...res,
+          chain_id: Number(res?.chain_id),
+          nonce_counter: Number(res?.nonce_counter),
+        }))
+    );
   }
 
   /**
@@ -292,7 +300,14 @@ export class MarketplaceOrdersService {
         // @ts-expect-error Typing issue with provider
         EvmClientFactory.createEthersClient(chainId),
       );
-      const validationResults = await hec.checkOrdersValidity(matchingOrders);
+      console.log("matchingOrders", matchingOrders);
+      const validationResults = await hec.checkOrdersValidity(
+        matchingOrders.map((order) => ({
+          ...order,
+          chainId: Number(order.chainId),
+        })),
+      );
+      console.log("validationResults", validationResults);
 
       // filter all orders that have changed validity or validator codes
       const _changedOrders = validationResults
