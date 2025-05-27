@@ -23,7 +23,14 @@ export class UsersService {
   }
 
   async getUsers(args: GetUsersArgs) {
-    return this.entityService.getMany(args);
+    return this.entityService.getMany(args).then((res) => ({
+      ...res,
+      data: res.data.map((user) => ({
+        ...user,
+        // TODO: Investigate why chain_id is returned as a string
+        chain_id: Number(user.chain_id),
+      })),
+    }));
   }
 
   async getUser(args: GetUsersArgs) {
