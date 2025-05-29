@@ -107,7 +107,7 @@ describe("OrderResolver", () => {
       expect(mockMarketplaceOrdersService.getOrders).toHaveBeenCalledWith(args);
       expect(mockHypercertService.getHypercerts).toHaveBeenCalledWith({
         where: {
-          hypercert_id: { in: [mockOrder.hypercert_id?.toLowerCase()] },
+          hypercert_id: { in: [mockOrder.hypercert_id] },
         },
       });
 
