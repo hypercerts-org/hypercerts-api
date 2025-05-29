@@ -208,8 +208,8 @@ export async function createTestDataDatabase(
           "blueprints.hypercert_ids as hypercert_ids",
           "users.address as admin_address",
           "users.chain_id as admin_chain_id",
-          "users.avatar",
-          "users.display_name",
+          "users.avatar as avatar",
+          "users.display_name as display_name",
         ]),
     )
     .execute();
@@ -294,6 +294,35 @@ export async function createTestDataDatabase(
       col.notNull().references("hyperboards.id").onDelete("cascade"),
     )
     .addUniqueConstraint("hyperboard_admins_pkey", ["user_id", "hyperboard_id"])
+    .execute();
+
+  // Create hyperboards_with_admins view
+  await db.schema
+    .createView("hyperboards_with_admins")
+    .orReplace()
+    .as(
+      db
+        .selectFrom("hyperboards")
+        .innerJoin(
+          "hyperboard_admins",
+          "hyperboards.id",
+          "hyperboard_admins.hyperboard_id",
+        )
+        .innerJoin("users", "hyperboard_admins.user_id", "users.id")
+        .select([
+          "hyperboards.id as id",
+          "hyperboards.created_at as created_at",
+          "hyperboards.name as name",
+          "hyperboards.background_image as background_image",
+          "hyperboards.grayscale_images as grayscale_images",
+          "hyperboards.tile_border_color as tile_border_color",
+          "hyperboards.chain_ids as chain_ids",
+          "users.address as admin_address",
+          "users.chain_id as admin_chain_id",
+          "users.avatar as avatar",
+          "users.display_name as display_name",
+        ]),
+    )
     .execute();
 
   await db.schema
