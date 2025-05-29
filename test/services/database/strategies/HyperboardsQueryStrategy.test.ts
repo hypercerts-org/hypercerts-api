@@ -16,7 +16,7 @@ describe("HyperboardsQueryStrategy", () => {
     it("should build a basic query without args", () => {
       const query = strategy.buildDataQuery(db);
       const { sql } = query.compile();
-      expect(sql).toMatch(/select \* from "hyperboards"/i);
+      expect(sql).toMatch(/select \* from "hyperboards_with_admins"/i);
     });
 
     it("should build a query with collection filter", () => {
@@ -26,7 +26,9 @@ describe("HyperboardsQueryStrategy", () => {
         },
       });
       const { sql } = query.compile();
-      expect(sql).toContain('select "hyperboards".* from "hyperboards"');
+      expect(sql).toContain(
+        'select "hyperboards_with_admins".* from "hyperboards_with_admins"',
+      );
     });
 
     it("should build a query with admin filter", () => {
@@ -36,7 +38,9 @@ describe("HyperboardsQueryStrategy", () => {
         },
       });
       const { sql } = query.compile();
-      expect(sql).toContain('select "hyperboards".* from "hyperboards"');
+      expect(sql).toContain(
+        'select "hyperboards_with_admins".* from "hyperboards_with_admins"',
+      );
     });
   });
 
@@ -44,7 +48,9 @@ describe("HyperboardsQueryStrategy", () => {
     it("should build a basic count query without args", () => {
       const query = strategy.buildCountQuery(db);
       const { sql } = query.compile();
-      expect(sql).toMatch(/select count\(\*\) as "count" from "hyperboards"/i);
+      expect(sql).toMatch(
+        /select count\(\*\) as "count" from "hyperboards_with_admins"/i,
+      );
     });
 
     it("should build a count query with collection filter", () => {
