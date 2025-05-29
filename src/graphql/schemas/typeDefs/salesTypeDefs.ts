@@ -2,8 +2,8 @@ import { Field, ObjectType } from "type-graphql";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
 import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { DataResponse } from "../../../lib/graphql/DataResponse.js";
-import { HypercertWithMetadata } from "./hypercertTypeDefs.js";
 import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
+import { HypercertWithMetadata } from "./baseTypes/hypercertBaseWithMetadata.js";
 
 @ObjectType()
 export class Sale extends BasicTypeDef {

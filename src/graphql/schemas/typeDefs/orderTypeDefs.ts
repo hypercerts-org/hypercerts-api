@@ -3,7 +3,7 @@ import { DataResponse } from "../../../lib/graphql/DataResponse.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
 import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
-import { HypercertWithMetadata } from "./hypercertTypeDefs.js";
+import { HypercertWithMetadata } from "./baseTypes/hypercertBaseWithMetadata.js";
 
 @ObjectType({
   description: "Marketplace order for a hypercert",
