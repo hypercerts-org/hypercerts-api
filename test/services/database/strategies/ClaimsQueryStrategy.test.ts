@@ -24,7 +24,7 @@ describe("ClaimsQueryStrategy", () => {
       const { sql } = query.compile();
 
       // Assert
-      expect(sql).toBe('select * from "claims"');
+      expect(sql).toBe('select * from "claims_view"');
     });
 
     it("should build query with contract filter", () => {
@@ -42,7 +42,7 @@ describe("ClaimsQueryStrategy", () => {
       const { sql } = query.compile();
       // Assert
       expect(sql).toContain(
-        'from "contracts" where "contracts"."id" = "claims"."contracts_id"',
+        'from "contracts" where "contracts"."id" = "claims_view"."contracts_id"',
       );
     });
 
@@ -62,7 +62,7 @@ describe("ClaimsQueryStrategy", () => {
 
       // Assert
       expect(sql).toContain(
-        'from "fractions_view" where "fractions_view"."claims_id" = "claims"."id"',
+        'from "fractions_view" where "fractions_view"."claims_id" = "claims_view"."id"',
       );
     });
 
@@ -81,7 +81,7 @@ describe("ClaimsQueryStrategy", () => {
       const { sql } = query.compile();
       // Assert
       expect(sql).toContain(
-        'from "metadata" where "metadata"."uri" = "claims"."uri"',
+        'from "metadata" where "metadata"."uri" = "claims_view"."uri"',
       );
     });
 
@@ -100,7 +100,7 @@ describe("ClaimsQueryStrategy", () => {
       const { sql } = query.compile();
       // Assert
       expect(sql).toContain(
-        'from "attestations" where "attestations"."claims_id" = "claims"."id"',
+        'from "attestations" where "attestations"."claims_id" = "claims_view"."id"',
       );
     });
 
@@ -118,10 +118,10 @@ describe("ClaimsQueryStrategy", () => {
       const { sql } = query.compile();
       // Assert
       expect(sql).toContain(
-        'from "contracts" where "contracts"."id" = "claims"."contracts_id"',
+        'from "contracts" where "contracts"."id" = "claims_view"."contracts_id"',
       );
       expect(sql).toContain(
-        'from "metadata" where "metadata"."uri" = "claims"."uri"',
+        'from "metadata" where "metadata"."uri" = "claims_view"."uri"',
       );
     });
   });
@@ -132,7 +132,7 @@ describe("ClaimsQueryStrategy", () => {
       const query = strategy.buildCountQuery(db);
       const { sql } = query.compile();
       // Assert
-      expect(sql).toBe('select count(*) as "count" from "claims"');
+      expect(sql).toBe('select count(*) as "count" from "claims_view"');
     });
 
     it("should build count query with contract filter", () => {
@@ -150,7 +150,7 @@ describe("ClaimsQueryStrategy", () => {
       const { sql } = query.compile();
       // Assert
       expect(sql).toContain(
-        'from "contracts" where "contracts"."id" = "claims"."contracts_id"',
+        'from "contracts" where "contracts"."id" = "claims_view"."contracts_id"',
       );
       expect(sql).toContain('count(*) as "count"');
     });
@@ -169,10 +169,10 @@ describe("ClaimsQueryStrategy", () => {
       const { sql } = query.compile();
       // Assert
       expect(sql).toContain(
-        'from "contracts" where "contracts"."id" = "claims"."contracts_id"',
+        'from "contracts" where "contracts"."id" = "claims_view"."contracts_id"',
       );
       expect(sql).toContain(
-        'from "metadata" where "metadata"."uri" = "claims"."uri"',
+        'from "metadata" where "metadata"."uri" = "claims_view"."uri"',
       );
       expect(sql).toContain('count(*) as "count"');
     });

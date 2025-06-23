@@ -87,6 +87,12 @@ export class Fraction extends BasicTypeDef {
     description: "Sales related to this fraction",
   })
   sales?: GetSalesResponse;
+
+  @Field({
+    nullable: true,
+    description: "Whether the fraction has been burned",
+  })
+  burned?: boolean;
 }
 
 @ObjectType()

@@ -56,6 +56,12 @@ class HypercertBaseType extends BasicTypeDef {
     description: "Count of sales of fractions that belong to this hypercert",
   })
   sales_count?: number;
+
+  @Field({
+    nullable: true,
+    description: "Whether the hypercert has been burned",
+  })
+  burned?: boolean;
 }
 
 export { HypercertBaseType };

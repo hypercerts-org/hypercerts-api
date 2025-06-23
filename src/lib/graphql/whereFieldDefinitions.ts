@@ -95,6 +95,7 @@ export const WhereFieldDefinitions = {
       hypercert_id: "string",
       fraction_id: "string",
       token_id: "bigint",
+      burned: "boolean",
     },
   },
   Hypercert: {
@@ -111,6 +112,7 @@ export const WhereFieldDefinitions = {
       sales_count: "number",
       attestations_count: "number",
       uri: "string",
+      burned: "boolean",
     },
   },
   Hyperboard: {
