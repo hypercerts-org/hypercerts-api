@@ -28,7 +28,7 @@ export type HypercertSelect = Selectable<CachingDatabase["claims"]>;
 @injectable()
 export class HypercertsService {
   private entityService: EntityService<
-    CachingDatabase["claims"],
+    CachingDatabase["claims_view"],
     GetHypercertsArgs
   >;
 
@@ -38,9 +38,9 @@ export class HypercertsService {
   ) {
     this.entityService = createEntityService<
       CachingDatabase,
-      "claims",
+      "claims_view",
       GetHypercertsArgs
-    >("claims", "HypercertsEntityService", kyselyCaching);
+    >("claims_view", "HypercertsEntityService", kyselyCaching);
   }
 
   /**

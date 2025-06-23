@@ -22,10 +22,10 @@ import { QueryStrategy } from "./QueryStrategy.js";
  */
 export class ClaimsQueryStrategy extends QueryStrategy<
   CachingDatabase,
-  "claims",
+  "claims_view",
   GetHypercertsArgs
 > {
-  protected readonly tableName = "claims" as const;
+  protected readonly tableName = "claims_view" as const;
 
   /**
    * Builds a query to retrieve claim data.
@@ -63,7 +63,7 @@ export class ClaimsQueryStrategy extends QueryStrategy<
             selectFrom("contracts").whereRef(
               "contracts.id",
               "=",
-              "claims.contracts_id",
+              "claims_view.contracts_id",
             ),
           ),
         );
@@ -74,7 +74,7 @@ export class ClaimsQueryStrategy extends QueryStrategy<
             selectFrom("fractions_view").whereRef(
               "fractions_view.claims_id",
               "=",
-              "claims.id",
+              "claims_view.id",
             ),
           ),
         );
@@ -82,7 +82,11 @@ export class ClaimsQueryStrategy extends QueryStrategy<
       .$if(!isWhereEmpty(args.where?.metadata), (qb) => {
         return qb.where(({ exists, selectFrom }) =>
           exists(
-            selectFrom("metadata").whereRef("metadata.uri", "=", "claims.uri"),
+            selectFrom("metadata").whereRef(
+              "metadata.uri",
+              "=",
+              "claims_view.uri",
+            ),
           ),
         );
       })
@@ -92,7 +96,7 @@ export class ClaimsQueryStrategy extends QueryStrategy<
             selectFrom("attestations").whereRef(
               "attestations.claims_id",
               "=",
-              "claims.id",
+              "claims_view.id",
             ),
           ),
         );
@@ -138,7 +142,7 @@ export class ClaimsQueryStrategy extends QueryStrategy<
             selectFrom("contracts").whereRef(
               "contracts.id",
               "=",
-              "claims.contracts_id",
+              "claims_view.contracts_id",
             ),
           ),
         ),
@@ -149,7 +153,7 @@ export class ClaimsQueryStrategy extends QueryStrategy<
             selectFrom("fractions_view").whereRef(
               "fractions_view.claims_id",
               "=",
-              "claims.id",
+              "claims_view.id",
             ),
           ),
         ),
@@ -157,7 +161,11 @@ export class ClaimsQueryStrategy extends QueryStrategy<
       .$if(!isWhereEmpty(args.where?.metadata), (qb) =>
         qb.where(({ exists, selectFrom }) =>
           exists(
-            selectFrom("metadata").whereRef("metadata.uri", "=", "claims.uri"),
+            selectFrom("metadata").whereRef(
+              "metadata.uri",
+              "=",
+              "claims_view.uri",
+            ),
           ),
         ),
       )
@@ -167,7 +175,7 @@ export class ClaimsQueryStrategy extends QueryStrategy<
             selectFrom("attestations").whereRef(
               "attestations.claims_id",
               "=",
-              "claims.id",
+              "claims_view.id",
             ),
           ),
         ),

@@ -44,6 +44,7 @@ type AllowlistRecord {
 
 input AllowlistRecordHypercertWhereInput {
   attestations_count: NumberSearchOptions
+  burned: BooleanSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   creator_address: StringSearchOptions
@@ -134,6 +135,7 @@ input AttestationAttestationSchemaWhereInput {
 
 input AttestationHypercertWhereInput {
   attestations_count: NumberSearchOptions
+  burned: BooleanSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   creator_address: StringSearchOptions
@@ -331,6 +333,7 @@ input CollectionBlueprintWhereInput {
 
 input CollectionHypercertWhereInput {
   attestations_count: NumberSearchOptions
+  burned: BooleanSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   creator_address: StringSearchOptions
@@ -398,6 +401,9 @@ scalar EthBigInt
 
 """Fraction of an hypercert"""
 type Fraction {
+  """Whether the fraction has been burned"""
+  burned: Boolean
+
   """The ID of the claims"""
   claims_id: String
 
@@ -461,6 +467,7 @@ input FractionMetadataWhereInput {
 }
 
 input FractionSortOptions {
+  burned: SortOrder = null
   creation_block_number: SortOrder = null
   creation_block_timestamp: SortOrder = null
   fraction_id: SortOrder = null
@@ -474,6 +481,7 @@ input FractionSortOptions {
 }
 
 input FractionWhereInput {
+  burned: BooleanSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   fraction_id: StringSearchOptions
@@ -667,6 +675,9 @@ type Hypercert {
   """Count of attestations referencing this hypercert"""
   attestations_count: Int
 
+  """Whether the hypercert has been burned"""
+  burned: Boolean
+
   """The contract that the hypercert is associated with"""
   contract: Contract
 
@@ -729,6 +740,9 @@ type HypercertBaseType {
   """Count of attestations referencing this hypercert"""
   attestations_count: Int
 
+  """Whether the hypercert has been burned"""
+  burned: Boolean
+
   """The UUID of the contract as stored in the database"""
   contracts_id: ID
   creation_block_number: EthBigInt
@@ -765,6 +779,7 @@ input HypercertContractWhereInput {
 }
 
 input HypercertFractionWhereInput {
+  burned: BooleanSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   fraction_id: StringSearchOptions
@@ -796,6 +811,7 @@ input HypercertMetadataWhereInput {
 
 input HypercertSortOptions {
   attestations_count: SortOrder = null
+  burned: SortOrder = null
   creation_block_number: SortOrder = null
   creation_block_timestamp: SortOrder = null
   creator_address: SortOrder = null
@@ -812,6 +828,7 @@ input HypercertSortOptions {
 input HypercertWhereInput {
   attestations: HypercertAttestationWhereInput = {}
   attestations_count: NumberSearchOptions
+  burned: BooleanSearchOptions
   contract: HypercertContractWhereInput = {}
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
@@ -834,6 +851,9 @@ Hypercert with metadata, contract, orders, sales and fraction information
 type HypercertWithMetadata {
   """Count of attestations referencing this hypercert"""
   attestations_count: Int
+
+  """Whether the hypercert has been burned"""
+  burned: Boolean
 
   """The UUID of the contract as stored in the database"""
   contracts_id: ID
@@ -931,6 +951,7 @@ type Metadata {
 
 input MetadataHypercertWhereInput {
   attestations_count: NumberSearchOptions
+  burned: BooleanSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   creator_address: StringSearchOptions
@@ -1029,6 +1050,7 @@ type Order {
 
 input OrderHypercertWhereInput {
   attestations_count: NumberSearchOptions
+  burned: BooleanSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   creator_address: StringSearchOptions
@@ -1146,6 +1168,7 @@ type Sale {
 
 input SaleHypercertWhereInput {
   attestations_count: NumberSearchOptions
+  burned: BooleanSearchOptions
   creation_block_number: BigIntSearchOptions
   creation_block_timestamp: BigIntSearchOptions
   creator_address: StringSearchOptions

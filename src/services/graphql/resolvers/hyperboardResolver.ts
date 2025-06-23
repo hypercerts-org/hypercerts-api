@@ -245,6 +245,7 @@ class HyperboardResolver {
               hypercertIds,
             ),
             hypercerts: this.enrichHypercertsWithMetadata(
+              // @ts-expect-error - claim_attestation_count is not in the type
               hypercerts,
               metadataByUri,
             ),

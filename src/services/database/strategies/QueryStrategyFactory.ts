@@ -67,6 +67,7 @@ export class QueryStrategyFactory {
     blueprints_with_admins: BlueprintsQueryStrategy,
     blueprints: BlueprintsQueryStrategy,
     claims: ClaimsQueryStrategy,
+    claims_view: ClaimsQueryStrategy,
     hypercerts: ClaimsQueryStrategy,
     collections: CollectionsQueryStrategy,
     contracts: ContractsQueryStrategy,
