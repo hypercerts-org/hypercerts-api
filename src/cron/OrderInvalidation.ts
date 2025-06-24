@@ -1,9 +1,10 @@
-import cron from "node-cron";
 import { OrderValidatorCode } from "@hypercerts-org/marketplace-sdk";
-import { SupabaseDataService } from "../services/SupabaseDataService.js";
-import _ from "lodash";
-import { kyselyData } from "../client/kysely.js";
 import { sql } from "kysely";
+import _ from "lodash";
+import cron from "node-cron";
+import { inject, singleton } from "tsyringe";
+import { kyselyData } from "../client/kysely.js";
+import { MarketplaceOrdersService } from "../services/database/entities/MarketplaceOrdersEntityService.js";
 
 /**
  * These error codes are considered temporary and should be
@@ -14,18 +15,23 @@ export const TEMPORARILY_INVALID_ERROR_CODES = [
   OrderValidatorCode.TOO_EARLY_TO_EXECUTE_ORDER,
 ];
 
+@singleton()
 export default class OrderInvalidationCronjob {
-  private static instance: OrderInvalidationCronjob;
-  private dataService: SupabaseDataService;
+  private cronJob: cron.ScheduledTask | null = null;
 
-  private constructor() {
-    this.dataService = new SupabaseDataService();
-    this.setupCronJob();
-  }
+  constructor(
+    @inject(MarketplaceOrdersService)
+    private marketplaceOrdersService: MarketplaceOrdersService,
+  ) {}
 
-  private setupCronJob() {
-    // Run every 30 seconds
-    cron.schedule("*/30 * * * * *", async () => {
+  public start(): void {
+    if (this.cronJob) {
+      // Already started
+      return;
+    }
+
+    // Schedule the cron job
+    this.cronJob = cron.schedule("*/30 * * * * *", async () => {
       try {
         await this.invalidateOrders();
       } catch (error) {
@@ -34,9 +40,11 @@ export default class OrderInvalidationCronjob {
     });
   }
 
-  public static start(): void {
-    if (!OrderInvalidationCronjob.instance) {
-      OrderInvalidationCronjob.instance = new OrderInvalidationCronjob();
+  // Stop method is useful for testing or graceful shutdown
+  public stop(): void {
+    if (this.cronJob) {
+      this.cronJob.stop();
+      this.cronJob = null;
     }
   }
 
@@ -64,10 +72,10 @@ export default class OrderInvalidationCronjob {
     for (const chainId in ordersByChain) {
       const ordersForChain = ordersByChain[chainId];
       const tokenIds = _.uniq(ordersForChain.map((order) => order.itemIds[0]));
-      await this.dataService.validateOrdersByTokenIds({
+      await this.marketplaceOrdersService.validateOrdersByTokenIds(
         tokenIds,
-        chainId: parseInt(chainId, 10),
-      });
+        parseInt(chainId, 10),
+      );
     }
   }
 }

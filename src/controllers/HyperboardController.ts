@@ -1,37 +1,48 @@
+import { CONSTANTS, parseClaimOrFractionId } from "@hypercerts-org/sdk";
+import { User } from "@sentry/node";
+import { Selectable } from "kysely";
+import _ from "lodash";
 import {
   Body,
   Controller,
   Delete,
+  Patch,
   Path,
   Post,
+  Query,
   Response,
   Route,
-  Query,
   SuccessResponse,
   Tags,
-  Patch,
 } from "tsoa";
+import { inject, injectable } from "tsyringe";
+import { z } from "zod";
+import { CollectionService } from "../services/database/entities/CollectionEntityService.js";
+import { HyperboardService } from "../services/database/entities/HyperboardEntityService.js";
 import type {
   BaseResponse,
   HyperboardCreateRequest,
   HyperboardResponse,
   HyperboardUpdateRequest,
 } from "../types/api.js";
-import { z } from "zod";
 import { isValidHypercertId } from "../utils/hypercertIds.js";
-import { parseClaimOrFractionId } from "@hypercerts-org/sdk";
-import { SupabaseDataService } from "../services/SupabaseDataService.js";
-import { CONSTANTS } from "@hypercerts-org/sdk";
-import _ from "lodash";
 import { verifyAuthSignedData } from "../utils/verifyAuthSignedData.js";
 
 const allChains = Object.keys(CONSTANTS.DEPLOYMENTS).map((chain) =>
   parseInt(chain),
 );
 
-@Route("v1/hyperboards")
+@injectable()
+@Route("v2/hyperboards")
 @Tags("Hyperboards")
 export class HyperboardController extends Controller {
+  constructor(
+    @inject(HyperboardService) private hyperboardsService: HyperboardService,
+    @inject(CollectionService) private collectionService: CollectionService,
+  ) {
+    super();
+  }
+
   /**
    * Create a new hyperboard. Creates the collections passed to it automatically.
    */
@@ -230,10 +241,9 @@ export class HyperboardController extends Controller {
       };
     }
 
-    const dataService = new SupabaseDataService();
     let hyperboardId: string;
     try {
-      const hyperboards = await dataService.upsertHyperboards([
+      const hyperboards = await this.hyperboardsService.upsertHyperboard([
         {
           background_image: parsedBody.data.backgroundImg,
           tile_border_color: parsedBody.data.borderColor,
@@ -246,10 +256,12 @@ export class HyperboardController extends Controller {
         throw new Error("Hyperboard must have an id to add collections.");
       }
       hyperboardId = hyperboards[0]?.id;
-      const admin = await dataService.addAdminToHyperboard(
+      const admin = await this.hyperboardsService.addAdminToHyperboard(
         hyperboardId,
-        adminAddress,
-        chainId,
+        {
+          address: adminAddress,
+          chain_id: chainId,
+        },
       );
       if (!admin) {
         throw new Error("Admin must be added to hyperboard.");
@@ -271,30 +283,34 @@ export class HyperboardController extends Controller {
         if (!collection.id) {
           continue;
         }
-        const currentCollection = await dataService.getCollectionById(
-          collection.id,
-        );
+        const currentCollection = await this.collectionService.getCollection({
+          where: {
+            id: { eq: collection.id },
+          },
+        });
         if (!currentCollection) {
           throw new Error(`Collection with id ${collection.id} not found`);
         }
 
         // Add the collection to the hyperboard
-        await dataService.addCollectionToHyperboard(
+        await this.hyperboardsService.addCollectionToHyperboard(
           hyperboardId,
           collection.id,
         );
 
-        const currentUserIsAdminForCollection =
-          currentCollection.collection_admins
-            .flatMap((x) => x.admins)
-            .find(
-              (admin) =>
-                admin.chain_id === chainId && admin.address === adminAddress,
-            );
+        const admins = await this.collectionService.getCollectionAdmins(
+          collection.id,
+        );
+
+        const currentUserIsAdminForCollection = admins.some(
+          (admin: Selectable<User>) =>
+            admin.chain_id === chainId &&
+            admin.address.toLowerCase() === adminAddress.toLowerCase(),
+        );
 
         if (currentUserIsAdminForCollection) {
           // Update collection if you are an admin of the collection
-          await dataService.upsertCollections([
+          await this.collectionService.upsertCollections([
             {
               id: collection.id,
               name: collection.title,
@@ -304,11 +320,13 @@ export class HyperboardController extends Controller {
           ]);
 
           // Remove all hypercerts from the collection
-          await dataService.deleteAllHypercertsFromCollection(collection.id);
+          await this.collectionService.deleteAllHypercertsFromCollection(
+            collection.id,
+          );
 
           if (collection.hypercerts?.length) {
             // Update hypercerts in the collection if you are an admin of the collection
-            await dataService.upsertHypercerts(
+            await this.collectionService.upsertHypercertCollections(
               collection.hypercerts.map((hc) => ({
                 hypercert_id: hc.hypercertId,
                 collection_id: currentCollection.id,
@@ -316,7 +334,7 @@ export class HyperboardController extends Controller {
             );
 
             // Update metadata anyway because they are not collection specific
-            await dataService.upsertHyperboardHypercertMetadata(
+            await this.hyperboardsService.upsertHyperboardHypercertMetadata(
               collection.hypercerts.map((hc) => ({
                 hypercert_id: hc.hypercertId,
                 hyperboard_id: hyperboardId,
@@ -326,17 +344,19 @@ export class HyperboardController extends Controller {
             );
           }
 
-          await dataService.deleteAllBlueprintsFromCollection(collection.id);
+          await this.collectionService.deleteAllBlueprintsFromCollection(
+            collection.id,
+          );
 
           if (collection.blueprints?.length) {
-            await dataService.addBlueprintsToCollection(
+            await this.collectionService.addBlueprintsToCollection(
               collection.blueprints.map((bp) => ({
                 blueprint_id: bp.blueprintId,
                 collection_id: currentCollection.id,
               })),
             );
 
-            await dataService.upsertHyperboardBlueprintMetadata(
+            await this.hyperboardsService.upsertHyperboardBlueprintMetadata(
               collection.blueprints.map((bp) => ({
                 blueprint_id: bp.blueprintId,
                 hyperboard_id: hyperboardId,
@@ -361,24 +381,27 @@ export class HyperboardController extends Controller {
     );
     for (const collection of collectionsToCreate) {
       try {
-        const collectionCreateResponse = await dataService.upsertCollections([
-          {
-            name: collection.title,
-            description: collection.description,
-            chain_ids: [chainId],
-          },
-        ]);
+        const collectionCreateResponse =
+          await this.collectionService.upsertCollections([
+            {
+              name: collection.title,
+              description: collection.description,
+              chain_ids: [chainId],
+            },
+          ]);
 
-        const collectionId = collectionCreateResponse[0]?.id;
+        const collectionId = collectionCreateResponse[0].id;
         if (!collectionId) {
           throw new Error("Collection must have an id to add claims.");
         }
 
         // Add current user as admin to the collection because they are creating it
-        const admin = await dataService.addAdminToCollection(
-          collectionId,
-          adminAddress,
-          chainId,
+        const admin = await this.collectionService.addAdminToCollection(
+          collectionId.toString(),
+          {
+            address: adminAddress,
+            chain_id: chainId,
+          },
         );
 
         if (!admin) {
@@ -388,38 +411,41 @@ export class HyperboardController extends Controller {
         if (collection.hypercerts?.length) {
           const hypercerts = collection.hypercerts.map((hc) => ({
             hypercert_id: hc.hypercertId,
-            collection_id: collectionId,
+            collection_id: collectionId.toString(),
           }));
-          await dataService.upsertHypercerts(hypercerts);
-          await dataService.upsertHyperboardHypercertMetadata(
+          await this.collectionService.upsertHypercertCollections(hypercerts);
+          await this.hyperboardsService.upsertHyperboardHypercertMetadata(
             collection.hypercerts.map((hc) => ({
               hypercert_id: hc.hypercertId,
               hyperboard_id: hyperboardId,
-              collection_id: collectionId,
+              collection_id: collectionId.toString(),
               display_size: hc.factor,
             })),
           );
         }
 
         if (collection.blueprints?.length) {
-          await dataService.addBlueprintsToCollection(
+          await this.collectionService.addBlueprintsToCollection(
             collection.blueprints.map((bp) => ({
               blueprint_id: bp.blueprintId,
-              collection_id: collectionId,
+              collection_id: collectionId.toString(),
             })),
           );
 
-          await dataService.upsertHyperboardBlueprintMetadata(
+          await this.hyperboardsService.upsertHyperboardBlueprintMetadata(
             collection.blueprints.map((bp) => ({
               blueprint_id: bp.blueprintId,
               hyperboard_id: hyperboardId,
-              collection_id: collectionId,
+              collection_id: collectionId.toString(),
               display_size: bp.factor,
             })),
           );
         }
 
-        await dataService.addCollectionToHyperboard(hyperboardId, collectionId);
+        await this.hyperboardsService.addCollectionToHyperboard(
+          hyperboardId,
+          collectionId.toString(),
+        );
       } catch (e) {
         console.error(e);
         this.setStatus(400);
@@ -589,8 +615,11 @@ export class HyperboardController extends Controller {
       };
     }
 
-    const dataService = new SupabaseDataService();
-    const hyperboard = await dataService.getHyperboardById(hyperboardId);
+    const hyperboard = await this.hyperboardsService.getHyperboard({
+      where: {
+        id: { eq: hyperboardId },
+      },
+    });
 
     if (!hyperboard) {
       this.setStatus(404);
@@ -601,7 +630,14 @@ export class HyperboardController extends Controller {
     }
 
     const { signature, adminAddress } = parsedBody.data;
-    const chainId = hyperboard.chain_ids[0];
+    const chainId = hyperboard.chain_ids?.[0];
+    if (!chainId) {
+      this.setStatus(400);
+      return {
+        success: false,
+        message: "Hyperboard must have a chain id",
+      };
+    }
     const success = await verifyAuthSignedData({
       address: adminAddress as `0x${string}`,
       signature: signature as `0x${string}`,
@@ -653,12 +689,17 @@ export class HyperboardController extends Controller {
       };
     }
 
+    const { data: admins } =
+      await this.hyperboardsService.getHyperboardAdmins(hyperboardId);
+
     // Check if the admin is authorized to update the hyperboard
-    const adminUser = hyperboard.admins.find(
-      (admin) => admin.address === adminAddress && admin.chain_id === chainId,
+    const isAdmin = admins.some(
+      (admin) =>
+        admin.address.toLowerCase() === adminAddress.toLowerCase() &&
+        admin.chain_id === chainId,
     );
 
-    if (!adminUser) {
+    if (!isAdmin) {
       this.setStatus(401);
       return {
         success: false,
@@ -666,8 +707,16 @@ export class HyperboardController extends Controller {
       };
     }
 
+    if (!hyperboard.chain_ids) {
+      this.setStatus(400);
+      return {
+        success: false,
+        message: "Hyperboard must have a chain id",
+      };
+    }
+
     try {
-      await dataService.upsertHyperboards([
+      await this.hyperboardsService.upsertHyperboard([
         {
           id: hyperboardId,
           background_image: parsedBody.data.backgroundImg || null,
@@ -689,41 +738,49 @@ export class HyperboardController extends Controller {
     const collectionsToUpdate = parsedBody.data.collections.filter(
       (collection) => !!collection.id,
     );
+
+    const { data: hyperboardCollections } =
+      await this.hyperboardsService.getHyperboardCollections(hyperboardId);
     for (const collection of collectionsToUpdate) {
       try {
         if (!collection.id) {
           continue;
         }
-        const currentCollection = await dataService.getCollectionById(
-          collection.id,
-        );
+        const currentCollection = await this.collectionService.getCollection({
+          where: {
+            id: { eq: collection.id },
+          },
+        });
+
         if (!currentCollection) {
           throw new Error(`Collection with id ${collection.id} not found`);
         }
 
         // Add the collection to the hyperboard if it hasn't been added already
-        const isCollectionInHyperboard = !!hyperboard.collections.find(
+        const isCollectionInHyperboard = !!hyperboardCollections.find(
           (c) => c.id === collection.id,
         );
         if (!isCollectionInHyperboard) {
-          await dataService.addCollectionToHyperboard(
+          await this.hyperboardsService.addCollectionToHyperboard(
             hyperboardId,
             collection.id,
           );
         }
 
+        const admins = await this.collectionService.getCollectionAdmins(
+          collection.id,
+        );
+
         // Update metadata anyway because they are not collection specific
-        const currentUserIsAdminForCollection =
-          currentCollection.collection_admins
-            .flatMap((x) => x.admins)
-            .find(
-              (admin) =>
-                admin.chain_id === chainId && admin.address === adminAddress,
-            );
+        const currentUserIsAdminForCollection = admins.some(
+          (admin: Selectable<User>) =>
+            admin.chain_id === chainId &&
+            admin.address.toLowerCase() === adminAddress.toLowerCase(),
+        );
 
         if (currentUserIsAdminForCollection) {
           // Update collection if you are an admin of the collection
-          await dataService.upsertCollections([
+          await this.collectionService.upsertCollections([
             {
               id: collection.id,
               name: collection.title,
@@ -733,11 +790,13 @@ export class HyperboardController extends Controller {
           ]);
 
           // Start with removing all hypercerts from the collection
-          await dataService.deleteAllHypercertsFromCollection(collection.id);
+          await this.collectionService.deleteAllHypercertsFromCollection(
+            collection.id,
+          );
 
           if (collection.hypercerts?.length) {
             // Update hypercerts in the collection if you are an admin of the collection
-            await dataService.upsertHypercerts(
+            await this.collectionService.upsertHypercertCollections(
               collection.hypercerts.map((hc) => ({
                 hypercert_id: hc.hypercertId,
                 collection_id: currentCollection.id,
@@ -745,7 +804,7 @@ export class HyperboardController extends Controller {
             );
 
             // Add metadata for all newly added hypercerts
-            await dataService.upsertHyperboardHypercertMetadata(
+            await this.hyperboardsService.upsertHyperboardHypercertMetadata(
               collection.hypercerts.map((hc) => ({
                 hypercert_id: hc.hypercertId,
                 hyperboard_id: hyperboardId,
@@ -756,11 +815,13 @@ export class HyperboardController extends Controller {
           }
 
           // Delete all blueprints from teh collection for a fresh start
-          await dataService.deleteAllBlueprintsFromCollection(collection.id);
+          await this.collectionService.deleteAllBlueprintsFromCollection(
+            collection.id,
+          );
 
           if (collection.blueprints?.length) {
             // Add blueprints to the collection
-            await dataService.addBlueprintsToCollection(
+            await this.collectionService.addBlueprintsToCollection(
               collection.blueprints.map((bp) => ({
                 blueprint_id: bp.blueprintId,
                 collection_id: currentCollection.id,
@@ -768,7 +829,7 @@ export class HyperboardController extends Controller {
             );
 
             // Add metadata for all newly added blueprints
-            await dataService.upsertHyperboardBlueprintMetadata(
+            await this.hyperboardsService.upsertHyperboardBlueprintMetadata(
               collection.blueprints.map((bp) => ({
                 blueprint_id: bp.blueprintId,
                 hyperboard_id: hyperboardId,
@@ -793,24 +854,27 @@ export class HyperboardController extends Controller {
     );
     for (const collection of collectionsToCreate) {
       try {
-        const collectionCreateResponse = await dataService.upsertCollections([
-          {
-            name: collection.title,
-            description: collection.description,
-            chain_ids: [chainId],
-          },
-        ]);
+        const collectionCreateResponse =
+          await this.collectionService.upsertCollections([
+            {
+              name: collection.title,
+              description: collection.description,
+              chain_ids: [chainId],
+            },
+          ]);
 
-        const collectionId = collectionCreateResponse[0]?.id;
+        const collectionId = collectionCreateResponse[0].id;
         if (!collectionId) {
           throw new Error("Collection must have an id to add claims.");
         }
 
         // Add current user as admin to the collection because they are creating it
-        const admin = await dataService.addAdminToCollection(
-          collectionId,
-          adminAddress,
-          chainId,
+        const admin = await this.collectionService.addAdminToCollection(
+          collectionId.toString(),
+          {
+            address: adminAddress,
+            chain_id: chainId,
+          },
         );
 
         if (!admin) {
@@ -819,37 +883,40 @@ export class HyperboardController extends Controller {
 
         const hypercerts = collection.hypercerts.map((hc) => ({
           hypercert_id: hc.hypercertId,
-          collection_id: collectionId,
+          collection_id: collectionId.toString(),
         }));
-        await dataService.upsertHypercerts(hypercerts);
-        await dataService.upsertHyperboardHypercertMetadata(
+        await this.collectionService.upsertHypercertCollections(hypercerts);
+        await this.hyperboardsService.upsertHyperboardHypercertMetadata(
           collection.hypercerts.map((hc) => ({
             hypercert_id: hc.hypercertId,
             hyperboard_id: hyperboardId,
-            collection_id: collectionId,
+            collection_id: collectionId.toString(),
             display_size: hc.factor,
           })),
         );
 
         if (collection.blueprints?.length) {
-          await dataService.addBlueprintsToCollection(
+          await this.collectionService.addBlueprintsToCollection(
             collection.blueprints.map((bp) => ({
               blueprint_id: bp.blueprintId,
-              collection_id: collectionId,
+              collection_id: collectionId.toString(),
             })),
           );
 
-          await dataService.upsertHyperboardBlueprintMetadata(
+          await this.hyperboardsService.upsertHyperboardBlueprintMetadata(
             collection.blueprints.map((bp) => ({
               blueprint_id: bp.blueprintId,
               hyperboard_id: hyperboardId,
-              collection_id: collectionId,
+              collection_id: collectionId.toString(),
               display_size: bp.factor,
             })),
           );
         }
 
-        await dataService.addCollectionToHyperboard(hyperboardId, collectionId);
+        await this.hyperboardsService.addCollectionToHyperboard(
+          hyperboardId,
+          collectionId.toString(),
+        );
       } catch (e) {
         console.error(e);
         this.setStatus(400);
@@ -898,8 +965,11 @@ export class HyperboardController extends Controller {
       };
     }
 
-    const dataService = new SupabaseDataService();
-    const hyperboard = await dataService.getHyperboardById(hyperboardId);
+    const hyperboard = await this.hyperboardsService.getHyperboard({
+      where: {
+        id: { eq: hyperboardId },
+      },
+    });
 
     if (!hyperboard) {
       this.setStatus(404);
@@ -909,8 +979,18 @@ export class HyperboardController extends Controller {
       };
     }
 
-    const { admins, chain_ids } = hyperboard;
-    const chain_id = chain_ids[0];
+    const { data: admins } =
+      await this.hyperboardsService.getHyperboardAdmins(hyperboardId);
+
+    const chain_id = hyperboard.chain_ids?.[0];
+    if (!chain_id) {
+      this.setStatus(400);
+      return {
+        success: false,
+        message: "Hyperboard must have a chain id",
+      };
+    }
+
     if (
       !admins.find(
         (admin) =>
@@ -949,7 +1029,7 @@ export class HyperboardController extends Controller {
     }
 
     try {
-      await dataService.deleteHyperboard(hyperboardId);
+      await this.hyperboardsService.deleteHyperboard(hyperboardId);
       this.setStatus(202);
       return {
         success: true,

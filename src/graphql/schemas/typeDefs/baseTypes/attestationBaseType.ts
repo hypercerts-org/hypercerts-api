@@ -4,6 +4,7 @@ import { EthBigInt } from "../../../scalars/ethBigInt.js";
 import type { Json } from "../../../../types/supabaseCaching.js";
 import { GraphQLJSON } from "graphql-scalars";
 
+// TODO: Add chain ID, contract address, token ID to the attestation
 @ObjectType()
 class AttestationBaseType extends BasicTypeDef {
   @Field(() => ID, {
@@ -12,11 +13,12 @@ class AttestationBaseType extends BasicTypeDef {
   })
   uid?: string;
   @Field({
+    name: "schema_uid",
     nullable: true,
     description:
       "Unique identifier of the EAS schema used to create the attestation",
   })
-  schema_uid?: string;
+  supported_schemas_id?: string;
 
   @Field(() => EthBigInt, {
     nullable: true,
@@ -49,11 +51,6 @@ class AttestationBaseType extends BasicTypeDef {
     description: "Address of the recipient of the attestation",
   })
   recipient?: string;
-  @Field({
-    nullable: true,
-    description: "Address of the resolver contract for the attestation",
-  })
-  resolver?: string;
   @Field(() => GraphQLJSON, {
     nullable: true,
     description: "Encoded data of the attestation",

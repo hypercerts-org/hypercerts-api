@@ -9,10 +9,11 @@ import {
   SuccessResponse,
   Tags,
 } from "tsoa";
+import { inject, injectable } from "tsyringe";
 import { isAddress } from "viem";
 import { z } from "zod";
 import { EvmClientFactory } from "../client/evmClient.js";
-import { SupabaseDataService } from "../services/SupabaseDataService.js";
+import { BlueprintsService } from "../services/database/entities/BlueprintsEntityService.js";
 import type {
   BaseResponse,
   BlueprintCreateRequest,
@@ -24,9 +25,16 @@ import { Json } from "../types/supabaseData.js";
 import { verifyAuthSignedData } from "../utils/verifyAuthSignedData.js";
 import { waitForTxThenMintBlueprint } from "../utils/waitForTxThenMintBlueprint.js";
 
-@Route("v1/blueprints")
+@injectable()
+@Route("v2/blueprints")
 @Tags("Blueprints")
 export class BlueprintController extends Controller {
+  constructor(
+    @inject(BlueprintsService) private blueprintsService: BlueprintsService,
+  ) {
+    super();
+  }
+
   @Post()
   @SuccessResponse(201, "Blueprint created successfully")
   @Response<BlueprintResponse>(422, "Unprocessable content", {
@@ -160,11 +168,9 @@ export class BlueprintController extends Controller {
       };
     }
 
-    const dataService = new SupabaseDataService();
-
     let blueprintId: number;
     try {
-      const blueprint = await dataService.upsertBlueprints([
+      const blueprint = await this.blueprintsService.upsertBlueprints([
         {
           form_values: form_values as unknown as Json,
           minter_address,
@@ -190,7 +196,7 @@ export class BlueprintController extends Controller {
     }
 
     try {
-      await dataService.addAdminToBlueprint(
+      await this.blueprintsService.addAdminToBlueprint(
         blueprintId,
         admin_address,
         chain_id,
@@ -243,8 +249,11 @@ export class BlueprintController extends Controller {
 
     const { signature, admin_address, chain_id } = parsedBody.data;
 
-    const dataService = new SupabaseDataService();
-    const blueprint = await dataService.getBlueprintById(blueprintId);
+    const blueprint = await this.blueprintsService.getBlueprint({
+      where: {
+        id: { eq: blueprintId },
+      },
+    });
 
     if (!blueprint) {
       this.setStatus(404);
@@ -255,7 +264,9 @@ export class BlueprintController extends Controller {
       };
     }
 
-    const isAdmin = blueprint.admins.some(
+    const admins = await this.blueprintsService.getBlueprintAdmins(blueprintId);
+
+    const isAdmin = admins.some(
       (admin) => admin.address === admin_address && admin.chain_id === chain_id,
     );
 
@@ -291,7 +302,7 @@ export class BlueprintController extends Controller {
     }
 
     try {
-      await dataService.deleteBlueprint(blueprintId);
+      await this.blueprintsService.deleteBlueprint(blueprintId);
     } catch (error) {
       this.setStatus(500);
       return {

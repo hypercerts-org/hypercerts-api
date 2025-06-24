@@ -1,15 +1,17 @@
-import { ArgsType, InputType, Field } from "type-graphql";
-import { withPagination } from "./baseArgs.js";
-import { BasicUserWhereInput } from "../inputs/userInput.js";
+import { ArgsType } from "type-graphql";
+import { BaseQueryArgs } from "../../../lib/graphql/BaseQueryArgs.js";
+import { createEntityArgs } from "../../../lib/graphql/createEntityArgs.js";
+import { WhereFieldDefinitions } from "../../../lib/graphql/whereFieldDefinitions.js";
 
-@InputType()
-export class UserWhereInput extends BasicUserWhereInput {}
-
-@ArgsType()
-class UserArgs {
-  @Field(() => UserWhereInput, { nullable: true })
-  where?: UserWhereInput;
-}
+const { WhereInput: UserWhereInput, SortOptions: UserSortOptions } =
+  createEntityArgs("User", {
+    ...WhereFieldDefinitions.User.fields,
+  });
 
 @ArgsType()
-export class GetUserArgs extends withPagination(UserArgs) {}
+export class GetUsersArgs extends BaseQueryArgs(
+  UserWhereInput,
+  UserSortOptions,
+) {}
+
+export { UserSortOptions, UserWhereInput };

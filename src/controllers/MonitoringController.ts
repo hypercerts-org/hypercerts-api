@@ -1,6 +1,6 @@
 import { Route, Get, Response } from "tsoa";
 
-@Route("monitoring")
+@Route("/v2/monitoring")
 export class MonitoringController {
   @Get("/health")
   @Response(200, "OK")

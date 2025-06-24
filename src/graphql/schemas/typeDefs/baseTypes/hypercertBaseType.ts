@@ -1,7 +1,6 @@
-import { Field, ID, ObjectType, Int } from "type-graphql";
-import { BasicTypeDef } from "./basicTypeDef.js";
+import { Field, ID, Int, ObjectType } from "type-graphql";
 import { EthBigInt } from "../../../scalars/ethBigInt.js";
-import { Metadata } from "../metadataTypeDefs.js";
+import { BasicTypeDef } from "./basicTypeDef.js";
 
 @ObjectType()
 class HypercertBaseType extends BasicTypeDef {
@@ -37,12 +36,6 @@ class HypercertBaseType extends BasicTypeDef {
   })
   uri?: string;
 
-  @Field(() => Metadata, {
-    nullable: true,
-    description: "The metadata for the hypercert as referenced by the uri",
-  })
-  metadata?: Metadata;
-
   @Field(() => EthBigInt, { nullable: true })
   creation_block_number?: bigint | number | string;
   @Field(() => EthBigInt, { nullable: true })
@@ -63,6 +56,12 @@ class HypercertBaseType extends BasicTypeDef {
     description: "Count of sales of fractions that belong to this hypercert",
   })
   sales_count?: number;
+
+  @Field({
+    nullable: true,
+    description: "Whether the hypercert has been burned",
+  })
+  burned?: boolean;
 }
 
 export { HypercertBaseType };
