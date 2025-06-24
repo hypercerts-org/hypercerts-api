@@ -1,14 +1,18 @@
-import { Field, ObjectType } from "type-graphql";
-import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
+import { Field, Int, ObjectType } from "type-graphql";
+import { DataResponse } from "../../../lib/graphql/DataResponse.js";
 import { EthBigInt } from "../../scalars/ethBigInt.js";
+import { BasicTypeDef } from "./baseTypes/basicTypeDef.js";
 import { HypercertBaseType } from "./baseTypes/hypercertBaseType.js";
+import { HypercertWithMetadata } from "./baseTypes/hypercertBaseWithMetadata.js";
 
-@ObjectType()
-class Order extends BasicTypeDef {
+@ObjectType({
+  description: "Marketplace order for a hypercert",
+})
+export class Order extends BasicTypeDef {
   @Field()
   hypercert_id?: string;
   @Field()
-  createdAt?: string;
+  createdAt?: number;
   @Field()
   quoteType?: number;
   @Field()
@@ -45,19 +49,20 @@ class Order extends BasicTypeDef {
   amounts?: number[];
   @Field()
   invalidated?: boolean;
-  @Field(() => [String], { nullable: true })
-  validator_codes?: string[];
+  @Field(() => [Int], { nullable: true })
+  validator_codes?: number[];
 
   @Field()
   pricePerPercentInUSD?: string;
   @Field()
   pricePerPercentInToken?: string;
 
-  @Field(() => HypercertBaseType, {
+  @Field(() => HypercertWithMetadata, {
     nullable: true,
     description: "The hypercert associated with this order",
   })
   hypercert?: HypercertBaseType;
 }
 
-export { Order };
+@ObjectType()
+export class GetOrdersResponse extends DataResponse(Order) {}

@@ -20,7 +20,7 @@ vi.mock("../../../src/services/StorageService", async () => {
   };
 });
 
-describe("Metadata upload at v1/metadata", async () => {
+describe("Metadata upload at v2/metadata", async () => {
   const controller = new MetadataController();
   const mockStorage = mock<StorageService>();
 
@@ -44,7 +44,7 @@ describe("Metadata upload at v1/metadata", async () => {
 
     expect(response.success).to.be.false;
     expect(response.data).to.be.undefined;
-    expect(response.message).to.eq("Errors while validating metadata");
+    expect(response.message).to.eq("Metadata validation failed");
     expect(response.errors).to.deep.eq({
       metadata: "Provided metadata is not a valid hypercert metadata object",
     });
@@ -65,7 +65,7 @@ describe("Metadata upload at v1/metadata", async () => {
   });
 });
 
-describe("Metadata validation at v1/metadata/validate", async () => {
+describe("Metadata validation at v2/metadata/validate", async () => {
   const controller = new MetadataController();
 
   test("Validates a metadata set and returns results", async () => {
@@ -83,7 +83,7 @@ describe("Metadata validation at v1/metadata/validate", async () => {
     });
 
     expect(response.success).to.be.true;
-    expect(response.message).to.eq("Errors while validating metadata");
+    expect(response.message).to.eq("Metadata validation failed");
     expect(response.errors).to.deep.eq({
       metadata: "Provided metadata is not a valid hypercert metadata object",
     });

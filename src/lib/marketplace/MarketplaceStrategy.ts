@@ -1,12 +1,7 @@
 import { DataResponse } from "../../types/api.js";
-import { SupabaseDataService } from "../../services/SupabaseDataService.js";
 
 export abstract class MarketplaceStrategy {
-  protected readonly dataService: SupabaseDataService;
-
-  constructor() {
-    this.dataService = new SupabaseDataService();
-  }
+  constructor() {}
 
   abstract executeCreate(): Promise<DataResponse<unknown>>;
 

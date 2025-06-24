@@ -1,28 +1,39 @@
-import { ArgsType, Field, InputType } from "type-graphql";
+import { EntityTypeDefs } from "../typeDefs/typeDefs.js";
+import { createEntityArgs } from "../../../lib/graphql/createEntityArgs.js";
+import { BaseQueryArgs } from "../../../lib/graphql/BaseQueryArgs.js";
+import { WhereFieldDefinitions } from "../../../lib/graphql/whereFieldDefinitions.js";
+import { ArgsType } from "type-graphql";
 
-import { BasicCollectionWhereInput } from "../inputs/collectionInput.js";
-import type { OrderOptions } from "../inputs/orderOptions.js";
-import { Collection } from "../typeDefs/collectionTypeDefs.js";
-import { CollectionSortOptions } from "../inputs/sortOptions.js";
-
-import { withPagination } from "./baseArgs.js";
-
-@InputType()
-export class CollectionWhereInput extends BasicCollectionWhereInput {}
-
-@InputType()
-export class CollectionFetchInput implements OrderOptions<Collection> {
-  @Field(() => CollectionSortOptions, { nullable: true })
-  by?: CollectionSortOptions;
-}
+const { WhereInput: CollectionWhereInput, SortOptions: CollectionSortOptions } =
+  createEntityArgs("Collection", {
+    ...WhereFieldDefinitions.Collection.fields,
+    admins: {
+      type: "id",
+      references: {
+        entity: EntityTypeDefs.User,
+        fields: WhereFieldDefinitions.User.fields,
+      },
+    },
+    hypercerts: {
+      type: "id",
+      references: {
+        entity: EntityTypeDefs.Hypercert,
+        fields: WhereFieldDefinitions.Hypercert.fields,
+      },
+    },
+    blueprints: {
+      type: "id",
+      references: {
+        entity: EntityTypeDefs.Blueprint,
+        fields: WhereFieldDefinitions.Blueprint.fields,
+      },
+    },
+  });
 
 @ArgsType()
-export class CollectionArgs {
-  @Field(() => CollectionWhereInput, { nullable: true })
-  where?: CollectionWhereInput;
-  @Field(() => CollectionFetchInput, { nullable: true })
-  sort?: CollectionFetchInput;
-}
+export class GetCollectionsArgs extends BaseQueryArgs(
+  CollectionWhereInput,
+  CollectionSortOptions,
+) {}
 
-@ArgsType()
-export class GetCollectionsArgs extends withPagination(CollectionArgs) {}
+export { CollectionSortOptions, CollectionWhereInput };

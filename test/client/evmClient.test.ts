@@ -6,7 +6,6 @@ import { RpcClientFactory } from "../../src/client/rpcClientFactory.js";
 vi.mock("@/utils/constants", () => ({
   indexerEnvironment: "test",
   alchemyApiKey: "mock-alchemy-key",
-  infuraApiKey: "mock-infura-key",
   drpcApiPkey: "mock-drpc-key",
   filecoinApiKey: "mock-filecoin-key",
   Environment: { TEST: "test", PROD: "prod" },
@@ -59,10 +58,9 @@ describe("EvmClientFactory", () => {
       expect(sepoliaUrls[0]).toContain("alchemy.com");
 
       const opUrls = EvmClientFactory.getAllAvailableUrls(10);
-      expect(opUrls).toHaveLength(3); // Alchemy, Infura, DRPC for Optimism
+      expect(opUrls).toHaveLength(2); // Alchemy, DRPC for Optimism
       expect(opUrls[0]).toContain("alchemy.com");
-      expect(opUrls[1]).toContain("infura.io");
-      expect(opUrls[2]).toContain("drpc.org");
+      expect(opUrls[1]).toContain("drpc.org");
     });
 
     it("returns empty array for unsupported chain", () => {

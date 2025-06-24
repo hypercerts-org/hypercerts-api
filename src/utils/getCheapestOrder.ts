@@ -1,8 +1,8 @@
 import _ from "lodash";
-import { Database } from "../types/supabaseData.js";
+import { MarketplaceOrderSelect } from "../services/database/entities/MarketplaceOrdersEntityService.js";
 
 export const getCheapestOrder = (
-  orders: (Database["public"]["Tables"]["marketplace_orders"]["Row"] & {
+  orders: (MarketplaceOrderSelect & {
     pricePerPercentInUSD: string;
   })[],
 ) =>

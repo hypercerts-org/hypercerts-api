@@ -1,36 +1,34 @@
-import { ArgsType, Field, InputType } from "type-graphql";
-import { BasicAttestationWhereInput } from "../inputs/attestationInput.js";
-import { BasicMetadataWhereInput } from "../inputs/metadataInput.js";
-import { withPagination } from "./baseArgs.js";
-import { BasicHypercertWhereArgs } from "../inputs/hypercertsInput.js";
-import type { OrderOptions } from "../inputs/orderOptions.js";
-import type { Attestation } from "../typeDefs/attestationTypeDefs.js";
-import { AttestationSortOptions } from "../inputs/sortOptions.js";
-import { BasicAttestationSchemaWhereInput } from "../inputs/attestationSchemaInput.js";
+import { EntityTypeDefs } from "../typeDefs/typeDefs.js";
+import { createEntityArgs } from "../../../lib/graphql/createEntityArgs.js";
+import { BaseQueryArgs } from "../../../lib/graphql/BaseQueryArgs.js";
+import { WhereFieldDefinitions } from "../../../lib/graphql/whereFieldDefinitions.js";
+import { ArgsType } from "type-graphql";
 
-@InputType()
-class AttestationWhereInput extends BasicAttestationWhereInput {
-  @Field(() => BasicHypercertWhereArgs, { nullable: true })
-  hypercerts?: BasicHypercertWhereArgs;
-  @Field(() => BasicMetadataWhereInput, { nullable: true })
-  metadata?: BasicMetadataWhereInput;
-  @Field(() => BasicAttestationSchemaWhereInput, { nullable: true })
-  eas_schema?: BasicAttestationSchemaWhereInput;
-}
-
-@InputType()
-class AttestationFetchInput implements OrderOptions<Attestation> {
-  @Field(() => AttestationSortOptions, { nullable: true })
-  by?: AttestationSortOptions;
-}
-
-@ArgsType()
-class AttestationArgs {
-  @Field(() => AttestationWhereInput, { nullable: true })
-  where?: AttestationWhereInput;
-  @Field(() => AttestationFetchInput, { nullable: true })
-  sort?: AttestationFetchInput;
-}
+const {
+  WhereInput: AttestationWhereInput,
+  SortOptions: AttestationSortOptions,
+} = createEntityArgs("Attestation", {
+  ...WhereFieldDefinitions.Attestation.fields,
+  hypercert: {
+    type: "id",
+    references: {
+      entity: EntityTypeDefs.Hypercert,
+      fields: WhereFieldDefinitions.Hypercert.fields,
+    },
+  },
+  eas_schema: {
+    type: "id",
+    references: {
+      entity: EntityTypeDefs.AttestationSchema,
+      fields: WhereFieldDefinitions.AttestationSchema.fields,
+    },
+  },
+});
 
 @ArgsType()
-export class GetAttestationsArgs extends withPagination(AttestationArgs) {}
+export class GetAttestationsArgs extends BaseQueryArgs(
+  AttestationWhereInput,
+  AttestationSortOptions,
+) {}
+
+export { AttestationSortOptions, AttestationWhereInput };

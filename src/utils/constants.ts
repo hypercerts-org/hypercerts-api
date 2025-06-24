@@ -16,7 +16,6 @@ export const web3upKey = getRequiredEnvVar("KEY", "WEB3UP Key");
 export const web3upProof = getRequiredEnvVar("PROOF", "WEB3UP Proof");
 export const indexerEnvironment = getRequiredEnvVar("INDEXER_ENVIRONMENT");
 export const alchemyApiKey = getRequiredEnvVar("ALCHEMY_API_KEY");
-export const infuraApiKey = getRequiredEnvVar("INFURA_API_KEY");
 export const drpcApiPkey = getRequiredEnvVar("DRPC_API_KEY");
 export const cachingDatabaseUrl = getRequiredEnvVar("CACHING_DATABASE_URL");
 export const dataDatabaseUrl = getRequiredEnvVar("DATA_DATABASE_URL");
