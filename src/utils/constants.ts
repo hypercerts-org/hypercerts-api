@@ -21,3 +21,9 @@ export const drpcApiPkey = getRequiredEnvVar("DRPC_API_KEY");
 export const cachingDatabaseUrl = getRequiredEnvVar("CACHING_DATABASE_URL");
 export const dataDatabaseUrl = getRequiredEnvVar("DATA_DATABASE_URL");
 export const filecoinApiKey = getRequiredEnvVar("FILECOIN_API_KEY");
+
+const ENABLE_CRON_JOBS_ENV = getRequiredEnvVar(
+  "ENABLE_CRON_JOBS",
+  "Enable cron jobs",
+);
+export const ENABLE_CRON_JOBS = ENABLE_CRON_JOBS_ENV === "true";
