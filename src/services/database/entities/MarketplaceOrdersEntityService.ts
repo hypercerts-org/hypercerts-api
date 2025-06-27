@@ -320,7 +320,7 @@ export class MarketplaceOrdersService {
         })
         .map((x) => ({
           id: x.id,
-          invalidated: x.valid,
+          invalidated: !x.valid,
           validator_codes: x.validatorCodes,
         }));
 
