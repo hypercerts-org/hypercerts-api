@@ -170,7 +170,13 @@ export class CollectionService {
         "users.avatar",
       ])
       .where("collection_admins.collection_id", "=", collectionId)
-      .execute();
+      .execute()
+      .then((res) =>
+        res.map((x) => ({
+          ...x,
+          chain_id: Number(x.chain_id),
+        })),
+      );
   }
 
   /**
