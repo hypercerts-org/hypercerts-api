@@ -192,6 +192,7 @@ class HyperboardResolver {
               this.fractionsService
                 .getFractions({
                   where: { hypercert_id: { in: hypercertIds } },
+                  first: Number.MAX_SAFE_INTEGER,
                 })
                 .then((res) => res.data),
               this.allowlistRecordService
@@ -200,11 +201,13 @@ class HyperboardResolver {
                     hypercert_id: { in: hypercertIds },
                     claimed: { eq: false },
                   },
+                  first: Number.MAX_SAFE_INTEGER,
                 })
                 .then((res) => res.data),
               this.hypercertsService
                 .getHypercerts({
                   where: { hypercert_id: { in: hypercertIds } },
+                  first: Number.MAX_SAFE_INTEGER,
                 })
                 .then((res) => res.data),
               this.hypercertsService.getHypercertMetadataSets({
