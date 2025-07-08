@@ -18,8 +18,8 @@ importers:
         specifier: 2.0.0-alpha.12
         version: 2.0.0-alpha.12(ts-node@10.9.2(@swc/core@1.4.15(@swc/helpers@0.5.15))(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)
       '@hypercerts-org/marketplace-sdk':
-        specifier: 0.5.1
-        version: 0.5.1(@safe-global/api-kit@2.5.4(encoding@0.1.13)(typescript@5.5.3)(zod@3.23.8))(@safe-global/protocol-kit@5.0.4(typescript@5.5.3)(zod@3.23.8))(@swc/helpers@0.5.15)(ethers@6.12.2)(graphql@16.10.0)(rollup@4.12.0)(ts-node@10.9.2(@swc/core@1.4.15(@swc/helpers@0.5.15))(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)(zod@3.23.8)
+        specifier: 0.8.0
+        version: 0.8.0(@safe-global/api-kit@2.5.4(encoding@0.1.13)(typescript@5.5.3)(zod@3.23.8))(@safe-global/protocol-kit@5.0.4(typescript@5.5.3)(zod@3.23.8))(@safe-global/types-kit@1.0.0(typescript@5.5.3)(zod@3.23.8))(@swc/helpers@0.5.15)(ethers@6.12.2)(graphql@16.10.0)(rollup@4.12.0)(ts-node@10.9.2(@swc/core@1.4.15(@swc/helpers@0.5.15))(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)(zod@3.23.8)
       '@hypercerts-org/sdk':
         specifier: 2.5.0-beta.6
         version: 2.5.0-beta.6(@swc/helpers@0.5.15)(graphql@16.10.0)(rollup@4.12.0)(ts-node@10.9.2(@swc/core@1.4.15(@swc/helpers@0.5.15))(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)
@@ -1382,12 +1382,13 @@ packages:
   '@hypercerts-org/contracts@2.0.0-alpha.12':
     resolution: {integrity: sha512-Nr0aTJIt6/H1mI3N0uve3yF922kCVpAeN3aUqhWZfizukTVSD5aRE64fmKYpwzCWe0JNR9mBBR+Ogxq5lcGSvA==}
 
-  '@hypercerts-org/marketplace-sdk@0.5.1':
-    resolution: {integrity: sha512-OGB56YH2wcSqIKkPxaABaxNQ5MH8ROyFGZw+vKDekY0yYDGlItRC3Jvb6B9aZ9COXoOeNiijSDEHBwpSJBi2mA==}
+  '@hypercerts-org/marketplace-sdk@0.8.0':
+    resolution: {integrity: sha512-fm56Kl/oopti4XdPKX19+0SNDPYuY7m46fk4rDSXUeST1tFf8lei4qKate2IBsoknRWCrE8O77QMw1BkJiK2FA==}
     engines: {node: '>= 16.15.1 <= 20.x'}
     peerDependencies:
       '@safe-global/api-kit': ^2.5.7
       '@safe-global/protocol-kit': ^5.2.0
+      '@safe-global/types-kit': ^1.0.4
       ethers: ^6.6.2
 
   '@hypercerts-org/sdk@2.4.0':
@@ -8358,12 +8359,13 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@hypercerts-org/marketplace-sdk@0.5.1(@safe-global/api-kit@2.5.4(encoding@0.1.13)(typescript@5.5.3)(zod@3.23.8))(@safe-global/protocol-kit@5.0.4(typescript@5.5.3)(zod@3.23.8))(@swc/helpers@0.5.15)(ethers@6.12.2)(graphql@16.10.0)(rollup@4.12.0)(ts-node@10.9.2(@swc/core@1.4.15(@swc/helpers@0.5.15))(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)(zod@3.23.8)':
+  '@hypercerts-org/marketplace-sdk@0.8.0(@safe-global/api-kit@2.5.4(encoding@0.1.13)(typescript@5.5.3)(zod@3.23.8))(@safe-global/protocol-kit@5.0.4(typescript@5.5.3)(zod@3.23.8))(@safe-global/types-kit@1.0.0(typescript@5.5.3)(zod@3.23.8))(@swc/helpers@0.5.15)(ethers@6.12.2)(graphql@16.10.0)(rollup@4.12.0)(ts-node@10.9.2(@swc/core@1.4.15(@swc/helpers@0.5.15))(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)(zod@3.23.8)':
     dependencies:
       '@hypercerts-org/sdk': 2.4.0(@swc/helpers@0.5.15)(graphql@16.10.0)(rollup@4.12.0)(ts-node@10.9.2(@swc/core@1.4.15(@swc/helpers@0.5.15))(@types/node@20.10.6)(typescript@5.5.3))(typescript@5.5.3)
       '@looksrare/contracts-libs': 3.5.1
       '@safe-global/api-kit': 2.5.4(encoding@0.1.13)(typescript@5.5.3)(zod@3.23.8)
       '@safe-global/protocol-kit': 5.0.4(typescript@5.5.3)(zod@3.23.8)
+      '@safe-global/types-kit': 1.0.0(typescript@5.5.3)(zod@3.23.8)
       '@urql/core': 5.0.4(graphql@16.10.0)
       ethers: 6.12.2
       gql.tada: 1.8.10(graphql@16.10.0)(typescript@5.5.3)
