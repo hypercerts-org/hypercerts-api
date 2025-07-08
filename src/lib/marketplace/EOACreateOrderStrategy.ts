@@ -59,9 +59,6 @@ export default class EOACreateOrderStrategy extends MarketplaceStrategy {
         signature,
         chainId,
         id: "temporary",
-        createdAt: new Date().toISOString(),
-        invalidated: false,
-        validator_codes: [],
       },
     ]);
     if (!validationResult.valid) {

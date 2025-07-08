@@ -133,14 +133,7 @@ export default class MultisigCreateOrderStrategy extends MarketplaceStrategy {
       EvmClientFactory.createEthersClient(this.request.chainId),
     );
 
-    const [validationResult] = await hec.checkOrdersValidity([
-      {
-        ...orderToValidate,
-        createdAt: new Date().toISOString(),
-        invalidated: false,
-        validator_codes: [],
-      },
-    ]);
+    const [validationResult] = await hec.checkOrdersValidity([orderToValidate]);
 
     if (!validationResult.valid) {
       const errorCodes = validationResult.validatorCodes || [];
