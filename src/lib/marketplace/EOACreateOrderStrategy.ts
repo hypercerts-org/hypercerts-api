@@ -1,5 +1,6 @@
 import {
   HypercertExchangeClient,
+  OrderValidatorCode,
   utils,
 } from "@hypercerts-org/marketplace-sdk";
 import { verifyTypedData } from "ethers";
@@ -61,7 +62,8 @@ export default class EOACreateOrderStrategy extends MarketplaceStrategy {
         id: "temporary",
       },
     ]);
-    if (!validationResult.valid) {
+    if (!this.evaluateOrderValidationResult(validationResult)) {
+      // Check if only error code is TOO_EARLY_TO_EXECUTE_ORDER
       throw new Errors.InvalidOrder(validationResult);
     }
 
@@ -116,5 +118,26 @@ export default class EOACreateOrderStrategy extends MarketplaceStrategy {
           }
         : null,
     );
+  }
+
+  evaluateOrderValidationResult(validationResult: {
+    valid: boolean;
+    validatorCodes: OrderValidatorCode[];
+  }) {
+    if (validationResult.valid) {
+      return true;
+    }
+
+    if (
+      validationResult.validatorCodes
+        .filter(
+          (code) => code !== OrderValidatorCode.TOO_EARLY_TO_EXECUTE_ORDER,
+        )
+        .every((code) => code === OrderValidatorCode.ORDER_EXPECTED_TO_BE_VALID)
+    ) {
+      return true;
+    }
+
+    return false;
   }
 }
