@@ -135,30 +135,11 @@ export default class MultisigCreateOrderStrategy extends MarketplaceStrategy {
 
     const [validationResult] = await hec.checkOrdersValidity([orderToValidate]);
 
-    if (!validationResult.valid) {
-      const errorCodes = validationResult.validatorCodes || [];
-
-      // Check if error codes follow the expected pattern. Everything needs to be 0 (valid),
-      // except for the signature validation error. This is because when this request is
-      // made, the message is missing one or more signatures.
-      // The signature will be validated in the command. It's only skipped for now.
-      // TODO: get the command name when ready
-      const isValidErrorPattern = errorCodes.every((code, index) => {
-        if (index === 3) {
-          return (
-            code ===
-              OrderValidatorCode.MISSING_IS_VALID_SIGNATURE_FUNCTION_EIP1271 ||
-            code === OrderValidatorCode.ORDER_EXPECTED_TO_BE_VALID
-          );
-        }
-        return code === 0;
-      });
-
-      // Only proceed if it's the expected signature validation error pattern
-      if (!isValidErrorPattern) {
-        throw new Errors.InvalidOrder(validationResult);
-      }
+    // Only proceed if it's the expected signature validation error pattern
+    if (!this.evaluateOrderValidationResult(validationResult)) {
+      throw new Errors.InvalidOrder(validationResult);
     }
+
     const tokenIds = orderDetails.itemIds.map(
       (id) => `${this.request.chainId}-${orderDetails.collection}-${id}`,
     );
@@ -207,6 +188,29 @@ export default class MultisigCreateOrderStrategy extends MarketplaceStrategy {
       message: messageForStorage,
       purpose: "create_marketplace_order",
       timestamp: Math.floor(Date.now() / 1000),
+    });
+  }
+
+  evaluateOrderValidationResult(validationResult: {
+    valid: boolean;
+    validatorCodes: OrderValidatorCode[];
+  }): boolean {
+    const errorCodes = validationResult.validatorCodes || [];
+
+    // Check if error codes follow the expected pattern. Everything needs to be 0 (valid),
+    // except for the signature validation error. This is because when this request is
+    // made, the message is missing one or more signatures.
+    // The signature will be validated in the command. It's only skipped for now.
+    // TODO: get the command name when ready
+    return errorCodes.every((code, index) => {
+      if (index === 3) {
+        return (
+          code ===
+            OrderValidatorCode.MISSING_IS_VALID_SIGNATURE_FUNCTION_EIP1271 ||
+          code === OrderValidatorCode.ORDER_EXPECTED_TO_BE_VALID
+        );
+      }
+      return code === OrderValidatorCode.ORDER_EXPECTED_TO_BE_VALID;
     });
   }
 }
