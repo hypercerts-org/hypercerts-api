@@ -207,10 +207,14 @@ export default class MultisigCreateOrderStrategy extends MarketplaceStrategy {
         return (
           code ===
             OrderValidatorCode.MISSING_IS_VALID_SIGNATURE_FUNCTION_EIP1271 ||
-          code === OrderValidatorCode.ORDER_EXPECTED_TO_BE_VALID
+          code === OrderValidatorCode.ORDER_EXPECTED_TO_BE_VALID ||
+          code === OrderValidatorCode.TOO_EARLY_TO_EXECUTE_ORDER
         );
       }
-      return code === OrderValidatorCode.ORDER_EXPECTED_TO_BE_VALID;
+      return (
+        code === OrderValidatorCode.ORDER_EXPECTED_TO_BE_VALID ||
+        code === OrderValidatorCode.TOO_EARLY_TO_EXECUTE_ORDER
+      );
     });
   }
 }
