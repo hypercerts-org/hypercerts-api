@@ -127,6 +127,7 @@ type CurrencyFeeds = Record<
   string
 >;
 
+// Get pricefeeds from https://docs.chain.link/data-feeds/price-feeds/addresses?page=1&testnetPage=1
 const feedsPerChain: Record<Partial<ChainId>, Partial<CurrencyFeeds>> = {
   [ChainId.BASE_SEPOLIA]: {
     ETH: "0x4aDC67696bA383F43DD60A9e78F2C97Fbbfc7cb1",
@@ -157,6 +158,8 @@ const feedsPerChain: Record<Partial<ChainId>, Partial<CurrencyFeeds>> = {
     cUSD: "0xe38A27BE4E7d866327e09736F3C570F256FFd048",
     USDC: "0xc7A353BaE210aed958a1A2928b654938EC59DaB2",
     USDT: "0x5e37AF40A7A344ec9b03CCD34a250F3dA9a20B02",
+    // Placeholder for USDGLO, used USDC on Celo for now
+    USDGLO: "0xc7A353BaE210aed958a1A2928b654938EC59DaB2",
   },
   [ChainId.ARBITRUM]: {
     ETH: "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612",
