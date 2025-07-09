@@ -11,6 +11,7 @@ import * as Sentry from "@sentry/node";
 import SignatureRequestProcessorCron from "./cron/SignatureRequestProcessing.js";
 import OrderInvalidationCronjob from "./cron/OrderInvalidation.js";
 import { container } from "tsyringe";
+import { ENABLE_CRON_JOBS } from "./utils/constants.js";
 
 // @ts-expect-error BigInt is not supported by JSON
 BigInt.prototype.toJSON = function () {
@@ -47,9 +48,14 @@ RegisterRoutes(app);
 Sentry.setupExpressErrorHandler(app);
 
 // Start Safe signature request processing cron job
-SignatureRequestProcessorCron.start();
-const cronJob = container.resolve(OrderInvalidationCronjob);
-cronJob.start();
+if (ENABLE_CRON_JOBS) {
+  console.log("🚀 Starting cron jobs");
+  SignatureRequestProcessorCron.start();
+  const cronJob = container.resolve(OrderInvalidationCronjob);
+  cronJob.start();
+} else {
+  console.log("🚨 Cron jobs are disabled");
+}
 
 app.listen(PORT, () => {
   console.log(

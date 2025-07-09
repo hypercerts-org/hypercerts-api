@@ -25,6 +25,8 @@ jobs:
       CACHING_DATABASE_URL: "https://test.supabase.com"
       DATA_DATABASE_URL: "https://test.supabase.com"
 
+      ENABLE_CRON_JOBS: "false"
+
     permissions:
       # Required to checkout the code
       contents: read

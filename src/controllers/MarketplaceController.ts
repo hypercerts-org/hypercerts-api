@@ -24,6 +24,7 @@ import type {
 import { inject, injectable } from "tsyringe";
 import { FractionService } from "../services/database/entities/FractionEntityService.js";
 import { MarketplaceOrdersService } from "../services/database/entities/MarketplaceOrdersEntityService.js";
+import { InvalidOrder } from "../lib/marketplace/errors.js";
 
 @injectable()
 @Route("v2/marketplace")
@@ -114,6 +115,7 @@ export class MarketplaceController extends Controller {
         success: false,
         message: "Error processing order",
         error: error instanceof Error ? error.message : String(error),
+        ...(error instanceof InvalidOrder ? { result: error.errors } : {}),
       };
     }
   }
