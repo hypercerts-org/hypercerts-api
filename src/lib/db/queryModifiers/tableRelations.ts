@@ -35,6 +35,14 @@ export const TABLE_RELATIONS: TableRelations = {
       joinCondition: "claims.hypercert_id = fractions_view.hypercert_id",
     },
   },
+  claims_view: {
+    metadata: {
+      joinCondition: "metadata.uri = claims_view.uri",
+    },
+    fractions_view: {
+      joinCondition: "fractions_view.hypercert_id = claims_view.hypercert_id",
+    },
+  },
   sales: {
     claims: {
       joinCondition: "claims.hypercert_id = sales.hypercert_id",
