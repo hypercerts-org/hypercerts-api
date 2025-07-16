@@ -12,7 +12,7 @@ import SignatureRequestProcessorCron from "./cron/SignatureRequestProcessing.js"
 import OrderInvalidationCronjob from "./cron/OrderInvalidation.js";
 import { container } from "tsyringe";
 import { ENABLE_CRON_JOBS } from "./utils/constants.js";
-import { subscribeToSupabaseRealtimeEvents } from "./client/supabase.js";
+import { SupabaseRealtimeManager } from "./client/supabase.js";
 
 // @ts-expect-error BigInt is not supported by JSON
 BigInt.prototype.toJSON = function () {
@@ -58,7 +58,8 @@ if (ENABLE_CRON_JOBS) {
   console.log("🚨 Cron jobs are disabled");
 }
 
-subscribeToSupabaseRealtimeEvents();
+const supabaseRealtimeManager = container.resolve(SupabaseRealtimeManager);
+supabaseRealtimeManager.subscribeToEvents();
 
 app.listen(PORT, () => {
   console.log(
