@@ -300,14 +300,12 @@ export class MarketplaceOrdersService {
         // @ts-expect-error Typing issue with provider
         EvmClientFactory.createEthersClient(chainId),
       );
-      console.log("matchingOrders", matchingOrders);
       const validationResults = await hec.checkOrdersValidity(
         matchingOrders.map((order) => ({
           ...order,
           chainId: Number(order.chainId),
         })),
       );
-      console.log("validationResults", validationResults);
 
       // filter all orders that have changed validity or validator codes
       const _changedOrders = validationResults

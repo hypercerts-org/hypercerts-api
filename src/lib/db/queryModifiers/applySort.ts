@@ -45,7 +45,6 @@ export function applySort<
   args: Args,
 ): SelectQueryBuilder<DB, T, Selectable<DB[T]>> {
   if (!args.sortBy) {
-    console.debug("No sort arguments provided");
     return query;
   }
 
@@ -56,7 +55,6 @@ export function applySort<
   );
 
   if (sortEntries.length === 0) {
-    console.debug("No non-null sort fields found");
     return query;
   }
 
