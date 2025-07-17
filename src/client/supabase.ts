@@ -28,7 +28,7 @@ export const supabaseData = createClient<DataDatabaseTypes>(
 const handleChangeClaims = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.debug(payload);
+  // console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([{ typename: "Hypercert" }]);
@@ -45,7 +45,7 @@ const handleChangeClaims = (
 const handleChangeFractions = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.debug(payload);
+  // console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([{ typename: "Fraction" }]);
@@ -62,7 +62,7 @@ const handleChangeFractions = (
 const handleChangeMetadata = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.debug(payload);
+  // console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([{ typename: "Metadata", id: payload.new.id }]);
@@ -79,7 +79,7 @@ const handleChangeMetadata = (
 const handleChangeSales = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.debug(payload);
+  // console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([{ typename: "Sale" }]);
@@ -96,7 +96,7 @@ const handleChangeSales = (
 const handleChangeAllowlistRecords = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.debug(payload);
+  // console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([
@@ -122,7 +122,7 @@ const handleChangeAllowlistRecords = (
 const handleChangeAttestations = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.debug(payload);
+  // console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([{ typename: "Attestation" }]);
@@ -139,7 +139,7 @@ const handleChangeAttestations = (
 const handleChangeUsers = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.debug(payload);
+  // console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([{ typename: "User" }]);
@@ -156,7 +156,7 @@ const handleChangeUsers = (
 const handleChangeBlueprints = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.debug(payload);
+  // console.debug(payload);
   switch (payload.eventType) {
     case "INSERT":
       cache.invalidate([{ typename: "Blueprint" }]);
@@ -176,7 +176,7 @@ const handleChangeBlueprints = (
 const handleChangeHyperboards = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.debug(payload);
+  // console.debug(payload);
   switch (payload.eventType) {
     case "UPDATE":
     case "DELETE":
@@ -202,7 +202,7 @@ const handleChangeHyperboards = (
 const handleChangeOrders = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.debug(payload);
+  // console.debug(payload);
 
   switch (payload.eventType) {
     case "INSERT":
@@ -219,7 +219,7 @@ const handleChangeOrders = (
 const handleChangeSignatureRequests = (
   payload: RealtimePostgresChangesPayload<{ [key: string]: any }>,
 ) => {
-  console.debug(payload);
+  // console.debug(payload);
 
   switch (payload.eventType) {
     case "INSERT":
