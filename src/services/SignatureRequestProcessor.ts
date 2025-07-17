@@ -23,6 +23,10 @@ export default class SignatureRequestProcessor {
   async processPendingRequests(): Promise<void> {
     const pendingRequests = await this.getPendingRequests();
 
+    if (pendingRequests.length === 0) {
+      return;
+    }
+
     console.log(`Found ${pendingRequests.length} pending signature requests`);
 
     for (const request of pendingRequests) {
