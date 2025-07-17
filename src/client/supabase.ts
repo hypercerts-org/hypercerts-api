@@ -236,7 +236,7 @@ const handleChangeSignatureRequests = (
 export class SupabaseRealtimeManager {
   private isSubscribed: boolean = false;
 
-  public subscribeToEvents(): void {
+  public async subscribeToEvents(): Promise<void> {
     if (this.isSubscribed) {
       console.log(
         "⚠️ [REALTIME] Already subscribed to Supabase realtime events",
@@ -245,11 +245,11 @@ export class SupabaseRealtimeManager {
     }
 
     console.log(
-      "✏️ [REALTIME] Initializing Supabase realtime event subscriptions",
+      "ℹ️ [REALTIME] Initializing Supabase realtime event subscriptions",
     );
 
     try {
-      this.subscribeToSupabaseRealtimeEvents();
+      await this.subscribeToSupabaseRealtimeEvents();
       this.isSubscribed = true;
       console.log(
         "✅ [REALTIME] Successfully subscribed to Supabase realtime events",
@@ -263,270 +263,298 @@ export class SupabaseRealtimeManager {
     }
   }
 
-  private subscribeToSupabaseRealtimeEvents(): void {
-    console.log("✏️ Subscribing to realtime events");
+  private async subscribeToSupabaseRealtimeEvents() {
+    console.log("ℹ️ [REALTIME] Unsubscribing from all channels");
+    const cachingChannel = supabaseCaching.channel("schema-db-changes");
+    const dataChannel = supabaseData.channel("schema-db-changes");
 
-    supabaseCaching
-      .channel("schema-db-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "claims",
-        },
-        (payload) => handleChangeClaims(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "fractions",
-        },
-        (payload) => handleChangeFractions(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "metadata",
-        },
-        (payload) => handleChangeMetadata(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "sales",
-        },
-        (payload) => handleChangeSales(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "sales",
-        },
-        (payload) => handleChangeSales(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "allow_list_data",
-        },
-        (payload) => handleChangeAllowlistRecords(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "hypercert_allow_list_records",
-        },
-        (payload) => handleChangeAllowlistRecords(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "attestations",
-        },
-        (payload) => handleChangeAttestations(payload),
-      )
-      .subscribe((status, error) => {
-        if (status === "SUBSCRIBED") {
-          console.log(
-            "✅ [CACHING] Subscribed to realtime events with status",
-            status,
-          );
-          return;
-        }
+    await Promise.all([
+      cachingChannel.unsubscribe().then((status) => {
+        console.log("ℹ️ [REALTIME] Caching channel unsubscribed", status);
+      }),
+      dataChannel.unsubscribe().then((status) => {
+        console.log("ℹ️ [REALTIME] Data channel unsubscribed", status);
+      }),
+    ]);
 
-        if (error) {
-          console.error(
-            "⛔️ [CACHING] Error subscribing to realtime events ",
-            error,
-          );
-          throw new Error("Error subscribing to realtime events caching");
-        } else {
-          console.log(
-            "⚠️ [CACHING] Subscribed to realtime events with status",
-            status,
-          );
-          throw new Error("Error subscribing to realtime events caching");
-        }
-      });
+    console.log("ℹ️ [REALTIME] Subscribing to realtime events");
 
-    supabaseData
-      .channel("schema-db-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "users",
-        },
-        (payload) => handleChangeUsers(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "collections",
-        },
-        (payload) => handleChangeHyperboards(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "hyperboards",
-        },
-        (payload) => handleChangeHyperboards(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "hypercerts",
-        },
-        (payload) => handleChangeHyperboards(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "hyperboard_hypercert_metadata",
-        },
-        (payload) => handleChangeHyperboards(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "hyperboard_collections",
-        },
-        (payload) => handleChangeHyperboards(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "hyperboard_blueprint_metadata",
-        },
-        (payload) => handleChangeHyperboards(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "collection_blueprints",
-        },
-        (payload) => handleChangeHyperboards(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "blueprints",
-        },
-        (payload) => {
-          handleChangeBlueprints(payload);
-          handleChangeHyperboards(payload);
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "users",
-        },
-        (payload) => handleChangeHyperboards(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "collection_admins",
-        },
-        (payload) => handleChangeHyperboards(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "hyperboard_admins",
-        },
-        (payload) => handleChangeHyperboards(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "marketplace_orders",
-        },
-        (payload) => handleChangeOrders(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "marketplace_order_nonces",
-        },
-        (payload) => handleChangeOrders(payload),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "signature_requests",
-        },
-        (payload) => handleChangeSignatureRequests(payload),
-      )
-      .subscribe((status, error) => {
-        if (status === "SUBSCRIBED") {
-          console.log(
-            "✅ [DATA] Subscribed to realtime events with status",
-            status,
-          );
-          return;
-        }
+    await Promise.all([
+      this.subscribeToCachingChannel(),
+      this.subscribeToDataChannel(),
+    ]);
+  }
 
-        if (error) {
-          console.error(
-            "⛔️ [DATA] Error subscribing to realtime events ",
-            error,
-          );
-          throw new Error("Error subscribing to realtime events data");
-        } else {
-          console.log(
-            "⚠️ [DATA] Subscribed to realtime events with status",
-            status,
-          );
-          throw new Error("Error subscribing to realtime events data");
-        }
-      });
+  private subscribeToCachingChannel(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      supabaseCaching
+        .channel("schema-db-changes")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "claims",
+          },
+          (payload) => handleChangeClaims(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "fractions",
+          },
+          (payload) => handleChangeFractions(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "metadata",
+          },
+          (payload) => handleChangeMetadata(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "sales",
+          },
+          (payload) => handleChangeSales(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "sales",
+          },
+          (payload) => handleChangeSales(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "allow_list_data",
+          },
+          (payload) => handleChangeAllowlistRecords(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "hypercert_allow_list_records",
+          },
+          (payload) => handleChangeAllowlistRecords(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "attestations",
+          },
+          (payload) => handleChangeAttestations(payload),
+        )
+        .subscribe((status, error) => {
+          if (status === "SUBSCRIBED") {
+            console.log(
+              "✅ [REALTIME] Subscribed to realtime events for caching with status",
+              status,
+            );
+            resolve();
+            return;
+          }
+
+          if (error) {
+            console.error(
+              "⛔️ [REALTIME] Error subscribing to realtime events for caching",
+              error,
+            );
+            reject(new Error("Error subscribing to realtime events caching"));
+          } else {
+            console.log(
+              "⚠️ [REALTIME] Subscribed to realtime events for caching with status",
+              status,
+            );
+            reject(new Error("Error subscribing to realtime events caching"));
+          }
+        });
+    });
+  }
+
+  private subscribeToDataChannel(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      supabaseData
+        .channel("schema-db-changes")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "users",
+          },
+          (payload) => handleChangeUsers(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "collections",
+          },
+          (payload) => handleChangeHyperboards(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "hyperboards",
+          },
+          (payload) => handleChangeHyperboards(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "hypercerts",
+          },
+          (payload) => handleChangeHyperboards(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "hyperboard_hypercert_metadata",
+          },
+          (payload) => handleChangeHyperboards(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "hyperboard_collections",
+          },
+          (payload) => handleChangeHyperboards(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "hyperboard_blueprint_metadata",
+          },
+          (payload) => handleChangeHyperboards(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "collection_blueprints",
+          },
+          (payload) => handleChangeHyperboards(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "blueprints",
+          },
+          (payload) => {
+            handleChangeBlueprints(payload);
+            handleChangeHyperboards(payload);
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "users",
+          },
+          (payload) => handleChangeHyperboards(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "collection_admins",
+          },
+          (payload) => handleChangeHyperboards(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "hyperboard_admins",
+          },
+          (payload) => handleChangeHyperboards(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "marketplace_orders",
+          },
+          (payload) => handleChangeOrders(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "marketplace_order_nonces",
+          },
+          (payload) => handleChangeOrders(payload),
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "signature_requests",
+          },
+          (payload) => handleChangeSignatureRequests(payload),
+        )
+        .subscribe((status, error) => {
+          if (status === "SUBSCRIBED") {
+            console.log(
+              "✅ [REALTIME] Subscribed to realtime events for data with status",
+              status,
+            );
+            resolve();
+            return;
+          }
+
+          if (error) {
+            console.error(
+              "⛔️ [REALTIME] Error subscribing to realtime events for data",
+              error,
+            );
+            reject(new Error("Error subscribing to realtime events data"));
+          } else {
+            console.log(
+              "⚠️ [REALTIME] Subscribed to realtime events for data with status",
+              status,
+            );
+            reject(new Error("Error subscribing to realtime events data"));
+          }
+        });
+    });
   }
 
   public isEventSubscriptionActive(): boolean {
