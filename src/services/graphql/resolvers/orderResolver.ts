@@ -132,8 +132,6 @@ class OrderResolver {
         }),
       );
 
-      console.log("ordersWithPrices", ordersWithPrices);
-
       return {
         data: ordersWithPrices,
         count: count ?? ordersWithPrices.length,
