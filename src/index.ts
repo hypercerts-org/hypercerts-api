@@ -5,7 +5,7 @@ import cors from "cors";
 import { getRequiredEnvVar } from "./utils/envVars.js";
 import { yoga } from "./client/graphql.js";
 import swaggerUi from "swagger-ui-express";
-import swaggerJson from "./__generated__/swagger.json" assert { type: "json" };
+import swaggerJson from "./__generated__/swagger.json" with { type: "json" };
 import { RegisterRoutes } from "./__generated__/routes/routes.js";
 import * as Sentry from "@sentry/node";
 import SignatureRequestProcessorCron from "./cron/SignatureRequestProcessing.js";
@@ -59,7 +59,7 @@ if (ENABLE_CRON_JOBS) {
 }
 
 const supabaseRealtimeManager = container.resolve(SupabaseRealtimeManager);
-supabaseRealtimeManager.subscribeToEvents();
+await supabaseRealtimeManager.subscribeToEvents();
 
 app.listen(PORT, () => {
   console.log(
