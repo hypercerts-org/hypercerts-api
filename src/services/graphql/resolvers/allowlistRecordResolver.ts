@@ -95,9 +95,21 @@ class AllowlistRecordResolver {
   @FieldResolver()
   async hypercert(@Root() allowlistRecord: AllowlistRecord) {
     try {
-      return await this.hypercertsService.getHypercert({
-        where: { hypercert_id: { eq: allowlistRecord.hypercert_id } },
-      });
+      const [hypercert, metadata] = await Promise.all([
+        this.hypercertsService.getHypercert({
+          where: { hypercert_id: { eq: allowlistRecord.hypercert_id } },
+        }),
+        this.hypercertsService.getHypercertMetadata({
+          hypercert_id: allowlistRecord.hypercert_id,
+        }),
+      ]);
+      if (!hypercert) {
+        return null;
+      }
+      return {
+        ...hypercert,
+        metadata: metadata || null,
+      };
     } catch (e) {
       console.error(
         `[AllowlistRecordResolver::hypercert] Error fetching hypercert: ${(e as Error).message}`,
