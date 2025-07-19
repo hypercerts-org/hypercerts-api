@@ -100,13 +100,25 @@ class SalesResolver {
     }
 
     try {
-      return await this.hypercertsService.getHypercert({
-        where: {
-          hypercert_id: {
-            eq: sale.hypercert_id,
+      const [hypercert, metadata] = await Promise.all([
+        this.hypercertsService.getHypercert({
+          where: {
+            hypercert_id: { eq: sale.hypercert_id },
           },
-        },
-      });
+        }),
+        this.hypercertsService.getHypercertMetadata({
+          hypercert_id: sale.hypercert_id,
+        }),
+      ]);
+
+      if (!hypercert) {
+        return null;
+      }
+
+      return {
+        ...hypercert,
+        metadata: metadata || null,
+      };
     } catch (e) {
       console.error(
         `[SalesResolver::hypercert] Error fetching hypercert: ${(e as Error).message}`,

@@ -15,6 +15,7 @@ describe("AllowlistRecordResolver", () => {
   };
   let mockHypercertsService: {
     getHypercert: Mock;
+    getHypercertMetadata: Mock;
   };
 
   beforeEach(() => {
@@ -26,6 +27,7 @@ describe("AllowlistRecordResolver", () => {
 
     mockHypercertsService = {
       getHypercert: vi.fn(),
+      getHypercertMetadata: vi.fn(),
     };
 
     // Register mocks with the DI container
@@ -94,6 +96,7 @@ describe("AllowlistRecordResolver", () => {
       const expectedHypercert = {
         id: "test-hypercert-id",
         name: "Test Hypercert",
+        metadata: null,
       };
       mockHypercertsService.getHypercert.mockResolvedValue(expectedHypercert);
 
