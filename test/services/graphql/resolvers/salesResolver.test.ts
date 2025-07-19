@@ -16,6 +16,7 @@ describe("SalesResolver", () => {
   };
   let mockHypercertsService: {
     getHypercert: Mock;
+    getHypercertMetadata: Mock;
   };
   let mockSale: Sale;
 
@@ -31,6 +32,7 @@ describe("SalesResolver", () => {
 
     mockHypercertsService = {
       getHypercert: vi.fn(),
+      getHypercertMetadata: vi.fn(),
     };
 
     // Register mocks with the DI container
@@ -103,6 +105,7 @@ describe("SalesResolver", () => {
       const expectedHypercert = {
         id: faker.string.uuid(),
         hypercert_id: mockSale.hypercert_id,
+        metadata: null,
       };
       mockHypercertsService.getHypercert.mockResolvedValue(expectedHypercert);
 
