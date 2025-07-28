@@ -139,11 +139,17 @@ export class MarketplaceOrdersService {
         .where("chain_id", "=", nonce.chain_id)
         .executeTakeFirst()
         // TODO: Investigate why chain_id and nonce_counter are returned as strings
-        .then((res) => ({
-          ...res,
-          chain_id: Number(res?.chain_id),
-          nonce_counter: Number(res?.nonce_counter),
-        }))
+        .then((res) => {
+          if (!res) {
+            return undefined;
+          }
+
+          return {
+            ...res,
+            chain_id: Number(res?.chain_id),
+            nonce_counter: Number(res?.nonce_counter),
+          };
+        })
     );
   }
 
@@ -158,6 +164,8 @@ export class MarketplaceOrdersService {
     if (!nonce.address || !nonce.chain_id) {
       throw new Error("Address and chain ID are required");
     }
+
+    console.log("nonce", nonce);
 
     return this.dbService
       .getConnection()
